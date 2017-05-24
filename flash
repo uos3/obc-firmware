@@ -3,6 +3,16 @@
 source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 cd $source_dir
 
+host_platform='unknown'
+unamestr=`uname`
+if [[ "$unamestr" == 'Linux' ]]; then
+  host_platform='linux'
+elif [[ "$unamestr" == 'Darwin' ]]; then
+  host_platform='mac'
+else
+  host_platform='windows'
+fi
+
 COLOUR_GREEN='\033[0;32m'
 COLOUR_YELLOW='\033[1;33m'
 COLOUR_PURPLE='\033[0;35m'
@@ -107,11 +117,13 @@ flash_device() {
   done
 }
 
-groups $USER | grep -q 'dialout'
-if [[ ! $? -eq 0 ]]; then
-    echo -e "${COLOUR_RED}Error:${COLOUR_OFF} Current user is not in dialout group, you'll need this to use the programmer!" >&$stderr
-    echo -e " * eg. for Ubuntu/Debian: 'sudo gpasswd --add "$USER" dialout'" >&$stderr
-    exit 1
+if [ ${host_platform} == "linux" ]; then
+  groups $USER | grep -q 'dialout'
+  if [[ ! $? -eq 0 ]]; then
+      echo -e "${COLOUR_RED}Error:${COLOUR_OFF} Current user is not in dialout group, you'll need this to use the programmer!" >&$stderr
+      echo -e " * eg. for Ubuntu/Debian: 'sudo gpasswd --add "$USER" dialout'" >&$stderr
+      exit 1
+  fi
 fi
 
 if [[ ! -f $binary ]]; then
@@ -132,9 +144,22 @@ if $opt_verbose; then
   echo -e "$_INFO_ Flash Tool: arm-none-eabi-gdb" >&$stdout
 fi
 
-if ! programmer="`wait_for_black_magic`"; then
-  exit 1
+if [ ${host_platform} == "linux" ]; then
+  if ! programmer="`wait_for_black_magic`"; then
+    exit 1
+  fi
+elif [ ${host_platform} == "windows" ]; then
+  programmer="$2"
+  if [ -z "$programmer" ]; then
+    echo -e "$_ERROR_ Windows users must pass the BMP COM port as the final argument."
+    echo -e "  eg. ./flash <binary> COM3"
+    return 1
+  fi
+elif [ ${host_platform} == "mac" ]; then
+  echo -e "$_ERROR_ Not implemented for mac yet.."
+  return 1
 fi
+
 echo -e "$CLEAR_LINE$COLOUR_PURPLE[Programmer]$COLOUR_GREEN Found Blackmagic$COLOUR_OFF" >&$stdout
 if $opt_verbose; then
   echo -e "$_INFO_ Programmer: $programmer" >&$stdout
