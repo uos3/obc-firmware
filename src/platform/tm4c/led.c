@@ -18,6 +18,7 @@ static LED LED_leds[2] =
   { { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_2, false, state_OFF } // LED A
   , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_1, false, state_OFF } // LED B
   };
+#define NUMBER_OF_LEDS  ( sizeof(LED_leds) / sizeof(LED) )
 
 /* Driver Abstraction Macros */
 #define PERIPH_init(periph) if(!SysCtlPeripheralReady(periph)) { \
@@ -39,6 +40,9 @@ static void LED_init(LED *led)
 
 void LED_on(uint8_t led_num)
 {
+  if(led_num >= NUMBER_OF_LEDS)
+    return;
+
   LED_init(&LED_leds[led_num]);
 
   PIN_on(LED_leds[led_num].port, LED_leds[led_num].pin);
@@ -47,6 +51,9 @@ void LED_on(uint8_t led_num)
 
 void LED_off(uint8_t led_num)
 {
+  if(led_num >= NUMBER_OF_LEDS)
+    return;
+  
   LED_init(&LED_leds[led_num]);
 
   PIN_off(LED_leds[led_num].port, LED_leds[led_num].pin);
@@ -55,6 +62,9 @@ void LED_off(uint8_t led_num)
 
 void LED_set(uint8_t led_num, bool state)
 {
+  if(led_num >= NUMBER_OF_LEDS)
+    return;
+  
   if(state==true)
   {
     LED_on(led_num);
