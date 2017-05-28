@@ -100,8 +100,7 @@ if [ ! -e "src/main/$main.c" ]; then
 fi
 
 defines="-D PLATFORM=${platform^^} -D MAIN=${main}"
-#githash="$(git describe --dirty --always)"
-githash="no_git"
+githash="$(git describe --dirty --always)"
 
 outdir="builds"
 filename="$(hyphenjoin uos3 $platform $main $flags $githash)"
