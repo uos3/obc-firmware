@@ -112,13 +112,13 @@ ${FW_ROOT}/${OUTDIR}/${OUTFILE}:
 	     echo ${LD} -T ${SCATTERgcc}                                         \
 	          --entry ${ENTRY_SYM}                       \
 	          ${LDFLAGSgcc_${notdir ${@:.axf=}}}                          \
-	          ${LDFLAGS} -o ${@}.axf $(filter %.o %.a, ${^})                  \
+	          ${LDFLAGS} -o ${@}.axf $(filter %.o, ${^}) $(filter %.a, ${^})      \
 	          '${LIBM}' '${LIBC}' '${LIBGCC}';                            \
 	 fi;                                                                  \
 	${LD} -T ${SCATTERgcc}                                                   \
 	      --entry ${ENTRY_SYM}                           \
 	      ${LDFLAGSgcc_${notdir ${@:.axf=}}}                              \
-	      ${LDFLAGS} -o ${@}.axf $(filter %.o %.a, ${^})                      \
+	      ${LDFLAGS} -o ${@}.axf $(filter %.o, ${^}) $(filter %.a, ${^})  \
 	      '${LIBM}' '${LIBC}' '${LIBGCC}';                          
 	@${OBJCOPY} -O elf32-littlearm ${@}.axf ${@};
 	@rm -f ${@}.axf;
