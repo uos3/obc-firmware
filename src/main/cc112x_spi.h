@@ -44,7 +44,8 @@ extern "C" {
 /******************************************************************************
  * INCLUDES
  */
-#include "hal_types.h"
+//#include "hal_types.h"
+#include <stdint.h>
 #ifdef MSP_EXP430G2
   #include "hal_msp_exp430g2_spi.h"
 #else
@@ -285,12 +286,12 @@ extern "C" {
  */ 
 
 /* basic set of access functions */
-rfStatus_t cc112xSpiReadReg(uint16 addr, uint8 *data, uint8 len);
+rfStatus_t cc112xSpiReadReg(uint16_t addr, uint8_t *data, uint8_t len);
 rfStatus_t cc112xGetTxStatus(void);
 rfStatus_t cc112xGetRxStatus(void);  
-rfStatus_t cc112xSpiWriteReg(uint16 addr, uint8 *data, uint8 len);
-rfStatus_t cc112xSpiWriteTxFifo(uint8 *pWriteData, uint8 len);
-rfStatus_t cc112xSpiReadRxFifo(uint8 *pReadData, uint8 len);
+rfStatus_t cc112xSpiWriteReg(uint16_t addr, uint8_t *data, uint8_t len);
+rfStatus_t cc112xSpiWriteTxFifo(uint8_t *pWriteData, uint8_t len);
+rfStatus_t cc112xSpiReadRxFifo(uint8_t *pReadData, uint8_t len);
 
 #ifdef  __cplusplus
 }
