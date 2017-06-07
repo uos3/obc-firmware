@@ -20,22 +20,21 @@ static LED LED_leds[2] =
   };
 #define NUMBER_OF_LEDS  ( sizeof(LED_leds) / sizeof(LED) )
 
-/* Driver Abstraction Macros */
-#define PERIPH_init(led) if(!SysCtlPeripheralReady((led)->peripheral)) { \
-                              SysCtlPeripheralEnable((led)->peripheral);    \
-                              while(!SysCtlPeripheralReady((led)->peripheral)) {}; \
-                            }
-#define PIN_init(led) GPIOPinTypeGPIOOutput((led)->port, (led)->pin);
-#define PIN_on(led)   GPIOPinWrite((led)->port, (led)->pin, (led)->pin);
-#define PIN_off(led)  GPIOPinWrite((led)->port, (led)->pin, 0);
-
 /* Generic Utility functions */
 static void LED_init(LED *led)
 {
   if(led->initialised)
     return;
-  PERIPH_init(led);
-  PIN_init(led);
+
+  // Initialise Peripheral
+  if(!SysCtlPeripheralReady(led->peripheral))
+  {
+    SysCtlPeripheralEnable(led->peripheral);
+    while(!SysCtlPeripheralReady(led->peripheral)) { };
+  }
+
+  // Initialise Pin
+  GPIOPinTypeGPIOOutput(led->port, led->pin);
 }
 
 void LED_on(uint8_t led_num)
@@ -45,7 +44,8 @@ void LED_on(uint8_t led_num)
 
   LED_init(&LED_leds[led_num]);
 
-  PIN_on(&LED_leds[led_num]);
+  GPIOPinWrite(LED_leds[led_num].port, LED_leds[led_num].pin, LED_leds[led_num].pin);
+
   LED_leds[led_num].state = state_ON;
 }
 
@@ -56,7 +56,8 @@ void LED_off(uint8_t led_num)
   
   LED_init(&LED_leds[led_num]);
 
-  PIN_off(&LED_leds[led_num]);
+  GPIOPinWrite(LED_leds[led_num].port, LED_leds[led_num].pin, 0);
+
   LED_leds[led_num].state = state_OFF;
 }
 

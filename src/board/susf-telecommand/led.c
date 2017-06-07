@@ -21,19 +21,13 @@ static LED LED_leds[4] =
   };
 #define NUMBER_OF_LEDS  ( sizeof(LED_leds) / sizeof(LED) )
 
-/* Driver Abstraction Macros */
-#define PERIPH_init(led) *(led)->peripheral_register |= _BV((led)->peripheral);
-#define PIN_init(led) 
-#define PIN_on(led)      *(led)->port |= _BV((led)->pin);
-#define PIN_off(led)     *(led)->port &= ~(_BV((led)->pin));
-
 /* Generic Utility functions */
 static void LED_init(LED *led)
 {
   if(led->initialised)
     return;
-  PERIPH_init(led);
-  PIN_init(led);
+  
+  *led->peripheral_register |= _BV(led->peripheral);
 }
 
 void LED_on(uint8_t led_num)
@@ -43,7 +37,8 @@ void LED_on(uint8_t led_num)
 
   LED_init(&LED_leds[led_num]);
 
-  PIN_on(&LED_leds[led_num]);
+  *led.port |= _BV(led.pin);
+
   LED_leds[led_num].state = state_ON;
 }
 
@@ -54,7 +49,8 @@ void LED_off(uint8_t led_num)
   
   LED_init(&LED_leds[led_num]);
 
-  PIN_off(&LED_leds[led_num]);
+  *led.port &= ~(_BV(led.pin));
+
   LED_leds[led_num].state = state_OFF;
 }
 

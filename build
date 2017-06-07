@@ -24,7 +24,7 @@ stderr="/proc/$$/fd/2"
 stdnull="/dev/null"
 
 usage() {
-    echo "Usage: build <platform> <main> <args...>" >&2
+    echo "Usage: build <board> <main> <args...>" >&2
 }
 
 print() {
@@ -41,52 +41,38 @@ print_err() {
 }
 
 hyphenjoin() {
-    str=""
-    while [ $# -gt 0 ]
-    do
-      str="$str$1-"
-      shift
-    done
-    if [ ! -z "$str" ]
-    then
-      str="${str::-1}"
-    fi
-    echo "$str"
-  }
+  str=""
+  while [ $# -gt 0 ]
+  do
+    str="$str$1-"
+    shift
+  done
+  if [ ! -z "$str" ]
+  then
+    str="${str::-1}"
+  fi
+  echo "$str"
+}
 
-
-
-platform=${1,,}
+board=${1,,}
 shift
 
 main=${1,,}
 shift
 
-if [ -z "$platform" ]; then
-    print_err "$_ERROR_ A platform must be specified"
+if [ -z "$board" ]; then
+    print_err "$_ERROR_ A board must be specified"
     usage
     exit 1
 fi
-if [ ! -d "src/platform/${platform}" ]; then
-    print_err "$_ERROR_ Platform \"${platform}\" not found"
+if [ ! -d "src/board/${board}" ]; then
+    print_err "$_ERROR_ Board \"${board}\" not found"
     exit 2
 fi
 
-tm4c_dir="src/platform/tm4c/TivaWare_C_Series-2.1.4.178"
-tm4c_driver="src/platform/tm4c/TivaWare_C_Series-2.1.4.178/driverlib/gcc/libdriver.a"
-if [ ${platform} == "tm4c" ]; then
-  if [ ! -d "${tm4c_dir}" ]; then
-    print_err "$_ERROR_ TM4C Drivers not found! Please download these from TI following README.md"
-    exit 2
-  fi
-  if [ ! -e "${tm4c_driver}" ]; then
-    print_err "$_ERROR_ TM4C Drivers not compiled!"
-    print "Compiling now - please wait.. (the firmware will be built when this is complete)"
-    cd ${tm4c_dir}/driverlib
-    make &>/dev/null \
-    || print "$_ERROR_ There were errors in building the TI Drivers :("
-    cd ${source_dir}
-  fi
+# Run Board's Platform dependencies script if it exists
+if [ -f "src/board/${board}/dependencies.sh" ]; then
+    src/board/${board}/dependencies.sh;
 fi
 
 if [ -z "$main" ]; then
@@ -99,14 +85,14 @@ if [ ! -e "src/main/$main.c" ]; then
     exit 4
 fi
 
-defines="-D PLATFORM=${platform^^} -D MAIN=${main}"
+defines="-D BOARD=${board^^} -D MAIN=${main}"
 githash="$(git describe --dirty --always)"
 
 outdir="builds"
-filename="$(hyphenjoin uos3 $platform $main $flags $githash)"
+filename="$(hyphenjoin $board $main $flags $githash)"
 
-cd "src/platform/$platform"
+cd "src/board/$board"
 make OUTDIR="$outdir" OUTFILE="$filename" clean \
-&& make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$main" PLATFORM="$platform" \
+&& make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$main" BOARD="$board" \
 && print "$_INFO_ Built: ${outdir}/${filename}" \
 || print "$_ERROR_ There were errors in the build process"

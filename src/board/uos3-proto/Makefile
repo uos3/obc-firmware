@@ -33,6 +33,8 @@ PART=TM4C123GH6PGE
 FW_ROOT=../../..
 ROOT=TivaWare_C_Series-2.1.4.178
 
+BOARD_INCLUDE="-I./ -include board.h"
+
 #
 # Include the common make definitions.
 #
@@ -74,9 +76,9 @@ ${FW_ROOT}/${OUTDIR}:
 	 then                                                 \
 	     echo "  CC    ${<}";                             \
 	 else                                                 \
-	     echo ${CC} ${CFLAGS} -D${COMPILER} -o ${@} ${<}; \
+	     echo ${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}; \
 	 fi
-	@${CC} ${CFLAGS} -D${COMPILER} -o ${@} ${<}
+	@${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}
 
 #
 # The rule for building the object file from each assembly source file.
