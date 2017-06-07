@@ -13,9 +13,12 @@
 #include "cc112x_spi.h"
 #include "cc1120_rx_sniff_mode_reg_config.h"
 
+
 #include "../platform/led.h"
 
 //! A very simple example that blinks the on-board LED.
+
+static void manualCalibration(void);
 
 uint32_t pui32DataTx[10];
 uint32_t pui32DataRx[10];
@@ -73,7 +76,7 @@ int main(void)
 	buff[0] = PACKETLEN;
 	 // Fill rest of buffer with random bytes
     for(uint8_t i = 1; i < (PACKETLEN + 1); i++) {
-        buff[i] = (uint8_t)rand();
+        buff[i] = (uint8_t)i; //rand();
     }
 	
 	
@@ -110,5 +113,98 @@ int main(void)
 		// TODO: wait for packet to be sent  (the example uses interrupts)
 		
 		
+    }
+}
+
+
+/*******************************************************************************
+*   @fn         manualCalibration
+*
+*   @brief      Calibrates radio according to CC112x errata
+*
+*   @param      none
+*
+*   @return     none
+*/
+#define VCDAC_START_OFFSET 2
+#define FS_VCO2_INDEX 0
+#define FS_VCO4_INDEX 1
+#define FS_CHP_INDEX 2
+static void manualCalibration(void) {
+
+    uint8_t original_fs_cal2;
+    uint8_t calResults_for_vcdac_start_high[3];
+    uint8_t calResults_for_vcdac_start_mid[3];
+    uint8_t marcstate;
+    uint8_t writeByte;
+
+    // 1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
+    writeByte = 0x00;
+    cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
+
+    // 2) Start with high VCDAC (original VCDAC_START + 2):
+    cc112xSpiReadReg(CC112X_FS_CAL2, &original_fs_cal2, 1);
+    writeByte = original_fs_cal2 + VCDAC_START_OFFSET;
+    cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
+
+    // 3) Calibrate and wait for calibration to be done
+    //   (radio back in IDLE state)
+    trxSpiCmdStrobe(CC112X_SCAL);
+
+    do {
+        cc112xSpiReadReg(CC112X_MARCSTATE, &marcstate, 1);
+    } while (marcstate != 0x41);
+
+    // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
+    //    high VCDAC_START value
+    cc112xSpiReadReg(CC112X_FS_VCO2,
+                     &calResults_for_vcdac_start_high[FS_VCO2_INDEX], 1);
+    cc112xSpiReadReg(CC112X_FS_VCO4,
+                     &calResults_for_vcdac_start_high[FS_VCO4_INDEX], 1);
+    cc112xSpiReadReg(CC112X_FS_CHP,
+                     &calResults_for_vcdac_start_high[FS_CHP_INDEX], 1);
+
+    // 5) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
+    writeByte = 0x00;
+    cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
+
+    // 6) Continue with mid VCDAC (original VCDAC_START):
+    writeByte = original_fs_cal2;
+    cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
+
+    // 7) Calibrate and wait for calibration to be done
+    //   (radio back in IDLE state)
+    trxSpiCmdStrobe(CC112X_SCAL);
+
+    do {
+        cc112xSpiReadReg(CC112X_MARCSTATE, &marcstate, 1);
+    } while (marcstate != 0x41);
+
+    // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained 
+    //    with mid VCDAC_START value
+    cc112xSpiReadReg(CC112X_FS_VCO2, 
+                     &calResults_for_vcdac_start_mid[FS_VCO2_INDEX], 1);
+    cc112xSpiReadReg(CC112X_FS_VCO4,
+                     &calResults_for_vcdac_start_mid[FS_VCO4_INDEX], 1);
+    cc112xSpiReadReg(CC112X_FS_CHP,
+                     &calResults_for_vcdac_start_mid[FS_CHP_INDEX], 1);
+
+    // 9) Write back highest FS_VCO2 and corresponding FS_VCO
+    //    and FS_CHP result
+    if (calResults_for_vcdac_start_high[FS_VCO2_INDEX] >
+        calResults_for_vcdac_start_mid[FS_VCO2_INDEX]) {
+        writeByte = calResults_for_vcdac_start_high[FS_VCO2_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
+        writeByte = calResults_for_vcdac_start_high[FS_VCO4_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_VCO4, &writeByte, 1);
+        writeByte = calResults_for_vcdac_start_high[FS_CHP_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_CHP, &writeByte, 1);
+    } else {
+        writeByte = calResults_for_vcdac_start_mid[FS_VCO2_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
+        writeByte = calResults_for_vcdac_start_mid[FS_VCO4_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_VCO4, &writeByte, 1);
+        writeByte = calResults_for_vcdac_start_mid[FS_CHP_INDEX];
+        cc112xSpiWriteReg(CC112X_FS_CHP, &writeByte, 1);
     }
 }
