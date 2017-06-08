@@ -99,7 +99,7 @@ outdir="builds"
 filename="$(hyphenjoin $board $program $flags $githash)"
 
 cd "src/board/$board"
-make OUTDIR="$outdir" OUTFILE="$filename" clean \
+make OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" clean \
 && make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" \
 && print "$_INFO_ Built: ${outdir}/${filename}" \
 || print "$_ERROR_ There were errors in the build process"

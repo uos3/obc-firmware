@@ -3,9 +3,9 @@
 #include <avr/io.h>
 
 typedef struct LED {
-  uint8_t *peripheral_register;
+  volatile uint8_t *peripheral_register;
   uint8_t peripheral;
-  uint8_t *port;
+  volatile uint8_t *port;
   uint8_t pin;
   bool initialised;
   enum { state_ON
@@ -37,7 +37,7 @@ void LED_on(uint8_t led_num)
 
   LED_init(&LED_leds[led_num]);
 
-  *led.port |= _BV(led.pin);
+  *LED_leds[led_num].port |= _BV(LED_leds[led_num].pin);
 
   LED_leds[led_num].state = state_ON;
 }
@@ -49,7 +49,7 @@ void LED_off(uint8_t led_num)
   
   LED_init(&LED_leds[led_num]);
 
-  *led.port &= ~(_BV(led.pin));
+  *LED_leds[led_num].port &= ~(_BV(LED_leds[led_num].pin));
 
   LED_leds[led_num].state = state_OFF;
 }
