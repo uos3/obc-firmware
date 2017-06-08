@@ -112,7 +112,7 @@ ${FW_ROOT}/${OUTDIR}:
 # The rule for building the object file from each C source file.
 #
 %.o: %.c
-	@if [ ! 'x${VERBOSE}' = x ];                          \
+	@if [ 'x${VERBOSE}' = x ];                          \
 	 then                                                 \
 	     echo "  CC    ${<}";                             \
 	 else                                                 \
