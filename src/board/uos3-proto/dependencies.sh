@@ -39,7 +39,7 @@ tm4c_driver="TivaWare_C_Series-2.1.4.178/driverlib/gcc/libdriver.a"
 
 if [ ! -d "${tm4c_dir}" ]; then
   print_err "$_ERROR_ TM4C Drivers not found! Please download these from TI following README.md"
-  exit 2
+  exit 1
 fi
 if [ ! -e "${tm4c_driver}" ]; then
   print_err "$_ERROR_ TM4C Drivers not compiled!"
@@ -47,6 +47,5 @@ if [ ! -e "${tm4c_driver}" ]; then
   cd ${tm4c_dir}/driverlib
   make &>/dev/null \
   && print "$_INFO_ TM4C Drivers Compiled." \
-  || print_err "$_ERROR_ There were errors in building the TM4C Drivers :("
-  cd ${source_dir}
+  || (print_err "$_ERROR_ There were errors in building the TM4C Drivers :(" && exit 2)
 fi

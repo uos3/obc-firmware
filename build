@@ -75,6 +75,9 @@ fi
 # Run <board>'s dependencies script if it exists
 if [ -f "src/board/${board}/dependencies.sh" ]; then
     src/board/${board}/dependencies.sh;
+    if [[ $? != 0 ]]; then
+      exit
+    fi
 fi
 
 ## Check <program> argument
