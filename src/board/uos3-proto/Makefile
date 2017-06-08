@@ -39,9 +39,49 @@ BOARD_INCLUDE="-I./ -include board.h"
 # Include the common make definitions.
 #
 include ${FW_ROOT}/src/firmware.mk
-include makedefs
 
-FW_SRCS+=$(wildcard ./*.c)
+# Moved from makedefs
+os     := ${shell uname -s}
+ifndef COMPILER
+  COMPILER = gcc
+endif
+PREFIX := ${shell type arm-stellaris-eabi-gcc > /dev/null 2>&1 && \
+         echo arm-stellaris-eabi || echo arm-none-eabi}
+CC      = ${PREFIX}-gcc
+ARMGCC_ROOT:=${shell dirname '${shell sh -c "which ${CC}"}'}/..
+CPU     = -mcpu=cortex-m4
+FPU     = -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+AFLAGS  = -mthumb \
+	       ${CPU}  \
+	       ${FPU}  \
+	       -MD
+CFLAGS  = -mthumb          \
+	       ${CPU}              \
+	       ${FPU}              \
+	       -ffunction-sections \
+	       -fdata-sections     \
+	       -MD                 \
+	       -std=c99            \
+	       -Wall               \
+	       -pedantic           \
+	       -DPART_${PART}      \
+	       -c
+AR      = ${PREFIX}-ar
+LD      = ${PREFIX}-ld
+LDFLAGS = --gc-sections
+LIBGCC := ${shell ${CC} ${CFLAGS} -print-libgcc-file-name}
+LIBC   := ${shell ${CC} ${CFLAGS} -print-file-name=libc.a}
+LIBM   := ${shell ${CC} ${CFLAGS} -print-file-name=libm.a}
+OBJCOPY = ${PREFIX}-objcopy
+ifdef DEBUG
+  CFLAGS += -D DEBUG
+endif
+CFLAGS += ${CFLAGSgcc}
+AFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
+CFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
+
+CFLAGS += -ggdb3 -O0
+FW_SRCS+= $(wildcard ./*.c)
 
 #
 # Where to find header files that do not live in the source directory.
@@ -72,7 +112,7 @@ ${FW_ROOT}/${OUTDIR}:
 # The rule for building the object file from each C source file.
 #
 %.o: %.c
-	@if [ 'x${VERBOSE}' = x ];                            \
+	@if [ ! 'x${VERBOSE}' = x ];                          \
 	 then                                                 \
 	     echo "  CC    ${<}";                             \
 	 else                                                 \
