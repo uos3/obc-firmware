@@ -1,0 +1,14 @@
+/* This file contains all header files */
+
+#ifndef __FIRMWARE_H__
+#define __FIRMWARE_H__
+
+/* Board-specific header file, completed by macro: 'board/<board>/board.h' */
+#include BOARD_INCLUDE
+
+/* Generic Board Module header files */
+#include "board/led.h"
+
+/* ... */
+
+#endif /*  __FIRMWARE_H__ */

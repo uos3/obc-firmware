@@ -33,12 +33,11 @@ PART=TM4C123GH6PGE
 FW_ROOT=../../..
 ROOT=TivaWare_C_Series-2.1.4.178
 
-BOARD_INCLUDE="-I./ -include board.h"
-
 #
 # Include the common make definitions.
 #
 include ${FW_ROOT}/src/firmware.mk
+BOARD_INCLUDE="-DBOARD_INCLUDE=\"board/${BOARD}/board.h\""
 
 # Moved from makedefs
 os     := ${shell uname -s}
@@ -81,6 +80,7 @@ AFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 CFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 
 CFLAGS += -ggdb3 -O0
+
 FW_SRCS+= $(wildcard ./*.c)
 
 #

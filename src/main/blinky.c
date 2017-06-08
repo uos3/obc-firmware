@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../board/led.h"
+#include "../firmware.h"
 
 //! A very simple example that blinks the on-board LED.
 
