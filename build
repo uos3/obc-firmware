@@ -24,7 +24,7 @@ stderr="/proc/$$/fd/2"
 stdnull="/dev/null"
 
 usage() {
-    echo "Usage: build <board> <main> <args...>" >&2
+    echo "Usage: build <board> <program>" >&2
 }
 
 print() {
@@ -54,12 +54,14 @@ hyphenjoin() {
   echo "$str"
 }
 
+## Read Arguments
 board=${1,,}
 shift
 
-main=${1,,}
+program=${1,,}
 shift
 
+## Check <board> argument
 if [ -z "$board" ]; then
     print_err "$_ERROR_ A board must be specified"
     usage
@@ -70,29 +72,31 @@ if [ ! -d "src/board/${board}" ]; then
     exit 2
 fi
 
-# Run Board's Platform dependencies script if it exists
+# Run <board>'s dependencies script if it exists
 if [ -f "src/board/${board}/dependencies.sh" ]; then
     src/board/${board}/dependencies.sh;
 fi
 
-if [ -z "$main" ]; then
-    print_err "$_ERROR_ A main file must be specified"
+## Check <program> argument
+if [ -z "$program" ]; then
+    print_err "$_ERROR_ A main program file must be specified"
     usage
     exit 3
 fi
-if [ ! -e "src/main/$main.c" ]; then
-    print_err "$_ERROR_ Main File \"$main\" not found"
+if [ ! -e "src/main/$program.c" ]; then
+    print_err "$_ERROR_ Main Program File \"$program\" not found"
     exit 4
 fi
 
-defines="-D BOARD=${board^^} -D MAIN=${main}"
+## Set up Makefile Defines
+defines="-D BOARD=${board^^} -D MAIN=${program}"
 githash="$(git describe --dirty --always)"
 
 outdir="builds"
-filename="$(hyphenjoin $board $main $flags $githash)"
+filename="$(hyphenjoin $board $program $flags $githash)"
 
 cd "src/board/$board"
 make OUTDIR="$outdir" OUTFILE="$filename" clean \
-&& make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$main" BOARD="$board" \
+&& make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" \
 && print "$_INFO_ Built: ${outdir}/${filename}" \
 || print "$_ERROR_ There were errors in the build process"

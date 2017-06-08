@@ -2,23 +2,23 @@
 
 ## To use
 
-`./build [board] [main]` - will compile src/main/[main].c for [board]
+`./build [board] [program]` - will compile src/main/[program].c for [board]
 
-  * The resultant filename will be builds/_[board]-[main]-[gitref]_
+  * The resultant filename will be builds/_[board]-[program]-[gitref]_
 
 `./flash [binary]` - will flash a board (using blackmagic probe) with [binary] ELF file
 
 eg.
 
-`./build uos3-proto blinky` - builds the blinky.c application for the UoS3 Flight Computer Prototype Board
+`./build uos3-proto blinky` - builds the blinky.c program for the UoS3 Flight Computer Prototype Board
 
 `./flash builds/uos3-proto-blinky-fd8ea0c` - flashes a built binary to a board
 
 ## To develop
 
-To develop a new application (demonstration, test process, etc), create a new <application>.c in _src/main/_ from which you can call the relevant functions You can now build this application with `./build [board] [application]`
+To develop a new program (demonstration, test process, etc), create a new <program>.c in _src/main/_ from which you can call the relevant functions You can now build this application with `./build [board] [program]`
 
-#### _src/main_
+#### _src/main/<program>_
 
 This folder contains unique entry files for applications, and can be thought of as the top-level logic. One of the these will be the flight program, while others may demonstrate specific functions such as Radio Testing or Sensor Control.
 
@@ -28,7 +28,7 @@ This folder contains the general logic of the cubesat, such as tasks, protocol i
 
 Subfolders may be created when suitable for modules, will need to be added to the _firmware.mk_ file to be compiled.
 
-#### _src/board_
+#### _src/board/<board>/_
 
 These folders contain the low-level peripheral drivers for each board.
 
