@@ -20,7 +20,6 @@ static LED LED_leds[2] =
   };
 #define NUMBER_OF_LEDS  ( sizeof(LED_leds) / sizeof(LED) )
 
-/* Generic Utility functions */
 static void LED_init(LED *led)
 {
   if(led->initialised)
@@ -35,6 +34,8 @@ static void LED_init(LED *led)
 
   // Initialise Pin
   GPIOPinTypeGPIOOutput(led->port, led->pin);
+
+  led->initialised = true;
 }
 
 void LED_on(uint8_t led_num)
