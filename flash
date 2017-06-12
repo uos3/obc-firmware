@@ -76,7 +76,7 @@ locate_black_magic() {
 wait_for_black_magic() {
   until programmer="`locate_black_magic`"; do
     spinner_char=`spinner`
-    echo -ne "$COLOUR_PURPLE[Programmer]$COLOUR_YELLOW Looking for programmer... $spinner_char$COLOUR_OFF\r" >&$stdout
+    echo -ne "$_INFO_$COLOUR_YELLOW Looking for programmer... $spinner_char$COLOUR_OFF\r" >&$stdout
     sleep 0.2
   done
   echo "$programmer"
@@ -105,7 +105,7 @@ flash_device() {
   while ! ${flash_success}
   do
     spinner_char=`spinner`
-    echo -ne "$COLOUR_PURPLE[Programmer]$COLOUR_YELLOW Scanning.. $spinner_char$COLOUR_OFF\r";
+    echo -ne "$_INFO_$COLOUR_YELLOW Scanning for board.. $spinner_char$COLOUR_OFF\r";
     flash_out=`eval $flash_cmd 2>&1`;
     echo ${flash_out} | grep -vqE 'warning|fail|Error|MIS-MATCHED'
       if [[ $? -eq 0 ]]; then
@@ -117,26 +117,33 @@ flash_device() {
   done
 }
 
+# For Linux - check user has permissions to the serial port (required for Black Magic Probe)
 if [ ${host_platform} == "linux" ]; then
   groups $USER | grep -q 'dialout'
   if [[ ! $? -eq 0 ]]; then
-      echo -e "${COLOUR_RED}Error:${COLOUR_OFF} Current user is not in dialout group, you'll need this to use the programmer!" >&$stderr
+      echo -e "$_ERROR_ Current user is not in dialout group, you'll need this to use the programmer!" >&$stderr
       echo -e " * eg. for Ubuntu/Debian: 'sudo gpasswd --add "$USER" dialout'" >&$stderr
       exit 1
   fi
 fi
 
+if [ -z "$binary" ]; then
+  newest_binary=`ls -t builds/ | head -1`
+  binary="builds/${newest_binary}"
+  echo -e "$_INFO_ Most recent build selected: ${binary}" >&$stdout
+fi
+
 if [[ ! -f $binary ]]; then
-    echo -e "[Input] ${COLOUR_RED}Error:${COLOUR_OFF} Binary $binary not found!" >&$stderr
-    exit 1
+  echo -e "$_ERROR_ Binary $binary not found!" >&$stderr
+  exit 1
 fi
 
 if $opt_verbose; then
-  echo -e "$_INFO_ Binary: $binary" >&$stdout
+  echo -e "$_INFO_ Binary: ${binary}" >&$stdout
 fi
 
 if ! hash "$flashtool" 2>/dev/null; then
-  echo -e "${COLOUR_RED} $flashtool not found!$COLOUR_OFF" >&$stderr
+  echo -e "$_ERROR_ $flashtool not found!" >&$stderr
   exit 1
 fi
 
@@ -160,7 +167,7 @@ elif [ ${host_platform} == "mac" ]; then
   return 1
 fi
 
-echo -e "$CLEAR_LINE$COLOUR_PURPLE[Programmer]$COLOUR_GREEN Found Blackmagic$COLOUR_OFF" >&$stdout
+echo -e "$_INFO_$COLOUR_GREEN Found Blackmagic$COLOUR_OFF" >&$stdout
 if $opt_verbose; then
   echo -e "$_INFO_ Programmer: $programmer" >&$stdout
 fi
@@ -168,4 +175,4 @@ fi
 flash_device "$flashtool" "$programmer" "$binary"
 
 playsound tools/flash.wav
-echo -e "$CLEAR_LINE$COLOUR_PURPLE[Programmer]$COLOUR_GREEN Flashed$COLOUR_OFF" >&$stdout
+echo -e "$CLEAR_LINE$_INFO_$COLOUR_GREEN Board Flashed$COLOUR_OFF" >&$stdout

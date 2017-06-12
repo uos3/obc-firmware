@@ -8,6 +8,8 @@
 
 `./flash [binary]` - will flash a board (using blackmagic probe) with [binary] ELF file
 
+  * `./flash` with no arguments will use the most recent build from _builds/_
+
 eg.
 
 `./build uos3-proto blinky` - builds the blinky.c program for the UoS3 Flight Computer Prototype Board
