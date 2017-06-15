@@ -14,7 +14,7 @@ int main(void)
         /* On period */
         for(i = 0; i < 300000; i++) {};
 
-        LED_on(LED_B);
+        LED_off(LED_B);
 
         /* Off period */
         for(i = 0; i < 300000; i++) {};
