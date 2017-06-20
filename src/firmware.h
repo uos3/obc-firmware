@@ -11,6 +11,7 @@
 
 /* Generic Board Module header files */
 #include "board/led.h"
+#include "board/uart.h"
 
 /* ... */
 

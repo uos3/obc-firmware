@@ -53,25 +53,26 @@ void LED_off(uint8_t led_num)
 }
 
 /* Abstract for weird TI third argument */
-#define LED_Pin_Write(led_num, pin_value)  GPIOPinWrite(LED_leds[led_num].port, LED_leds[led_num].pin, pin_value)
+#define LED_Pin_Write(led, pin_value)  GPIOPinWrite(led->port, led->pin, pin_value)
 
 void LED_set(uint8_t led_num, bool state)
 {
   if(led_num >= NUMBER_OF_LEDS)
     return;
+  LED *led = &LED_leds[led_num];
 
-  LED_init(&LED_leds[led_num]);
+  LED_init(led);
 
   /* Write value to LED pin, abstracted to macro above */
   /* - second argument is for LOW: 0, for HIGH: LED_leds[led_num].pin */
   if(state == true)
   {
-    LED_Pin_Write(led_num, LED_leds[led_num].pin);
+    LED_Pin_Write(led, led->pin);
   }
   else
   {
-    LED_Pin_Write(led_num, 0);
+    LED_Pin_Write(led, 0);
   }
 
-  LED_leds[led_num].state = state;
+  led->state = state;
 }

@@ -5,18 +5,20 @@
 
 int main(void)
 {
-    volatile uint32_t i;
+  volatile uint32_t i;
 
-    while(1)
-    {
-        LED_on(LED_B);
+  Board_init();
 
-        /* On period */
-        for(i = 0; i < 300000; i++) {};
+  while(1)
+  {
+    LED_on(LED_B);
 
-        LED_off(LED_B);
+    /* On period */
+    for(i = 0; i < 300000; i++) {};
 
-        /* Off period */
-        for(i = 0; i < 300000; i++) {};
-    }
+    LED_off(LED_B);
+
+    /* Off period */
+    for(i = 0; i < 300000; i++) {};
+  }
 }
