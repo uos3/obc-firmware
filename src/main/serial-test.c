@@ -9,23 +9,23 @@ int main(void)
 
   LED_on(LED_B);
 
-  UART_init(UART_CAMERA, 9600);
-  UART_init(UART_GPS, 9600);
+  UART_init(UART_CAM_HEADER, 9600);
+  UART_init(UART_PC104_HEADER, 9600);
 
   while(1)
   {
     LED_off(LED_B);
+
+    UART_putc(UART_CAM_HEADER, 'U');
+    UART_putc(UART_PC104_HEADER, 'U');
 
     /* Off period */
     for(i = 0; i < 300000; i++) {};
 
     LED_on(LED_B);
 
-    UART_putc(UART_CAMERA, 't');
-    UART_putc(UART_GPS, 't');
-
-    UART_puts(UART_CAMERA, "Test\n");
-    UART_puts(UART_GPS, "Test\n");
+    UART_puts(UART_CAM_HEADER, "\r\nCamera Header\r\n");
+    UART_puts(UART_PC104_HEADER, "\r\nPC104 Header\r\n");
 
     /* On period */
     for(i = 0; i < 100000; i++) {};

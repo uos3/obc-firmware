@@ -10,6 +10,7 @@
 #include BOARD_INCLUDE
 
 /* Generic Board Module header files */
+#include "board/board.h"
 #include "board/led.h"
 #include "board/uart.h"
 
