@@ -3,8 +3,8 @@
 source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 cd $source_dir
 
+opt_flash=false
 opt_quiet=false
-opt_verbose=false
 opt_sound=false
 
 COLOUR_GREEN='\033[0;32m'
@@ -54,6 +54,36 @@ hyphenjoin() {
   echo "$str"
 }
 
+flash() {
+  if $opt_flash; then
+    flash_args="";
+    if $opt_sound; then flash_args="-s"; fi
+    ${source_dir}/flash ${flash_args} ${outdir}/${filename};
+  fi
+}
+
+## Read Flags
+OPTIND=1
+while getopts ":qfs" opt; do
+  case "$opt" in
+    q) # Quiet
+      opt_quiet=true
+      ;;
+    f) # Flash
+      opt_flash=true
+      ;;
+    s) # Sound
+      opt_sound=true
+      ;;
+    ?) # Illegal Option
+      print_err "$_ERROR_ Illegal option '$OPTARG'"
+      exit 3
+      ;;
+  esac
+done
+for i in `seq 2 $OPTIND`; do shift; done
+
+
 ## Read Arguments
 board=${1,,}
 shift
@@ -101,5 +131,5 @@ filename="$(hyphenjoin $board $program $flags $githash)"
 cd "src/board/$board"
 make OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" clean \
 && make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" \
-&& print "$_INFO_ Built: ${outdir}/${filename}" \
-|| print "$_ERROR_ There were errors in the build process"
+&& ( print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" && flash ) \
+|| print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF"

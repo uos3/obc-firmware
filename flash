@@ -33,9 +33,6 @@ stdout="/proc/$$/fd/1"
 stderr="/proc/$$/fd/2"
 stdnull="/dev/null"
 
-binary="$1"
-flashtool="arm-none-eabi-gdb"
-
 spinner() {
   case $spinner_char in
     '/') echo '-';;
@@ -127,6 +124,27 @@ if [ ${host_platform} == "linux" ]; then
   fi
 fi
 
+## Read Flags
+OPTIND=1
+while getopts ":qs" opt; do
+  case "$opt" in
+    q) # Quiet
+      opt_quiet=true
+      ;;
+    s) # Sound
+      opt_sound=true
+      ;;
+    ?) # Illegal Option
+      print_err "$_ERROR_ Illegal option '$OPTARG'"
+      exit 3
+      ;;
+  esac
+done
+for i in `seq 2 $OPTIND`; do shift; done
+
+binary="$1"
+flashtool="arm-none-eabi-gdb"
+
 if [ -z "$binary" ]; then
   newest_binary=`ls -t builds/ | head -1`
   binary="builds/${newest_binary}"
@@ -174,5 +192,5 @@ fi
 
 flash_device "$flashtool" "$programmer" "$binary"
 
-playsound tools/flash.wav
 echo -e "$CLEAR_LINE$_INFO_$COLOUR_GREEN Board Flashed$COLOUR_OFF" >&$stdout
+playsound tools/flash.wav
