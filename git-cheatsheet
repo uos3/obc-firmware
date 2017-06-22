@@ -1,0 +1,17 @@
+
+1) git pull -> gets latest
+
+2) git status -> any conflicts?
+
+3) git diff -> what is difference between them
+
+4) overwrite current changes with network version -> git reset HEAD --hard
+
+5) to commit (store to local version control) -> git commit -am "blurb around changes" (add files and message blurb) 
+
+6) git push -> send local stored changes to server/remote repository
+
+7) to build the executable binary see readme.md file
+
+
+
