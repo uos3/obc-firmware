@@ -1,42 +1,49 @@
-# UoS3 Cubesat Firmware
+# UoS3 Cubesat Firmware Repository
 
-## To use
+This folder contains all the source (apart from licensed drivers) to build the executable file to be flashed directly to the hardware.
 
-`./build [board] [program]` - will compile src/main/[program].c for [board]
+The firmware is built from a top-level C program file and resolves all the references and includes from the src/ and specified hardware folders
 
-  * The resultant filename will be builds/_[board]-[program]-[gitref]_
+The design is such so that the main hardware code and hardware can be easily varied. eg camera code which can be used with different boards goes in the src folder, but the actual board specific drivers go in the relevant board folder.
 
-`./flash [binary]` - will flash a board (using blackmagic probe) with [binary] ELF file
+## To use the build and flash tools
+
+Open a terminal in the root folder of this firmware repository, then run the following commands:
+
+`./build uos3-proto blinky` - will compile blinky.c with the folder 'src/board/uos3-proto/' included
+
+  * The resultant ELF filename will be 'builds/_<board>-<program>-<gitref>_' eg 'builds/uos3-proto-blinky-fd8ea0c'
+
+`./flash <binary>` - will flash a board (using a USB blackmagic probe) with specified ELF file
 
   * `./flash` with no arguments will use the most recent build from _builds/_
 
-eg.
 
-`./build uos3-proto blinky` - builds the blinky.c program for the UoS3 Flight Computer Prototype Board
+## To write a test program for the 'uos3-proto' circuit board
 
-`./flash builds/uos3-proto-blinky-fd8ea0c` - flashes a built binary to a board
+1. Install the software dependencies below
 
-## To develop
+2. Create a C source file in _src/main/_, eg. *test.c*. A minimal example is below.
+```
+#include "../firmware.h"
 
-To develop a new program (demonstration, test process, etc), create a new <program>.c in _src/main/_ from which you can call the relevant functions You can now build this application with `./build [board] [program]`
+int main(void)
+{
+  Board_init();
 
-#### _src/main/<program>_
+  /* Test Code goes here */
+}
+```
 
-This folder contains unique entry files for applications, and can be thought of as the top-level logic. One of the these will be the flight program, while others may demonstrate specific functions such as Radio Testing or Sensor Control.
+  * *firmware.h* should include all board header files.
+  * `Board_init()` should run hardware setup functions required for the board.
+  * The C source file must contain *main()* as this is the function that will be run on the hardware.
 
-#### _src/*.c_
+3. Compile the application with: `./build uos3-proto test`
 
-This folder contains the general logic of the cubesat, such as tasks, protocol implementations, data buffers, etc.
+4. Flash the test program to the circuit board with: `./flash`
 
-Subfolders may be created when suitable for modules, will need to be added to the _firmware.mk_ file to be compiled.
-
-#### _src/board/<board>/_
-
-These folders contain the low-level peripheral drivers for each board.
-
-This abstraction allows an application to be compiled for another board simply by changing the <board> in the `./build ...` command.
-
-## Dependencies
+## Dependencies 
 
 1. Enable user access to serial devices (programmer)
     * Ubuntu:
@@ -44,7 +51,7 @@ This abstraction allows an application to be compiled for another board simply b
       sudo gpasswd --add "$USER" dialout
       ```
 
-2. Install Latest ARM-Embedded Toolchain
+2. Install Latest Official ARM-Embedded Toolchain
     * Ubuntu:
       ```
       sudo apt-add-repository ppa:team-gcc-arm-embedded/ppa
