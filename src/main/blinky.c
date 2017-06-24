@@ -9,12 +9,10 @@
 
 #define CONFIG_1
 
-#include "hal_spi_rf_trxeb.h"
-#include "cc112x_spi.h"
+
 #include "cc1120_rx_sniff_mode_reg_config.h"
 
 
-#include "../platform/led.h"
 
 //! A very simple example that blinks the on-board LED.
 
@@ -87,10 +85,10 @@ int main(void)
         LED_off(LED_B);
 
 
-    /* On period */
-    for(i = 0; i < 300000; i++) {};
+		/* On period */
+		for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
 
-    LED_off(LED_B);
+		LED_off(LED_B);
 
         // Delay for a bit.
         for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};

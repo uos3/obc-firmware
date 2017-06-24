@@ -39,7 +39,7 @@
  * INCLUDES
  */
 //#include "hal_types.h"
-#include "../../main/cc112x_spi.h"
+#include "cc112x_spi.h"
 #include <stdint.h>
 
 /******************************************************************************

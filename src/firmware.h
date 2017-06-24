@@ -14,6 +14,10 @@
 #include "board/led.h"
 #include "board/uart.h"
 
+/* radio stuff */
+#include "board/hal_spi_rf_trxeb.h"
+#include "cc1125/cc112x_spi.h"
+
 /* ... */
 
 #endif /*  __FIRMWARE_H__ */

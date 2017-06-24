@@ -54,7 +54,7 @@
 #include "inc/hw_gpio.h"
 #include "inc/hw_types.h"
 
-#include "../../main/hal_spi_rf_trxeb.h"
+#include "../hal_spi_rf_trxeb.h"
 
 
 
