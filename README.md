@@ -64,7 +64,7 @@ int main(void)
 3. Acquire and unpack TI Tiva Driver Package
   * Due to the licensing agreement, this has to be manually added.
   * Download [SW-TM4C-2.1.4.178.exe](http://software-dl.ti.com/tiva-c/SW-TM4C/latest/index_FDS.html) (login required)
-  * Unpack to _src/platform/tm4c123g/TivaWare_C_Series-2.1.4.178_
+  * Unpack to _src/board/uos3-proto/TivaWare_C_Series-2.1.4.178_
   * Ask Phil if you have difficulties
 
 # Contact
