@@ -54,7 +54,7 @@ int main(void)
 	
 	*/
 	
-	UART_init(UART_PC104_HEADER, 9600);
+	UART_init(UART_PC104_HEADER, 500000);
 	UART_putc(UART_PC104_HEADER, 'M');
 	
 	trxRfSpiInterfaceInit(0);
@@ -64,16 +64,19 @@ int main(void)
     // Reset radio
     trxSpiCmdStrobe(CC112X_SRES);
     // Write registers to radio
+	UART_putc(UART_PC104_HEADER, (sizeof(preferredSettings)/sizeof(registerSetting_t)));
     for(uint16_t i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
-UART_putc(UART_PC104_HEADER, (sizeof(preferredSettings)/sizeof(registerSetting_t)));
         writeByte = preferredSettings[i].data;
-UART_putc(UART_PC104_HEADER, 'K');
         cc112xSpiWriteReg(preferredSettings[i].addr, &writeByte, 1);
-UART_putc(UART_PC104_HEADER, 'J');
     }
-	
+	UART_puts(UART_PC104_HEADER, "DONE");
+	for(ui32Loop = 0; ui32Loop < 30000; ui32Loop++) {};
 	//////// Calibrate radio according to errata
     manualCalibration();
+UART_puts(UART_PC104_HEADER, "}");
+	for(ui32Loop = 0; ui32Loop < 3000; ui32Loop++) {};
+	UART_puts(UART_PC104_HEADER, "CAL'd");
+	for(ui32Loop = 0; ui32Loop < 30000; ui32Loop++) {};
 	
 	/////// the packet
 	uint8_t buff[PACKETLEN+1];
@@ -148,11 +151,14 @@ static void manualCalibration(void) {
 
     // 2) Start with high VCDAC (original VCDAC_START + 2):
     cc112xSpiReadReg(CC112X_FS_CAL2, &original_fs_cal2, 1);
+	UART_puts(UART_PC104_HEADER, "%");
+	UART_putc(UART_PC104_HEADER, original_fs_cal2);
     writeByte = original_fs_cal2 + VCDAC_START_OFFSET;
     cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
 
     // 3) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
+	UART_puts(UART_PC104_HEADER, "_3");
     trxSpiCmdStrobe(CC112X_SCAL);
 
     do {
@@ -161,6 +167,7 @@ static void manualCalibration(void) {
 
     // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
     //    high VCDAC_START value
+	UART_puts(UART_PC104_HEADER, "_4");
     cc112xSpiReadReg(CC112X_FS_VCO2,
                      &calResults_for_vcdac_start_high[FS_VCO2_INDEX], 1);
     cc112xSpiReadReg(CC112X_FS_VCO4,
@@ -169,15 +176,18 @@ static void manualCalibration(void) {
                      &calResults_for_vcdac_start_high[FS_CHP_INDEX], 1);
 
     // 5) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
+	UART_puts(UART_PC104_HEADER, "_5");
     writeByte = 0x00;
     cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
 
     // 6) Continue with mid VCDAC (original VCDAC_START):
+	UART_puts(UART_PC104_HEADER, "_6");
     writeByte = original_fs_cal2;
     cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
 
     // 7) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
+	UART_puts(UART_PC104_HEADER, "_7");
     trxSpiCmdStrobe(CC112X_SCAL);
 
     do {
@@ -186,6 +196,7 @@ static void manualCalibration(void) {
 
     // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained 
     //    with mid VCDAC_START value
+	UART_puts(UART_PC104_HEADER, "_8");
     cc112xSpiReadReg(CC112X_FS_VCO2, 
                      &calResults_for_vcdac_start_mid[FS_VCO2_INDEX], 1);
     cc112xSpiReadReg(CC112X_FS_VCO4,
@@ -195,8 +206,10 @@ static void manualCalibration(void) {
 
     // 9) Write back highest FS_VCO2 and corresponding FS_VCO
     //    and FS_CHP result
+	
     if (calResults_for_vcdac_start_high[FS_VCO2_INDEX] >
         calResults_for_vcdac_start_mid[FS_VCO2_INDEX]) {
+		UART_puts(UART_PC104_HEADER, "_9");
         writeByte = calResults_for_vcdac_start_high[FS_VCO2_INDEX];
         cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
         writeByte = calResults_for_vcdac_start_high[FS_VCO4_INDEX];
@@ -204,6 +217,7 @@ static void manualCalibration(void) {
         writeByte = calResults_for_vcdac_start_high[FS_CHP_INDEX];
         cc112xSpiWriteReg(CC112X_FS_CHP, &writeByte, 1);
     } else {
+		UART_puts(UART_PC104_HEADER, "#9");
         writeByte = calResults_for_vcdac_start_mid[FS_VCO2_INDEX];
         cc112xSpiWriteReg(CC112X_FS_VCO2, &writeByte, 1);
         writeByte = calResults_for_vcdac_start_mid[FS_VCO4_INDEX];
@@ -211,4 +225,5 @@ static void manualCalibration(void) {
         writeByte = calResults_for_vcdac_start_mid[FS_CHP_INDEX];
         cc112xSpiWriteReg(CC112X_FS_CHP, &writeByte, 1);
     }
+	UART_puts(UART_PC104_HEADER, "#0");
 }
