@@ -13,6 +13,8 @@
 #include "board/board.h"
 #include "board/led.h"
 #include "board/uart.h"
+#include "board/delay.h"
+#include "board/wdt.h"
 
 /* ... */
 

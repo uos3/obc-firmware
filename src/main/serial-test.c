@@ -3,9 +3,8 @@
 
 int main(void)
 {
-  volatile uint32_t i;
-
   Board_init();
+  WDT_kick();
 
   LED_on(LED_B);
 
@@ -20,7 +19,8 @@ int main(void)
     UART_putc(UART_PC104_HEADER, 'U');
 
     /* Off period */
-    for(i = 0; i < 300000; i++) {};
+    Delay_ms(750);
+    WDT_kick();
 
     LED_on(LED_B);
 
@@ -28,6 +28,7 @@ int main(void)
     UART_puts(UART_PC104_HEADER, "\r\nPC104 Header\r\n");
 
     /* On period */
-    for(i = 0; i < 100000; i++) {};
+    Delay_ms(250);
+    WDT_kick();
   }
 }
