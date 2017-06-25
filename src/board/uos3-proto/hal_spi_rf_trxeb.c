@@ -56,6 +56,8 @@
 
 #include "../hal_spi_rf_trxeb.h"
 
+#include "../../firmware.h"
+
 
 
 /******************************************************************************
@@ -149,16 +151,20 @@ rfStatus_t trx8BitRegAccess(uint8_t accessType, uint8_t addrByte, uint8_t *pData
   GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
   //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
   // do we need to flush the rx buffer first?
-  
+ 
   while(SSIBusy(SSI1_BASE));
+
   SSIDataPut(SSI1_BASE, (uint32_t)(accessType|addrByte));
+
   while(SSIBusy(SSI1_BASE));
+
   SSIDataGet(SSI1_BASE, (uint32_t *)&readValue);
-  
+
   trxReadWriteBurstSingle(accessType|addrByte,pData,len);
-  
+UART_putc(UART_PC104_HEADER, '6');
    
   GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3);
+  UART_putc(UART_PC104_HEADER, '7');
   /* return the status byte value */
   return(readValue);
 }

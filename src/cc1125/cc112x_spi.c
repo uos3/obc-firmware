@@ -42,6 +42,8 @@
 #include "cc112x_spi.h"
 #include <stdint.h>
 
+#include "../firmware.h"
+
 /******************************************************************************
  * FUNCTIONS
  */
@@ -75,12 +77,15 @@ rfStatus_t cc112xSpiReadReg(uint16_t addr, uint8_t *pData, uint8_t len)
   /* Decide what register space is accessed */
   if(!tempExt)
   {
+	  UART_putc(UART_PC104_HEADER, 'X');
     rc = trx8BitRegAccess((RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempAddr,pData,len);
+	UART_putc(UART_PC104_HEADER, 'Y');
   }
   else if (tempExt == 0x2F)
   {
     rc = trx16BitRegAccess((RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempExt,tempAddr,pData,len);
   }
+  UART_putc(UART_PC104_HEADER, 'Z');
   return (rc);
 }
 
@@ -113,12 +118,15 @@ rfStatus_t cc112xSpiWriteReg(uint16_t addr, uint8_t *pData, uint8_t len)
   /* Decide what register space is accessed */  
   if(!tempExt)
   {
+	  UART_putc(UART_PC104_HEADER, 'X');
     rc = trx8BitRegAccess((RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempAddr,pData,len);
+	UART_putc(UART_PC104_HEADER, rc);
   }
   else if (tempExt == 0x2F)
   {
     rc = trx16BitRegAccess((RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempExt,tempAddr,pData,len);
   }
+  UART_putc(UART_PC104_HEADER, 'Z');
   return (rc);
 }
 

@@ -7,6 +7,7 @@
 #include "driverlib/ssi.h"
 #include "driverlib/sysctl.h"
 
+
 #define CONFIG_1
 
 
@@ -53,6 +54,9 @@ int main(void)
 	
 	*/
 	
+	UART_init(UART_PC104_HEADER, 9600);
+	UART_putc(UART_PC104_HEADER, 'M');
+	
 	trxRfSpiInterfaceInit(0);
 	
 	//////// write config ///////
@@ -60,10 +64,12 @@ int main(void)
     // Reset radio
     trxSpiCmdStrobe(CC112X_SRES);
     // Write registers to radio
-    for(uint16_t i = 0;
-        i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
+    for(uint16_t i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
+UART_putc(UART_PC104_HEADER, (sizeof(preferredSettings)/sizeof(registerSetting_t)));
         writeByte = preferredSettings[i].data;
+UART_putc(UART_PC104_HEADER, 'K');
         cc112xSpiWriteReg(preferredSettings[i].addr, &writeByte, 1);
+UART_putc(UART_PC104_HEADER, 'J');
     }
 	
 	//////// Calibrate radio according to errata
