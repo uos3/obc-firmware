@@ -28,6 +28,8 @@ int main(void)
 {
 
     volatile uint32_t ui32Loop;
+
+    Board_init();
 	
 	/*
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
@@ -55,7 +57,11 @@ int main(void)
 	*/
 	
 	UART_init(UART_PC104_HEADER, 9600);
-	UART_putc(UART_PC104_HEADER, 'M');
+  UART_putc(UART_PC104_HEADER, '\r');
+	UART_putc(UART_PC104_HEADER, '\n');
+  for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
+
+  UART_putc(UART_PC104_HEADER, 'M');
 	
 	trxRfSpiInterfaceInit(0);
 	
@@ -65,7 +71,7 @@ int main(void)
     trxSpiCmdStrobe(CC112X_SRES);
     // Write registers to radio
     for(uint16_t i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
-UART_putc(UART_PC104_HEADER, (sizeof(preferredSettings)/sizeof(registerSetting_t)));
+//UART_putc(UART_PC104_HEADER, (sizeof(preferredSettings)/sizeof(registerSetting_t)));
         writeByte = preferredSettings[i].data;
 UART_putc(UART_PC104_HEADER, 'K');
         cc112xSpiWriteReg(preferredSettings[i].addr, &writeByte, 1);
