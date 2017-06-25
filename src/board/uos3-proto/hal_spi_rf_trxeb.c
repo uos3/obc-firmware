@@ -205,7 +205,7 @@ rfStatus_t trx16BitRegAccess(uint8_t accessType, uint8_t extAddr, uint8_t regAdd
   while(SSIBusy(SSI1_BASE));
   SSIDataPut(SSI1_BASE, (uint32_t)(accessType|extAddr));
   while(SSIBusy(SSI1_BASE));
-  SSIDataGet(SSI1_BASE, (uint32_t *)&readValue);
+  SSIDataGet(SSI1_BASE, &readValue);
   UART_putc(UART_PC104_HEADER, (uint8_t) readValue);
   while(SSIBusy(SSI1_BASE));
   SSIDataPut(SSI1_BASE, (uint32_t)(regAddr));
@@ -244,16 +244,16 @@ rfStatus_t trx16BitRegAccess(uint8_t accessType, uint8_t extAddr, uint8_t regAdd
  */
 rfStatus_t trxSpiCmdStrobe(uint8_t cmd)
 {
-    uint8_t rc;
+    uint32_t rc;
 	
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
 	//while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
 	// do we need to flush the rx buffer first?
 	
 	while(SSIBusy(SSI1_BASE));
-	SSIDataPut(SSI1_BASE, (uint32_t)(cmd));
+	SSIDataPut(SSI1_BASE, cmd);
 	while(SSIBusy(SSI1_BASE));
-	SSIDataGet(SSI1_BASE, (uint32_t *)&rc);
+	SSIDataGet(SSI1_BASE, &rc);
 	
 	
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3);
@@ -290,7 +290,7 @@ rfStatus_t trxSpiCmdStrobe(uint8_t cmd)
  *
  * @return      void
  */
-static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData,uint16_t len)
+static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData, uint16_t len)
 {
 	uint16_t i;
 	uint32_t d,t;
@@ -306,7 +306,7 @@ static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData,uint16_t len)
 		  SSIDataGet(SSI1_BASE, &t); //(uint32_t *)pData);
 		  UART_putc(UART_PC104_HEADER, 'r');
 		  UART_putc(UART_PC104_HEADER, t);
-		  *pData++ = (uint8_t)t;
+		  *pData++ = t;
           ////TRXEM_SPI_TX(0);            /* Possible to combining read and write as one access type */
           ////TRXEM_SPI_WAIT_DONE();
           ////*pData = TRXEM_SPI_RX();     /* Store pData from last pData RX */
@@ -315,7 +315,6 @@ static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData,uint16_t len)
     }
     else
     {
-      UART_putc(UART_PC104_HEADER, '_');
       SSIDataPut(SSI1_BASE, 0);
       while(SSIBusy(SSI1_BASE)){};
       SSIDataGet(SSI1_BASE, &t);
@@ -334,7 +333,7 @@ static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData,uint16_t len)
       {
 		SSIDataPut(SSI1_BASE, (uint32_t)*pData);
         while(SSIBusy(SSI1_BASE)){};
-		SSIDataGet(SSI1_BASE, (uint32_t *)&d);
+		SSIDataGet(SSI1_BASE, &d);
         //TRXEM_SPI_TX(*pData);
         //TRXEM_SPI_WAIT_DONE();
         pData++;
@@ -344,7 +343,7 @@ static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData,uint16_t len)
     {
 	   SSIDataPut(SSI1_BASE, (uint32_t)*pData);
        while(SSIBusy(SSI1_BASE)){};
-	   SSIDataGet(SSI1_BASE, (uint32_t *)&d);
+	   SSIDataGet(SSI1_BASE, &d);
       //TRXEM_SPI_TX(*pData);
       //TRXEM_SPI_WAIT_DONE();
     }
