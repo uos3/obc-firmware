@@ -28,6 +28,8 @@ int main(void)
 {
 
     volatile uint32_t ui32Loop;
+
+    Board_init();
 	
 	/*
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
@@ -54,8 +56,13 @@ int main(void)
 	
 	*/
 	
-	UART_init(UART_PC104_HEADER, 500000);
-	UART_putc(UART_PC104_HEADER, 'M');
+
+	UART_init(UART_PC104_HEADER, 9600);
+  UART_putc(UART_PC104_HEADER, '\r');
+	UART_putc(UART_PC104_HEADER, '\n');
+  for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
+
+  UART_putc(UART_PC104_HEADER, 'M');
 	
 	trxRfSpiInterfaceInit(0);
 	

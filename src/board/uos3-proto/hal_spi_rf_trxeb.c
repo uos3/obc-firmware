@@ -162,7 +162,7 @@ rfStatus_t trx8BitRegAccess(uint8_t accessType, uint8_t addrByte, uint8_t *pData
   while(SSIBusy(SSI1_BASE));
   SSIDataPut(SSI1_BASE, (uint32_t)(accessType|addrByte));
   while(SSIBusy(SSI1_BASE));
-  SSIDataGet(SSI1_BASE, (uint32_t *)&readValue);
+  SSIDataGet(SSI1_BASE, &readValue);
   UART_putc(UART_PC104_HEADER, (uint8_t) readValue);
   trxReadWriteBurstSingle(accessType|addrByte,pData,len);   
   GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3);
