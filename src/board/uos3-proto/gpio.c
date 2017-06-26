@@ -115,7 +115,7 @@ void GPIO_reset(uint8_t gpio_num)
   GPIO_write(gpio_num, false);
 }
 
-/* Abstract for weird TI third argument */
+/* Third argument is a bit mask of bits to be set */
 #define GPIO_Pin_Write(gpio, value)  GPIOPinWrite(gpio->port, gpio->pin, value ? gpio->pin : 0x00)
 
 void GPIO_write(uint8_t gpio_num, bool state)
@@ -129,6 +129,9 @@ void GPIO_write(uint8_t gpio_num, bool state)
   GPIO_Pin_Write(gpio, state);
 }
 
+/* Bit mask the returned 32 bits for the required pin and convert to boolean */
+#define GPIO_Pin_Read(gpio)  !!(GPIOPinRead(gpio->port, gpio->pin) & gpio->pin)
+
 bool GPIO_read(uint8_t gpio_num)
 {
   if(gpio_num >= NUMBER_OF_GPIOS)
@@ -137,5 +140,5 @@ bool GPIO_read(uint8_t gpio_num)
 
   GPIO_init(gpio, GPIO_MODE_INPUT);
 
-  return (bool)(gpio->pin & GPIOPinRead(gpio->port, gpio->pin));
+  return GPIO_Pin_Read(gpio);
 }
