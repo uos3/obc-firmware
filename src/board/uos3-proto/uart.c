@@ -16,8 +16,8 @@ typedef struct UART {
   uint32_t base_uart;       // TI Driver UART Base Reference
   uint32_t pin_rx_function; // TI Driver UART RX Pin Reference
   uint32_t pin_tx_function; // TI Driver UART TX Pin Reference
-  uint32_t pin_rx;          // TI Driver RX Pin Reference
-  uint32_t pin_tx;          // TI Driver TX Pin Reference
+  uint8_t  pin_rx;          // TI Driver RX Pin Reference
+  uint8_t  pin_tx;          // TI Driver TX Pin Reference
   uint8_t  uart_id;         // number X in UARTX
   bool     initialised;
 } UART;
@@ -96,7 +96,7 @@ char UART_getc(uint8_t uart_num)
   check_uart_num(uart_num, '\0');
   UART *uart = &UART_uarts[uart_num];
 
-  return UARTCharGet(uart->base_uart);
+  return (char)UARTCharGet(uart->base_uart);
 }
 
 void UART_putc(uint8_t uart_num, char c)

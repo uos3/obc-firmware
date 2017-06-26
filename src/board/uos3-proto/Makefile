@@ -78,7 +78,17 @@ AFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 CFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 
 CFLAGS += -ggdb3 -O0
-CFLAGS += -Wall -Wextra -Wpedantic
+CFLAGS += -Wall \
+			-Wextra \
+			-Wpedantic \
+			-Wswitch-default \
+			-Wswitch-enum \
+			-Wduplicated-cond \
+			-Wconversion \
+			-Wlogical-op \
+			-Wstrict-prototypes \
+			-Wmissing-prototypes \
+			-Wmissing-declarations
 
 FW_SRCS+= $(wildcard ./*.c)
 
@@ -168,10 +178,10 @@ ${FW_ROOT}/${OUTDIR}/${OUTFILE}:
 # Rules for building the blinky example.
 #
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}: $(patsubst %.c,%.o,${FW_SRCS})
-${FW_ROOT}/${OUTDIR}/${OUTFILE}: tm4c123g/startup_${COMPILER}.o
+${FW_ROOT}/${OUTDIR}/${OUTFILE}: tm4c_startup_${COMPILER}.o
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}: ${ROOT}/driverlib/${COMPILER}/libdriver.a
-${FW_ROOT}/${OUTDIR}/${OUTFILE}: tm4c123g/tm4c123g.ld
-SCATTERgcc=tm4c123g/tm4c123g.ld
+${FW_ROOT}/${OUTDIR}/${OUTFILE}: tm4c123g.ld
+SCATTERgcc=tm4c123g.ld
 ENTRY_SYM=ResetISR
 CFLAGSgcc=-DTARGET_IS_TM4C123_RB1
 
