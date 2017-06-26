@@ -3,3 +3,4 @@
 builds/
 *.d
 *.o
+COM_PORT

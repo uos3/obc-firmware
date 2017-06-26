@@ -174,10 +174,15 @@ if [ ${host_platform} == "linux" ]; then
     exit 1
   fi
 elif [ ${host_platform} == "windows" ]; then
-  programmer="$2"
+  if ! [ -f "COM_PORT" ]; then
+    echo -e "$_ERROR_ Windows users need to set the BMP COM port in a file called 'COM_PORT'."
+    echo -e "  eg. 'COM8'"
+    return 1
+  fi
+  programmer=$(<COM_PORT)
   if [ -z "$programmer" ]; then
-    echo -e "$_ERROR_ Windows users must pass the BMP COM port as the final argument."
-    echo -e "  eg. ./flash <binary> COM3"
+    echo -e "$_ERROR_ BMP COM port not found in 'COM_PORT' file."
+    echo -e "  eg. 'COM8'"
     return 1
   fi
 elif [ ${host_platform} == "mac" ]; then
