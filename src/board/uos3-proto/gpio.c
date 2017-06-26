@@ -115,6 +115,9 @@ void GPIO_reset(uint8_t gpio_num)
   GPIO_write(gpio_num, false);
 }
 
+/* Abstract for weird TI third argument */
+#define GPIO_Pin_Write(gpio, value)  GPIOPinWrite(gpio->port, gpio->pin, value ? gpio->pin : 0x00)
+
 void GPIO_write(uint8_t gpio_num, bool state)
 {
   if(gpio_num >= NUMBER_OF_GPIOS)
@@ -123,14 +126,7 @@ void GPIO_write(uint8_t gpio_num, bool state)
 
   GPIO_init(gpio, GPIO_MODE_OUTPUT);
 
-  if(state == true)
-  {
-    GPIOPinWrite(gpio->port, gpio->pin, 1);
-  }
-  else
-  {
-    GPIOPinWrite(gpio->port, gpio->pin, 0);
-  }
+  GPIO_Pin_Write(gpio, state);
 }
 
 bool GPIO_read(uint8_t gpio_num)
