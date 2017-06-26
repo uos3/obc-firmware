@@ -163,7 +163,6 @@ rfStatus_t trx8BitRegAccess(uint8_t accessType, uint8_t addrByte, uint8_t *pData
   SSIDataPut(SSI1_BASE, (uint32_t)(accessType|addrByte));
   while(SSIBusy(SSI1_BASE));
   SSIDataGet(SSI1_BASE, &readValue);
-  UART_putc(UART_PC104_HEADER, (uint8_t) readValue);
   trxReadWriteBurstSingle(accessType|addrByte,pData,len);   
   GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3);
   /* return the status byte value */
@@ -206,7 +205,6 @@ rfStatus_t trx16BitRegAccess(uint8_t accessType, uint8_t extAddr, uint8_t regAdd
   SSIDataPut(SSI1_BASE, (uint32_t)(accessType|extAddr));
   while(SSIBusy(SSI1_BASE));
   SSIDataGet(SSI1_BASE, &readValue);
-  UART_putc(UART_PC104_HEADER, (uint8_t) readValue);
   while(SSIBusy(SSI1_BASE));
   SSIDataPut(SSI1_BASE, (uint32_t)(regAddr));
   while(SSIBusy(SSI1_BASE));
@@ -304,8 +302,6 @@ static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData, uint16_t len)
 		  SSIDataPut(SSI1_BASE, 0);
 		  while(SSIBusy(SSI1_BASE));
 		  SSIDataGet(SSI1_BASE, &t); //(uint32_t *)pData);
-		  UART_putc(UART_PC104_HEADER, 'r');
-		  UART_putc(UART_PC104_HEADER, t);
 		  *pData++ = t;
           ////TRXEM_SPI_TX(0);            /* Possible to combining read and write as one access type */
           ////TRXEM_SPI_WAIT_DONE();
