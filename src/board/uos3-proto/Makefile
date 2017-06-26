@@ -61,8 +61,6 @@ CFLAGS  = -mthumb          \
 	       -fdata-sections     \
 	       -MD                 \
 	       -std=c99            \
-	       -Wall               \
-	       -pedantic           \
 	       -DPART_${PART}      \
 	       -c
 AR      = ${PREFIX}-ar
@@ -80,6 +78,7 @@ AFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 CFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 
 CFLAGS += -ggdb3 -O0
+CFLAGS += -Wall -Wextra -Wpedantic
 
 FW_SRCS+= $(wildcard ./*.c)
 
