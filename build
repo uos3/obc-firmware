@@ -64,12 +64,12 @@ flash() {
 
 ## Read Flags
 OPTIND=1
-while getopts ":qfs" opt; do
+while getopts ":qFs" opt; do
   case "$opt" in
     q) # Quiet
       opt_quiet=true
       ;;
-    f) # Flash
+    F) # Flash
       opt_flash=true
       ;;
     s) # Sound
