@@ -78,7 +78,17 @@ AFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 CFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 
 CFLAGS += -ggdb3 -O0
-CFLAGS += -Wall -Wextra -Wpedantic
+CFLAGS += -Wall \
+			-Wextra \
+			-Wpedantic \
+			-Wswitch-default \
+			-Wswitch-enum \
+			-Wduplicated-cond \
+			-Wconversion \
+			-Wlogical-op \
+			-Wstrict-prototypes \
+			-Wmissing-prototypes \
+			-Wmissing-declarations
 
 FW_SRCS+= $(wildcard ./*.c)
 
