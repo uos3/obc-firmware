@@ -1,21 +1,9 @@
 /* firmware.h contains all relevant headers */
 #include "../firmware.h"
 
-#include "inc/hw_memmap.h"
-#include "driverlib/gpio.h"
-#include "driverlib/pin_map.h"
-#include "driverlib/ssi.h"
-#include "driverlib/sysctl.h"
-
-
 #define CONFIG_1
 
-
 #include "cc1120_rx_sniff_mode_reg_config.h"
-
-
-
-//! A very simple example that blinks the on-board LED.
 
 static void manualCalibration(void);
 
