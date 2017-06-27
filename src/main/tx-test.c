@@ -14,10 +14,7 @@ uint32_t pui32DataRx[10];
 
 int main(void)
 {
-
-    volatile uint32_t ui32Loop;
-
-    Board_init();
+  Board_init();
 	
 	/*
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
@@ -45,77 +42,68 @@ int main(void)
 	*/
 	
 
-	UART_init(UART_PC104_HEADER, 500000);
+  UART_init(UART_PC104_HEADER, 500000);
   UART_putc(UART_PC104_HEADER, '\r');
-	UART_putc(UART_PC104_HEADER, '\n');
-  for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
+  UART_putc(UART_PC104_HEADER, '\n');
+  Delay_ms(100);
 
   UART_putc(UART_PC104_HEADER, 'M');
-	
-	trxRfSpiInterfaceInit(0);
-	
-	//////// write config ///////
-	uint8_t writeByte;
-    // Reset radio
-    trxSpiCmdStrobe(CC112X_SRES);
-    // Write registers to radio
-	UART_putc(UART_PC104_HEADER, (sizeof(preferredSettings)/sizeof(registerSetting_t)));
-    for(uint16_t i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
-        writeByte = preferredSettings[i].data;
-        cc112xSpiWriteReg(preferredSettings[i].addr, &writeByte, 1);
-    }
-	UART_puts(UART_PC104_HEADER, "DONE");
-	for(ui32Loop = 0; ui32Loop < 30000; ui32Loop++) {};
-	//////// Calibrate radio according to errata
-    manualCalibration();
-UART_puts(UART_PC104_HEADER, "}");
-	for(ui32Loop = 0; ui32Loop < 3000; ui32Loop++) {};
-	UART_puts(UART_PC104_HEADER, "CAL'd");
-	for(ui32Loop = 0; ui32Loop < 30000; ui32Loop++) {};
-	
-	/////// the packet
-	uint8_t buff[PACKETLEN+1];
-	buff[0] = PACKETLEN;
-	 // Fill rest of buffer with random bytes
-    for(uint8_t i = 1; i < (PACKETLEN + 1); i++) {
-        buff[i] = (uint8_t)i; //rand();
-    }
-	
-	
-    // Loop forever.
-    while(1)
-    {
-        // Turn on the LED.
-        LED_off(LED_B);
+
+  trxRfSpiInterfaceInit();
+
+  //////// write config ///////
+  uint8_t writeByte;
+  // Reset radio
+  trxSpiCmdStrobe(CC112X_SRES);
+  // Write registers to radio
+  UART_putc(UART_PC104_HEADER, (sizeof(preferredSettings)/sizeof(registerSetting_t)));
+  for(uint16_t i = 0; i < (sizeof(preferredSettings)/sizeof(registerSetting_t)); i++) {
+    writeByte = preferredSettings[i].data;
+    cc112xSpiWriteReg(preferredSettings[i].addr, &writeByte, 1);
+  }
+  UART_puts(UART_PC104_HEADER, "DONE");
+
+  Delay_ms(100);
+  //////// Calibrate radio according to errata
+  manualCalibration();
+
+  UART_puts(UART_PC104_HEADER, "}");
+  Delay_ms(100);
+
+  UART_puts(UART_PC104_HEADER, "CAL'd");
+  Delay_ms(100);
+
+  /////// the packet
+  uint8_t buff[PACKETLEN+1];
+  buff[0] = PACKETLEN;
+   // Fill rest of buffer with random bytes
+  for(uint8_t i = 1; i < (PACKETLEN + 1); i++) {
+    buff[i] = (uint8_t)i; //rand();
+  }
 
 
-		/* On period */
-		for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
+  // Loop forever.
+  while(1)
+  {
+    // Turn on the LED.
+    LED_off(LED_B);
+    Delay_ms(100);
 
-		LED_off(LED_B);
+    LED_off(LED_B);
+    Delay_ms(100);
+		
+    /*for(ui32Index = 0; ui32Index < 3; ui32Index++)
+    SSIDataPut(SSI1_BASE, pui32DataTx[ui32Index]);
+    while(SSIBusy(SSI1_BASE));*/
 
-        // Delay for a bit.
-        for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
-		
-		uint8_t ui32Index;
-		/*for(ui32Index = 0; ui32Index < 3; ui32Index++)
-			SSIDataPut(SSI1_BASE, pui32DataTx[ui32Index]);
-		while(SSIBusy(SSI1_BASE));*/
-		
-		
-		
-		
-		// Write packet to TX FIFO
-        cc112xSpiWriteTxFifo(buff, sizeof(buff));
+    // Write packet to TX FIFO
+    cc112xSpiWriteTxFifo(buff, sizeof(buff));
 
-        // Strobe TX to send packet
-        trxSpiCmdStrobe(CC112X_STX);
-		
-		
-		// TODO: wait for packet to be sent  (the example uses interrupts)
-		
-		
-    }
+    // Strobe TX to send packet
+    trxSpiCmdStrobe(CC112X_STX);
+
+    // TODO: wait for packet to be sent  (the example uses interrupts)
+  }
 }
 
 
@@ -148,7 +136,7 @@ static void manualCalibration(void) {
     cc112xSpiReadReg(CC112X_FS_CAL2, &original_fs_cal2, 1);
 	UART_puts(UART_PC104_HEADER, "%");
 	UART_putc(UART_PC104_HEADER, original_fs_cal2);
-    writeByte = original_fs_cal2 + VCDAC_START_OFFSET;
+    writeByte = (uint8_t)(original_fs_cal2 + VCDAC_START_OFFSET);
     cc112xSpiWriteReg(CC112X_FS_CAL2, &writeByte, 1);
 
     // 3) Calibrate and wait for calibration to be done

@@ -87,7 +87,7 @@ static void ssi_flush(void)
  *
  * @return      void
  */
-void trxRfSpiInterfaceInit(uint8_t prescalerValue)
+void trxRfSpiInterfaceInit(void)
 {
 
   
@@ -252,7 +252,7 @@ rfStatus_t trxSpiCmdStrobe(uint8_t cmd)
 	
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3);
   
-    return(rc);
+    return (uint8_t)rc;
 }
 
 /*******************************************************************************
@@ -298,7 +298,7 @@ static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData, uint16_t len)
 		  SSIDataPut(SSI1_BASE, 0);
 		  while(SSIBusy(SSI1_BASE));
 		  SSIDataGet(SSI1_BASE, &t); //(uint32_t *)pData);
-		  *pData++ = t;
+		  *pData++ = (uint8_t)t;
           ////TRXEM_SPI_TX(0);            /* Possible to combining read and write as one access type */
           ////TRXEM_SPI_WAIT_DONE();
           ////*pData = TRXEM_SPI_RX();     /* Store pData from last pData RX */

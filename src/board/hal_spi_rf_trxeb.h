@@ -119,7 +119,7 @@ typedef uint8_t rfStatus_t;
  * PROTOTYPES
  */
 
-void trxRfSpiInterfaceInit(uint8_t clockDivider);
+void trxRfSpiInterfaceInit(void);
 rfStatus_t trx8BitRegAccess(uint8_t accessType, uint8_t addrByte, uint8_t *pData, uint16_t len);
 rfStatus_t trxSpiCmdStrobe(uint8_t cmd);
 
