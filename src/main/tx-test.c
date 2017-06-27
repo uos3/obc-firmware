@@ -85,8 +85,7 @@ int main(void)
   // Loop forever.
   while(1)
   {
-    // Turn on the LED.
-    LED_off(LED_B);
+    LED_on(LED_B);
     Delay_ms(100);
 
     LED_off(LED_B);
