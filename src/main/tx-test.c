@@ -76,15 +76,15 @@ int main(void)
     // Reset radio
     // Write registers to radio
 
-//	radio_reset_config(radio_id, preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
-	
+	radio_reset_config(radio_id, preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
+	/*
 	trxSpiCmdStrobe(radio_id, CC112X_SRES);
 	uint8_t writeByte;
 	for(uint16_t i = 0; i < sizeof(preferredSettings)/sizeof(registerSetting_t); i++) {
         writeByte = preferredSettings[i].data;
         cc112xSpiWriteReg(radio_id, preferredSettings[i].addr, &writeByte, 1);
     }
-	
+	*/
 	
 	
 	UART_puts(UART_PC104_HEADER, "DONE");

@@ -176,7 +176,7 @@ rfStatus_t trx8BitRegAccess(uint8_t radio_id, uint8_t accessType, uint8_t addrBy
   /* Pull CS_N low and wait for SO to go low before communication starts */
   cs_low(radio_id);
   //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
-  while(GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_0) & GPIO_PIN_0){};
+  while(GPIOPinRead(GPIO_PORTF_BASE, RADIO_MISO_PIN) & RADIO_MISO_PIN){};
   // do we need to flush the rx buffer first?
   ssi_flush();
  
@@ -219,7 +219,7 @@ rfStatus_t trx16BitRegAccess(uint8_t radio_id, uint8_t accessType, uint8_t extAd
   
   cs_low(radio_id);
   
-  while(GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_0) & GPIO_PIN_0){};
+  while(GPIOPinRead(GPIO_PORTF_BASE, RADIO_MISO_PIN) & RADIO_MISO_PIN){};
   // do we need to flush the rx buffer first?
   ssi_flush();
   
@@ -269,13 +269,19 @@ rfStatus_t trxSpiCmdStrobe(uint8_t radio_id, uint8_t cmd)
 	
 	cs_low(radio_id);
 	
-	while(GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_0) & GPIO_PIN_0){};
+	while(GPIOPinRead(GPIO_PORTF_BASE, RADIO_MISO_PIN) & RADIO_MISO_PIN){};
 	// do we need to flush the rx buffer first?
 	
 	while(SSIBusy(SSI1_BASE));
 	SSIDataPut(SSI1_BASE, cmd);
 	while(SSIBusy(SSI1_BASE));
 	SSIDataGet(SSI1_BASE, &rc);
+
+	
+	// only needed if we start sending a new header without pulling CS high/low
+	//if (cmd == 0x30){  // SRES
+	//	while(GPIOPinRead(GPIO_PORTF_BASE, RADIO_MISO_PIN) & RADIO_MISO_PIN){};
+	//}
 	
 	
 	cs_high(radio_id);
