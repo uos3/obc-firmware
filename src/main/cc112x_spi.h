@@ -49,7 +49,7 @@ extern "C" {
 #ifdef MSP_EXP430G2
   #include "hal_msp_exp430g2_spi.h"
 #else
-  #include "../board/hal_spi_rf_trxeb.h"  
+  #include "hal_spi_rf_trxeb.h"  
 #endif
 
 /******************************************************************************
@@ -286,12 +286,12 @@ extern "C" {
  */ 
 
 /* basic set of access functions */
-rfStatus_t cc112xSpiReadReg(uint8_t radio_id, uint16_t addr, uint8_t *data, uint8_t len);
-rfStatus_t cc112xGetTxStatus(uint8_t radio_id);
-rfStatus_t cc112xGetRxStatus(uint8_t radio_id);  
-rfStatus_t cc112xSpiWriteReg(uint8_t radio_id, uint16_t addr, uint8_t *data, uint8_t len);
-rfStatus_t cc112xSpiWriteTxFifo(uint8_t radio_id, uint8_t *pWriteData, uint8_t len);
-rfStatus_t cc112xSpiReadRxFifo(uint8_t radio_id, uint8_t *pReadData, uint8_t len);
+rfStatus_t cc112xSpiReadReg(uint16_t addr, uint8_t *data, uint8_t len);
+rfStatus_t cc112xGetTxStatus(void);
+rfStatus_t cc112xGetRxStatus(void);  
+rfStatus_t cc112xSpiWriteReg(uint16_t addr, uint8_t *data, uint8_t len);
+rfStatus_t cc112xSpiWriteTxFifo(uint8_t *pWriteData, uint8_t len);
+rfStatus_t cc112xSpiReadRxFifo(uint8_t *pReadData, uint8_t len);
 
 #ifdef  __cplusplus
 }

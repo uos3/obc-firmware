@@ -57,6 +57,7 @@
  *
  * input parameters
  *
+ * @param       radio_id - which radio IC to communicate to
  * @param       addr   - address of first register to read
  * @param       *pData - pointer to data array where read bytes are saved
  * @param       len   - number of bytes to read
@@ -65,7 +66,7 @@
  *
  * @return      rfStatus_t
  */
-rfStatus_t cc112xSpiReadReg(uint16_t addr, uint8_t *pData, uint8_t len)
+rfStatus_t cc112xSpiReadReg(uint8_t radio_id, uint16_t addr, uint8_t *pData, uint8_t len)
 {
   uint8_t tempExt  = (uint8_t)(addr>>8);
   uint8_t tempAddr = (uint8_t)(addr & 0x00FF);
@@ -77,11 +78,11 @@ rfStatus_t cc112xSpiReadReg(uint16_t addr, uint8_t *pData, uint8_t len)
   /* Decide what register space is accessed */
   if(!tempExt)
   {
-    rc = trx8BitRegAccess((RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempAddr,pData,len);
+    rc = trx8BitRegAccess(radio_id, (RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempAddr,pData,len);
   }
   else if (tempExt == 0x2F)
   {
-    rc = trx16BitRegAccess((RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempExt,tempAddr,pData,len);
+    rc = trx16BitRegAccess(radio_id, (RADIO_BURST_ACCESS|RADIO_READ_ACCESS),tempExt,tempAddr,pData,len);
   }
   return (rc);
 }
@@ -95,6 +96,7 @@ rfStatus_t cc112xSpiReadReg(uint16_t addr, uint8_t *pData, uint8_t len)
  *
  * input parameters
  *
+ * @param       radio_id - which radio IC to communicate to
  * @param       addr   - address of first register to write
  * @param       *pData - pointer to data array that holds bytes to be written
  * @param       len    - number of bytes to write
@@ -103,7 +105,7 @@ rfStatus_t cc112xSpiReadReg(uint16_t addr, uint8_t *pData, uint8_t len)
  *
  * @return      rfStatus_t
  */
-rfStatus_t cc112xSpiWriteReg(uint16_t addr, uint8_t *pData, uint8_t len)
+rfStatus_t cc112xSpiWriteReg(uint8_t radio_id, uint16_t addr, uint8_t *pData, uint8_t len)
 {
   uint8_t tempExt  = (uint8_t)(addr>>8);
   uint8_t tempAddr = (uint8_t)(addr & 0x00FF);
@@ -115,13 +117,13 @@ rfStatus_t cc112xSpiWriteReg(uint16_t addr, uint8_t *pData, uint8_t len)
   /* Decide what register space is accessed */  
   if(!tempExt)
   {
-    rc = trx8BitRegAccess((RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempAddr,pData,len);
+    rc = trx8BitRegAccess(radio_id, (RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempAddr,pData,len);
     //UART_putc(UART_PC104_HEADER, rc);
     UART_putc(UART_PC104_HEADER, 'Q');
   }
   else if (tempExt == 0x2F)
   {
-    rc = trx16BitRegAccess((RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempExt,tempAddr,pData,len);
+    rc = trx16BitRegAccess(radio_id, (RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempExt,tempAddr,pData,len);
   }
   return (rc);
 }
@@ -133,6 +135,7 @@ rfStatus_t cc112xSpiWriteReg(uint16_t addr, uint8_t *pData, uint8_t len)
  *
  * input parameters
  *
+ * @param       radio_id - which radio IC to communicate to
  * @param       *pData - pointer to data array that is written to TX FIFO
  * @param       len    - Length of data array to be written
  *
@@ -140,10 +143,10 @@ rfStatus_t cc112xSpiWriteReg(uint16_t addr, uint8_t *pData, uint8_t len)
  *
  * @return      rfStatus_t
  */
-rfStatus_t cc112xSpiWriteTxFifo(uint8_t *pData, uint8_t len)
+rfStatus_t cc112xSpiWriteTxFifo(uint8_t radio_id, uint8_t *pData, uint8_t len)
 {
   uint8_t rc;
-  rc = trx8BitRegAccess(0x00,CC112X_BURST_TXFIFO, pData, len);
+  rc = trx8BitRegAccess(radio_id, 0x00,CC112X_BURST_TXFIFO, pData, len);
   return (rc);
 }
 
@@ -154,6 +157,7 @@ rfStatus_t cc112xSpiWriteTxFifo(uint8_t *pData, uint8_t len)
  *
  * input parameters
  *
+ * @param       radio_id - which radio IC to communicate to
  * @param       *pData - pointer to data array where RX FIFO bytes are saved
  * @param       len    - number of bytes to read from the RX FIFO
  *
@@ -161,10 +165,10 @@ rfStatus_t cc112xSpiWriteTxFifo(uint8_t *pData, uint8_t len)
  *
  * @return      rfStatus_t
  */
-rfStatus_t cc112xSpiReadRxFifo(uint8_t * pData, uint8_t len)
+rfStatus_t cc112xSpiReadRxFifo(uint8_t radio_id, uint8_t * pData, uint8_t len)
 {
   uint8_t rc;
-  rc = trx8BitRegAccess(0x00,CC112X_BURST_RXFIFO, pData, len);
+  rc = trx8BitRegAccess(radio_id, 0x00,CC112X_BURST_RXFIFO, pData, len);
   return (rc);
 }
 
@@ -185,16 +189,16 @@ rfStatus_t cc112xSpiReadRxFifo(uint8_t * pData, uint8_t len)
  *
  * input parameters
  *
- * @param   none
+ * @param       radio_id - which radio IC to communicate to
  *
  * output parameters
  *         
  * @return  rfStatus_t 
  *
  */
-rfStatus_t cc112xGetTxStatus(void)
+rfStatus_t cc112xGetTxStatus(uint8_t radio_id)
 {
-    return(trxSpiCmdStrobe(CC112X_SNOP));
+    return(trxSpiCmdStrobe(radio_id, CC112X_SNOP));
 }
 
 /******************************************************************************
@@ -217,14 +221,14 @@ rfStatus_t cc112xGetTxStatus(void)
  *
  * input parameters
  *
- * @param     none
+ * @param       radio_id - which radio IC to communicate to
  *
  * output parameters
  *         
  * @return    rfStatus_t 
  *
  */
-rfStatus_t cc112xGetRxStatus(void)
+rfStatus_t cc112xGetRxStatus(uint8_t radio_id)
 {
-    return(trxSpiCmdStrobe(CC112X_SNOP | RADIO_READ_ACCESS));
+    return(trxSpiCmdStrobe(radio_id, CC112X_SNOP | RADIO_READ_ACCESS));
 }
