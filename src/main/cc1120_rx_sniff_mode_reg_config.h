@@ -70,7 +70,7 @@ extern "C" {
 // Deviation = 20.019531
 // Rf settings for CC1120
 static const registerSetting_t preferredSettings[] = {
-    {CC112X_IOCFG3,         0xB0},
+    {CC112X_IOCFG3,         0x59},
     {CC112X_IOCFG2,         0x13},
     {CC112X_IOCFG1,         0xB0},
     {CC112X_IOCFG0,         0x06},
@@ -134,7 +134,7 @@ static const registerSetting_t preferredSettings[] = {
 // Deviation = 20.019531
 // Rf settings for CC1120
 static const registerSetting_t preferredSettings[] = {
-    {CC112X_IOCFG3,         0xB0},
+    {CC112X_IOCFG3,         0x59},
     {CC112X_IOCFG2,         0x13},
     {CC112X_IOCFG1,         0xB0},
     {CC112X_IOCFG0,         0x06},
