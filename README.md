@@ -1,5 +1,7 @@
 # UoS3 Cubesat Firmware Repository
 
+**Current Build Status**: <https://travis-ci.org/uos3/firmware>
+
 This folder contains all the source (apart from licensed drivers) to build the executable file to be flashed directly to the hardware.
 
 The firmware is built from a top-level C program file and resolves all the references and includes from the src/ and specified hardware folders
@@ -65,7 +67,7 @@ int main(void)
   * Due to the licensing agreement, this has to be manually added.
   * Download [SW-TM4C-2.1.4.178.exe](http://software-dl.ti.com/tiva-c/SW-TM4C/latest/index_FDS.html) (login required)
   * Unpack to _src/board/uos3-proto/TivaWare_C_Series-2.1.4.178_
-  * Ask Phil if you have difficulties
+  * Contact Phil if you have difficulties
 
 # Contact
 

@@ -179,7 +179,7 @@ ${FW_ROOT}/${OUTDIR}/${OUTFILE}:
 #
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}: $(patsubst %.c,%.o,${FW_SRCS})
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}: tm4c_startup_${COMPILER}.o
-${FW_ROOT}/${OUTDIR}/${OUTFILE}: ${ROOT}/driverlib/${COMPILER}/libdriver.a
+${FW_ROOT}/${OUTDIR}/${OUTFILE}: ${ROOT}/driverlib/gcc/libdriver.a
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}: tm4c123g.ld
 SCATTERgcc=tm4c123g.ld
 ENTRY_SYM=ResetISR
