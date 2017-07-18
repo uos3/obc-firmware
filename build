@@ -83,11 +83,9 @@ while getopts ":qFs" opt; do
 done
 for i in `seq 2 $OPTIND`; do shift; done
 
-
 ## Read Arguments
 board=${1,,}
 shift
-
 program=${1,,}
 shift
 
@@ -102,7 +100,7 @@ if [ ! -d "src/board/${board}" ]; then
     exit 2
 fi
 
-# Run <board>'s dependencies script if it exists
+## Run <board>'s dependencies script if it exists
 if [ -f "src/board/${board}/dependencies.sh" ]; then
     src/board/${board}/dependencies.sh;
     if [[ $? != 0 ]]; then
@@ -128,12 +126,13 @@ githash="$(git describe --dirty --always)"
 if [ ! -z "$(git status --porcelain | grep "^??")" ]; then
 	githash="$githash-dirty"
 fi
-
 outdir="builds"
 filename="$(hyphenjoin $board $program $flags $githash)"
 
+## Print compiler information
 print "$_INFO_ Building with $(arm-none-eabi-gcc --version | head -n1)"
 
+## Change to board directory, make clean, make, then print summary message.
 cd "src/board/$board"
 make OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" clean \
 && make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" \
