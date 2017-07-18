@@ -94,8 +94,8 @@ shift
 ## Check Compiler is installed
 hash ${compiler} 2>/dev/null \
 || {
-	print_err "$_ERROR_ GCC ARM Compiler not installed. Aborting.";
-	exit 1;
+    print_err "$_ERROR_ GCC ARM Compiler not installed. Aborting.";
+    exit 1;
 }
 
 ## Check <board> argument
@@ -106,14 +106,14 @@ if [ -z "$board" ]; then
 fi
 if [ ! -d "src/board/${board}" ]; then
     print_err "$_ERROR_ Board \"${board}\" not found"
-    exit 2
+    exit 1
 fi
 
 ## Run <board>'s dependencies script if it exists
 if [ -f "src/board/${board}/dependencies.sh" ]; then
     src/board/${board}/dependencies.sh;
     if [[ $? != 0 ]]; then
-      exit
+      exit 1
     fi
 fi
 
@@ -121,11 +121,11 @@ fi
 if [ -z "$program" ]; then
     print_err "$_ERROR_ A main program file must be specified"
     usage
-    exit 3
+    exit 1
 fi
 if [ ! -e "src/main/$program.c" ]; then
     print_err "$_ERROR_ Main Program File \"$program\" not found"
-    exit 4
+    exit 1
 fi
 
 ## Set up Makefile Defines
