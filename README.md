@@ -6,6 +6,8 @@ The firmware is built from a top-level C program file and resolves all the refer
 
 The design is such so that the main hardware code and hardware can be easily varied. eg camera code which can be used with different boards goes in the src folder, but the actual board specific drivers go in the relevant board folder.
 
+**Current Build Status**: <https://travis-ci.org/uos3/firmware>
+
 ## To use the build and flash tools
 
 Open a terminal in the root folder of this firmware repository, then run the following commands:
