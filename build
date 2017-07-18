@@ -3,8 +3,6 @@
 source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 cd $source_dir
 
-compiler=arm-none-eabi-gcc
-
 opt_flash=false
 opt_quiet=false
 opt_sound=false
@@ -91,13 +89,6 @@ shift
 program=${1,,}
 shift
 
-## Check Compiler is installed
-hash ${compiler} 2>/dev/null \
-|| {
-    print_err "$_ERROR_ GCC ARM Compiler not installed. Aborting.";
-    exit 1;
-}
-
 ## Check <board> argument
 if [ -z "$board" ]; then
     print_err "$_ERROR_ A board must be specified"
@@ -137,9 +128,6 @@ if [ -z "$(echo "$githash" | grep "dirty")" ] && [ ! -z "$(git status --porcelai
 fi
 outdir="builds"
 filename="$(hyphenjoin $board $program $flags $githash)"
-
-## Print compiler information
-print "$_INFO_ Building with $(${compiler} --version | head -n1)"
 
 ## Change to board directory, make clean, make, then print summary message.
 cd "src/board/$board"
