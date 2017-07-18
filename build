@@ -146,7 +146,10 @@ cd "src/board/$board"
 make OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" clean \
 && make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" \
 && {
-	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" && flash
+	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" \
+	&& flash \
+	&& exit 0
 } || {
-	print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF"
+	print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF" \
+	&& exit 1
 }
