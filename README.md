@@ -1,12 +1,12 @@
 # UoS3 Cubesat Firmware Repository
 
+**Current Build Status**: <https://travis-ci.org/uos3/firmware>
+
 This folder contains all the source (apart from licensed drivers) to build the executable file to be flashed directly to the hardware.
 
 The firmware is built from a top-level C program file and resolves all the references and includes from the src/ and specified hardware folders
 
 The design is such so that the main hardware code and hardware can be easily varied. eg camera code which can be used with different boards goes in the src folder, but the actual board specific drivers go in the relevant board folder.
-
-**Current Build Status**: <https://travis-ci.org/uos3/firmware>
 
 ## To use the build and flash tools
 
