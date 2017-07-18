@@ -17,8 +17,8 @@ install:
   - export PATH=$PATH:$GCC_DIR/bin
 
 env:
-  - BOARD=uos3-proto APP=blinky
-  - BOARD=uos3-proto APP=serial-test
-  - BOARD=uos3-proto APP=tx-test
+  - BOARD=uos3-proto MAIN=blinky
+  - BOARD=uos3-proto MAIN=serial-test
+  - BOARD=uos3-proto MAIN=tx-test
 
-script: ./build $BOARD $APP
+script: ./build $BOARD $MAIN
