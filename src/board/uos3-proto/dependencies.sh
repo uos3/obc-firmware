@@ -35,38 +35,34 @@ print_err() {
 }
 
 tm4c_dir="TivaWare_C_Series-2.1.4.178"
-tm4c_driver_source="TivaWare_C_Series-2.1.4.178/driverlib/gcc/libdriver.a"
-tm4c_driver="libdriver.a"
+tm4c_driver="TivaWare_C_Series-2.1.4.178/driverlib/gcc/libdriver.a"
 
 ## Check for TM4C Driver Blob
 if [ ! -e "${tm4c_driver}" ]; then
+  ## Check for downloadable TM4C Driver Blob
   if [ ! -z "$TM4C_LIBDRIVER_URL" ]; then
-    wget -q "$TM4C_LIBDRIVER_URL" -O ${tm4c_driver} \
+    print "$_INFO_ Downloading TM4C Drivers.."
+    wget -q "$TM4C_LIBDRIVER_URL" -O tm4c.tar.bz2 \
+    && tar -xjf tm4c.tar.bz2 && rm tm4c.tar.bz2 \
     && print "$_INFO_ TM4C Drivers Downloaded." \
     && exit 0
   fi
-
   ## Check for TM4C Driver source directory
   if [ ! -d "${tm4c_dir}" ]; then
     print_err "$_ERROR_ TM4C Drivers not found! Please download these from TI following README.md"
     exit 1
   else
-    ## Check for TM4C Driver Blob in source directory
-    if [ ! -e "${tm4c_driver_source}" ]; then
-      print "$_INFO_ TM4C Drivers Compiling now - please wait.."
-      cd ${tm4c_dir}/driverlib
-      make &>/dev/null \
-      && {
-        print "$_INFO_ TM4C Drivers Compiled.";
-      } || {
-        print_err "$_ERROR_ There were errors in building the TM4C Drivers :(";
-        exit 1;
-      }
-    fi
-    ## Copy TM4C Driver Blob from source directory
-    cp ${source_dir}/${tm4c_driver_source} ${source_dir}/${tm4c_driver} \
-    && print "$_INFO_ TM4C Drivers Installed." \
-    && exit 0;
+    ## source directory exists so compile Driver Blob
+    print "$_INFO_ TM4C Drivers Compiling now - please wait.."
+    cd ${tm4c_dir}/driverlib
+    make &>/dev/null \
+    && [ -e "${tm4c_driver}" ] \
+    && {
+      print "$_INFO_ TM4C Drivers Compiled.";
+    } || {
+      print_err "$_ERROR_ There were errors in building the TM4C Drivers :(";
+      exit 1;
+    }
   fi
 else
   print "$_INFO_ TM4C Drivers Found.";
