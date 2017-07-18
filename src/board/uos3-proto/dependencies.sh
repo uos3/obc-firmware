@@ -40,6 +40,12 @@ tm4c_driver="libdriver.a"
 
 ## Check for TM4C Driver Blob
 if [ ! -e "${tm4c_driver}" ]; then
+  if [ ! -z "$TM4C_LIBDRIVER_URL" ]; then
+    wget -q "$TM4C_LIBDRIVER_URL" -O ${tm4c_driver} \
+    && print "$_INFO_ TM4C Drivers Downloaded." \
+    && exit 0
+  fi
+
   ## Check for TM4C Driver source directory
   if [ ! -d "${tm4c_dir}" ]; then
     print_err "$_ERROR_ TM4C Drivers not found! Please download these from TI following README.md"
