@@ -129,9 +129,10 @@ if [ ! -z "$(git status --porcelain | grep "^??")" ]; then
 	githash="$githash-dirty"
 fi
 
-
 outdir="builds"
 filename="$(hyphenjoin $board $program $flags $githash)"
+
+print "$_INFO_ Building with $(arm-none-eabi-gcc --version | head -n1)"
 
 cd "src/board/$board"
 make OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" clean \
