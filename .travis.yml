@@ -16,4 +16,9 @@ install:
   - if [ ! -e $GCC_DIR/bin/arm-none-eabi-gcc ]; then wget -nv $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME; fi
   - export PATH=$PATH:$GCC_DIR/bin
 
-script: ./build uos3-proto blinky
+env:
+  - BOARD=uos3-proto APP=blinky
+  - BOARD=uos3-proto APP=serial-test
+  - BOARD=uos3-proto APP=tx-test
+
+script: ./build $BOARD $APP
