@@ -124,6 +124,11 @@ fi
 ## Set up Makefile Defines
 defines="-D BOARD=${board^^} -D MAIN=${program}"
 githash="$(git describe --dirty --always)"
+# Mark as dirty if untracked files exist
+if [ ! -z "$(git status --porcelain | grep "^??")" ]; then
+	githash="$githash-dirty"
+fi
+
 
 outdir="builds"
 filename="$(hyphenjoin $board $program $flags $githash)"
