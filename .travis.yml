@@ -1,7 +1,6 @@
 notifications:
   email: false
 
-sudo: enabled
 dist: trusty
 
 language: c
