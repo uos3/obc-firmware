@@ -1,14 +1,19 @@
+# Disable email notifications until we're more involved
 notifications:
   email: false
 
+# Use Ubuntu 14.04 instead of 12.04 (note: travis is slowly making this default)
 dist: trusty
 
 language: c
 
+# Cache the compiler folder so we don't have to download and unpack it for every build
 cache:
   directories:
     - $HOME/gcc-arm-none-eabi-6-2017-q2-update
 
+# Download and unpack the latest GNU ARM Embedded Toolchain
+#  Also add the gcc/bin folder to $PATH
 install:
   - export GCC_DIR=$HOME/gcc-arm-none-eabi-6-2017-q2-update
   - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2
@@ -16,9 +21,13 @@ install:
   - if [ ! -e $GCC_DIR/bin/arm-none-eabi-gcc ]; then wget -nv $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME; fi
   - export PATH=$PATH:$GCC_DIR/bin
 
+# This sets all the targets for the CI builds
+#  Add new lines here for new boards/mains.
+#  A seperate job will run for each line.
 env:
   - BOARD=uos3-proto MAIN=blinky
   - BOARD=uos3-proto MAIN=serial-test
   - BOARD=uos3-proto MAIN=tx-test
 
+# The command that actually gets run:
 script: ./build $BOARD $MAIN
