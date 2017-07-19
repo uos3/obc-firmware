@@ -118,8 +118,6 @@ rfStatus_t cc112xSpiWriteReg(uint8_t radio_id, uint16_t addr, uint8_t *pData, ui
   if(!tempExt)
   {
     rc = trx8BitRegAccess(radio_id, (RADIO_BURST_ACCESS|RADIO_WRITE_ACCESS),tempAddr,pData,len);
-    //UART_putc(UART_PC104_HEADER, rc);
-    UART_putc(UART_PC104_HEADER, 'Q');
   }
   else if (tempExt == 0x2F)
   {

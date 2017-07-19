@@ -123,6 +123,7 @@ typedef uint8_t rfStatus_t;
 void trxRfSpiInterfaceInit(uint8_t clockDivider);
 rfStatus_t trx8BitRegAccess(uint8_t radio_id, uint8_t accessType, uint8_t addrByte, uint8_t *pData, uint16_t len);
 rfStatus_t trxSpiCmdStrobe(uint8_t radio_id, uint8_t cmd);
+uint8_t pollRadioGPIO0(uint8_t radio_id);
 
 /* CC112X specific prototype function */
 rfStatus_t trx16BitRegAccess(uint8_t radio_id, uint8_t accessType, uint8_t extAddr, uint8_t regAddr, uint8_t *pData, uint8_t len);

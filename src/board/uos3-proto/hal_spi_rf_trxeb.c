@@ -141,11 +141,37 @@ void trxRfSpiInterfaceInit(uint8_t prescalerValue)
 	GPIOPinTypeGPIOOutput(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN);
 	GPIOPinWrite(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN, RADIO_RX_CS_PIN);
 
+	//configure GPIO0 (RX)
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+	GPIOPinTypeGPIOInput(RADIO_RX_GP0_PORT, RADIO_RX_GP0_PIN);
+
+	//configure GPIO0 (TX)
+	GPIOPinTypeGPIOInput(RADIO_TX_GP0_PORT, RADIO_TX_GP0_PIN);
+
   
   
   return;
 }
 
+/*******************************************************************************
+ * @fn          pollRadioGPIO0
+ *
+ * @brief       Queries the GPIO0 of the radios
+ *
+ * input parameters
+
+ * output parameters
+ *
+ * @return      0 - pin low; else - pin high
+ */
+uint8_t pollRadioGPIO0(uint8_t radio_id)
+{
+	if (radio_id == RADIO_TX)
+		return (GPIOPinRead(RADIO_TX_GP0_PORT, RADIO_TX_GP0_PIN) & RADIO_TX_GP0_PIN)>0;
+	else //(radio_id == RADIO_RX)
+		return (GPIOPinRead(RADIO_RX_GP0_PORT, RADIO_RX_GP0_PIN) & RADIO_RX_GP0_PIN)>0;
+
+}
 
 /*******************************************************************************
  * @fn          trx8BitRegAccess

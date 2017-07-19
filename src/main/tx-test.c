@@ -33,31 +33,7 @@ int main(void)
 
     Board_init();
 	
-	/*
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-	GPIOPinConfigure(GPIO_PF2_SSI1CLK);
-    GPIOPinConfigure(GPIO_PF3_SSI1FSS);
-    GPIOPinConfigure(GPIO_PF0_SSI1RX);
-    GPIOPinConfigure(GPIO_PF1_SSI1TX);
-	GPIOPinTypeSSI(GPIO_PORTF_BASE, GPIO_PIN_0 | GPIO_PIN_2 | GPIO_PIN_3 |
-                   GPIO_PIN_1);
-	SSIConfigSetExpClk(SSI1_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
-                       SSI_MODE_MASTER, 1000000, 8);
-	
-	
-	SSIEnable(SSI1_BASE);
-	
-	while(SSIDataGetNonBlocking(SSI1_BASE, &pui32DataRx[0]))
-    {
-    }
-	
-	pui32DataTx[0] = 's';
-    pui32DataTx[1] = 'p';
-    pui32DataTx[2] = 'i';
-	
-	*/
-	
+	uint8_t rxBuffer[128] = {0};	
 
 	UART_init(UART_PC104_HEADER, 500000);
   UART_putc(UART_PC104_HEADER, '\r');
@@ -76,7 +52,8 @@ int main(void)
     // Reset radio
     // Write registers to radio
 
-	radio_reset_config(radio_id, preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
+	radio_reset_config(RADIO_TX, preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
+	radio_reset_config(RADIO_RX, preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
 	/*
 	trxSpiCmdStrobe(radio_id, CC112X_SRES);
 	uint8_t writeByte;
@@ -87,15 +64,16 @@ int main(void)
 	*/
 	
 	
-	UART_puts(UART_PC104_HEADER, "DONE");
+	//UART_puts(UART_PC104_HEADER, "DONE");
 	for(ui32Loop = 0; ui32Loop < 3000; ui32Loop++) {};
 	
 	//////// Calibrate radio according to errata
-    manualCalibration(radio_id);
+    manualCalibration(RADIO_TX);
+    manualCalibration(RADIO_RX);
 
 	
 	for(ui32Loop = 0; ui32Loop < 3000; ui32Loop++) {};
-	UART_puts(UART_PC104_HEADER, "CAL'd");
+	//UART_puts(UART_PC104_HEADER, "CAL'd");
 	for(ui32Loop = 0; ui32Loop < 30000; ui32Loop++) {};
 	
 	/////// the packet
@@ -131,16 +109,61 @@ int main(void)
 		
 		
 		// Write packet to TX FIFO
-        cc112xSpiWriteTxFifo(radio_id, buff, sizeof(buff));
+        cc112xSpiWriteTxFifo(RADIO_TX, buff, sizeof(buff));
 
+		trxSpiCmdStrobe(RADIO_RX, CC112X_SRX);
+		
         // Strobe TX to send packet
-        trxSpiCmdStrobe(radio_id, CC112X_STX);
+        trxSpiCmdStrobe(RADIO_TX, CC112X_STX);
 		
 		
-		// TODO: wait for packet to be sent  (the example uses interrupts)
+		// Wait for RX. If we dont get anything the WDT will kick 
+		// in and we can try again later
+		UART_puts(UART_PC104_HEADER, "waiting... ");
+		// Wait for falling edge of GPIO0
+		while(pollRadioGPIO0(RADIO_RX) == 0){};
+		while(pollRadioGPIO0(RADIO_RX) > 0){};
+		UART_puts(UART_PC104_HEADER, " flag high ");
 		
-		
+		// Read number of bytes in RX FIFO
+		uint8_t rxBytes, marcState;
+        cc112xSpiReadReg(RADIO_RX, CC112X_NUM_RXBYTES, &rxBytes, 1);
+				
+		// Check that we have bytes in FIFO
+		if(rxBytes != 0) {
+			UART_puts(UART_PC104_HEADER, "Got some bytes: ");
+			// Read MARCSTATE to check for RX FIFO error
+			cc112xSpiReadReg(RADIO_RX, CC112X_MARCSTATE, &marcState, 1);
+
+			// Mask out MARCSTATE bits and check if we have a RX FIFO error
+			if((marcState & 0x1F) == 0x11) { //RX_FIFO_ERROR) {
+				UART_puts(UART_PC104_HEADER, "RX FIFO error :(\n");
+				// Flush RX FIFO
+				trxSpiCmdStrobe(RADIO_RX, CC112X_SFRX);
+			} else {
+
+				// Read n bytes from RX FIFO
+				cc112xSpiReadRxFifo(RADIO_RX, rxBuffer, rxBytes);
+				
+
+				for (uint8_t i = 0; i < rxBytes; i++)
+					UART_puts(UART_PC104_HEADER, (char *)&rxBuffer[i]);
+				
+				// Check CRC ok (CRC_OK: bit7 in second status byte)
+				// This assumes status bytes are appended in RX_FIFO
+				// (PKT_CFG1.APPEND_STATUS = 1)
+				// If CRC is disabled the CRC_OK field will read 1
+				//if(rxBuffer[rxBytes - 1] & 0x80) {
+				//
+				//	// Update packet counter
+				//	packetCounter++;
+				//}
+			}
+		}
+		else
+			UART_puts(UART_PC104_HEADER, "No bytes.:(");
+
+
     }
 }
-
 
