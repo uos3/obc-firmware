@@ -108,8 +108,8 @@ int main(void)
 		
 		
 		
-		// Write packet to TX FIFO
-        cc112xSpiWriteTxFifo(RADIO_TX, buff, sizeof(buff));
+		//// Write packet to TX FIFO
+        //cc112xSpiWriteTxFifo(RADIO_TX, buff, sizeof(buff));
 
 		trxSpiCmdStrobe(RADIO_RX, CC112X_SRX);
 		
