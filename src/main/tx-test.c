@@ -52,7 +52,7 @@ int main(void)
     // Reset radio
     // Write registers to radio
 
-	radio_reset_config(RADIO_TX, preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
+	radio_reset_config(RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
 	radio_reset_config(RADIO_RX, preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
 	/*
 	trxSpiCmdStrobe(radio_id, CC112X_SRES);
@@ -88,25 +88,7 @@ int main(void)
     // Loop forever.
     while(1)
     {
-        // Turn on the LED.
-        LED_off(LED_B);
-
-
-		/* On period */
-		for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
-
-		LED_off(LED_B);
-
-        // Delay for a bit.
-        for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
-		
-		uint8_t ui32Index;
-		/*for(ui32Index = 0; ui32Index < 3; ui32Index++)
-			SSIDataPut(SSI1_BASE, pui32DataTx[ui32Index]);
-		while(SSIBusy(SSI1_BASE));*/
-		
-		
-		
+ 		
 		
 		//// Write packet to TX FIFO
         //cc112xSpiWriteTxFifo(RADIO_TX, buff, sizeof(buff));
@@ -116,7 +98,14 @@ int main(void)
         // Strobe TX to send packet
         trxSpiCmdStrobe(RADIO_TX, CC112X_STX);
 		
+		while(1){
+			WDT_kick();
+			// Delay for a bit.
+			for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
+
+		}
 		
+	/*	
 		// Wait for RX. If we dont get anything the WDT will kick 
 		// in and we can try again later
 		UART_puts(UART_PC104_HEADER, "waiting... ");
@@ -163,7 +152,7 @@ int main(void)
 		else
 			UART_puts(UART_PC104_HEADER, "No bytes.:(");
 
-
+*/
     }
 }
 
