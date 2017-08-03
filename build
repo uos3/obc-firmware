@@ -83,11 +83,9 @@ while getopts ":qFs" opt; do
 done
 for i in `seq 2 $OPTIND`; do shift; done
 
-
 ## Read Arguments
 board=${1,,}
 shift
-
 program=${1,,}
 shift
 
@@ -99,14 +97,14 @@ if [ -z "$board" ]; then
 fi
 if [ ! -d "src/board/${board}" ]; then
     print_err "$_ERROR_ Board \"${board}\" not found"
-    exit 2
+    exit 1
 fi
 
-# Run <board>'s dependencies script if it exists
+## Run <board>'s dependencies script if it exists
 if [ -f "src/board/${board}/dependencies.sh" ]; then
     src/board/${board}/dependencies.sh;
     if [[ $? != 0 ]]; then
-      exit
+      exit 1
     fi
 fi
 
@@ -114,22 +112,32 @@ fi
 if [ -z "$program" ]; then
     print_err "$_ERROR_ A main program file must be specified"
     usage
-    exit 3
+    exit 1
 fi
 if [ ! -e "src/main/$program.c" ]; then
     print_err "$_ERROR_ Main Program File \"$program\" not found"
-    exit 4
+    exit 1
 fi
 
 ## Set up Makefile Defines
 defines="-D BOARD=${board^^} -D MAIN=${program}"
 githash="$(git describe --dirty --always)"
-
+# Mark as dirty if untracked files exist
+if [ -z "$(echo "$githash" | grep "dirty")" ] && [ ! -z "$(git status --porcelain | grep "^??")" ]; then
+	githash="$githash-dirty"
+fi
 outdir="builds"
 filename="$(hyphenjoin $board $program $flags $githash)"
 
+## Change to board directory, make clean, make, then print summary message.
 cd "src/board/$board"
 make OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" clean \
 && make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" \
-&& ( print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" && flash ) \
-|| print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF"
+&& {
+	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" \
+	&& flash \
+	&& exit 0
+} || {
+	print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF" \
+	&& exit 1
+}

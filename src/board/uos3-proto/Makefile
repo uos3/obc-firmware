@@ -65,7 +65,7 @@ CFLAGS  = -mthumb          \
 	       -c
 AR      = ${PREFIX}-ar
 LD      = ${PREFIX}-ld
-LDFLAGS = --gc-sections
+LDFLAGS = --gc-sections --print-memory-usage
 LIBGCC := ${shell ${CC} ${CFLAGS} -print-libgcc-file-name}
 LIBC   := ${shell ${CC} ${CFLAGS} -print-file-name=libc.a}
 LIBM   := ${shell ${CC} ${CFLAGS} -print-file-name=libm.a}
@@ -179,7 +179,7 @@ ${FW_ROOT}/${OUTDIR}/${OUTFILE}:
 #
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}: $(patsubst %.c,%.o,${FW_SRCS})
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}: tm4c_startup_${COMPILER}.o
-${FW_ROOT}/${OUTDIR}/${OUTFILE}: ${ROOT}/driverlib/${COMPILER}/libdriver.a
+${FW_ROOT}/${OUTDIR}/${OUTFILE}: ${ROOT}/driverlib/gcc/libdriver.a
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}: tm4c123g.ld
 SCATTERgcc=tm4c123g.ld
 ENTRY_SYM=ResetISR

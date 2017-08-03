@@ -69,21 +69,21 @@ static void trxReadWriteBurstSingle(uint8_t addr,uint8_t *pData,uint16_t len) ;
 
 static void ssi_flush(void)
 {
-	uint32_t d[8];
-	SSIDataGetNonBlocking(SSI1_BASE , d );
+  uint32_t d[8];
+  SSIDataGetNonBlocking(SSI1_BASE , d );
 }
 
 static void cs_high(uint8_t radio_id){
-	if (radio_id == RADIO_TX)
-		GPIOPinWrite(RADIO_TX_CS_PORT, RADIO_TX_CS_PIN, RADIO_TX_CS_PIN);
-	else //if (radio_id == RADIO_RX)
-		GPIOPinWrite(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN, RADIO_RX_CS_PIN);
+  if (radio_id == RADIO_TX)
+    GPIOPinWrite(RADIO_TX_CS_PORT, RADIO_TX_CS_PIN, RADIO_TX_CS_PIN);
+  else //if (radio_id == RADIO_RX)
+    GPIOPinWrite(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN, RADIO_RX_CS_PIN);
 }
 static void cs_low(uint8_t radio_id){
-	if (radio_id == RADIO_TX)
-		GPIOPinWrite(RADIO_TX_CS_PORT, RADIO_TX_CS_PIN, 0);
-	else //if (radio_id == RADIO_RX)
-		GPIOPinWrite(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN, 0);
+  if (radio_id == RADIO_TX)
+    GPIOPinWrite(RADIO_TX_CS_PORT, RADIO_TX_CS_PIN, 0);
+  else //if (radio_id == RADIO_RX)
+    GPIOPinWrite(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN, 0);
 }
 
 
@@ -110,43 +110,43 @@ void trxRfSpiInterfaceInit(uint8_t prescalerValue)
 {
 
   
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-	// sort out PF0...
-	HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = GPIO_LOCK_KEY; //Unlock 
-	HWREG(GPIO_PORTF_BASE+GPIO_O_CR) |= 0x01; // Enable PF0 AFS 
-	HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) =0; // Relock
-	
-	GPIOPinConfigure(GPIO_PF2_SSI1CLK);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+  // sort out PF0...
+  HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = GPIO_LOCK_KEY; //Unlock 
+  HWREG(GPIO_PORTF_BASE+GPIO_O_CR) |= 0x01; // Enable PF0 AFS 
+  HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) =0; // Relock
+  
+  GPIOPinConfigure(GPIO_PF2_SSI1CLK);
     //GPIOPinConfigure(GPIO_PF3_SSI1FSS);
     GPIOPinConfigure(GPIO_PF0_SSI1RX);
     GPIOPinConfigure(GPIO_PF1_SSI1TX);
-	GPIOPinTypeSSI(GPIO_PORTF_BASE, RADIO_MISO_PIN | RADIO_MOSI_PIN | RADIO_CLK_PIN);
-	SSIConfigSetExpClk(SSI1_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
+  GPIOPinTypeSSI(GPIO_PORTF_BASE, RADIO_MISO_PIN | RADIO_MOSI_PIN | RADIO_CLK_PIN);
+  SSIConfigSetExpClk(SSI1_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
                        SSI_MODE_MASTER, 1000000, 8);
-	
-	
-	SSIEnable(SSI1_BASE);
-	
-	uint32_t d;
-	while(SSIDataGetNonBlocking(SSI1_BASE, &d));
-	
-	//configure CS pin (TX)
-	//SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-	GPIOPinTypeGPIOOutput(RADIO_TX_CS_PORT, RADIO_TX_CS_PIN);
-	GPIOPinWrite(RADIO_TX_CS_PORT, RADIO_TX_CS_PIN, RADIO_TX_CS_PIN);
-	
-	//configure CS pin (RX)
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
-	GPIOPinTypeGPIOOutput(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN);
-	GPIOPinWrite(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN, RADIO_RX_CS_PIN);
+  
+  
+  SSIEnable(SSI1_BASE);
+  
+  uint32_t d;
+  while(SSIDataGetNonBlocking(SSI1_BASE, &d));
+  
+  //configure CS pin (TX)
+  //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+  GPIOPinTypeGPIOOutput(RADIO_TX_CS_PORT, RADIO_TX_CS_PIN);
+  GPIOPinWrite(RADIO_TX_CS_PORT, RADIO_TX_CS_PIN, RADIO_TX_CS_PIN);
+  
+  //configure CS pin (RX)
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+  GPIOPinTypeGPIOOutput(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN);
+  GPIOPinWrite(RADIO_RX_CS_PORT, RADIO_RX_CS_PIN, RADIO_RX_CS_PIN);
 
-	//configure GPIO0 (RX)
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-	GPIOPinTypeGPIOInput(RADIO_RX_GP0_PORT, RADIO_RX_GP0_PIN);
+  //configure GPIO0 (RX)
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+  GPIOPinTypeGPIOInput(RADIO_RX_GP0_PORT, RADIO_RX_GP0_PIN);
 
-	//configure GPIO0 (TX)
-	GPIOPinTypeGPIOInput(RADIO_TX_GP0_PORT, RADIO_TX_GP0_PIN);
+  //configure GPIO0 (TX)
+  GPIOPinTypeGPIOInput(RADIO_TX_GP0_PORT, RADIO_TX_GP0_PIN);
 
   
   
@@ -166,10 +166,10 @@ void trxRfSpiInterfaceInit(uint8_t prescalerValue)
  */
 uint8_t pollRadioGPIO0(uint8_t radio_id)
 {
-	if (radio_id == RADIO_TX)
-		return (GPIOPinRead(RADIO_TX_GP0_PORT, RADIO_TX_GP0_PIN) & RADIO_TX_GP0_PIN)>0;
-	else //(radio_id == RADIO_RX)
-		return (GPIOPinRead(RADIO_RX_GP0_PORT, RADIO_RX_GP0_PIN) & RADIO_RX_GP0_PIN)>0;
+  if (radio_id == RADIO_TX)
+    return (GPIOPinRead(RADIO_TX_GP0_PORT, RADIO_TX_GP0_PIN) & RADIO_TX_GP0_PIN)>0;
+  else //(radio_id == RADIO_RX)
+    return (GPIOPinRead(RADIO_RX_GP0_PORT, RADIO_RX_GP0_PIN) & RADIO_RX_GP0_PIN)>0;
 
 }
 
@@ -292,25 +292,25 @@ rfStatus_t trx16BitRegAccess(uint8_t radio_id, uint8_t accessType, uint8_t extAd
 rfStatus_t trxSpiCmdStrobe(uint8_t radio_id, uint8_t cmd)
 {
     uint32_t rc;
-	
-	cs_low(radio_id);
-	
-	while(GPIOPinRead(GPIO_PORTF_BASE, RADIO_MISO_PIN) & RADIO_MISO_PIN){};
-	// do we need to flush the rx buffer first?
-	
-	while(SSIBusy(SSI1_BASE));
-	SSIDataPut(SSI1_BASE, cmd);
-	while(SSIBusy(SSI1_BASE));
-	SSIDataGet(SSI1_BASE, &rc);
+  
+  cs_low(radio_id);
+  
+  while(GPIOPinRead(GPIO_PORTF_BASE, RADIO_MISO_PIN) & RADIO_MISO_PIN){};
+  // do we need to flush the rx buffer first?
+  
+  while(SSIBusy(SSI1_BASE));
+  SSIDataPut(SSI1_BASE, cmd);
+  while(SSIBusy(SSI1_BASE));
+  SSIDataGet(SSI1_BASE, &rc);
 
-	
-	// only needed if we start sending a new header without pulling CS high/low
-	//if (cmd == 0x30){  // SRES
-	//	while(GPIOPinRead(GPIO_PORTF_BASE, RADIO_MISO_PIN) & RADIO_MISO_PIN){};
-	//}
-	
-	
-	cs_high(radio_id);
+  
+  // only needed if we start sending a new header without pulling CS high/low
+  //if (cmd == 0x30){  // SRES
+  //  while(GPIOPinRead(GPIO_PORTF_BASE, RADIO_MISO_PIN) & RADIO_MISO_PIN){};
+  //}
+  
+  
+  cs_high(radio_id);
   
     return(rc);
 }
@@ -346,19 +346,19 @@ rfStatus_t trxSpiCmdStrobe(uint8_t radio_id, uint8_t cmd)
  */
 static void trxReadWriteBurstSingle(uint8_t addr, uint8_t *pData, uint16_t len)
 {
-	uint16_t i;
-	uint32_t d,t;
-	/* Communicate len number of bytes: if RX - the procedure sends 0x00 to push bytes from slave*/
+  uint16_t i;
+  uint32_t d,t;
+  /* Communicate len number of bytes: if RX - the procedure sends 0x00 to push bytes from slave*/
   if(addr&RADIO_READ_ACCESS)
   {
     if(addr&RADIO_BURST_ACCESS)
     {
       for (i = 0; i < len; i++)
       {
-		  SSIDataPut(SSI1_BASE, 0);
-		  while(SSIBusy(SSI1_BASE));
-		  SSIDataGet(SSI1_BASE, &t); //(uint32_t *)pData);
-		  *pData++ = t;
+      SSIDataPut(SSI1_BASE, 0);
+      while(SSIBusy(SSI1_BASE));
+      SSIDataGet(SSI1_BASE, &t); //(uint32_t *)pData);
+      *pData++ = t;
           ////TRXEM_SPI_TX(0);            /* Possible to combining read and write as one access type */
           ////TRXEM_SPI_WAIT_DONE();
           ////*pData = TRXEM_SPI_RX();     /* Store pData from last pData RX */
@@ -370,7 +370,7 @@ static void trxReadWriteBurstSingle(uint8_t addr, uint8_t *pData, uint16_t len)
       SSIDataPut(SSI1_BASE, 0);
       while(SSIBusy(SSI1_BASE)){};
       SSIDataGet(SSI1_BASE, &t);
-	  *pData = (uint8_t)t;
+    *pData = (uint8_t)t;
       //TRXEM_SPI_TX(0);
       //TRXEM_SPI_WAIT_DONE();
       //*pData = TRXEM_SPI_RX();
@@ -383,9 +383,9 @@ static void trxReadWriteBurstSingle(uint8_t addr, uint8_t *pData, uint16_t len)
       /* Communicate len number of bytes: if TX - the procedure doesn't overwrite pData */
       for (i = 0; i < len; i++)
       {
-		SSIDataPut(SSI1_BASE, (uint32_t)*pData);
+    SSIDataPut(SSI1_BASE, (uint32_t)*pData);
         while(SSIBusy(SSI1_BASE)){};
-		SSIDataGet(SSI1_BASE, &d);
+    SSIDataGet(SSI1_BASE, &d);
         //TRXEM_SPI_TX(*pData);
         //TRXEM_SPI_WAIT_DONE();
         pData++;
@@ -393,9 +393,9 @@ static void trxReadWriteBurstSingle(uint8_t addr, uint8_t *pData, uint16_t len)
     }
     else
     {
-	   SSIDataPut(SSI1_BASE, (uint32_t)*pData);
+     SSIDataPut(SSI1_BASE, (uint32_t)*pData);
        while(SSIBusy(SSI1_BASE)){};
-	   SSIDataGet(SSI1_BASE, &d);
+     SSIDataGet(SSI1_BASE, &d);
       //TRXEM_SPI_TX(*pData);
       //TRXEM_SPI_WAIT_DONE();
     }

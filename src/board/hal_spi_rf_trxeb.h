@@ -3,7 +3,7 @@
 *
 *  Description: Common header file for spi access to the different tranceiver
 *               radios. Supports CC1101/CC112X radios
-*				 
+*        
 *  Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com/
 *
 *
