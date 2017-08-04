@@ -266,17 +266,19 @@ main(void)
     //
     // Indicate the direction of the data.
     //
-    UARTprintf("Tranferring from: Master -> Slave\n");
+    UARTprintf("Transferring from: Master -> Slave\n");
 
     //
-    // Send 3 peices of I2C data from the master to the slave.
+    // Send 3 pieces of I2C data from the master to the slave.
     //
     for(ui32Index = 0; ui32Index < NUM_I2C_DATA; ui32Index++)
     {
         //
         // Display the data that the I2C0 master is transferring.
         //
-        UARTprintf("  Sending: '%c'  . . .  ", pui32DataTx[ui32Index]);
+        UART_puts(UART_CAM_HEADER,"  Sending: '");
+        UART_putc(UART_CAM_HEADER,pui32DataTx[ui32Index]);
+        UART_puts(UART_CAM_HEADER,"' ");
 
         //
         // Place the data to be sent in the data register
@@ -312,8 +314,12 @@ main(void)
         //
         // Display the data that the slave has received.
         //
-        UARTprintf("Received: '%c'\n", pui32DataRx[ui32Index]);
-    }
+        UART_puts(UART_CAM_HEADER,"Received: '");
+        UART_putc(UART_CAM_HEADER,pui32DataRx[ui32Index]);
+        UART_puts(UART_CAM_HEADER,"'\r\n");
+    
+
+}
 
     //
     // Reset receive buffer.
@@ -326,10 +332,10 @@ main(void)
     //
     // Indicate the direction of the data.
     //
-    UARTprintf("\n\nTranferring from: Slave -> Master\n");
+    UARTprintf("\n\nTransferring from: Slave -> Master\n");
 
     //
-    // Modifiy the data direction to true, so that seeing the address will
+    // Modify the data direction to true, so that seeing the address will
     // indicate that the I2C Master is initiating a read from the slave.
     //
     I2CMasterSlaveAddrSet(I2C0_BASE, SLAVE_ADDRESS, true);
@@ -352,7 +358,9 @@ main(void)
         //
         // Display the data that I2C0 slave module is transferring.
         //
-        UARTprintf("  Sending: '%c'  . . .  ", pui32DataTx[ui32Index]);
+        UART_puts(UART_CAM_HEADER,"  Sending: '");
+        UART_putc(UART_CAM_HEADER,pui32DataTx[ui32Index]);
+        UART_puts(UART_CAM_HEADER,"' ");
 
         //
         // Place the data to be sent in the data register
@@ -379,7 +387,10 @@ main(void)
         //
         // Display the data that the slave has received.
         //
-        UARTprintf("Received: '%c'\n", pui32DataRx[ui32Index]);
+        UART_puts(UART_CAM_HEADER,"Received: '");
+        UART_putc(UART_CAM_HEADER,pui32DataRx[ui32Index]);
+        UART_puts(UART_CAM_HEADER,"'\r\n");
+
     }
 
     //
