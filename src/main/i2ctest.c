@@ -1,6 +1,39 @@
-// i2c test built on back of below test demo
+// i2c test built on back of below test demo (originally master_slave_loopback.c) and blinky merged and forged to make something working
+
+
+// this is blinky working code
+
+/* firmware.h contains all relevant headers */
+#include "../firmware.h"
+
+/* A very simple example that blinks the on-board LED. */
+
+int main(void)
+{
+  Board_init();
+  WDT_kick();
+
+  while(1)
+  {
+    LED_on(LED_B);
+
+    /* On period */
+    Delay_ms(500);
+    WDT_kick();
+
+    LED_off(LED_B);
+
+    /* Off period */
+    Delay_ms(500);
+    WDT_kick();
+  }
+}
 
 // hack it to work with gyro and satellite i2c system (WIP)
+
+// introduce below step by step (currently not even linking properly)
+
+/*
 
 //*****************************************************************************
 //
@@ -41,6 +74,8 @@
 // This is part of revision 2.1.4.178 of the Tiva Firmware Development Package.
 //
 //*****************************************************************************
+
+#include "../firmware.h" // this is bringing in satellite links, standard ones not configured for this build setting currently
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -425,3 +460,5 @@ main(void)
     //
     return(0);
 }
+
+*/
