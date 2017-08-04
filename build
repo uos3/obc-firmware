@@ -6,6 +6,7 @@ cd $source_dir
 opt_flash=false
 opt_quiet=false
 opt_sound=false
+opt_asm=false
 
 COLOUR_GREEN='\033[0;32m'
 COLOUR_YELLOW='\033[1;33m'
@@ -62,10 +63,20 @@ flash() {
   fi
 }
 
+asmdump() {
+  if $opt_asm; then
+     arm-none-eabi-objdump -DSlx ${source_dir}/${outdir}/${filename} > ${source_dir}/${outdir}/${filename}.asm
+     print "$_INFO_$COLOUR_GREEN Machine code: ${outdir}/${filename}.asm$COLOUR_OFF"
+  fi
+}
+
 ## Read Flags
 OPTIND=1
-while getopts ":qFs" opt; do
+while getopts ":mqFs" opt; do
   case "$opt" in
+    m) # ASM
+      opt_asm=true
+      ;;
     q) # Quiet
       opt_quiet=true
       ;;
@@ -135,6 +146,7 @@ make OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" clean \
 && make DEFINES="$defines" OUTDIR="$outdir" OUTFILE="$filename" MAIN="$program" BOARD="$board" \
 && {
 	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" \
+	&& asmdump \
 	&& flash \
 	&& exit 0
 } || {
