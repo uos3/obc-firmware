@@ -19,6 +19,10 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 
+#include <string.h>
+#include <stdlib.h>
+
+
 /* A very simple example that blinks the on-board LED. */
 
 /*
@@ -319,15 +323,31 @@ int16_t I2CReceive16(uint32_t slave_addr,uint8_t reg)
 #define STRING_BUFFER_LENGTH 20
 
 static char string_buffer[STRING_BUFFER_LENGTH];
+static char string_buffer2[STRING_BUFFER_LENGTH];
+
+void UART_putnum(unsigned int serialport,signed long x)
+ {
+  itoa(abs(x),string_buffer,10);
+  unsigned int len=strlen(string_buffer);
+  unsigned int targetlen=6-len;
+  strcpy(string_buffer2,"+00000");
+  strcpy(string_buffer2+targetlen,string_buffer);
+  if (x<0) string_buffer2[0]='-';
+  UART_puts(serialport,string_buffer2);
+}
+
+void UART_putstr(unsigned int serialport, char *s1,signed long x, char *s2)
+ {
+  if (s1!=NULL) UART_puts(serialport,s1);
+  UART_putnum(serialport,x);
+  if (s2!=NULL) UART_puts(serialport,s2);
+ }  
 
 int main(void)
 {
     uint32_t pui32DataTx[NUM_I2C_DATA];
     uint32_t pui32DataRx[NUM_I2C_DATA];
     uint32_t ui32Index;
-
-
- 
 
     //
     // Set the clocking to run directly from the external crystal/oscillator.
@@ -340,70 +360,7 @@ int main(void)
 
    InitI2C2();
 
-/*
-    //
-    // The I2C2 peripheral must be enabled before use.
-    //
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C2);
 
-    //
-    // For this example I2C2 is used with PortB[3:2].  The actual port and
-    // pins used may be different on your part, consult the data sheet for
-    // more information.  GPIO port B needs to be enabled so these pins can
-    // be used.
-    // TODO: change this to whichever GPIO port you are using.
-    //
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-
-    //
-    // Configure the pin muxing for I2C2 functions on port B2 and B3.
-    // This step is not necessary if your part does not support pin muxing.
-    // TODO: change this to select the port/pin you are using.
-    //
-    GPIOPinConfigure(GPIO_PB2_I2C2SCL);
-    GPIOPinConfigure(GPIO_PB3_I2C2SDA);
-
-    //
-    // Select the I2C function for these pins.  This function will also
-    // configure the GPIO pins pins for I2C operation, setting them to
-    // open-drain operation with weak pull-ups.  Consult the data sheet
-    // to see which functions are allocated per pin.
-    // TODO: change this to select the port/pin you are using.
-    //
-    GPIOPinTypeI2CSCL(GPIO_PORTB_BASE, GPIO_PIN_2);
-    GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_3);
-
-    //
-    // Enable and initialize the I2C2 master module.  Use the system clock for
-    // the I2C2 module.  The last parameter sets the I2C data transfer rate.
-    // If false the data rate is set to 100kbps and if true the data rate will
-    // be set to 400kbps.  For this example we will use a data rate of 100kbps.
-    //
-
-    I2CMasterInitExpClk(I2C2_BASE, SysCtlClockGet(), false);
-
-
-    //
-    // Set the slave address to SLAVE_ADDRESS.
-
-  //  I2CSlaveInit(I2C2_BASE, SLAVE_ADDRESS);
-
-    //
-    // Tell the master module what address it will place on the bus when
-    // communicating with the slave.  Set the address to SLAVE_ADDRESS
-    // (as set in the slave module).  The receive parameter is set to false
-    // which indicates the I2C Master is initiating a writes to the slave.  If
-    // true, that would indicate that the I2C Master is initiating reads from
-    // the slave.
-    //
-    I2CMasterSlaveAddrSet(I2C2_BASE, SLAVE_ADDRESS, false);
-
-    //
-    // Set up the serial console to use for displaying messages.  This is
-    // just for this example program and is not needed for I2C operation.
-    //
-
-*/
   Board_init();
   WDT_kick();
 
@@ -417,143 +374,53 @@ int main(void)
     UARTprintf("   Mode = Single Send/Receive\n");
     UARTprintf("   Rate = 100kbps\n\n\n");
 
-//#define SLAVE_ADDRESS 0xD0 // this is the MPU-9250A i2c address %1011000
-unsigned long SLAVE_ADDRESS=0x68;
+#define SLAVE_ADDRESS 0x68 // this is the MPU-9250A i2c address %1011000
 
-signed short acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z;
+// MPU 9250 registers 
 
-   while(1)
+#define MPU_CONFIG 26
+#define MPU_GYRO_CONFIG 27
+#define MPU_ACCEL_CONFIG 28
+#define MPU_ACCEL_XOUT 59
+#define MPU_ACCEL_YOUT 61
+#define MPU_ACCEL_ZOUT 63
+#define MPU_TEMP_OUT 65
+#define MPU_GYRO_XOUT 67
+#define MPU_GYRO_YOUT 69
+#define MPU_GYRO_ZOUT 71
+#define MPU_WHO_AM_I 117
+
+signed short acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z,temp;
+
+//unsigned long SLAVE_ADDRESS=0x68;
+unsigned int wdt_kicker=100;
+
+unsigned int wdt_start=20; // loops before kick, not too long or too short or hardware will reset
+
+   while(1) // infinite loop
  {
 
-
-
-    UART_puts(UART_CAM_HEADER,"\n\r IMU data =>> "); //itoa(SLAVE_ADDRESS,string_buffer,10);UART_puts(UART_CAM_HEADER,string_buffer);
+ for (wdt_kicker=wdt_start;wdt_kicker>0;wdt_kicker--) // repeat this to kick wdt at correct time.
+  {
+     
+    acc_x=I2CReceive16(SLAVE_ADDRESS,MPU_ACCEL_XOUT); 
+    acc_y=I2CReceive16(SLAVE_ADDRESS, MPU_ACCEL_YOUT); 
+    acc_z=I2CReceive16(SLAVE_ADDRESS, MPU_ACCEL_ZOUT);
+    gyr_x=I2CReceive16(SLAVE_ADDRESS, MPU_GYRO_XOUT);
+    gyr_y=I2CReceive16(SLAVE_ADDRESS, MPU_GYRO_YOUT);
+    gyr_z=I2CReceive16(SLAVE_ADDRESS, MPU_GYRO_ZOUT);
+    temp=I2CReceive16(SLAVE_ADDRESS, MPU_TEMP_OUT);
     
-  
-    acc_x=I2CReceive16(SLAVE_ADDRESS,59); //(I2CReceive(SLAVE_ADDRESS, 59)<<8) + I2CReceive(SLAVE_ADDRESS, 60);
-    acc_y=I2CReceive16(SLAVE_ADDRESS, 61); //<<8) + I2CReceive(SLAVE_ADDRESS, 62);
-    acc_z=I2CReceive16(SLAVE_ADDRESS, 63);//<<8) + I2CReceive(SLAVE_ADDRESS, 64);
-  
-    UART_puts(UART_CAM_HEADER," Acc ( X reg = "); itoa(acc_x,string_buffer,10);UART_puts(UART_CAM_HEADER,string_buffer);
-    UART_puts(UART_CAM_HEADER,": Y reg = "); itoa(acc_y,string_buffer,10);UART_puts(UART_CAM_HEADER,string_buffer);
-    UART_puts(UART_CAM_HEADER,": Z reg = "); itoa(acc_z,string_buffer,10);UART_puts(UART_CAM_HEADER,string_buffer);
-    UART_puts(UART_CAM_HEADER," ) ");
-
-   //WDT_kick();
+    UART_putstr(UART_CAM_HEADER,"\r Accel:(",acc_x,",");
+    UART_putstr(UART_CAM_HEADER,NULL,acc_y,",");
+    UART_putstr(UART_CAM_HEADER,NULL,acc_z,") ");
+    UART_putstr(UART_CAM_HEADER,"Gyro:(",gyr_x,",");
+    UART_putstr(UART_CAM_HEADER,NULL,gyr_y,",");
+    UART_putstr(UART_CAM_HEADER,NULL,gyr_z,") ");
+    UART_putstr(UART_CAM_HEADER,"Temp:(",temp,")");
+  }
+  WDT_kick();
 }
-/*
-
-
-
-    //
-    // Initalize the data to send.
-    //
-    pui32DataTx[0] = 0;//'I'; // self test gyro regs x,y,z
-    pui32DataTx[1] = 1;//'2';
-    pui32DataTx[2] = 2;//'C';
-
-    //
-    // Initalize the receive buffer.
-    //
-    for(ui32Index = 0; ui32Index < NUM_I2C_DATA; ui32Index++)
-    {
-        pui32DataRx[ui32Index] = 0;
-    }
-
-    //
-    // Indicate the direction of the data.
-    //
-    UARTprintf("Transferring from: Master -> Slave\n");
-
-    //
-    // Send 3 pieces of I2C data from the master to the slave.
-    //
-    for(ui32Index = 0; ui32Index < NUM_I2C_DATA; ui32Index++)
-    {
-        //
-        // Display the data that the I2C2 master is transferring.
-        //
-        UART_puts(UART_CAM_HEADER,"  Sending: '");
-        UART_putc(UART_CAM_HEADER,pui32DataTx[ui32Index]);
-        UART_puts(UART_CAM_HEADER,"'\r\n");
-
-        //
-        // Place the data to be sent in the data register
-        //
-        I2CMasterDataPut(I2C2_BASE, pui32DataTx[ui32Index]);
-
-        //
-        // Initiate send of data from the master.  
-        I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_SINGLE_SEND);
-
-        //
-        // Wait until master module is done transferring.
-        //
-        while(I2CMasterBusy(I2C2_BASE))
-        {
-        }    
-
-   }
-
-    // So hopefully we now have
-
-    //
-    // Reset receive buffer.
-    //
-    for(ui32Index = 0; ui32Index < NUM_I2C_DATA; ui32Index++)
-    {
-        pui32DataRx[ui32Index] = 0;
-    }
-
-    //
-    // Indicate the direction of the data.
-    //
-    UARTprintf("\n\nTransferring from: Slave -> Master\n");
-
-    //
-    // Modify the data direction to true, so that seeing the address will
-    // indicate that the I2C Master is initiating a read from the slave.
-    //
-    I2CMasterSlaveAddrSet(I2C2_BASE, SLAVE_ADDRESS, true);
-
-    //
-    // Do a dummy receive to make sure you don't get junk on the first receive.
-    //
-    I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
- 
-    for(ui32Index = 0; ui32Index < NUM_I2C_DATA; ui32Index++)
-    {
-    
-        //
-        // Tell the master to read data.
-        //
-        I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
-   
-        //
-        // Read the data from the master.
-        //
-        pui32DataRx[ui32Index] = I2CMasterDataGet(I2C2_BASE);
-
-        //
-        // Display the data that the slave has received.
-        //
-        UART_puts(UART_CAM_HEADER,"Received: '");
-        UART_putc(UART_CAM_HEADER,pui32DataRx[ui32Index]);
-        UART_puts(UART_CAM_HEADER,"'\r\n");
-
-    }
-
-*/
-
-    //
-    // Tell the user that the test is done.
-    //
-    UARTprintf("\nDone.\n\n");
-
-    //
-    // Return no errors
-    //
-    return(0);
 }
 
 
