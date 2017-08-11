@@ -1,115 +1,34 @@
-// i2c test built on back of below test demo (originally master_slave_loopback.c) and blinky merged and forged to make something working
+
+// i2c IMU functionality test
+//
+// Suzanna Lucarotti (c) 11/8/2017
+//
+// for use with the UoS3 Cubesat
+//
+// derived from blinky and Ti's i2c examples and MPU9205 datasheets
 
 
-// this is blinky working code
-
-/* firmware.h contains all relevant headers */
 #include "../firmware.h"
 
-#include "i2ctest.h" // local header
+//#include "i2ctest.h" // local header
 
-#include <stdbool.h>
-#include <stdint.h>
 #include "inc/hw_i2c.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
+
 #include "driverlib/gpio.h"
 #include "driverlib/i2c.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
-#include "driverlib/uart.h"
 
-#include <string.h>
 #include <stdlib.h>
-
-
-/* A very simple example that blinks the on-board LED. */
-
-/*
-
-int main(void)
-{
-  Board_init();
-  WDT_kick();
-
-  UART_init(UART_CAM_HEADER, 9600);
-
-  while(1)
-  {
-    LED_on(LED_B); 
-UART_puts(UART_CAM_HEADER, "LED On\r\n");
-    Delay_ms(500);
-    WDT_kick();
-
-    LED_off(LED_B);
-UART_puts(UART_CAM_HEADER, "LED Off\r\n");
-     
-    Delay_ms(500);
-    WDT_kick();
-  }
-}
-
-*/
-
-void UARTprintf(x)               // lets use our console instead of TI one
- {UART_puts(UART_CAM_HEADER,x);UART_puts(UART_CAM_HEADER,"\r");}
-
-// hack it to work with gyro and satellite i2c system (WIP)
-
-// introduce below step by step (currently not even linking properly)
-
-
-//*****************************************************************************
-//
-//! \addtogroup i2c_examples_list
-//! <h1>I2C Master Loopback (i2c_master_slave_loopback)</h1>
-//!
-//! This example shows how to configure the I2C2 module for loopback mode.
-//! This includes setting up the master and slave module.  Loopback mode
-//! internally connects the master and slave data and clock lines together.
-//! The address of the slave module is set in order to read data from the
-//! master.  Then the data is checked to make sure the received data matches
-//! the data that was transmitted.  This example uses a polling method for
-//! sending and receiving data.
-//!
-//! This example uses the following peripherals and I/O signals.  You must
-//! review these and change as needed for your own board:
-//! - I2C2 peripheral
-//! - GPIO Port B peripheral (for I2C2 pins)
-//! - I2C2SCL - PB2
-//! - I2C2SDA - PB3
-//!
-//! The following UART signals are configured only for displaying console
-//! messages for this example.  These are not required for operation of I2C.
-//! - UART0 peripheral
-//! - GPIO Port A peripheral (for UART0 pins)
-//! - UART0RX - PA0
-//! - UART0TX - PA1
-//!
-//! This example uses the following interrupt handlers.  To use this example
-//! in your own application you must add these interrupt handlers to your
-//! vector table.
-//! - None.
-//
-//*****************************************************************************
-
 #include <stdarg.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include "inc/hw_i2c.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "inc/hw_gpio.h"
-#include "driverlib/i2c.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/gpio.h"
-#include "driverlib/pin_map.h"
 
-//initialize I2C module 0
-//Slightly modified version of TI's example code
+
+
 void InitI2C2(void)
 {
-    //enable I2C module 0
+    //enable I2C module 2
     SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C2);
  
     //reset module
@@ -118,7 +37,7 @@ void InitI2C2(void)
     //enable GPIO peripheral that contains I2C 2
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
  
-    // Configure the pin muxing for I2C2 functions on port B2 and B3.
+    // Configure the pin muxing for I2C2 functions on port E4 and E5.
     GPIOPinConfigure(GPIO_PE4_I2C2SCL);
     GPIOPinConfigure(GPIO_PE5_I2C2SDA);
      
@@ -291,7 +210,7 @@ uint32_t I2CReceive(uint32_t slave_addr, uint8_t reg)
     return I2CMasterDataGet(I2C2_BASE);
 }
 
-int16_t I2CReceive16(uint32_t slave_addr,uint8_t reg)
+int16_t I2CReceive16(uint32_t slave_addr,uint8_t reg) // lets get 2 byte value (TBD improve performance by data burst v single read)
  {
   int16_t x=I2CReceive(slave_addr,reg);
   x=x<<8;
@@ -299,28 +218,10 @@ int16_t I2CReceive16(uint32_t slave_addr,uint8_t reg)
  return x;
  }
 
-//(I2CReceive(SLAVE_ADDRESS, 59)<<8) + I2CReceive(SLAVE_ADDRESS, 60);
 
-//*****************************************************************************
-//
-// Number of I2C data packets to send.
-//
-//*****************************************************************************
-#define NUM_I2C_DATA 3
+/// Fancy Console code to display without scrolling
 
-//*****************************************************************************
-//
-// Set the address for slave module. This is a 7-bit address sent in the
-// following format:
-//                      [A6:A5:A4:A3:A2:A1:A0:RS]
-//
-// A zero in the "RS" position of the first byte means that the master
-// transmits (sends) data to the selected slave, and a one in this position
-// means that the master receives data from the slave.
-//
-//*****************************************************************************
-
-#define STRING_BUFFER_LENGTH 20
+#define STRING_BUFFER_LENGTH 20 // rough hack for testing
 
 static char string_buffer[STRING_BUFFER_LENGTH];
 static char string_buffer2[STRING_BUFFER_LENGTH];
@@ -343,37 +244,8 @@ void UART_putstr(unsigned int serialport, char *s1,signed long x, char *s2)
   if (s2!=NULL) UART_puts(serialport,s2);
  }  
 
-int main(void)
-{
-    uint32_t pui32DataTx[NUM_I2C_DATA];
-    uint32_t pui32DataRx[NUM_I2C_DATA];
-    uint32_t ui32Index;
-
-    //
-    // Set the clocking to run directly from the external crystal/oscillator.
-    // TODO: The SYSCTL_XTAL_ value must be changed to match the value of the
-    // crystal on your board.
-    //
-
-    SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN |
-                   SYSCTL_XTAL_16MHZ);
-
-   InitI2C2();
-
-
-  Board_init();
-  WDT_kick();
-
-  UART_init(UART_CAM_HEADER, 9600);
-
-    //
-    // Display the example setup on the console.
-    //
-    UARTprintf("\n\rI2C Satellite I2C test ->\n");
-    UARTprintf("   Module = I2C2\n");
-    UARTprintf("   Mode = Single Send/Receive\n");
-    UARTprintf("   Rate = 100kbps\n\n\n");
-
+ // the useful hardware constants (only used here so not moved away as yet)
+ 
 #define SLAVE_ADDRESS 0x68 // this is the MPU-9250A i2c address %1011000
 
 // MPU 9250 registers 
@@ -390,17 +262,35 @@ int main(void)
 #define MPU_GYRO_ZOUT 71
 #define MPU_WHO_AM_I 117
 
-signed short acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z,temp;
+ //////////////////////////////////////////////////////////////////
+ // the actual main code
+ //////////////////////////////////////////////////////////////////
 
-//unsigned long SLAVE_ADDRESS=0x68;
-unsigned int wdt_kicker=100;
+int main(void)
+{
+
+  SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN |  SYSCTL_XTAL_16MHZ); // set the system clock
+  
+  InitI2C2(); // initialise correct interface on processor
+
+  Board_init(); // start the board
+  WDT_kick();
+
+  UART_init(UART_CAM_HEADER, 9600); // start the console, print bootup message (below)
+
+  UART_puts(UART_CAM_HEADER,"\n\n\r   I2C Satellite I2C IMU test.\n");
+  UART_puts(UART_CAM_HEADER,"\r   Module = I2C2\n");
+  UART_puts(UART_CAM_HEADER,"\r   Mode = Single Send/Receive\n");
+  UART_puts(UART_CAM_HEADER,"\r   Rate = 100kbps\n\n\n");
+
+signed short acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z,temp;
 
 unsigned int wdt_start=20; // loops before kick, not too long or too short or hardware will reset
 
    while(1) // infinite loop
  {
 
- for (wdt_kicker=wdt_start;wdt_kicker>0;wdt_kicker--) // repeat this to kick wdt at correct time.
+ for (unsigned int wdt_kicker=wdt_start;wdt_kicker>0;wdt_kicker--) // repeat this to kick wdt at correct time.
   {
      
     acc_x=I2CReceive16(SLAVE_ADDRESS,MPU_ACCEL_XOUT); 
@@ -420,7 +310,7 @@ unsigned int wdt_start=20; // loops before kick, not too long or too short or ha
     UART_putstr(UART_CAM_HEADER,"Temp:(",temp,")");
   }
   WDT_kick();
-}
+ }
 }
 
 
