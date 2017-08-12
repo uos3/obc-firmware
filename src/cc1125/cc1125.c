@@ -3,6 +3,104 @@
 #include "cc112x_spi.h"
 #include "inttypes.h"
 
+#define CC_XO_FREQ 38400000
+
+
+/*******************************************************************************
+*   @fn         radio_set_wr_f
+*
+*   @brief      Sets the power to the requested floating point value in dBm. Will
+*               overwrite the input value with the actual value. Call only when
+*               in 'idle' state
+*
+*   @param      radio_id - select the radio to use
+*               *pwr - pointer to the requested power (dBm)
+*               *reg_value - used for reading back the register value, useful for 
+*                            cal'ing the output
+*
+*   @return     0 - changed sucessfully; 1 - error, freq not set
+*/
+uint8_t radio_set_pwr_f(uint8_t radio_id, double *pwr, uint8_t *reg_value){
+   
+   uint8_t div;
+   if ((*pwr < -11) || (*pwr > 15))      
+      return 1;
+   
+   double p;
+   p = (*pwr+1)/2-18;
+   
+   uint32_t pwr_reg = (int32_t)p;
+   
+   if (pwr_reg < 3)
+      pwr_reg = 3;
+   pwr_reg = pwr_reg & 0x3F;
+   
+   // work back to calculate the actual freq
+   p = (2*(pwr_reg+18))-1;
+   
+   *pwr = p;
+   *reg_value = pwr_reg;
+   
+   //now write to CC112X
+   cc112xSpiWriteReg(radio_id, CC112X_PA_CFG2, (1<<6) | pwr_reg, 1);   
+   
+   return 0;  
+   
+} 
+
+/*******************************************************************************
+*   @fn         radio_set_freq_f
+*
+*   @brief      Sets the frequency to the requested floating point value. Will
+*               overwrite the input value with the actual value. Call only when
+*               in 'idle' state
+*
+*   @param      radio_id - select the radio to use
+*               *freq - pointer to the requested frequency
+*
+*   @return     0 - changed sucessfully; 1 - error, freq not set
+*/
+uint8_t radio_set_freq_f(uint8_t radio_id, double *freq){
+   
+   uint8_t div;
+   if ((*freq >= 136.7) && (*freq <= 160))
+      div = 24;
+   else if ((*freq >= 164) && (*freq <= 192))
+      div = 20;
+   else if ((*freq >= 205) && (*freq <= 240))
+      div = 16;
+   else if ((*freq >= 273.3) && (*freq <= 320))
+      div = 12;
+   else if ((*freq >= 410) && (*freq <= 480))
+      div = 8;
+   else if ((*freq >= 820) && (*freq <= 960))
+      div = 4;
+   else
+      return 1;
+   
+   double f;
+   f = div * ((*freq)*1000000) * 65536 / CC_XO_FREQ;
+   
+   uint32_t freq_reg = (int32_t)f;
+   
+   // work back to calculate the actual freq
+   f = freq_reg*CC_XO_FREQ;
+   f = f / div;
+   f = f / 65536;
+   
+   *freq = f/1000000;
+   
+   
+   //now write to CC112X
+   cc112xSpiWriteReg(radio_id, CC112X_FREQ0, freq_reg & 0xFF, 1);
+   cc112xSpiWriteReg(radio_id, CC112X_FREQ1, (freq_reg >> 8) & 0xFF, 1);
+   cc112xSpiWriteReg(radio_id, CC112X_FREQ2, (freq_reg >> 16) & 0xFF, 1);
+   cc112xSpiWriteReg(radio_id, CC112X_FS_CFG, 0x10 | div , 1);
+   
+   
+   return 0;  
+   
+} 
 
 
 /*******************************************************************************
