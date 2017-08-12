@@ -143,6 +143,29 @@ void SPI_init(uint8_t spi_num)
   }
 }
 
+uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd)
+{
+  check_spi_num(spi_num, 0);
+  SPI *spi = &SPI_spis[spi_num];
+
+  uint32_t readValue;
+
+  /* Pull CS_N low and wait for SO to go low before communication starts */
+  GPIO_write(spi->gpio_cs, false);
+
+  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso){};
+  // do we need to flush the rx buffer first?
+ 
+  while(SSIBusy(spi->port->base_spi));
+  SSIDataPut(spi->port->base_spi, cmd);
+  while(SSIBusy(spi->port->base_spi));
+  SSIDataGet(spi->port->base_spi, &readValue);
+
+  GPIO_write(spi->gpio_cs, true);
+  /* return the status byte value */
+  return((uint8_t)readValue);
+}
+
 uint8_t SPI_read8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData)
 {
   check_spi_num(spi_num, 0);
@@ -152,6 +175,7 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData)
 
   /* Pull CS_N low and wait for SO to go low before communication starts */
   GPIO_write(spi->gpio_cs, false);
+
   //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
   while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso){};
   // do we need to flush the rx buffer first?
@@ -169,6 +193,7 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData)
   *pData = (uint8_t)d;
 
   GPIO_write(spi->gpio_cs, true);
+
   /* return the status byte value */
   return((uint8_t)readValue);
 }
@@ -182,6 +207,7 @@ uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData, uint16
 
   /* Pull CS_N low and wait for SO to go low before communication starts */
   GPIO_write(spi->gpio_cs, false);
+
   //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
   while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso){};
   // do we need to flush the rx buffer first?
@@ -202,6 +228,7 @@ uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData, uint16
   }
 
   GPIO_write(spi->gpio_cs, true);
+
   /* return the status byte value */
   return((uint8_t)readValue);
 }
@@ -211,10 +238,11 @@ uint8_t SPI_write8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData)
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d;
+  uint32_t readValue, d, w;
 
   /* Pull CS_N low and wait for SO to go low before communication starts */
   GPIO_write(spi->gpio_cs, false);
+
   //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
   while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso){};
   // do we need to flush the rx buffer first?
@@ -226,12 +254,13 @@ uint8_t SPI_write8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData)
   while(SSIBusy(spi->port->base_spi));
   SSIDataGet(spi->port->base_spi, &readValue);
 
-
-  SSIDataPut(spi->port->base_spi, (uint32_t)*pData);
+  w = *pData;
+  SSIDataPut(spi->port->base_spi, w);
   while(SSIBusy(spi->port->base_spi)) {};
   SSIDataGet(spi->port->base_spi, &d);
 
   GPIO_write(spi->gpio_cs, true);
+
   /* return the status byte value */
   return((uint8_t)readValue);
 }
@@ -241,7 +270,7 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData, uint1
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d;
+  uint32_t readValue, d, w;
 
   /* Pull CS_N low and wait for SO to go low before communication starts */
   GPIO_write(spi->gpio_cs, false);
@@ -254,12 +283,14 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData, uint1
   /* Transmit address without Read Bit */
   SSIDataPut(spi->port->base_spi, (uint32_t)(0x7F & addrByte));
   while(SSIBusy(spi->port->base_spi));
+
   SSIDataGet(spi->port->base_spi, &readValue);
 
   /* Communicate len number of bytes: if TX - the procedure doesn't overwrite pData */
   for (uint32_t i = 0; i < len; i++)
   {
-    SSIDataPut(spi->port->base_spi, (uint32_t)*pData);
+    w = *pData;
+    SSIDataPut(spi->port->base_spi, w);
     while(SSIBusy(spi->port->base_spi)) {};
     SSIDataGet(spi->port->base_spi, &d);
     pData++;
@@ -270,7 +301,7 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addrByte, uint8_t *pData, uint1
   return((uint8_t)readValue);
 }
 
-uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd, uint32_t *rc)
+uint8_t SPI_read16(uint8_t spi_num, uint8_t addrByte, uint8_t regByte, uint8_t *pData)
 {
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
@@ -280,15 +311,68 @@ uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd, uint32_t *rc)
   /* Pull CS_N low and wait for SO to go low before communication starts */
   GPIO_write(spi->gpio_cs, false);
 
+  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
   while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso){};
   // do we need to flush the rx buffer first?
+  SPI_flush(spi->port->base_spi);
  
   while(SSIBusy(spi->port->base_spi));
-  SSIDataPut(spi->port->base_spi, cmd);
-  while(SSIBusy(spi->port->base_spi));
-  SSIDataGet(spi->port->base_spi, rc);
+  /* Transmit address with Read Bit Set */
+  SSIDataPut(spi->port->base_spi, (uint32_t)(0x80|addrByte));
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  SSIDataGet(spi->port->base_spi, &readValue);
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  SSIDataPut(spi->port->base_spi, (uint32_t)regByte);
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  SSIDataGet(spi->port->base_spi, &d);
+  *pData = (uint8_t)d;
 
   GPIO_write(spi->gpio_cs, true);
+
+  /* return the status byte value */
+  return((uint8_t)readValue);
+}
+
+uint8_t SPI_write16(uint8_t spi_num, uint8_t addrByte, uint8_t regByte, uint8_t *pData)
+{
+  check_spi_num(spi_num, 0);
+  SPI *spi = &SPI_spis[spi_num];
+
+  uint32_t readValue, d, w;
+
+  /* Pull CS_N low and wait for SO to go low before communication starts */
+  GPIO_write(spi->gpio_cs, false);
+
+  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
+  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso){};
+  // do we need to flush the rx buffer first?
+  SPI_flush(spi->port->base_spi);
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* Transmit address without Read Bit */
+  SSIDataPut(spi->port->base_spi, (uint32_t)(0x7F & addrByte));
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  SSIDataGet(spi->port->base_spi, &readValue);
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  SSIDataPut(spi->port->base_spi, (uint32_t)regByte);
+  while(SSIBusy(spi->port->base_spi)) {};
+  // do we need a dummy read?
+  SSIDataGet(SSI1_BASE, (uint32_t *)&d);
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  w = *pData;
+  SSIDataPut(spi->port->base_spi, w);
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  SSIDataGet(spi->port->base_spi, &d);
+
+  GPIO_write(spi->gpio_cs, true);
+
   /* return the status byte value */
   return((uint8_t)readValue);
 }
