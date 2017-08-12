@@ -25,8 +25,7 @@
 #include <stdarg.h>
 
 
-
-void InitI2C2(void)
+void InitI2C2(void) // initialise board for I2C capability
 {
     //enable I2C module 2
     SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C2);
@@ -218,6 +217,14 @@ int16_t I2CReceive16(uint32_t slave_addr,uint8_t reg) // lets get 2 byte value (
  return x;
  }
 
+int16_t I2CReceive16r(uint32_t slave_addr,uint8_t reg) // lets get 2 byte value (TBD improve performance by data burst v single read) reversed for Magnetometer little-endian
+ {
+  int16_t x=I2CReceive(slave_addr,reg+1);
+  x=x<<8;
+  x+=I2CReceive(slave_addr,reg);
+ return x;
+ }
+
 
 /// Fancy Console code to display without scrolling
 
@@ -261,6 +268,7 @@ void UART_putstr(unsigned int serialport, char *s1,signed long x, char *s2)
 #define MPU_GYRO_YOUT 69
 #define MPU_GYRO_ZOUT 71
 #define MPU_WHO_AM_I 117
+#define MPU_INT_BYPASS_ENABLE 55
 
  //////////////////////////////////////////////////////////////////
  // the actual main code
@@ -283,6 +291,37 @@ int main(void)
   UART_puts(UART_CAM_HEADER,"\r   Mode = Single Send/Receive\n");
   UART_puts(UART_CAM_HEADER,"\r   Rate = 100kbps\n\n\n");
 
+ #define MAG_PASS_THROUGH_I2C_ADDR 12 
+
+ #define MAG_HXL 3
+ #define MAG_HYL 5
+ #define MAG_HZL 7 // offsets in magnetometer, note little endian, so need to be read opposite way round
+ #define MAG_CNTL1 10 // Magnetometer control register
+ #define MAG_STA1 2 // read only gives flags at 1 for DRDY and 2 for DOR (data ready and overload), used in read cycle
+
+ char i2cstring[3];
+ i2cstring[0]=MPU_INT_BYPASS_ENABLE; // int pin /bypass enable configuration
+ //i2cstring[1]=2; // turn on bypass enable
+
+ char i2cstatus=I2CReceive(SLAVE_ADDRESS,55);
+ i2cstring[1]=i2cstatus | 2; // flag bypass on
+ i2cstring[3]=0; // null terminated string
+ 
+ I2CSendString(SLAVE_ADDRESS, i2cstring); // turn on bypass to Magnetometer so visible on I2C
+
+ i2cstring[0]=MAG_CNTL1;
+ i2cstring[2]=0;
+ i2cstring[1]=0; // set mode to zero before changing mode
+ I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); // set Magnetometer to safe mode before mode change 
+ i2cstring[1]=1 | 0; // continuous (16hz) mode with 14bit range
+ I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); // set Magnetometer to continuous shot mode with 16bit range, single shot needs updating and has delay 
+
+ char mag_id=I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,0); // magnetometer ID (hopefully)
+
+UART_putstr(UART_CAM_HEADER,"\r I2Cstatus old: ",i2cstatus,"\n");
+UART_putstr(UART_CAM_HEADER,"\r I2Cstatus new (After enabling passthrough for Magnetometer): ",I2CReceive(SLAVE_ADDRESS,55),"\n");
+UART_putstr(UART_CAM_HEADER,"\r Magnetometer ID (test, should equal 72 if found): ",mag_id,"\n");
+
 signed short acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z,temp;
 
 unsigned int wdt_start=20; // loops before kick, not too long or too short or hardware will reset
@@ -301,13 +340,25 @@ unsigned int wdt_start=20; // loops before kick, not too long or too short or ha
     gyr_z=I2CReceive16(SLAVE_ADDRESS, MPU_GYRO_ZOUT);
     temp=I2CReceive16(SLAVE_ADDRESS, MPU_TEMP_OUT);
     
-    UART_putstr(UART_CAM_HEADER,"\r Accel:(",acc_x,",");
+    // magnetometer should be in power down mode with data ready, if not wait for it
+    while ((I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,MAG_STA1)&1)!=1) {}
+    mag_x=I2CReceive16r(MAG_PASS_THROUGH_I2C_ADDR, MAG_HXL); 
+    mag_y=I2CReceive16r(MAG_PASS_THROUGH_I2C_ADDR, MAG_HYL); 
+    mag_z=I2CReceive16r(MAG_PASS_THROUGH_I2C_ADDR, MAG_HZL);
+
+    I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); // prepare for next call (delay, so give lead in
+    
+    UART_putstr(UART_CAM_HEADER,"\r A:(",acc_x,",");
     UART_putstr(UART_CAM_HEADER,NULL,acc_y,",");
     UART_putstr(UART_CAM_HEADER,NULL,acc_z,") ");
-    UART_putstr(UART_CAM_HEADER,"Gyro:(",gyr_x,",");
+    UART_putstr(UART_CAM_HEADER,"G:(",gyr_x,",");
     UART_putstr(UART_CAM_HEADER,NULL,gyr_y,",");
     UART_putstr(UART_CAM_HEADER,NULL,gyr_z,") ");
     UART_putstr(UART_CAM_HEADER,"Temp:(",temp,")");
+    UART_putstr(UART_CAM_HEADER," M:(",mag_x,",");
+    UART_putstr(UART_CAM_HEADER,NULL,mag_y,",");
+    UART_putstr(UART_CAM_HEADER,NULL,mag_z,") ");
+
   }
   WDT_kick();
  }
