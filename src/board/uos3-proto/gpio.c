@@ -1,3 +1,4 @@
+#include "board.h"
 #include "../gpio.h"
 
 #include "inc/hw_memmap.h"

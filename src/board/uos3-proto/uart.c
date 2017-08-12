@@ -1,3 +1,4 @@
+#include "board.h"
 #include "../uart.h"
 
 #include "inc/tm4c123gh6pm.h"
@@ -18,7 +19,6 @@ typedef struct UART {
   uint32_t pin_tx_function; // TI Driver UART TX Pin Reference
   uint8_t  pin_rx;          // TI Driver RX Pin Reference
   uint8_t  pin_tx;          // TI Driver TX Pin Reference
-  uint8_t  uart_id;         // number X in UARTX
   bool     initialised;
 } UART;
 
@@ -34,7 +34,6 @@ static UART UART_uarts[2] =
       GPIO_PA1_U0TX,
       GPIO_PIN_0,
       GPIO_PIN_1,
-      0,
       false
     },
     { 
@@ -46,7 +45,6 @@ static UART UART_uarts[2] =
       GPIO_PC7_U3TX,
       GPIO_PIN_6,
       GPIO_PIN_7,
-      3,
       false
     }
   };
