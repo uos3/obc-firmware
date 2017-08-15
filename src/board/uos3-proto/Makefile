@@ -71,8 +71,8 @@ LIBGCC := ${shell ${CC} ${CFLAGS} -print-libgcc-file-name}
 LIBC   := ${shell ${CC} ${CFLAGS} -print-file-name=libc.a}
 LIBM   := ${shell ${CC} ${CFLAGS} -print-file-name=libm.a}
 OBJCOPY = ${PREFIX}-objcopy
-ifdef DEBUG
-  CFLAGS += -D DEBUG
+ifneq ($(DEBUG_ON),)
+  CFLAGS += -DDEBUG
 endif
 CFLAGS += ${CFLAGSgcc}
 AFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
@@ -90,6 +90,9 @@ CFLAGS += -Wall \
 			-Wstrict-prototypes \
 			-Wmissing-prototypes \
 			-Wmissing-declarations
+ifneq ($(WERROR_ON),)
+  CFLAGS += -Werror
+endif
 
 FW_SRCS+= $(wildcard ./*.c)
 

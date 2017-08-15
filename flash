@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+## Cross-Platform Embedded Toolchain
+## Copyright (c) 2016 Phil Crump <phil@philcrump.co.uk>
+## Freely distributable under the MIT license.
+
 source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 cd $source_dir
 

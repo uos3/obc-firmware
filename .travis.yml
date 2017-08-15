@@ -29,4 +29,4 @@ env:
   - BOARD=uos3-proto MAIN=tx-test
 
 # The command that actually gets run:
-script: ./build $BOARD $MAIN
+script: ./build -W $BOARD $MAIN
