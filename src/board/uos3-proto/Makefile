@@ -61,6 +61,7 @@ CFLAGS  = -mthumb          \
 	       -fdata-sections     \
 	       -MD                 \
 	       -std=c99            \
+	       -specs=nosys.specs  \
 	       -DPART_${PART}      \
 	       -c
 AR      = ${PREFIX}-ar
