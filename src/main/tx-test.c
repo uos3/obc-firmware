@@ -42,18 +42,16 @@ int main(void)
 
   UART_putc(UART_PC104_HEADER, 'M');
 	
-	trxRfSpiInterfaceInit(0);
-	
-	
-	uint8_t radio_id = RADIO_TX;
+	SPI_init(SPI_RADIO_TX);
+	SPI_init(SPI_RADIO_RX);
 	
 	//////// write config ///////
 
     // Reset radio
     // Write registers to radio
 
-	radio_reset_config(RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-	radio_reset_config(RADIO_RX, preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
+	radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+	radio_reset_config(SPI_RADIO_RX, preferredSettings, sizeof(preferredSettings)/sizeof(registerSetting_t));
 	/*
 	trxSpiCmdStrobe(radio_id, CC112X_SRES);
 	uint8_t writeByte;
@@ -68,8 +66,8 @@ int main(void)
 	for(ui32Loop = 0; ui32Loop < 3000; ui32Loop++) {};
 	
 	//////// Calibrate radio according to errata
-    manualCalibration(RADIO_TX);
-    manualCalibration(RADIO_RX);
+    manualCalibration(SPI_RADIO_TX);
+    manualCalibration(SPI_RADIO_RX);
 
 	
 	for(ui32Loop = 0; ui32Loop < 3000; ui32Loop++) {};
@@ -93,10 +91,10 @@ int main(void)
 		//// Write packet to TX FIFO
         //cc112xSpiWriteTxFifo(RADIO_TX, buff, sizeof(buff));
 
-		trxSpiCmdStrobe(RADIO_RX, CC112X_SRX);
+		SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
 		
         // Strobe TX to send packet
-        trxSpiCmdStrobe(RADIO_TX, CC112X_STX);
+        SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
 		
 		while(1){
 			WDT_kick();

@@ -80,5 +80,5 @@ rfStatus_t cc112xGetTxStatus(uint8_t spi_device)
 
 rfStatus_t cc112xGetRxStatus(uint8_t spi_device)
 {
-  return SPI_cmdstrobe(spi_device, CC112X_SNOP | RADIO_READ_ACCESS);
+  return SPI_cmdstrobe(spi_device, CC112X_SNOP | 0x80);
 }

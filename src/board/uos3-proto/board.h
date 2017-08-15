@@ -3,37 +3,6 @@
 #ifndef __BOARD_UOS3_PROTO_H__
 #define __BOARD_UOS3_PROTO_H__
 
-
-#define LED_A	0x0
-#define LED_B	0x1
-
-
-#define UART_PC104_HEADER	0x0
-#define UART_CAM_HEADER		0x1
-
-
-#define SPI_RADIO_RX	0x0
-#define SPI_RADIO_TX	0x1
-
-
-#define RADIO_SPI_PORT		GPIO_PORTF_BASE
-#define RADIO_MISO_PIN		GPIO_PIN_0
-#define RADIO_MOSI_PIN		GPIO_PIN_1
-#define RADIO_CLK_PIN		GPIO_PIN_2
-
-
-#define RADIO_TX_CS_PORT	GPIO_PORTF_BASE
-#define RADIO_TX_CS_PIN		GPIO_PIN_3
-#define RADIO_RX_CS_PORT	GPIO_PORTA_BASE
-#define RADIO_RX_CS_PIN		GPIO_PIN_3
-#define RADIO_RX_GP0_PORT	GPIO_PORTB_BASE
-#define RADIO_RX_GP0_PIN	GPIO_PIN_7
-#define RADIO_TX_GP0_PORT	GPIO_PORTA_BASE
-#define RADIO_TX_GP0_PIN	GPIO_PIN_2
-
-#define RADIO_TX 0
-#define RADIO_RX 1
-
 #define GPIO_PA0	0x00
 #define GPIO_PA1	0x01
 #define GPIO_PA2	0x02
@@ -87,5 +56,22 @@
 #define GPIO_PF5	0x2D
 #define GPIO_PF6	0x2E
 #define GPIO_PF7	0x2F
+
+
+#define LED_A	0x0
+#define LED_B	0x1
+
+
+#define UART_PC104_HEADER	0x0
+#define UART_CAM_HEADER		0x1
+
+
+#define SPI_RADIO_RX	0x0
+#define SPI_RADIO_TX	0x1
+
+
+#define GPIO0_RADIO_RX	GPIO_PB7
+#define GPIO0_RADIO_TX	GPIO_PA2
+
 
 #endif /*  __BOARD_UOS3_PROTO_H__ */

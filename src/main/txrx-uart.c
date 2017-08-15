@@ -1,10 +1,10 @@
 /* firmware.h contains all relevant headers */
 #include "../firmware.h"
 #include "txrx-uart.h"
-#include "../cc1125/cc1125.h"
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /* A very simple example that blinks the on-board LED. */
 
@@ -26,7 +26,9 @@ int main(void)
 
 
    UART_init(UART, 500000);
-
+   
+   SPI_init(SPI_RADIO_TX);
+   SPI_init(SPI_RADIO_RX);
    
    UART_puts(UART, "Welcome to the radio test program\n\n");
    UART_puts(UART, "1) CW tone\n");
@@ -111,8 +113,8 @@ void cw_tone_option(void){
    uint8_t r;
    uint8_t pwr_reg=0;
    
-   radio_reset_config(RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-   manualCalibration(RADIO_TX);
+   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+   manualCalibration(SPI_RADIO_TX);
    
    UART_puts(UART, "\nCW tone selected\n");
    
@@ -120,7 +122,7 @@ void cw_tone_option(void){
    UART_puts(UART, "Enter frequency (MHz): ");
    uint16_t res = wait_for_response_ln();
    freq = atoi(uart_in_buff);
-   r = radio_set_freq_f(RADIO_TX, &freq);
+   r = radio_set_freq_f(SPI_RADIO_TX, &freq);
    snprintf(uart_out_buff, UART_BUFF_LEN, "%3.3f MHz\n", freq);
    if (r){
       UART_puts(UART, "Error in frequency entered: ");
@@ -134,7 +136,7 @@ void cw_tone_option(void){
    
    res = wait_for_response_ln();
    pwr = atoi(uart_in_buff);
-   r = radio_set_pwr_f(RADIO_TX, &pwr, &pwr_reg);
+   r = radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
    snprintf(uart_out_buff, UART_BUFF_LEN, "%2.1f dBm (reg = %i)\n", pwr, pwr_reg);
    if (r){
       UART_puts(UART, "Error in power entered: ");
@@ -146,7 +148,7 @@ void cw_tone_option(void){
    
    // turn on radio   
    UART_puts(UART, "CW tone on. Press q to quit\n");   
-   trxSpiCmdStrobe(RADIO_TX, CC112X_STX);
+   SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
    
    while(wait_for_response_char() != 'q'){};
    

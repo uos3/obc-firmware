@@ -3,8 +3,17 @@
 #include "cc112x_spi.h"
 #include "inttypes.h"
 
+#include "../firmware.h"
+
 #define CC_XO_FREQ 38400000
 
+
+
+/* Pins: GPIO0_RADIO_RX / GPIO0_RADIO_TX */
+bool cc1125_pollGPIO(uint8_t gpio_pin)
+{
+  return GPIO_read(gpio_pin);
+}
 
 /*******************************************************************************
 *   @fn         radio_set_wr_f
@@ -131,7 +140,7 @@ uint8_t radio_set_freq_f(uint8_t radio_id, double *freq){
 */
 void radio_reset_config(uint8_t radio_id, registerSetting_t *cfg, uint16_t len){
 	
-	trxSpiCmdStrobe(radio_id, CC112X_SRES);
+  SPI_cmdstrobe(radio_id, CC112X_SRES);
 	uint8_t writeByte;
 	for(uint16_t i = 0; i < len; i++) {
         writeByte = cfg[i].data;
@@ -173,7 +182,7 @@ void manualCalibration(uint8_t radio_id) {
 
     // 3) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
-    trxSpiCmdStrobe(radio_id, CC112X_SCAL);
+    SPI_cmdstrobe(radio_id, CC112X_SCAL);
 
     do {
         cc112xSpiReadReg(radio_id, CC112X_MARCSTATE, &marcstate);
@@ -198,7 +207,8 @@ void manualCalibration(uint8_t radio_id) {
 
     // 7) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
-    trxSpiCmdStrobe(radio_id, CC112X_SCAL);
+
+    SPI_cmdstrobe(radio_id, CC112X_SCAL);
 
     do {
         cc112xSpiReadReg(radio_id, CC112X_MARCSTATE, &marcstate);

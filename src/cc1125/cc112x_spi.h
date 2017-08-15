@@ -38,19 +38,9 @@
 #ifndef CC112x_SPI_H
 #define CC112x_SPI_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-/******************************************************************************
- * INCLUDES
- */
-//#include "hal_types.h"
-#include <stdint.h>
-#ifdef MSP_EXP430G2
-  #include "hal_msp_exp430g2_spi.h"
-#else
-  #include "../board/hal_spi_rf_trxeb.h"  
-#endif
+#include "../firmware.h"
+
+typedef uint8_t rfStatus_t;
 
 /******************************************************************************
  * CONSTANTS

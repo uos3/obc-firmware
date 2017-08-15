@@ -42,7 +42,7 @@ extern "C" {
 /******************************************************************************
  * INCLUDES
  */
-#include "../board/hal_spi_rf_trxeb.h"
+#include "../firmware.h"
 #include "../cc1125/cc112x_spi.h"
 
 
