@@ -15,6 +15,7 @@
 #include "board/uart.h"
 #include "board/delay.h"
 #include "board/wdt.h"
+#include "board/spi.h"
 
 /* radio stuff */
 #include "board/hal_spi_rf_trxeb.h"

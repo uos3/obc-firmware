@@ -282,18 +282,17 @@ extern "C" {
 
 
 /******************************************************************************
- * PROTPTYPES
+ * PROTOTYPES
  */ 
 
 /* basic set of access functions */
-rfStatus_t cc112xSpiReadReg(uint8_t radio_id, uint16_t addr, uint8_t *data, uint8_t len);
-rfStatus_t cc112xGetTxStatus(uint8_t radio_id);
-rfStatus_t cc112xGetRxStatus(uint8_t radio_id);  
-rfStatus_t cc112xSpiWriteReg(uint8_t radio_id, uint16_t addr, uint8_t *data, uint8_t len);
-rfStatus_t cc112xSpiWriteTxFifo(uint8_t radio_id, uint8_t *pWriteData, uint8_t len);
-rfStatus_t cc112xSpiReadRxFifo(uint8_t radio_id, uint8_t *pReadData, uint8_t len);
+rfStatus_t cc112xSpiReadReg(uint8_t spi_device, uint16_t addr, uint8_t *data);
+rfStatus_t cc112xSpiWriteReg(uint8_t spi_device, uint16_t addr, uint8_t *data);
+rfStatus_t cc112xSpiReadBurstReg(uint8_t spi_device, uint16_t addr, uint8_t *data, uint8_t len);
+rfStatus_t cc112xSpiWriteBurstReg(uint8_t spi_device, uint16_t addr, uint8_t *data, uint8_t len);
+rfStatus_t cc112xSpiWriteTxFifo(uint8_t spi_device, uint8_t *data, uint8_t len);
+rfStatus_t cc112xSpiReadRxFifo(uint8_t spi_device, uint8_t *data, uint8_t len);
+rfStatus_t cc112xGetTxStatus(uint8_t spi_device);
+rfStatus_t cc112xGetRxStatus(uint8_t spi_device);
 
-#ifdef  __cplusplus
-}
-#endif
 #endif// CC112x_SPI_H

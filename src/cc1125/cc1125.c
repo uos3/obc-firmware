@@ -22,14 +22,13 @@
 */
 uint8_t radio_set_pwr_f(uint8_t radio_id, double *pwr, uint8_t *reg_value){
    
-   uint8_t div;
    if ((*pwr < -11) || (*pwr > 15))      
       return 1;
    
    double p;
    p = (*pwr+1)/2-18;
    
-   uint32_t pwr_reg = (int32_t)p;
+   uint32_t pwr_reg = (uint32_t)p;
    
    if (pwr_reg < 3)
       pwr_reg = 3;
@@ -39,10 +38,13 @@ uint8_t radio_set_pwr_f(uint8_t radio_id, double *pwr, uint8_t *reg_value){
    p = (2*(pwr_reg+18))-1;
    
    *pwr = p;
-   *reg_value = pwr_reg;
+   *reg_value = (uint8_t)pwr_reg;
    
    //now write to CC112X
-   cc112xSpiWriteReg(radio_id, CC112X_PA_CFG2, (1<<6) | pwr_reg, 1);   
+   //cc112xSpiWriteReg(radio_id, CC112X_PA_CFG2, (1<<6) | pwr_reg, 1);
+   uint8_t writebyte;
+   writebyte = (uint8_t)((1<<6) | pwr_reg);
+   cc112xSpiWriteReg(radio_id, CC112X_PA_CFG2, &writebyte);   
    
    return 0;  
    
@@ -81,7 +83,7 @@ uint8_t radio_set_freq_f(uint8_t radio_id, double *freq){
    double f;
    f = div * ((*freq)*1000000) * 65536 / CC_XO_FREQ;
    
-   uint32_t freq_reg = (int32_t)f;
+   uint32_t freq_reg = (uint32_t)f;
    
    // work back to calculate the actual freq
    f = freq_reg*CC_XO_FREQ;
@@ -92,10 +94,24 @@ uint8_t radio_set_freq_f(uint8_t radio_id, double *freq){
    
    
    //now write to CC112X
-   cc112xSpiWriteReg(radio_id, CC112X_FREQ0, freq_reg & 0xFF, 1);
-   cc112xSpiWriteReg(radio_id, CC112X_FREQ1, (freq_reg >> 8) & 0xFF, 1);
-   cc112xSpiWriteReg(radio_id, CC112X_FREQ2, (freq_reg >> 16) & 0xFF, 1);
-   cc112xSpiWriteReg(radio_id, CC112X_FS_CFG, 0x10 | div , 1);
+   uint8_t writebyte;
+   writebyte = freq_reg & 0xFF;
+   cc112xSpiWriteReg(radio_id, CC112X_FREQ0, &writebyte);
+   writebyte = (freq_reg >> 8) & 0xFF;
+   cc112xSpiWriteReg(radio_id, CC112X_FREQ1, &writebyte);
+   writebyte = (freq_reg >> 16) & 0xFF;
+   cc112xSpiWriteReg(radio_id, CC112X_FREQ2, &writebyte);
+   writebyte = 0x10 | div;
+   cc112xSpiWriteReg(radio_id, CC112X_FS_CFG, &writebyte);
+
+   writebyte = freq_reg & 0xFF;
+   cc112xSpiWriteReg(radio_id, CC112X_FREQ0, &writebyte);
+   writebyte = (freq_reg >> 8) & 0xFF;
+   cc112xSpiWriteReg(radio_id, CC112X_FREQ1, &writebyte);
+   writebyte = (freq_reg >> 16) & 0xFF;
+   cc112xSpiWriteReg(radio_id, CC112X_FREQ2, &writebyte);
+   writebyte = 0x10 | div;
+   cc112xSpiWriteReg(radio_id, CC112X_FS_CFG, &writebyte);
    
    
    return 0;  
@@ -119,7 +135,7 @@ void radio_reset_config(uint8_t radio_id, registerSetting_t *cfg, uint16_t len){
 	uint8_t writeByte;
 	for(uint16_t i = 0; i < len; i++) {
         writeByte = cfg[i].data;
-        cc112xSpiWriteReg(radio_id, cfg[i].addr, &writeByte, 1);
+        cc112xSpiWriteReg(radio_id, cfg[i].addr, &writeByte);
     }
 }
 
@@ -148,54 +164,54 @@ void manualCalibration(uint8_t radio_id) {
 
     // 1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
     writeByte = 0x00;
-    cc112xSpiWriteReg(radio_id, CC112X_FS_VCO2, &writeByte, 1);
+    cc112xSpiWriteReg(radio_id, CC112X_FS_VCO2, &writeByte);
 
     // 2) Start with high VCDAC (original VCDAC_START + 2):
-    cc112xSpiReadReg(radio_id, CC112X_FS_CAL2, &original_fs_cal2, 1);
+    cc112xSpiReadReg(radio_id, CC112X_FS_CAL2, &original_fs_cal2);
     writeByte = original_fs_cal2 + VCDAC_START_OFFSET;
-    cc112xSpiWriteReg(radio_id, CC112X_FS_CAL2, &writeByte, 1);
+    cc112xSpiWriteReg(radio_id, CC112X_FS_CAL2, &writeByte);
 
     // 3) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
     trxSpiCmdStrobe(radio_id, CC112X_SCAL);
 
     do {
-        cc112xSpiReadReg(radio_id, CC112X_MARCSTATE, &marcstate, 1);
+        cc112xSpiReadReg(radio_id, CC112X_MARCSTATE, &marcstate);
     } while (marcstate != 0x41);
 
     // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
     //    high VCDAC_START value
     cc112xSpiReadReg(radio_id, CC112X_FS_VCO2,
-                     &calResults_for_vcdac_start_high[FS_VCO2_INDEX], 1);
+                     &calResults_for_vcdac_start_high[FS_VCO2_INDEX]);
     cc112xSpiReadReg(radio_id, CC112X_FS_VCO4,
-                     &calResults_for_vcdac_start_high[FS_VCO4_INDEX], 1);
+                     &calResults_for_vcdac_start_high[FS_VCO4_INDEX]);
     cc112xSpiReadReg(radio_id, CC112X_FS_CHP,
-                     &calResults_for_vcdac_start_high[FS_CHP_INDEX], 1);
+                     &calResults_for_vcdac_start_high[FS_CHP_INDEX]);
 
     // 5) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
     writeByte = 0x00;
-    cc112xSpiWriteReg(radio_id, CC112X_FS_VCO2, &writeByte, 1);
+    cc112xSpiWriteReg(radio_id, CC112X_FS_VCO2, &writeByte);
 
     // 6) Continue with mid VCDAC (original VCDAC_START):
     writeByte = original_fs_cal2;
-    cc112xSpiWriteReg(radio_id, CC112X_FS_CAL2, &writeByte, 1);
+    cc112xSpiWriteReg(radio_id, CC112X_FS_CAL2, &writeByte);
 
     // 7) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
     trxSpiCmdStrobe(radio_id, CC112X_SCAL);
 
     do {
-        cc112xSpiReadReg(radio_id, CC112X_MARCSTATE, &marcstate, 1);
+        cc112xSpiReadReg(radio_id, CC112X_MARCSTATE, &marcstate);
     } while (marcstate != 0x41);
 
     // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained 
     //    with mid VCDAC_START value
     cc112xSpiReadReg(radio_id, CC112X_FS_VCO2, 
-                     &calResults_for_vcdac_start_mid[FS_VCO2_INDEX], 1);
+                     &calResults_for_vcdac_start_mid[FS_VCO2_INDEX]);
     cc112xSpiReadReg(radio_id, CC112X_FS_VCO4,
-                     &calResults_for_vcdac_start_mid[FS_VCO4_INDEX], 1);
+                     &calResults_for_vcdac_start_mid[FS_VCO4_INDEX]);
     cc112xSpiReadReg(radio_id, CC112X_FS_CHP,
-                     &calResults_for_vcdac_start_mid[FS_CHP_INDEX], 1);
+                     &calResults_for_vcdac_start_mid[FS_CHP_INDEX]);
 
     // 9) Write back highest FS_VCO2 and corresponding FS_VCO
     //    and FS_CHP result
@@ -203,17 +219,17 @@ void manualCalibration(uint8_t radio_id) {
     if (calResults_for_vcdac_start_high[FS_VCO2_INDEX] >
         calResults_for_vcdac_start_mid[FS_VCO2_INDEX]) {
         writeByte = calResults_for_vcdac_start_high[FS_VCO2_INDEX];
-        cc112xSpiWriteReg(radio_id, CC112X_FS_VCO2, &writeByte, 1);
+        cc112xSpiWriteReg(radio_id, CC112X_FS_VCO2, &writeByte);
         writeByte = calResults_for_vcdac_start_high[FS_VCO4_INDEX];
-        cc112xSpiWriteReg(radio_id, CC112X_FS_VCO4, &writeByte, 1);
+        cc112xSpiWriteReg(radio_id, CC112X_FS_VCO4, &writeByte);
         writeByte = calResults_for_vcdac_start_high[FS_CHP_INDEX];
-        cc112xSpiWriteReg(radio_id, CC112X_FS_CHP, &writeByte, 1);
+        cc112xSpiWriteReg(radio_id, CC112X_FS_CHP, &writeByte);
     } else {
         writeByte = calResults_for_vcdac_start_mid[FS_VCO2_INDEX];
-        cc112xSpiWriteReg(radio_id, CC112X_FS_VCO2, &writeByte, 1);
+        cc112xSpiWriteReg(radio_id, CC112X_FS_VCO2, &writeByte);
         writeByte = calResults_for_vcdac_start_mid[FS_VCO4_INDEX];
-        cc112xSpiWriteReg(radio_id, CC112X_FS_VCO4, &writeByte, 1);
+        cc112xSpiWriteReg(radio_id, CC112X_FS_VCO4, &writeByte);
         writeByte = calResults_for_vcdac_start_mid[FS_CHP_INDEX];
-        cc112xSpiWriteReg(radio_id, CC112X_FS_CHP, &writeByte, 1);
+        cc112xSpiWriteReg(radio_id, CC112X_FS_CHP, &writeByte);
     }
 }
