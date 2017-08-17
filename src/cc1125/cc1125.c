@@ -138,7 +138,7 @@ uint8_t radio_set_freq_f(uint8_t radio_id, double *freq){
 *
 *   @return     none
 */
-void radio_reset_config(uint8_t radio_id, registerSetting_t *cfg, uint16_t len){
+void radio_reset_config(uint8_t radio_id, const registerSetting_t *cfg, uint16_t len){
 	
   SPI_cmdstrobe(radio_id, CC112X_SRES);
 	uint8_t writeByte;

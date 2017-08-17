@@ -33,7 +33,7 @@ int main(void)
 
     Board_init();
 	
-	uint8_t rxBuffer[128] = {0};	
+	//uint8_t rxBuffer[128] = {0};	
 
 	UART_init(UART_PC104_HEADER, 500000);
   UART_putc(UART_PC104_HEADER, '\r');
@@ -75,12 +75,12 @@ int main(void)
 	for(ui32Loop = 0; ui32Loop < 30000; ui32Loop++) {};
 	
 	/////// the packet
-	uint8_t buff[PACKETLEN+1];
-	buff[0] = PACKETLEN;
+	//uint8_t buff[PACKETLEN+1];
+	//buff[0] = PACKETLEN;
 	 // Fill rest of buffer with random bytes
-    for(uint8_t i = 1; i < (PACKETLEN + 1); i++) {
-        buff[i] = (uint8_t)i; //rand();
-    }
+    //for(uint8_t i = 1; i < (PACKETLEN + 1); i++) {
+    //    buff[i] = (uint8_t)i; //rand();
+    //}
 	
 	
     // Loop forever.
