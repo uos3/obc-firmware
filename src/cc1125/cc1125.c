@@ -177,7 +177,7 @@ void manualCalibration(uint8_t radio_id) {
 
     // 2) Start with high VCDAC (original VCDAC_START + 2):
     cc112xSpiReadReg(radio_id, CC112X_FS_CAL2, &original_fs_cal2);
-    writeByte = original_fs_cal2 + VCDAC_START_OFFSET;
+    writeByte = (uint8_t)(original_fs_cal2 + VCDAC_START_OFFSET);
     cc112xSpiWriteReg(radio_id, CC112X_FS_CAL2, &writeByte);
 
     // 3) Calibrate and wait for calibration to be done
