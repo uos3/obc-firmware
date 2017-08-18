@@ -125,7 +125,7 @@ ${FW_ROOT}/${OUTDIR}:
 # The rule for building the object file from each C source file.
 #
 %.o: %.c
-	@if [ 'x${VERBOSE}' = x ];                          \
+	@if [ 'x${VERBOSE_ON}' = x ];                          \
 	 then                                                 \
 	     echo "  CC    ${<}";                             \
 	 else                                                 \
@@ -137,7 +137,7 @@ ${FW_ROOT}/${OUTDIR}:
 # The rule for building the object file from each assembly source file.
 #
 %.o: %.S
-	@if [ 'x${VERBOSE}' = x ];                               \
+	@if [ 'x${VERBOSE_ON}' = x ];                               \
 	 then                                                    \
 	     echo "  AS    ${<}";                                \
 	 else                                                    \
@@ -149,7 +149,7 @@ ${FW_ROOT}/${OUTDIR}:
 # The rule for creating an object library.
 #
 %.a:
-	@if [ 'x${VERBOSE}' = x ];     \
+	@if [ 'x${VERBOSE_ON}' = x ];     \
 	 then                          \
 	     echo "  AR    ${@}";      \
 	 else                          \
@@ -160,7 +160,7 @@ ${FW_ROOT}/${OUTDIR}:
 # The rule for linking the application.
 #
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}:
-	@if [ 'x${VERBOSE}' = x ];                                            \
+	@if [ 'x${VERBOSE_ON}' = x ];                                            \
 	 then                                                                 \
 	     echo "  LD    ${@} ${LNK_SCP}";                                  \
 	 else                                                                 \
