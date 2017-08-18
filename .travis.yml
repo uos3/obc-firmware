@@ -27,6 +27,7 @@ env:
   - BOARD=uos3-proto MAIN=blinky
   - BOARD=uos3-proto MAIN=serial-test
   - BOARD=uos3-proto MAIN=tx-test
+  - BOARD=uos3-proto MAIN=txrx-uart
 
 # The command that actually gets run:
 script: ./build -w $BOARD $MAIN
