@@ -28,6 +28,7 @@ env:
   - BOARD=uos3-proto MAIN=serial-test
   - BOARD=uos3-proto MAIN=tx-test
   - BOARD=uos3-proto MAIN=txrx-uart
+  - BOARD=uos3-proto MAIN=i2ctest
 
 # The command that actually gets run:
 script: ./build -w $BOARD $MAIN
