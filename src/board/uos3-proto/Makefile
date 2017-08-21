@@ -70,9 +70,6 @@ LIBGCC := ${shell ${CC} ${CFLAGS} -print-libgcc-file-name}
 LIBC   := ${shell ${CC} ${CFLAGS} -print-file-name=libc.a}
 LIBM   := ${shell ${CC} ${CFLAGS} -print-file-name=libm.a}
 OBJCOPY = ${PREFIX}-objcopy
-ifneq ($(DEBUG_ON),)
-  CFLAGS += -DDEBUG
-endif
 CFLAGS += ${CFLAGSgcc}
 AFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 CFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}

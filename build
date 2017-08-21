@@ -11,7 +11,6 @@ opt_flash=false
 opt_quiet=false
 opt_sound=false
 opt_asm=false
-opt_debug=false
 opt_werror=false
 opt_verbose=false
 opt_osize=false
@@ -106,9 +105,6 @@ while getopts ":hmdsqvFSw" opt; do
     m) # ASM
       opt_asm=true
       ;;
-    d) # Debug
-      opt_debug=true
-      ;;
     s) # Optimise for Size
       opt_osize=true
       ;;
@@ -185,10 +181,6 @@ filename="$(hyphenjoin $board $program $flags $githash)"
 
 flags="BOARD=${board} MAIN=${program} OUTDIR=${outdir} OUTFILE=\"${filename}\""
 
-if $opt_debug; then
-  print "$_INFO_ Compiler define DEBUG:$COLOUR_RED ON $COLOUR_OFF"
-  flags="${flags} DEBUG_ON=true"
-fi
 if $opt_osize; then
   print "$_INFO_ Compiler optimise for size (-Os):$COLOUR_RED ON $COLOUR_OFF"
   flags="${flags} OSIZE_ON=true"
