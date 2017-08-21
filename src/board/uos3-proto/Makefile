@@ -77,7 +77,12 @@ CFLAGS += ${CFLAGSgcc}
 AFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 CFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 
-CFLAGS += -ggdb3 -O0
+CFLAGS += -ggdb3
+ifneq ($(OSIZE_ON),)
+  CFLAGS += -Os
+else
+  CFLAGS += -O0
+endif 
 CFLAGS += -Wall \
 			-Wextra \
 			-Wpedantic \
