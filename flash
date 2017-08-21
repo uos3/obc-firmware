@@ -130,12 +130,12 @@ fi
 
 ## Read Flags
 OPTIND=1
-while getopts ":qs" opt; do
+while getopts ":qS" opt; do
   case "$opt" in
     q) # Quiet
       opt_quiet=true
       ;;
-    s) # Sound
+    S) # Sound
       opt_sound=true
       ;;
     ?) # Illegal Option

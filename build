@@ -89,13 +89,13 @@ print_help() {
   echo " -m        Also generate machine code output."
   echo " -w        Tell compiler to treat warnings as errors."
   echo " -F        Attempt to flash board if compile is successful."
-  echo " -s        Play sound if flash is successful. [requires -F]"
+  echo " -S        Play sound if flash is successful. [requires -F]"
   echo ""
 }
 
 ## Read Flags
 OPTIND=1
-while getopts ":hmdqvFsw" opt; do
+while getopts ":hmdqvFSw" opt; do
   case "$opt" in
     h) # Help
       print_help
@@ -116,7 +116,7 @@ while getopts ":hmdqvFsw" opt; do
     F) # Flash
       opt_flash=true
       ;;
-    s) # Sound
+    S) # Sound
       opt_sound=true
       ;;
     w) # Warnings as Errors
