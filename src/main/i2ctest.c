@@ -24,6 +24,12 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#define DEBUG_SERIAL UART_CAM_HEADER // this is the serial port debug messages will come through (UART_CAM_HEADER or UART_PC104_HEADER)
+#define GPS_SERIAL UART_PC104_HEADER
+#define CAM_SERIAL UART_CAM_HEADER
+
+#define DEBUG_SERIAL GPS_SERIAL
+
 
 void InitI2C2(void) // initialise board for I2C capability
 {
@@ -284,12 +290,12 @@ int main(void)
   Board_init(); // start the board
   WDT_kick();
 
-  UART_init(UART_CAM_HEADER, 9600); // start the console, print bootup message (below)
+  UART_init(DEBUG_SERIAL, 9600); // start the console, print bootup message (below)
 
-  UART_puts(UART_CAM_HEADER,"\n\n\r   I2C Satellite I2C IMU test.\n");
-  UART_puts(UART_CAM_HEADER,"\r   Module = I2C2\n");
-  UART_puts(UART_CAM_HEADER,"\r   Mode = Single Send/Receive\n");
-  UART_puts(UART_CAM_HEADER,"\r   Rate = 100kbps\n\n\n");
+  UART_puts(DEBUG_SERIAL,"\n\n\r   I2C Satellite I2C IMU test.\n");
+  UART_puts(DEBUG_SERIAL,"\r   Module = I2C2\n");
+  UART_puts(DEBUG_SERIAL,"\r   Mode = Single Send/Receive\n");
+  UART_puts(DEBUG_SERIAL,"\r   Rate = 100kbps\n\n\n");
 
  #define MAG_PASS_THROUGH_I2C_ADDR 12 
 
@@ -318,9 +324,9 @@ int main(void)
 
  char mag_id=I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,0); // magnetometer ID (hopefully)
 
-UART_putstr(UART_CAM_HEADER,"\r I2Cstatus old: ",i2cstatus,"\n");
-UART_putstr(UART_CAM_HEADER,"\r I2Cstatus new (After enabling passthrough for Magnetometer): ",I2CReceive(SLAVE_ADDRESS,55),"\n");
-UART_putstr(UART_CAM_HEADER,"\r Magnetometer ID (test, should equal 72 if found): ",mag_id,"\n");
+UART_putstr(DEBUG_SERIAL,"\r I2Cstatus old: ",i2cstatus,"\n");
+UART_putstr(DEBUG_SERIAL,"\r I2Cstatus new (After enabling passthrough for Magnetometer): ",I2CReceive(SLAVE_ADDRESS,55),"\n");
+UART_putstr(DEBUG_SERIAL,"\r Magnetometer ID (test, should equal 72 if found): ",mag_id,"\n");
 
 signed short acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z,temp;
 
@@ -348,16 +354,16 @@ unsigned int wdt_start=20; // loops before kick, not too long or too short or ha
 
     I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); // prepare for next call (delay, so give lead in
     
-    UART_putstr(UART_CAM_HEADER,"\r A:(",acc_x,",");
-    UART_putstr(UART_CAM_HEADER,NULL,acc_y,",");
-    UART_putstr(UART_CAM_HEADER,NULL,acc_z,") ");
-    UART_putstr(UART_CAM_HEADER,"G:(",gyr_x,",");
-    UART_putstr(UART_CAM_HEADER,NULL,gyr_y,",");
-    UART_putstr(UART_CAM_HEADER,NULL,gyr_z,") ");
-    UART_putstr(UART_CAM_HEADER,"Temp:(",temp,")");
-    UART_putstr(UART_CAM_HEADER," M:(",mag_x,",");
-    UART_putstr(UART_CAM_HEADER,NULL,mag_y,",");
-    UART_putstr(UART_CAM_HEADER,NULL,mag_z,") ");
+    UART_putstr(DEBUG_SERIAL,"\r A:(",acc_x,",");
+    UART_putstr(DEBUG_SERIAL,NULL,acc_y,",");
+    UART_putstr(DEBUG_SERIAL,NULL,acc_z,") ");
+    UART_putstr(DEBUG_SERIAL,"G:(",gyr_x,",");
+    UART_putstr(DEBUG_SERIAL,NULL,gyr_y,",");
+    UART_putstr(DEBUG_SERIAL,NULL,gyr_z,") ");
+    UART_putstr(DEBUG_SERIAL,"Temp:(",temp,")");
+    UART_putstr(DEBUG_SERIAL," M:(",mag_x,",");
+    UART_putstr(DEBUG_SERIAL,NULL,mag_y,",");
+    UART_putstr(DEBUG_SERIAL,NULL,mag_z,") ");
 
   }
   WDT_kick();
