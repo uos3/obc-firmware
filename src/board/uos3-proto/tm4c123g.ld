@@ -1,26 +1,4 @@
-/******************************************************************************
- *
- * blinky.ld - Linker configuration file for blinky.
- *
- * Copyright (c) 2011-2017 Texas Instruments Incorporated.  All rights reserved.
- * Software License Agreement
- * 
- * Texas Instruments (TI) is supplying this software for use solely and
- * exclusively on TI's microcontroller products. The software is owned by
- * TI and/or its suppliers, and is protected under applicable copyright
- * laws. You may not combine this software with "viral" open-source
- * software in order to form a larger program.
- * 
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
- * NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
- * NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
- * CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
- * DAMAGES, FOR ANY REASON WHATSOEVER.
- * 
- * This is part of revision 2.1.4.178 of the DK-TM4C123G Firmware Package.
- *
- *****************************************************************************/
+/*** Linker configuration file ***/
 
 MEMORY
 {
@@ -46,16 +24,53 @@ STACKSIZE = 0x800;
 
 ENTRY(ResetISR)
 
-SECTIONS
-{
-    .text :
-    {
-        _text = .;
-        KEEP(*(.isr_vector))
-        *(.text*)
-        *(.rodata*)
-        _etext = .;
+SECTIONS {
+
+    PROVIDE (_intvecs_base_address = 0x0);
+
+    .intvecs (_intvecs_base_address) : AT (_intvecs_base_address) {
+        KEEP (*(.intvecs))
     } > REGION_TEXT
+
+    PROVIDE (_vtable_base_address = 0x20000000);
+
+    .vtable (_vtable_base_address) : AT (_vtable_base_address) {
+        KEEP (*(.vtable))
+    } > REGION_DATA
+
+    .text : {
+        CREATE_OBJECT_SYMBOLS
+        *(.text)
+        *(.text.*)
+        . = ALIGN(0x4);
+        KEEP (*(.ctors))
+        . = ALIGN(0x4);
+        KEEP (*(.dtors))
+        . = ALIGN(0x4);
+        __init_array_start = .;
+        KEEP (*(.init_array*))
+        __init_array_end = .;
+        *(.init)
+        *(.fini*)
+    } > REGION_TEXT
+
+    PROVIDE (__etext = .);
+    PROVIDE (_etext = .);
+    PROVIDE (etext = .);
+
+    .rodata : {
+        *(.rodata)
+        *(.rodata*)
+    } > REGION_TEXT
+
+    .data : ALIGN (4) {
+        __data_load__ = LOADADDR (.data);
+        __data_start__ = .;
+        *(.data)
+        *(.data*)
+        . = ALIGN (4);
+        __data_end__ = .;
+    } > REGION_DATA AT> REGION_TEXT
 
     .ARM.exidx : {
         __exidx_start = .;
@@ -67,21 +82,14 @@ SECTIONS
         *(.ARM.extab* .gnu.linkonce.armextab.*)
     } > REGION_ARM_EXTAB
 
-    .data : AT(ADDR(.text) + SIZEOF(.text))
-    {
-        _data = .;
-        _ldata = LOADADDR (.data);
-        *(vtable)
-        *(.data*)
-        _edata = .;
-    } > REGION_DATA
-
-    .bss :
-    {
-        _bss = .;
-        *(.bss*)
+    .bss : {
+        __bss_start__ = .;
+        *(.shbss)
+        *(.bss)
+        *(.bss.*)
         *(COMMON)
-        _ebss = .;
+        . = ALIGN (4);
+        __bss_end__ = .;
     } > REGION_BSS
 
     .heap : {
