@@ -33,6 +33,11 @@ PART=TM4C123GH6PGE
 FW_ROOT=../../..
 ROOT=TivaWare_C_Series-2.1.4.178
 
+# 8KB Heap
+HEAPSIZE = 0x2000
+# 2KB Stack
+STACKSIZE = 0x800
+
 #
 # Include the common make definitions.
 #
@@ -61,8 +66,10 @@ CFLAGS  = -mthumb          \
 	       -fdata-sections     \
 	       -MD                 \
 	       -std=c99            \
+           -c                  \
 	       -DPART_${PART}      \
-	       -c
+           -DHEAPSIZE=${HEAPSIZE} \
+           -DSTACKSIZE=${STACKSIZE}
 AR      = ${PREFIX}-ar
 LD      = ${PREFIX}-gcc
 LDFLAGS =   -mthumb \
@@ -72,7 +79,9 @@ LDFLAGS =   -mthumb \
             -Wl,--print-memory-usage \
             -nostartfiles \
             --specs=nano.specs \
-            --specs=nosys.specs
+            --specs=nosys.specs \
+            -Wl,--defsym,HEAPSIZE=${HEAPSIZE} \
+            -Wl,--defsym,STACKSIZE=${STACKSIZE}
 LIBGCC := ${shell ${CC} ${CFLAGS} -print-libgcc-file-name}
 LIBC   := ${shell ${CC} ${CFLAGS} -print-file-name=libc.a}
 LIBM   := ${shell ${CC} ${CFLAGS} -print-file-name=libm.a}
