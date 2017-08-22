@@ -24,9 +24,27 @@
 
 MEMORY
 {
+    /* 256KB Flash */
     FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 0x00040000
+    /* 32KB SRAM */
     SRAM (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00008000
 }
+
+REGION_ALIAS("REGION_TEXT", FLASH);
+REGION_ALIAS("REGION_ARM_EXIDX", FLASH);
+REGION_ALIAS("REGION_ARM_EXTAB", FLASH);
+
+REGION_ALIAS("REGION_BSS", SRAM);
+REGION_ALIAS("REGION_DATA", SRAM);
+REGION_ALIAS("REGION_STACK", SRAM);
+REGION_ALIAS("REGION_HEAP", SRAM);
+
+/* 8KB Heap */
+HEAPSIZE = 0x2000;
+/* 2KB Stack */
+STACKSIZE = 0x800;
+
+ENTRY(ResetISR)
 
 SECTIONS
 {
@@ -37,7 +55,17 @@ SECTIONS
         *(.text*)
         *(.rodata*)
         _etext = .;
-    } > FLASH
+    } > REGION_TEXT
+
+    .ARM.exidx : {
+        __exidx_start = .;
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
+    } > REGION_ARM_EXIDX
+
+    .ARM.extab : {
+        *(.ARM.extab* .gnu.linkonce.armextab.*)
+    } > REGION_ARM_EXTAB
 
     .data : AT(ADDR(.text) + SIZEOF(.text))
     {
@@ -46,7 +74,7 @@ SECTIONS
         *(vtable)
         *(.data*)
         _edata = .;
-    } > SRAM
+    } > REGION_DATA
 
     .bss :
     {
@@ -54,5 +82,24 @@ SECTIONS
         *(.bss*)
         *(COMMON)
         _ebss = .;
-    } > SRAM
+    } > REGION_BSS
+
+    .heap : {
+        __heap_start__ = .;
+        end = __heap_start__;
+        _end = end;
+        __end = end;
+        . = . + HEAPSIZE;
+        KEEP(*(.heap))
+        __heap_end__ = .;
+        __HeapLimit = __heap_end__;
+    } > REGION_HEAP
+
+    .stack : ALIGN(0x8) {
+        _stack = .;
+        __stack = .;
+        . = . + STACKSIZE;
+        __StackTop = . ;
+        KEEP(*(.stack))
+    } > REGION_STACK
 }

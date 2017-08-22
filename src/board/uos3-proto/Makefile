@@ -64,8 +64,8 @@ CFLAGS  = -mthumb          \
 	       -DPART_${PART}      \
 	       -c
 AR      = ${PREFIX}-ar
-LD      = ${PREFIX}-ld
-LDFLAGS = --gc-sections --print-memory-usage
+LD      = ${PREFIX}-gcc
+LDFLAGS = ${CPU} ${FPU} -Wl,--gc-sections -Wl,--print-memory-usage -specs=rdimon.specs
 LIBGCC := ${shell ${CC} ${CFLAGS} -print-libgcc-file-name}
 LIBC   := ${shell ${CC} ${CFLAGS} -print-file-name=libc.a}
 LIBM   := ${shell ${CC} ${CFLAGS} -print-file-name=libm.a}

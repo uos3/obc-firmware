@@ -120,10 +120,12 @@ void cw_tone_option(void){
    
    
    UART_puts(UART, "Enter frequency (MHz): ");
-   uint16_t res = wait_for_response_ln();
+   //uint16_t res = wait_for_response_ln();
+   wait_for_response_ln();
    freq = atoi(uart_in_buff);
    r = radio_set_freq_f(SPI_RADIO_TX, &freq);
-   snprintf(uart_out_buff, UART_BUFF_LEN, "%3.3f MHz\n", freq);
+   //snprintf(uart_out_buff, UART_BUFF_LEN, "%3.3f MHz\n", freq);
+   snprintf(uart_out_buff, UART_BUFF_LEN, "%d MHz\n", 5);
    if (r){
       UART_puts(UART, "Error in frequency entered: ");
       UART_puts(UART, uart_out_buff);
@@ -134,10 +136,11 @@ void cw_tone_option(void){
    
    UART_puts(UART, "Enter power (dBm): ");
    
-   res = wait_for_response_ln();
+   //res = wait_for_response_ln();
+   wait_for_response_ln();
    pwr = atoi(uart_in_buff);
    r = radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
-   snprintf(uart_out_buff, UART_BUFF_LEN, "%2.1f dBm (reg = %i)\n", pwr, pwr_reg);
+   //snprintf(uart_out_buff, UART_BUFF_LEN, "%2.1f dBm (reg = %i)\n", pwr, pwr_reg);
    if (r){
       UART_puts(UART, "Error in power entered: ");
       UART_puts(UART, uart_out_buff);
