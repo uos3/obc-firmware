@@ -1,0 +1,32 @@
+debugging flash problems:
+
+
+
+single step through bash file with bashdb flash (needs sudo apt get bashdb)
+
+
+offending flash line (for running directly) is:
+
+arm-none-eabi-gdb -q --batch -ex 'file 'builds/uos3-proto-i2ctest-b68bbda-dirty -ex 'target extended-remote '/dev/serial/by-id/usb-Black_Sphere_Technologies_Black_Magic_Probe_D6DA86E7-if00 -ex 'set remotetimeout 10000' -ex 'monitor tpwr enable' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load 'builds/uos3-proto-i2ctest-b68bbda-dirty
+
+(change image file at end to current flash file
+
+note gdb options in line above:
+
+--batch is quit debugger after, -ex string is execute command directly
+
+quotes marks for converting from batch line to gdb command
+
+file builds/uos3-proto-i2ctest-b68bbda-dirty  // this is the program to be debugged) - symbol table et al
+target extended-remote /dev/serial/by-id/usb-Black_Sphere_Technologies_Black_Magic_Probe_D6DA86E7-if00 // this is use this remote computer as a serial line
+set remotetimeout 10000 // set response time from target
+monitor tpwr enable // send command to remote monitor (power on here)
+monitor swdp_scan /// detach any connected probes and detach from it
+attach 1 // attach another target of same type as your last (ref to stack or device file) - 1 will always be only device attached - bm probey
+load builds/uos3-proto-i2ctest-b68bbda-dirty // dynamically load FILE into the running program, and record symbols for access in gdb
+
+
+monitor commands -> https://github.com/blacksphere/blackmagic/wiki/Useful-GDB-commands
+
+tpower enable -> enable power to power translator with 3.3V regulator
+monitor swdp_scan -> scan for connected target devices using SWD interface
