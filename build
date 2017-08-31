@@ -4,6 +4,9 @@
 ## Copyright (c) 2016 Phil Crump <phil@philcrump.co.uk>
 ## Freely distributable under the MIT license.
 
+## hacked by Suzanna Lucarotti 2017 to assume uos3cubesat folder if not specified (my code ain't gonna work with any other as it stands)
+
+
 source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 cd $source_dir
 
@@ -32,7 +35,7 @@ stderr="/proc/$$/fd/2"
 stdnull="/dev/null"
 
 usage() {
-    echo "Usage: build <board> <program>" >&2
+    echo "Usage: build <board> <program> or build <program> to assume uos3cubesat" >&2
 }
 
 print() {
@@ -79,7 +82,7 @@ asmdump() {
 
 print_help() {
   echo ""
-  echo " Usage: ./build [options] <board> <application>"
+  echo " Usage: ./build [options] <board> <application> (board is assumed to be uos3cubesat if unspecified)"
   echo ""
   echo " Options:"
   echo ""
@@ -134,34 +137,15 @@ for i in `seq 2 $OPTIND`; do shift; done
 
 ## Read Arguments
 board=${1,,}
-shift
+shift 
 program=${1,,}
 shift
 
-## Check <board> argument
-if [ -z "$board" ]; then
-    print_err "$_ERROR_ A board must be specified"
-    usage
-    exit 1
-fi
-if [ ! -d "src/board/${board}" ]; then
-    print_err "$_ERROR_ Board \"${board}\" not found"
-    exit 1
-fi
-
-## Run <board>'s dependencies script if it exists
-if [ -f "src/board/${board}/dependencies.sh" ]; then
-    src/board/${board}/dependencies.sh;
-    if [[ $? != 0 ]]; then
-      exit 1
-    fi
-fi
 
 ## Check <program> argument
 if [ -z "$program" ]; then
-    print_err "$_ERROR_ A main program file must be specified"
-    usage
-    exit 1
+    program=$board
+    board="uos3-proto" ## insert default option here
 fi
 if [ ! -e "src/main/$program.c" ]; then
     print_err "$_ERROR_ Main Program File \"$program\" not found"

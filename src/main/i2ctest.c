@@ -10,8 +10,6 @@
 
 #include "../firmware.h"
 
-//#include "i2ctest.h" // local header
-
 #include "inc/hw_i2c.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -30,7 +28,7 @@
 
 #define DEBUG_SERIAL CAM_SERIAL
 
-
+/*
 void InitI2C2(void) // initialise board for I2C capability
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C2);//enable I2C module 2
@@ -173,7 +171,7 @@ uint16_t I2CReceive16r(uint32_t slave_addr,uint8_t reg) // lets get 2 byte value
   if (ans==NULL) return 0; // error handling
  return *(uint16_t *)ans;
  
-/* old code doing it with 2 calls to one byte
+ old code doing it with 2 calls to one byte
   char *ans=I2CReceiveGP(slave_addr,reg,1,false);
    if (ans==NULL) return 0; // error handling
 
@@ -183,8 +181,8 @@ uint16_t I2CReceive16r(uint32_t slave_addr,uint8_t reg) // lets get 2 byte value
 
   x+=ans[0]*256;
  return x;
-*/
- }
+
+ }*/
 
 /// Fancy Console code to display without scrolling
 
@@ -237,7 +235,7 @@ void UART_putstr(unsigned int serialport, char *s1,signed long x, char *s2)
 int main(void)
 {
 
-  SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN |  SYSCTL_XTAL_16MHZ); // set the system clock
+ // SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN |  SYSCTL_XTAL_16MHZ); // set the system clock
   
   InitI2C2(); // initialise correct interface on processor
 
