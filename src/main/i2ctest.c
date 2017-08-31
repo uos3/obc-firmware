@@ -28,19 +28,14 @@
 #define GPS_SERIAL UART_PC104_HEADER
 #define CAM_SERIAL UART_CAM_HEADER
 
-#define DEBUG_SERIAL GPS_SERIAL
+#define DEBUG_SERIAL CAM_SERIAL
 
 
 void InitI2C2(void) // initialise board for I2C capability
 {
-    //enable I2C module 2
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C2);
- 
-    //reset module
-    SysCtlPeripheralReset(SYSCTL_PERIPH_I2C2);
-     
-    //enable GPIO peripheral that contains I2C 2
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C2);//enable I2C module 2
+    SysCtlPeripheralReset(SYSCTL_PERIPH_I2C2);//reset module
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);//enable GPIO peripheral that contains I2C 2
  
     // Configure the pin muxing for I2C2 functions on port E4 and E5.
     GPIOPinConfigure(GPIO_PE4_I2C2SCL);
@@ -54,183 +49,142 @@ void InitI2C2(void) // initialise board for I2C capability
     // the I2C2 module.  The last parameter sets the I2C data transfer rate.
     // If false the data rate is set to 100kbps and if true the data rate will
     // be set to 400kbps.
-    I2CMasterInitExpClk(I2C2_BASE, SysCtlClockGet(), false);
+    I2CMasterInitExpClk(I2C2_BASE, SysCtlClockGet(), false); 
      
     //clear I2C FIFOs
     HWREG(I2C2_BASE + I2C_O_FIFOCTL) = 80008000;
 }
 
-//sends an I2C command to the specified slave
-void I2CSend(uint8_t slave_addr, uint8_t num_of_args, ...)
-{
-    // Tell the master module what address it will place on the bus when
-    // communicating with the slave.
-    I2CMasterSlaveAddrSet(I2C2_BASE, slave_addr, false);
-     
-    //stores list of variable number of arguments
-    va_list vargs;
-     
-    //specifies the va_list to "open" and the last fixed argument
-    //so vargs knows where to start looking
-    va_start(vargs, num_of_args);
-     
-    //put data to be sent into FIFO
-    I2CMasterDataPut(I2C2_BASE, va_arg(vargs, uint32_t));
-     
-    //if there is only one argument, we only need to use the
-    //single send I2C function
-    if(num_of_args == 1)
-    {
-        //Initiate send of data from the MCU
-        I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_SINGLE_SEND);
-         
-        // Wait until MCU is done transferring.
-        while(I2CMasterBusy(I2C2_BASE));
-         
-        //"close" variable argument list
-        va_end(vargs);
-    }
-     
-    //otherwise, we start transmission of multiple bytes on the
-    //I2C bus
-    else
-    {
-        //Initiate send of data from the MCU
-        I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_SEND_START);
-         
-        // Wait until MCU is done transferring.
-        while(I2CMasterBusy(I2C2_BASE));
-         
-        //send num_of_args-2 pieces of data, using the
-        //BURST_SEND_CONT command of the I2C module
-        for(uint8_t i = 1; i < (num_of_args - 1); i++)
-        {
-            //put next piece of data into I2C FIFO
-            I2CMasterDataPut(I2C2_BASE, va_arg(vargs, uint32_t));
-            //send next data that was just placed into FIFO
-            I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_SEND_CONT);
-     
-            // Wait until MCU is done transferring.
-            while(I2CMasterBusy(I2C2_BASE));
-        }
-     
-        //put last piece of data into I2C FIFO
-        I2CMasterDataPut(I2C2_BASE, va_arg(vargs, uint32_t));
-        //send next data that was just placed into FIFO
-        I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_SEND_FINISH);
-        // Wait until MCU is done transferring.
-        while(I2CMasterBusy(I2C2_BASE));
-         
-        //"close" variable args list
-        va_end(vargs);
-    }
-}
 
-//sends an array of data via I2C to the specified slave
+//sends an array of data via I2C to the specified slave, zero terminated as a string.
 void I2CSendString(uint32_t slave_addr, char array[])
 {
-    // Tell the master module what address it will place on the bus when
-    // communicating with the slave.
-    I2CMasterSlaveAddrSet(I2C2_BASE, slave_addr, false);
-     
-    //put data to be sent into FIFO
+    I2CMasterSlaveAddrSet(I2C2_BASE, slave_addr, false); // tell it which slave to talk to
     I2CMasterDataPut(I2C2_BASE, array[0]);
      
-    //if there is only one argument, we only need to use the
-    //single send I2C function
-    if(array[1] == '\0')
+     if(array[1] == 0) // single byte mode
     {
-        //Initiate send of data from the MCU
         I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_SINGLE_SEND);
-         
-        // Wait until MCU is done transferring.
-        while(I2CMasterBusy(I2C2_BASE));
+        while(I2CMasterBusy(I2C2_BASE)); // wait
     }
      
-    //otherwise, we start transmission of multiple bytes on the
-    //I2C bus
-    else
+    else // multi byte mode
     {
-        //Initiate send of data from the MCU
-        I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_SEND_START);
-         
-        // Wait until MCU is done transferring.
-        while(I2CMasterBusy(I2C2_BASE));
-         
-        //initialize index into array
-        uint8_t i = 1;
- 
-        //send num_of_args-2 pieces of data, using the
-        //BURST_SEND_CONT command of the I2C module
-        while(array[i + 1] != '\0')
+        I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_SEND_START);        
+        while(I2CMasterBusy(I2C2_BASE)); //wait
+         uint8_t i = 1;
+        while(array[i + 1] != 0) // keep going until find the end
         {
-            //put next piece of data into I2C FIFO
-            I2CMasterDataPut(I2C2_BASE, array[i++]);
- 
-            //send next data that was just placed into FIFO
-            I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_SEND_CONT);
-     
-            // Wait until MCU is done transferring.
-            while(I2CMasterBusy(I2C2_BASE));
-        }
-     
-        //put last piece of data into I2C FIFO
+          I2CMasterDataPut(I2C2_BASE, array[i++]);
+          I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_SEND_CONT);
+          while(I2CMasterBusy(I2C2_BASE));
+        }    
         I2CMasterDataPut(I2C2_BASE, array[i]);
- 
-        //send next data that was just placed into FIFO
         I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_SEND_FINISH);
- 
-        // Wait until MCU is done transferring.
         while(I2CMasterBusy(I2C2_BASE));
-    }
+     
+       if (I2CMasterErr(I2C2_BASE)) // error handling to stop I2C freezing if glitches during transmission
+               I2CMasterControl(I2C2_BASE,I2C_MASTER_CMD_BURST_SEND_ERROR_STOP);       
+   }
 }
 
 //read specified register on slave device
+
+
+#define I2CRECVMAXBUFFERLEN 4
+
+static char I2CReceiveBuffer[I2CRECVMAXBUFFERLEN+1];
+
+char *I2CReceiveGP(uint32_t slave_addr, uint8_t reg,uint8_t strlen, bool reverse) // returns zero pointer if an error...
+ {                                      // else pointer to zero terminated string of bytes read, reversed if requested
+    // this should fill buffer exactly with no overrun, responsibility for sufficient buffer size with caller
+ if (strlen>I2CRECVMAXBUFFERLEN || strlen<=0) { return NULL;}
+ // before can receive data, have to tell slave what register to start at
+    I2CMasterSlaveAddrSet(I2C2_BASE, slave_addr, false); // set address to send to
+    I2CMasterDataPut(I2C2_BASE, reg);     // tell it register to be read
+    I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_SINGLE_SEND); // send message to prepare for read
+     
+    while(I2CMasterBusy(I2C2_BASE)); // wait for I2c ready
+     
+    I2CMasterSlaveAddrSet(I2C2_BASE, slave_addr, true);  // set address to read from
+    
+    if (strlen==1) { 
+                     I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
+                     while(I2CMasterBusy(I2C2_BASE));
+                     I2CReceiveBuffer[0]=I2CMasterDataGet(I2C2_BASE); // exit with ptr to zero terminated two byte string
+                     I2CReceiveBuffer[1]=0;
+                     return I2CReceiveBuffer;
+                     }
+     else // we want a burst from the slave, not just one byte, slave interprets burst reads as starting from given reg and ascending
+        {
+        I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_RECEIVE_START);
+         while(I2CMasterBusy(I2C2_BASE));
+        I2CReceiveBuffer[0]=I2CMasterDataGet(I2C2_BASE);
+        uint8_t i=1;
+        while (i<strlen-1) // do the middle bytes
+         { 
+        while(I2CMasterBusy(I2C2_BASE)); // wait for ready
+           {
+            I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_RECEIVE_CONT);         
+            if (I2CMasterErr(I2C2_BASE)) // error handling
+                                      {I2CMasterControl(I2C2_BASE,I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP);return NULL;} 
+            I2CReceiveBuffer[i]=I2CMasterDataGet(I2C2_BASE);
+           }
+           i++;
+         }
+
+         I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
+         while(I2CMasterBusy(I2C2_BASE));
+         I2CReceiveBuffer[strlen-1]=I2CMasterDataGet(I2C2_BASE);
+         I2CReceiveBuffer[strlen]=0;
+  
+    if (I2CMasterErr(I2C2_BASE)) // error handling to stop I2C freezing if glitches during transmission
+               {I2CMasterControl(I2C2_BASE,I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP);return NULL;}       
+         }      
+  //I2CReceiveBuffer[0]=7;
+  //I2CReceiveBuffer[1]=3;
+  //I2CReceiveBuffer[2]=0;
+
+  if (reverse==false) // handle big endian or little endian data
+   for (uint8_t i=0;i<(strlen/2);i++) // quick bytewise reverse
+    {char b=I2CReceiveBuffer[i];I2CReceiveBuffer[i]=I2CReceiveBuffer[strlen-i-1];I2CReceiveBuffer[strlen-i-1]=b;}
+  return I2CReceiveBuffer;
+ }
+
 uint32_t I2CReceive(uint32_t slave_addr, uint8_t reg)
 {
-    //specify that we are writing (a register address) to the
-    //slave device
-    I2CMasterSlaveAddrSet(I2C2_BASE, slave_addr, false);
- 
-    //specify register to be read
-    I2CMasterDataPut(I2C2_BASE, reg);
- 
-    //send control byte and register address byte to slave device
-    I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_BURST_SEND_START);
-     
-    //wait for MCU to finish transaction
-    while(I2CMasterBusy(I2C2_BASE));
-     
-    //specify that we are going to read from slave device
-    I2CMasterSlaveAddrSet(I2C2_BASE, slave_addr, true);
-     
-    //send control byte and read from the register we
-    //specified
-    I2CMasterControl(I2C2_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
-     
-    //wait for MCU to finish transaction
-    while(I2CMasterBusy(I2C2_BASE));
-     
-    //return data pulled from the specified register
-    return I2CMasterDataGet(I2C2_BASE);
-}
-
-int16_t I2CReceive16(uint32_t slave_addr,uint8_t reg) // lets get 2 byte value (TBD improve performance by data burst v single read)
- {
-  int16_t x=I2CReceive(slave_addr,reg);
-  x=x<<8;
-  x+=I2CReceive(slave_addr,reg+1);
- return x;
+  char *ans=I2CReceiveGP(slave_addr,reg,1,false);
+  if (ans==NULL) return 0; // error handling
+  return ans[0];
  }
 
-int16_t I2CReceive16r(uint32_t slave_addr,uint8_t reg) // lets get 2 byte value (TBD improve performance by data burst v single read) reversed for Magnetometer little-endian
+uint16_t I2CReceive16(uint32_t slave_addr,uint8_t reg) // lets get 2 byte value (TBD improve performance by data burst v single read)
  {
-  int16_t x=I2CReceive(slave_addr,reg+1);
-  x=x<<8;
-  x+=I2CReceive(slave_addr,reg);
- return x;
+
+ char *ans=I2CReceiveGP(slave_addr,reg,2,false);
+  if (ans==NULL) return 0; // error handling
+ //return ans[0]|(ans[1]<<8); // same as below, but below better
+ return *(uint16_t *)ans;
  }
 
+uint16_t I2CReceive16r(uint32_t slave_addr,uint8_t reg) // lets get 2 byte value (TBD improve performance by data burst v single read)
+ {
+ char *ans=I2CReceiveGP(slave_addr,reg,2,true);
+  if (ans==NULL) return 0; // error handling
+ return *(uint16_t *)ans;
+ 
+/* old code doing it with 2 calls to one byte
+  char *ans=I2CReceiveGP(slave_addr,reg,1,false);
+   if (ans==NULL) return 0; // error handling
+
+  int16_t x=ans[0];
+  ans=I2CReceiveGP(slave_addr,reg+1,1,false);
+  if (ans==NULL) return 0; // error handling
+
+  x+=ans[0]*256;
+ return x;
+*/
+ }
 
 /// Fancy Console code to display without scrolling
 
@@ -241,7 +195,7 @@ static char string_buffer2[STRING_BUFFER_LENGTH];
 
 void UART_putnum(unsigned int serialport,signed long x)
  {
-  itoa(abs(x),string_buffer,10);
+  itoa(abs(x),string_buffer,10); // 16 for hex, 10 for decimal
   unsigned int len=strlen(string_buffer);
   unsigned int targetlen=6-len;
   strcpy(string_buffer2,"+00000");
@@ -293,9 +247,6 @@ int main(void)
   UART_init(DEBUG_SERIAL, 9600); // start the console, print bootup message (below)
 
   UART_puts(DEBUG_SERIAL,"\n\n\r   I2C Satellite I2C IMU test.\n");
-  UART_puts(DEBUG_SERIAL,"\r   Module = I2C2\n");
-  UART_puts(DEBUG_SERIAL,"\r   Mode = Single Send/Receive\n");
-  UART_puts(DEBUG_SERIAL,"\r   Rate = 100kbps\n\n\n");
 
  #define MAG_PASS_THROUGH_I2C_ADDR 12 
 
