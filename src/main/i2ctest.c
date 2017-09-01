@@ -26,7 +26,7 @@
 #define GPS_SERIAL UART_PC104_HEADER
 #define CAM_SERIAL UART_CAM_HEADER
 
-#define DEBUG_SERIAL CAM_SERIAL
+#define DEBUG_SERIAL GPS_SERIAL
 
  // the useful hardware constants (only used here so not moved away as yet)
  

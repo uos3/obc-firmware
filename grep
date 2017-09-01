@@ -91,7 +91,7 @@ search_string=$1
  print
  print "$_INFO_$COLOUR_YELLOW Searching files in Uos3 for : ${search_string}$COLOUR_OFF" 
  print
- grep -r -n -i -I --include="*.c" --include="*.h" ${search_string} 
+ grep -r -n -i -I --include="*.c" --include="*.h" --include="*.py" ${search_string} 
  print
  print "$_INFO_$COLOUR_GREEN Search Complete : ${search_string}$COLOUR_OFF" 
  print
