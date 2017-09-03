@@ -35,7 +35,7 @@ uint8_t radio_set_pwr_f(uint8_t radio_id, double *pwr, uint8_t *reg_value){
       return 1;
    
    double p;
-   p = (*pwr+1)/2-18;
+   p = (2*(*pwr+18))-1;
    
    uint32_t pwr_reg = (uint32_t)p;
    
@@ -44,7 +44,7 @@ uint8_t radio_set_pwr_f(uint8_t radio_id, double *pwr, uint8_t *reg_value){
    pwr_reg = pwr_reg & 0x3F;
    
    // work back to calculate the actual freq
-   p = (2*(pwr_reg+18))-1;
+   p = ((double)pwr_reg+1)/2-18;
    
    *pwr = p;
    *reg_value = (uint8_t)pwr_reg;
@@ -73,19 +73,25 @@ uint8_t radio_set_pwr_f(uint8_t radio_id, double *pwr, uint8_t *reg_value){
 */
 uint8_t radio_set_freq_f(uint8_t radio_id, double *freq){
    
-   uint8_t div;
-   if ((*freq >= 136.7) && (*freq <= 160))
+   uint8_t div, bandsel;
+   if ((*freq >= 136.7) && (*freq <= 160)){
       div = 24;
-   else if ((*freq >= 164) && (*freq <= 192))
+      bandsel = 11; }
+   else if ((*freq >= 164) && (*freq <= 192)){
       div = 20;
-   else if ((*freq >= 205) && (*freq <= 240))
+      bandsel = 10; }
+   else if ((*freq >= 205) && (*freq <= 240)){
       div = 16;
-   else if ((*freq >= 273.3) && (*freq <= 320))
+      bandsel = 8; }
+   else if ((*freq >= 273.3) && (*freq <= 320)){
       div = 12;
-   else if ((*freq >= 410) && (*freq <= 480))
+      bandsel = 6; }
+   else if ((*freq >= 410) && (*freq <= 480)){
       div = 8;
-   else if ((*freq >= 820) && (*freq <= 960))
+      bandsel = 4; }
+   else if ((*freq >= 820) && (*freq <= 960)){
       div = 4;
+      bandsel = 2; }
    else
       return 1;
    
@@ -95,7 +101,7 @@ uint8_t radio_set_freq_f(uint8_t radio_id, double *freq){
    uint32_t freq_reg = (uint32_t)f;
    
    // work back to calculate the actual freq
-   f = freq_reg*CC_XO_FREQ;
+   f = (double)freq_reg*CC_XO_FREQ;
    f = f / div;
    f = f / 65536;
    
@@ -110,16 +116,7 @@ uint8_t radio_set_freq_f(uint8_t radio_id, double *freq){
    cc112xSpiWriteReg(radio_id, CC112X_FREQ1, &writebyte);
    writebyte = (freq_reg >> 16) & 0xFF;
    cc112xSpiWriteReg(radio_id, CC112X_FREQ2, &writebyte);
-   writebyte = 0x10 | div;
-   cc112xSpiWriteReg(radio_id, CC112X_FS_CFG, &writebyte);
-
-   writebyte = freq_reg & 0xFF;
-   cc112xSpiWriteReg(radio_id, CC112X_FREQ0, &writebyte);
-   writebyte = (freq_reg >> 8) & 0xFF;
-   cc112xSpiWriteReg(radio_id, CC112X_FREQ1, &writebyte);
-   writebyte = (freq_reg >> 16) & 0xFF;
-   cc112xSpiWriteReg(radio_id, CC112X_FREQ2, &writebyte);
-   writebyte = 0x10 | div;
+   writebyte = 0x10 | bandsel;
    cc112xSpiWriteReg(radio_id, CC112X_FS_CFG, &writebyte);
    
    

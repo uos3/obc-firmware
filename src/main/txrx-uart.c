@@ -2,13 +2,18 @@
 #include "../firmware.h"
 #include "txrx-uart.h"
 
+#include "driverlib/interrupt.h"
+#include "driverlib/systick.h"
+#include "driverlib/sysctl.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 /* A very simple example that blinks the on-board LED. */
 
-#define UART UART_PC104_HEADER
+//#define UART UART_PC104_HEADER
+#define UART UART_CAM_HEADER
 
 void cw_tone_option(void);
 
@@ -19,10 +24,22 @@ uint16_t wait_for_response_ln(void);
 char uart_in_buff[UART_BUFF_LEN] = {0};
 char uart_out_buff[UART_BUFF_LEN] = {0};
 
+
+void SysTickIntHandler(void)
+{
+    WDT_kick();
+}
+
+
 int main(void)
 {
    Board_init();
    WDT_kick();
+   
+   SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+   IntMasterEnable();
+   //SysTickIntEnable();
+   //SysTickEnable();
 
 
    UART_init(UART, 500000);
@@ -30,57 +47,47 @@ int main(void)
    SPI_init(SPI_RADIO_TX);
    SPI_init(SPI_RADIO_RX);
    
-   UART_puts(UART, "Welcome to the radio test program\n\n");
-   UART_puts(UART, "1) CW tone\n");
-   UART_puts(UART, "2) TX FSK packets\n");
-   UART_puts(UART, "3) TX FSK packets (power sweep)\n");
-   UART_puts(UART, "4) RX FSK packets (stats only)\n");
-   UART_puts(UART, "5) RX FSK packets (logtail)\n");
+   while(1){
    
-   char res = wait_for_response_char();
-   
-   UART_putc(UART, res);
-   UART_putc(UART, '\n');
-   
-   switch (res){
-      case '1':
-         cw_tone_option();
-         break;
-      case '2':
+      UART_puts(UART, "Welcome to the radio test program\n\n");
+      UART_puts(UART, "1) CW tone\n");
+      UART_puts(UART, "2) TX FSK packets\n");
+      UART_puts(UART, "3) TX FSK packets (power sweep)\n");
+      UART_puts(UART, "4) RX FSK packets (stats only)\n");
+      UART_puts(UART, "5) RX FSK packets (logtail)\n");
       
-         break;
-      case '3':
+       WDT_kick();
       
-         break;
-      case '4':
+      char res = wait_for_response_char();
       
-         break;
-      case '5':
+      UART_putc(UART, res);
+      UART_putc(UART, '\n');
       
-         break;
-      default:
-         break;
+      switch (res){
+         case '1':
+            cw_tone_option();
+            break;
+         case '2':
+         
+            break;
+         case '3':
+         
+            break;
+         case '4':
+         
+            break;
+         case '5':
+         
+            break;
+         default:
+            break;
+      }
+      
    }
-   
-   // wait for WDT reset
-   while(1){};
-   
-   
-   
-   while(1)
-   {
-   LED_on(LED_B);
+      
+   //// wait for WDT reset
+   //while(1){};
 
-   /* On period */
-   Delay_ms(500);
-   WDT_kick();
-
-   LED_off(LED_B);
-
-   /* Off period */
-   Delay_ms(500);
-   WDT_kick();
-   }
 }
 
 char wait_for_response_char(void){
@@ -113,19 +120,17 @@ void cw_tone_option(void){
    uint8_t r;
    uint8_t pwr_reg=0;
    
-   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-   manualCalibration(SPI_RADIO_TX);
-   
    UART_puts(UART, "\nCW tone selected\n");
    
+   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+   manualCalibration(SPI_RADIO_TX);
    
    UART_puts(UART, "Enter frequency (MHz): ");
    //uint16_t res = wait_for_response_ln();
    wait_for_response_ln();
    freq = atoi(uart_in_buff);
    r = radio_set_freq_f(SPI_RADIO_TX, &freq);
-   //snprintf(uart_out_buff, UART_BUFF_LEN, "%3.3f MHz\n", freq);
-   snprintf(uart_out_buff, UART_BUFF_LEN, "%d MHz\n", 5);
+   snprintf(uart_out_buff, UART_BUFF_LEN, "%3.3f MHz\n", freq);
    if (r){
       UART_puts(UART, "Error in frequency entered: ");
       UART_puts(UART, uart_out_buff);
@@ -140,7 +145,7 @@ void cw_tone_option(void){
    wait_for_response_ln();
    pwr = atoi(uart_in_buff);
    r = radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
-   //snprintf(uart_out_buff, UART_BUFF_LEN, "%2.1f dBm (reg = %i)\n", pwr, pwr_reg);
+   snprintf(uart_out_buff, UART_BUFF_LEN, "%2.1f dBm (reg = %i)\n", pwr, pwr_reg);
    if (r){
       UART_puts(UART, "Error in power entered: ");
       UART_puts(UART, uart_out_buff);
@@ -154,5 +159,7 @@ void cw_tone_option(void){
    SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
    
    while(wait_for_response_char() != 'q'){};
+   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+
    
 }
