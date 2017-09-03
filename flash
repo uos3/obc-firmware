@@ -28,7 +28,7 @@ _ERROR_="$COLOUR_RED[ERROR]$COLOUR_OFF"
 _INFO_="$COLOUR_PURPLE[INFO]$COLOUR_OFF"
 _DEBUG_="$COLOUR_YELLOW[DEBUG]$COLOUR_OFF"
 
-opt_verbose=false
+opt_verbose=true
 opt_sound=false
 opt_power=true
 

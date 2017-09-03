@@ -22,6 +22,11 @@
 #include "cc1125/cc112x_spi.h"
 #include "cc1125/cc1125.h"
 
+/* get Suzi's modules */
+
+#include "suz/i2cbase.h"
+#include "suz/uartbase.h"
+
 /* ... */
 
 #endif /*  __FIRMWARE_H__ */

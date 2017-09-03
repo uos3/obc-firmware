@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+## Cross-Platform Embedded Toolchain
+## Grep edition (c) Suzanna Lucarotti 2017 as tired of not being able to find anything in this nest of folders
+## evolved from bash file by Phil Crump 
+## Freely distributable under the MIT license.
+
+## finds a reference in the rats nest of uos3 files (I didn't design it this way, n needing to keep tiva drivers separate makes it a pita)
+
+
+source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
+cd $source_dir
+
+opt_quiet=false
+opt_sound=false
+opt_verbose=false
+
+COLOUR_GREEN='\033[0;32m'
+COLOUR_YELLOW='\033[1;33m'
+COLOUR_PURPLE='\033[0;35m'
+COLOUR_RED='\033[0;31m'
+COLOUR_OFF='\033[0;00m'
+CLEAR_LINE='\033[2K'
+
+_ERROR_="$COLOUR_RED[ERROR]$COLOUR_OFF"
+_INFO_="$COLOUR_PURPLE[INFO]$COLOUR_OFF"
+_DEBUG_="$COLOUR_YELLOW[DEBUG]$COLOUR_OFF"
+
+stdin="/proc/$$/fd/0"
+stdout="/proc/$$/fd/1"
+stderr="/proc/$$/fd/2"
+stdnull="/dev/null"
+
+usage() {
+    echo "Usage: find <reference>" >&2
+}
+
+print() {
+    if ! $opt_quiet
+    then
+        echo -e $@ >&$stdout
+    fi
+}
+print_err() {
+    if ! $opt_quiet
+    then
+        echo -e $@ >&$stderr
+    fi
+}
+
+print_help() {
+  echo ""
+  echo " Usage: grep <searchpattern> to search all uos3 structure for reference in *.c and *.h files"
+  echo ""
+  echo " Options:"
+  echo ""
+  echo " -h        Display this help and exit."
+  echo " -q        Hide all messages apart from errors."
+  echo " -v        Compile verbosely."
+  echo ""
+}
+
+## Read Flags
+OPTIND=1
+while getopts ":hqv" opt; do
+  case "$opt" in
+    h) # Help
+      print_help
+      exit 0
+      ;;
+     q) # Quiet
+      opt_quiet=true
+      ;;
+    v) # Verbose
+      opt_verbose=true
+      ;;
+    ?) # Illegal Option
+      print_err "$_ERROR_ Illegal option '$OPTARG'"
+      print_help
+      exit 3
+      ;;
+  esac
+done
+for i in `seq 2 $OPTIND`; do shift; done
+
+## Read Arguments
+search_string=$1
+
+
+ ##echo searching for 'search_string
+ print
+ print "$_INFO_$COLOUR_YELLOW Searching files in Uos3 for : ${search_string}$COLOUR_OFF" 
+ print
+ grep -r -n -i -I --include="*.c" --include="*.h" --include="*.py" ${search_string} 
+ print
+ print "$_INFO_$COLOUR_GREEN Search Complete : ${search_string}$COLOUR_OFF" 
+ print
+
+
+
