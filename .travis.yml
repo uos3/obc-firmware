@@ -1,7 +1,3 @@
-# Disable email notifications until we're more involved
-notifications:
-  email: false
-
 # Use Ubuntu 14.04 C environment image instead of 12.04 (note: travis is slowly making this default)
 dist: trusty
 language: c
