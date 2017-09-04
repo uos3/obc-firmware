@@ -4,7 +4,7 @@
 ## Copyright (c) 2016 Phil Crump <phil@philcrump.co.uk>
 ## Freely distributable under the MIT license.
 
-## hacked by Suzanna Lucarotti 2017 to assume uos3cubesat folder if not specified (my code ain't gonna work with any other as it stands)
+## hacked by Suzanna Lucarotti 2017 to assume uos3-proto folder if not specified (my code ain't gonna work with any other as it stands)
 
 
 source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
@@ -35,7 +35,7 @@ stderr="/proc/$$/fd/2"
 stdnull="/dev/null"
 
 usage() {
-    echo "Usage: build <board> <program> or build <program> to assume uos3cubesat" >&2
+    echo "Usage: build <board> <program> or build <program> to assume uos3-proto" >&2
 }
 
 print() {
@@ -82,7 +82,7 @@ asmdump() {
 
 print_help() {
   echo ""
-  echo " Usage: ./build [options] <board> <application> (board is assumed to be uos3cubesat if unspecified)"
+  echo " Usage: ./build [options] <board> <application> (board is assumed to be uos3-proto if missing)"
   echo ""
   echo " Options:"
   echo ""
@@ -150,6 +150,25 @@ fi
 if [ ! -e "src/main/$program.c" ]; then
     print_err "$_ERROR_ Main Program File \"$program\" not found"
     exit 1
+fi
+
+## Check <board> argument
+if [ -z "$board" ]; then
+    print_err "$_ERROR_ A board must be specified"
+    usage
+    exit 1
+fi
+if [ ! -d "src/board/${board}" ]; then
+    print_err "$_ERROR_ Board \"${board}\" not found"
+    exit 1
+fi
+
+## Run <board>'s dependencies script if it exists
+if [ -f "src/board/${board}/dependencies.sh" ]; then
+    src/board/${board}/dependencies.sh;
+    if [[ $? != 0 ]]; then
+      exit 1
+    fi
 fi
 
 ## Set up Makefile Flags
