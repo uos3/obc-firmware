@@ -17,6 +17,7 @@
 #include "board/wdt.h"
 #include "board/spi.h"
 #include "board/gpio.h"
+#include "board/debug.h"
 
 /* radio stuff */
 #include "cc1125/cc112x_spi.h"
