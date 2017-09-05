@@ -16,6 +16,8 @@
 #define UART UART_CAM_HEADER
 
 void cw_tone_option(void);
+void tx_packets_option(void);
+uint8_t ui_set_freq_power(void);
 
 char wait_for_response_char(void);
 uint16_t wait_for_response_ln(void);
@@ -68,7 +70,7 @@ int main(void)
             cw_tone_option();
             break;
          case '2':
-         
+            tx_packets_option();
             break;
          case '3':
          
@@ -114,27 +116,21 @@ uint16_t wait_for_response_ln(void){
    return p;   
 }
 
-void cw_tone_option(void){
-   
+uint8_t ui_set_freq_power(void){
    double pwr, freq;
    uint8_t r;
    uint8_t pwr_reg=0;
    
-   UART_puts(UART, "\nCW tone selected\n");
-   
-   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-   manualCalibration(SPI_RADIO_TX);
-   
    UART_puts(UART, "Enter frequency (MHz): ");
    //uint16_t res = wait_for_response_ln();
    wait_for_response_ln();
-   freq = atoi(uart_in_buff);
+   freq = atof(uart_in_buff);
    r = radio_set_freq_f(SPI_RADIO_TX, &freq);
    snprintf(uart_out_buff, UART_BUFF_LEN, "%3.3f MHz\n", freq);
    if (r){
       UART_puts(UART, "Error in frequency entered: ");
       UART_puts(UART, uart_out_buff);
-      return;
+      return 1;
    }
    UART_puts(UART, "Setting frequency to ");
    UART_puts(UART, uart_out_buff);
@@ -143,16 +139,77 @@ void cw_tone_option(void){
    
    //res = wait_for_response_ln();
    wait_for_response_ln();
-   pwr = atoi(uart_in_buff);
+   pwr = atof(uart_in_buff);
    r = radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
    snprintf(uart_out_buff, UART_BUFF_LEN, "%2.1f dBm (reg = %i)\n", pwr, pwr_reg);
    if (r){
       UART_puts(UART, "Error in power entered: ");
       UART_puts(UART, uart_out_buff);
-      return;
+      return 1;
    }
    UART_puts(UART, "Setting power to ");
    UART_puts(UART, uart_out_buff);
+   return 0;
+}
+
+void tx_packets_option(void){
+   
+   uint32_t symrate, deviation;
+   uint8_t r;
+   
+   UART_puts(UART, "\nTX FSK packets selected\n");
+   
+   radio_reset_config(SPI_RADIO_TX, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
+   manualCalibration(SPI_RADIO_TX);
+   
+   if (ui_set_freq_power())
+      return;
+   
+   UART_puts(UART, "Enter symbol rate (/sec, default: 1000 /sec): ");
+   wait_for_response_ln();
+   symrate = (uint32_t)atoi(uart_in_buff);
+   
+   if (symrate == 0)
+      symrate = 1000;   
+   
+   UART_puts(UART, "\nEnter deviation (Hz, default: 2000 Hz): ");
+   wait_for_response_ln();
+   deviation = (uint32_t)atoi(uart_in_buff);
+   
+   if (deviation == 0)
+      deviation = 2000;
+   
+   r = radio_set_fsk_param(SPI_RADIO_TX, &symrate, &deviation);
+   snprintf(uart_out_buff, UART_BUFF_LEN, "%li, %li\n", symrate, deviation);
+   if (r){
+      UART_puts(UART, "\nError in symbol rate, deviation settings entered: ");
+      UART_puts(UART, uart_out_buff);
+      return;
+   }
+   UART_puts(UART, "\nSetting symbol rate, deviation settings to ");
+   UART_puts(UART, uart_out_buff);
+   
+   while(wait_for_response_char() != 'q'){};
+   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+
+   
+   UART_puts(UART, "\nEnter packet length (default: 200 bits): ");
+   
+   UART_puts(UART, "\nEnter off-time (msec, default: 100 msec): ");
+
+   return;
+}
+
+void cw_tone_option(void){
+   
+ 
+   UART_puts(UART, "\nCW tone selected\n");
+   
+   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+   manualCalibration(SPI_RADIO_TX);
+   
+   if (ui_set_freq_power())
+      return;
    
    // turn on radio   
    UART_puts(UART, "CW tone on. Press q to quit\n");   

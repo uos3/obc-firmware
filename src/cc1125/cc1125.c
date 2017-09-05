@@ -7,6 +7,9 @@
 
 #define CC_XO_FREQ 38400000
 
+#include <stdlib.h>
+#include <stdio.h>
+
 
 
 /* Pins: GPIO0_RADIO_RX / GPIO0_RADIO_TX */
@@ -14,6 +17,90 @@ bool cc1125_pollGPIO(uint8_t gpio_pin)
 {
   return GPIO_read(gpio_pin);
 }
+
+/*******************************************************************************
+*   @fn         radio_set_fsk_param
+*
+*   @brief      Sets the FSK symbol rate and deviation to the requested values.
+*               Will overwrite the input value with the actual value. Call only 
+*               when in 'idle' state
+*
+*   @param      radio_id - select the radio to use
+*               *symbol_rate - pointer to the requested symbol rate (/sec)
+*               *deviation - pointer to the requested deviation (Hz)
+*
+*   @return     0 - changed sucessfully; 1 - error, freq not set
+*/
+uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *deviation){
+   
+   // deviation
+   uint64_t d,d1;
+   uint8_t m,e;
+   
+   d = ((uint64_t)(*deviation) * (1<<24))/CC_XO_FREQ;
+   
+   d1 = d >> 8;
+   
+   if (d1 < 2){
+      e = 0;
+      m = (uint8_t)(((uint64_t)(*deviation) * (1<<23))/CC_XO_FREQ);
+   }else{
+      e = 0;
+      while(d1){
+         d1 = d1 >> 1;
+         e++;
+      }
+      e--;
+      m = (uint8_t)(((((uint64_t)(*deviation) * (1<<24))/CC_XO_FREQ) >> e) - 256); 
+   }
+   
+   //symbol rate
+   uint64_t s,s1;
+   uint32_t ms;
+   uint8_t es;
+   
+   s = ((uint64_t)(*symbol_rate) * ((uint64_t)1<<39))/((uint64_t)CC_XO_FREQ*1000);
+   s1 = s >> 20;
+   
+   if (s1 < 2){
+      es = 0;
+      ms = (uint32_t)(((uint64_t)(*symbol_rate) * ((uint64_t)1<<38))/((uint64_t)CC_XO_FREQ*1000));
+   }
+   else{
+      es = 0;
+      while(s1){
+         s1 = s1 >> 1;
+         es++;
+      }
+      es--;
+      ms = (uint32_t)(((((uint64_t)(*symbol_rate) * ((uint64_t)1<<39))/((uint64_t)CC_XO_FREQ*1000)) >> es) - ((uint64_t)1<<20)); 
+   }
+   
+   
+   //char buff[30];
+   //snprintf(buff, 30, "\n\n%li, %i, %i, %lli, %lli\n\n",*deviation, e,m,d1,d);
+   //UART_puts(UART_CAM_HEADER, buff);
+   //snprintf(buff, 30, "\n\n%li, %i, %li, %lli, %lli,   %lli  %lli\n\n",*deviation, es,ms,s1,s);
+   //UART_puts(UART_CAM_HEADER, buff);
+   
+   
+   
+   // work back to calculate the actual values
+   if (e == 0)
+      *deviation = (uint32_t)(((uint64_t)CC_XO_FREQ * m ) >> 23);
+   else
+      *deviation = (uint32_t)((CC_XO_FREQ * (256+(uint64_t)m) ) >> (24-e));
+   
+   if (es == 0)
+      *symbol_rate = (uint32_t)((((uint64_t)CC_XO_FREQ*1000) * ms ) >> 38);
+   else
+      *symbol_rate = (uint32_t)((((uint64_t)CC_XO_FREQ*1000) * ((1<<20)+(uint64_t)ms) ) >> (39-es));
+   
+   
+   return 0;  
+   
+} 
+
 
 /*******************************************************************************
 *   @fn         radio_set_wr_f
