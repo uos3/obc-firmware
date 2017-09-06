@@ -121,6 +121,56 @@ void UART_putb(uint8_t uart_num, char *str, uint32_t len)
   }
 }
 
+bool UART_getc_nonblocking(uint8_t uart_num, char *c)
+{
+  check_uart_num(uart_num, false);
+  UART *uart = &UART_uarts[uart_num];
+
+  int32_t value = UARTCharGetNonBlocking(uart->base_uart);
+
+  if(value >= 0)
+  {
+    *c = (char)value;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+bool UART_putc_nonblocking(uint8_t uart_num, char c)
+{
+  check_uart_num(uart_num, false);
+  UART *uart = &UART_uarts[uart_num];
+
+  return UARTCharPutNonBlocking(uart->base_uart, c);
+}
+
+bool UART_puts_nonblocking(uint8_t uart_num, char *str)
+{
+  while(*str != '\0')
+  {
+    if(!UART_putc_nonblocking(uart_num, *str++))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool UART_putb_nonblocking(uint8_t uart_num, char *str, uint32_t len)
+{
+  while(len--)
+  {
+    if(!UART_putc_nonblocking(uart_num, *str++))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool UART_busy(uint8_t uart_num)
 {
   check_uart_num(uart_num, false);
