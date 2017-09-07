@@ -160,8 +160,7 @@ void tx_packets_option(void){
    UART_puts(UART, "\nTX FSK packets selected\n");
    
    radio_reset_config(SPI_RADIO_TX, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
-   manualCalibration(SPI_RADIO_TX);
-   
+      
    if (ui_set_freq_power())
       return;
    
@@ -189,13 +188,29 @@ void tx_packets_option(void){
    UART_puts(UART, "\nSetting symbol rate, deviation settings to ");
    UART_puts(UART, uart_out_buff);
    
-   while(wait_for_response_char() != 'q'){};
-   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-
-   
+   //while(wait_for_response_char() != 'q'){};
+    
    UART_puts(UART, "\nEnter packet length (default: 200 bits): ");
    
    UART_puts(UART, "\nEnter off-time (msec, default: 100 msec): ");
+   
+   manualCalibration(SPI_RADIO_TX);
+   
+   uint8_t buff[64+1];
+   uint8_t i;
+   buff[0] = 64;
+   for (i = 1; i < 64+1; i++)
+      buff[i] = i;
+   
+   while(1){
+      cc112xSpiWriteTxFifo(SPI_RADIO_TX, buff, sizeof(buff));
+
+      SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
+      uint32_t ui32Loop;
+      for(ui32Loop = 0; ui32Loop < 3000000; ui32Loop++) {};
+      
+   }
+   
 
    return;
 }

@@ -96,6 +96,19 @@ uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *d
    else
       *symbol_rate = (uint32_t)((((uint64_t)CC_XO_FREQ*1000) * ((1<<20)+(uint64_t)ms) ) >> (39-es));
    
+
+   uint8_t writebyte;
+   writebyte = (uint8_t)(ms & 0xFF);
+   cc112xSpiWriteReg(radio_id, CC112X_SYMBOL_RATE0, &writebyte);
+   writebyte = (uint8_t)((ms>>8) & 0xFF);
+   cc112xSpiWriteReg(radio_id, CC112X_SYMBOL_RATE1, &writebyte);
+   writebyte = (uint8_t)(((ms>>16) & 0x0F) | ((es<<4) & 0xF0));
+   cc112xSpiWriteReg(radio_id, CC112X_SYMBOL_RATE2, &writebyte);
+   
+   cc112xSpiWriteReg(radio_id, CC112X_DEVIATION_M , &m);
+   writebyte = (uint8_t)(((e<<4) & 0x07) | (0 << 3) |  (0<<6));  // (0<<3) - FSK mode
+   cc112xSpiWriteReg(radio_id, CC112X_MODCFG_DEV_E , &writebyte);
+
    
    return 0;  
    
