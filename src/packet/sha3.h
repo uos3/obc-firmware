@@ -32,14 +32,6 @@ SOFTWARE.
 
 #include "../firmware.h"
 
-#ifndef KECCAKF_ROUNDS
-#define KECCAKF_ROUNDS 24
-#endif
-
-#ifndef ROTL64
-#define ROTL64(x, y) (((x) << (y)) | ((x) >> (64 - (y))))
-#endif
-
 // state context
 typedef struct {
     union {                                 // state:
