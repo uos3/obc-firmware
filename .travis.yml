@@ -20,22 +20,18 @@ install:
   - if [ ! -e $GCC_DIR/bin/arm-none-eabi-gcc ]; then wget -nv $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME/compilers; fi
   - export PATH=$PATH:$GCC_DIR/bin
 
-# This sets all the targets for the CI builds
-#  Add new lines here for new boards/mains.
-#  A seperate job will run for each line.
-env:
-  - BOARD=uos3-proto MAIN=blinky
-  - BOARD=uos3-proto MAIN=serial-test
-  - BOARD=uos3-proto MAIN=tx-test
-  - BOARD=uos3-proto MAIN=txrx-uart
-  - BOARD=uos3-proto MAIN=i2ctest
-
-# The command that actually gets run:
-script: ./build -w $BOARD $MAIN
-
 jobs:
   include:
     - stage: tests
-      script: ./test $MODULE
       env:
         - MODULE=packet
+      script: ./test $MODULE
+    - stage: builds
+      env:
+        - BOARD=uos3-proto MAIN=blinky
+        - BOARD=uos3-proto MAIN=serial-test
+        - BOARD=uos3-proto MAIN=tx-test
+        - BOARD=uos3-proto MAIN=txrx-uart
+        - BOARD=uos3-proto MAIN=i2ctest
+      script: ./build -w $BOARD $MAIN
+
