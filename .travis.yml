@@ -2,6 +2,10 @@
 dist: trusty
 language: c
 
+# Only grab latest git commit (no need for history)
+git:
+  depth: 1
+
 # Cache the compilers folder so we don't have to download and unpack it for every build
 cache:
   directories:
