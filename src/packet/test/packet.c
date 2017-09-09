@@ -203,10 +203,15 @@ static bool test_pn9_xor(void)
 
 int main(void)
 {
+  bool test_state;
   Debug_print("## Packet Test ##\n");
 
-  assert_run(test_interleave(), "Packet Interleave");
-  assert_run(test_pn9_xor(), "Packet PN9 XOR");
+  test_state = true;
+  assert_run(test_interleave(), "Packet Interleave", test_state);
+  assert_run(test_pn9_xor(), "Packet PN9 XOR", test_state);
 
-  return 0;
+  if(test_state)
+    return 0;
+  else
+    return -1;
 }

@@ -179,11 +179,16 @@ cd "src/board/${board}"
 make ${flags} clean \
 && make ${flags} \
 && {
-	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" \
-  && print "$_INFO_$COLOUR_GREEN Running test..$COLOUR_OFF" \
-	&& test_run \
-	&& exit 0
+	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF"
 } || {
 	print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF" \
 	&& exit 1
+} \
+&& print "$_INFO_$COLOUR_GREEN Running Tests..$COLOUR_OFF" \
+&& test_run \
+&& {
+  print "$_INFO_$COLOUR_GREEN Tests Passed $COLOUR_OFF"
+} || {
+  print "$_ERROR_$COLOUR_RED Tests Failed $COLOUR_OFF" \
+  && exit 1
 }
