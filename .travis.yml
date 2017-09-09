@@ -32,3 +32,10 @@ env:
 
 # The command that actually gets run:
 script: ./build -w $BOARD $MAIN
+
+jobs:
+  include:
+    - stage: tests
+      script: ./test $MODULE
+      env:
+        - MODULE=packet
