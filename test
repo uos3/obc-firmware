@@ -48,6 +48,19 @@ print_err() {
         echo -e $@ >&$stderr
     fi
 }
+flash() {
+  flash_args="";
+  if $opt_sound; then flash_args="-s"; fi
+  ${source_dir}/flash ${flash_args} ${outdir}/${filename};
+}
+test_run() {
+  if [ ${board} == "gnulinux" ]
+  then
+    ${source_dir}/${outdir}/${filename}
+  else
+    flash
+  fi
+}
 
 hyphenjoin() {
   str=""
@@ -114,17 +127,21 @@ while getopts ":hmdsqvVw" opt; do
 done
 for i in `seq 2 $OPTIND`; do shift; done
 
-## Read Arguments
+board=${1,,}
+shift 
 module=${1,,}
 shift
 
 
 ## Check <program> argument
+if [ -z "$module" ]; then
+    module=$board
+    board="gnulinux" ## insert default option here
+fi
 if [ ! -e "src/${module}/test/${module}.c" ]; then
     print_err "$_ERROR_ Test file for module \"${module}\" not found"
     exit 1
 fi
-
 
 
 ## Set up Makefile Flags
@@ -138,7 +155,7 @@ fi
 outdir="builds"
 filename="test-$(hyphenjoin $module $flags $githash)"
 
-flags="BOARD=gnulinux MAIN=../${module}/test/${module} OUTDIR=${outdir} OUTFILE=\"${filename}\""
+flags="BOARD=${board} MAIN=../${module}/test/${module} OUTDIR=${outdir} OUTFILE=\"${filename}\""
 
 if $opt_osize; then
   print "$_INFO_ Compiler optimise for size (-Os):$COLOUR_RED ON $COLOUR_OFF"
@@ -158,13 +175,13 @@ if $opt_testverbose; then
 fi
 
 ## Change to board directory, make clean, make, then print summary message.
-cd "src/board/gnulinux"
+cd "src/board/${board}"
 make ${flags} clean \
 && make ${flags} \
 && {
 	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" \
   && print "$_INFO_$COLOUR_GREEN Running test..$COLOUR_OFF" \
-	&& ../../../${outdir}/${filename} \
+	&& test_run \
 	&& exit 0
 } || {
 	print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF" \

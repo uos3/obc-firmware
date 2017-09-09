@@ -10,11 +10,11 @@
 #define assert_run(t, s)                                        \
   if((t))                                                       \
   {                                                             \
-    printf("\033[1;32m[ PASS ]\033[0;32m " s "\033[0;00m\n");   \
+    Debug_print("\033[1;32m[ PASS ]\033[0;32m " s "\033[0;00m\n");   \
   }                                                             \
   else                                                          \
   {                                                             \
-    printf("\033[1;31m[ FAIL ]\033[0;31m " s "\033[0;00m\n");   \
+    Debug_print("\033[1;31m[ FAIL ]\033[0;31m " s "\033[0;00m\n");   \
   }
 
 #endif /*  __TEST_H__ */

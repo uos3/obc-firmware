@@ -9,14 +9,14 @@ static void buffer_print(uint8_t *buffer, uint32_t length)
   {
     if(row == 0)
     {
-      printf("\r\n");
+      Debug_print("\r\n");
       row = 20;
     }
-    printf("%4d", buffer[i]);
+    Debug_print("%4d", buffer[i]);
     row--;
     i++;
   }
-  printf("\r\n");
+  Debug_print("\r\n");
 }
 
 static void buffer_print_hex(uint8_t *buffer, uint32_t length)
@@ -27,14 +27,14 @@ static void buffer_print_hex(uint8_t *buffer, uint32_t length)
   {
     if(row == 0)
     {
-      printf("\r\n");
+      Debug_print("\r\n");
       row = 20;
     }
-    printf(" %02x", buffer[i]);
+    Debug_print(" %02x", buffer[i]);
     row--;
     i++;
   }
-  printf("\r\n");
+  Debug_print("\r\n");
 }
 
 #define PACKET_LENGTH 1048
@@ -57,20 +57,20 @@ static bool test_interleave(void)
 
   if(TEST_VERBOSE)
   {
-    printf("Original packet\r\n");
+    Debug_print("Original packet\r\n");
     buffer_print(packet_original, PACKET_LENGTH);
   }
 
   /* Interleave packet */
   if(TEST_VERBOSE)
   {
-    printf("Interleaving packet..\r\n");
+    Debug_print("Interleaving packet..\r\n");
   }
   packet_interleave(packet_original, packet_interleaved, PACKET_X, PACKET_Y);
 
   if(TEST_VERBOSE)
   {
-    printf("Interleaved packet\r\n");
+    Debug_print("Interleaved packet\r\n");
     buffer_print(packet_interleaved, PACKET_LENGTH);
   }
 
@@ -78,7 +78,7 @@ static bool test_interleave(void)
 
   if(TEST_VERBOSE)
   {
-    printf("Un-interleaved packet\r\n");
+    Debug_print("Un-interleaved packet\r\n");
     buffer_print(packet_original, PACKET_LENGTH);
   }
 
@@ -154,20 +154,20 @@ static bool test_pn9_xor(void)
 {
   if(TEST_VERBOSE)
   {
-    printf("Original null test packet\r\n");
+    Debug_print("Original null test packet\r\n");
     buffer_print_hex(packet_null_test, PACKET_NULL_LENGTH);
   }
 
   /* XOR packet */
   if(TEST_VERBOSE)
   {
-    printf("PN9 XORing null packet..\r\n");
+    Debug_print("PN9 XORing null packet..\r\n");
   }
   packet_pn9_xor(packet_null_test, PACKET_NULL_LENGTH);
 
   if(TEST_VERBOSE)
   {
-    printf("PN9 XORed packet\r\n");
+    Debug_print("PN9 XORed packet\r\n");
     buffer_print_hex(packet_null_test, PACKET_NULL_LENGTH);
   }
 
@@ -180,13 +180,13 @@ static bool test_pn9_xor(void)
   /* XOR packet */
   if(TEST_VERBOSE)
   {
-    printf("PN9 XORing test packet..\r\n");
+    Debug_print("PN9 XORing test packet..\r\n");
   }
   packet_pn9_xor(packet_null_test, PACKET_NULL_LENGTH);
 
   if(TEST_VERBOSE)
   {
-    printf("PN9 double-XORed packet (should be null)\r\n");
+    Debug_print("PN9 double-XORed packet (should be null)\r\n");
     buffer_print_hex(packet_null_test, PACKET_NULL_LENGTH);
   }
 
@@ -203,7 +203,7 @@ static bool test_pn9_xor(void)
 
 int main(void)
 {
-  printf("## Packet Test ##\n");
+  Debug_print("## Packet Test ##\n");
 
   assert_run(test_interleave(), "Packet Interleave");
   assert_run(test_pn9_xor(), "Packet PN9 XOR");
