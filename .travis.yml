@@ -20,16 +20,16 @@ install:
   - if [ ! -e $GCC_DIR/bin/arm-none-eabi-gcc ]; then wget -nv $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME/compilers; fi
   - export PATH=$PATH:$GCC_DIR/bin
 
-jobs:
-  include:
-    - script: ./test $MODULE
-      env:
-        - MODULE=packet
-    - script: ./build -w $BOARD $MAIN
-      env:
-        - BOARD=uos3-proto MAIN=blinky
-        - BOARD=uos3-proto MAIN=serial-test
-        - BOARD=uos3-proto MAIN=tx-test
-        - BOARD=uos3-proto MAIN=txrx-uart
-        - BOARD=uos3-proto MAIN=i2ctest
+env:
+  - BOARD=uos3-proto MAIN=blinky
+  - BOARD=uos3-proto MAIN=serial-test
+  - BOARD=uos3-proto MAIN=tx-test
+  - BOARD=uos3-proto MAIN=txrx-uart
+  - BOARD=uos3-proto MAIN=i2ctest
 
+script: ./build -w $BOARD $MAIN
+
+env:
+  - MODULE=packet
+
+script: ./test $MODULE
