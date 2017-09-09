@@ -7,7 +7,7 @@ FW_ROOT=../../..
 include ${FW_ROOT}/src/firmware.mk
 BOARD_INCLUDE="-DBOARD_INCLUDE=\"board/${BOARD}/board.h\""
 
-CFLAGS += -std=c99 \
+CFLAGS += -std=gnu99 \
       -Wall \
 			-Wextra \
 			-Wpedantic \
