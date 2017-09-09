@@ -1,25 +1,5 @@
 #include "../../firmware.h"
-
-#include <stdio.h>
-#include <string.h>
-
-#define assert_run(t, s)                                        \
-  if((t))                                                       \
-  {                                                             \
-    printf("\033[1;32m[ PASS ]\033[0;32m " s "\033[0;00m\n");   \
-  }                                                             \
-  else                                                          \
-  {                                                             \
-    printf("\033[1;31m[ FAIL ]\033[0;31m " s "\033[0;00m\n");   \
-  }
-
-
-#define TEST_VERBOSE	false
-
-#define PACKET_LENGTH 1048
-// 1048 is divisible by 1 2 4 8 131 262 524 1048, so we pick 8*131
-#define PACKET_X  8
-#define PACKET_Y  131
+#include "../../test.h"
 
 static void buffer_print(uint8_t *buffer, uint32_t length)
 {
@@ -32,7 +12,7 @@ static void buffer_print(uint8_t *buffer, uint32_t length)
       printf("\r\n");
       row = 20;
     }
-    printf("%3d", buffer[i]);
+    printf("%4d", buffer[i]);
     row--;
     i++;
   }
@@ -50,12 +30,17 @@ static void buffer_print_hex(uint8_t *buffer, uint32_t length)
       printf("\r\n");
       row = 20;
     }
-    printf("  0x%02x,", buffer[i]);
+    printf(" %02x", buffer[i]);
     row--;
     i++;
   }
   printf("\r\n");
 }
+
+#define PACKET_LENGTH 1048
+// 1048 is divisible by 1 2 4 8 131 262 524 1048, so we pick 8*131
+#define PACKET_X  8
+#define PACKET_Y  131
 
 static uint8_t packet_original[PACKET_LENGTH];
 
@@ -108,6 +93,7 @@ static bool test_interleave(void)
 }
 
 #define PACKET_NULL_LENGTH  1024
+static uint8_t packet_null_reference[PACKET_NULL_LENGTH] = { 0 };
 static uint8_t packet_null_test[PACKET_NULL_LENGTH] = { 0 };
 static uint8_t packet_null_xor[PACKET_NULL_LENGTH] = {
   0xff,  0xe1,  0x1d,  0x9a,  0xed,  0x85,  0x33,  0x24,  0xea,  0x7a,  0xd2,  0x39,  0x70,  0x97,  0x57,  0x0a,  0x54,  0x7d,  0x2d,  0xd8,
@@ -164,11 +150,11 @@ static uint8_t packet_null_xor[PACKET_NULL_LENGTH] = {
   0xbe,  0x07,  0xff,  0xe1
 };
 
-static bool test_pn9_xor_null(void)
+static bool test_pn9_xor(void)
 {
   if(TEST_VERBOSE)
   {
-    printf("Original null packet\r\n");
+    printf("Original null test packet\r\n");
     buffer_print_hex(packet_null_test, PACKET_NULL_LENGTH);
   }
 
@@ -185,7 +171,27 @@ static bool test_pn9_xor_null(void)
     buffer_print_hex(packet_null_test, PACKET_NULL_LENGTH);
   }
 
-  if(memcmp(packet_null_test, packet_null_xor, PACKET_NULL_LENGTH) == 0)
+  /* Compare against stored pn9 sequence */
+  if(memcmp(packet_null_test, packet_null_xor, PACKET_NULL_LENGTH) != 0)
+  {
+    return false;
+  }
+
+  /* XOR packet */
+  if(TEST_VERBOSE)
+  {
+    printf("PN9 XORing test packet..\r\n");
+  }
+  packet_pn9_xor(packet_null_test, PACKET_NULL_LENGTH);
+
+  if(TEST_VERBOSE)
+  {
+    printf("PN9 double-XORed packet (should be null)\r\n");
+    buffer_print_hex(packet_null_test, PACKET_NULL_LENGTH);
+  }
+
+  /* Compare against stored null sequence */
+  if(memcmp(packet_null_test, packet_null_reference, PACKET_NULL_LENGTH) == 0)
   {
     return true;
   }
@@ -200,8 +206,7 @@ int main(void)
   printf("## Packet Test ##\n");
 
   assert_run(test_interleave(), "Packet Interleave");
-
-  assert_run(test_pn9_xor_null(), "Packet PN9 XOR Null");
+  assert_run(test_pn9_xor(), "Packet PN9 XOR");
 
   return 0;
 }

@@ -111,6 +111,10 @@ ifneq ($(WERROR_ON),)
   CFLAGS += -Werror
 endif
 
+ifneq ($(TESTVERBOSE_ON),)
+  CFLAGS += -DTEST_VERBOSE=true
+endif
+
 FW_SRCS+= $(wildcard ./*.c)
 
 #
