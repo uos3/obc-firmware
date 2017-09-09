@@ -22,16 +22,14 @@ install:
 
 jobs:
   include:
-    - stage: tests
+    - script: ./test $MODULE
       env:
         - MODULE=packet
-      script: ./test $MODULE
-    - stage: builds
+    - script: ./build -w $BOARD $MAIN
       env:
         - BOARD=uos3-proto MAIN=blinky
         - BOARD=uos3-proto MAIN=serial-test
         - BOARD=uos3-proto MAIN=tx-test
         - BOARD=uos3-proto MAIN=txrx-uart
         - BOARD=uos3-proto MAIN=i2ctest
-      script: ./build -w $BOARD $MAIN
 
