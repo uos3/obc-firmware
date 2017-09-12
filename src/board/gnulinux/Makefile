@@ -41,6 +41,7 @@ SRCS = $(FW_SRCS) \
 LIBS = -lm -lrt
 
 compile:
+	@mkdir -p ${FW_ROOT}/${OUTDIR}/
 	@if [ 'x${VERBOSE_ON}' = x ];                               \
 	then                                                    \
 	    echo "Compiling..";                                \
