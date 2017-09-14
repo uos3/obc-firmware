@@ -7,7 +7,7 @@
 #
 # usage: python serial_test 
 
-import serial, time, sys
+import serial, time, sys, csv
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -47,14 +47,13 @@ mag_z=list()
 temp=list()
 time=list()
 
-
 def capture_data_block(s,n):     
        i=0
-     
        plt.ion()
-       fig=plt.figure()
 
        print "Preparing to capture data - {} consecutive packets".format(n+1)
+ 
+       update_count=50
        
        for i in range (0, n): # plot for this long
           while True:                 # loop through serial data until find start of frame marker
@@ -78,37 +77,70 @@ def capture_data_block(s,n):
           temp.append(w(tem,0)) 
           time.append(i)
        
-          plt.plot(gyr_x,'-', color='blue',label='Gyr x')
-          plt.plot(gyr_y,'-', color='lightblue',label='Gyr y')
-          plt.plot(gyr_z,'-', color='darkblue',label='Gyr z')
-          plt.plot(acc_x,'-', color='red',label='Acc x')
-          plt.plot(acc_y,'-', color='orange',label='Acc y')
-          plt.plot(acc_z,'-', color='magenta',label='Acc z')
-          plt.plot(mag_x,'-', color='green',label='Mag x')
-          plt.plot(mag_y,'-', color='darkgreen',label='Mag y')
-          plt.plot(mag_z,'-', color='olive',label='Mag z')
-          plt.plot(temp,'-', color='yellow',label='Temp')
-          drawnow(make_fig)
+          if ((i % update_count)==0):
+              drawnow(make_fig)
           i=i+1
       
-       print "Finished Graphing data"
-       ioff()
-       plt.axis([0,n,-32768,32767])
-       plt.legend()
-       plt.grid()
-       plt.title("IMU data sampled at {} consecutive packets".format(n+1))
+       print "Finished Acquiring data"
+       plt.ioff()
+       plt.close()
+      # plt.draw()
+      # plt.legend()
+     #  plt.grid()
+#       plt.savefig('imu_perf.jpg',dpi=300)
+
+
+
+       print "Here we go!"   # render in 4 subplot grid for easy access    
+       fig,(ax1,ax2,ax3,ax4)=plt.subplots(4,sharex=True,sharey=True)
+   
+       mng=plt.get_current_fig_manager() # pita to get it to maximise figure window
+       mng.resize(*mng.window.maxsize())
+       ax1.set_autoscaley_on(False)
+       ax1.set_ylim([-32768,32767])
+       ax1.grid()
+       ax2.grid()
+       ax3.grid()
+       ax4.grid()
+       fig.subplots_adjust(hspace=0)
+       ax1.set_title("IMU Data sampled over {} packets".format(n))
+       ax1.plot(gyr_x,'-', color='red',label='Gyr x')
+       ax1.plot(gyr_y,'-', color='green',label='Gyr y')
+       ax1.plot(gyr_z,'-', color='blue',label='Gyr z')
+       ax2.plot(acc_x,'-', color='red',label='Acc x')
+       ax2.plot(acc_y,'-', color='green',label='Acc y')
+       ax2.plot(acc_z,'-', color='blue',label='Acc z')
+       ax3.plot(mag_x,'-', color='red',label='Mag x')
+       ax3.plot(mag_y,'-', color='green',label='Mag y')
+       ax3.plot(mag_z,'-', color='blue',label='Mag z')
+       ax4.plot(temp,'-', color='red',label='Temp')
+#       box=ax1.get_position()
+#       ax1.set_position([box.x0,box.y0,box.width*0.8,box.height])
+       ax1.legend(bbox_to_anchor=(1.05,1))
+       ax2.legend(bbox_to_anchor=(1.05,1))
+       ax3.legend(bbox_to_anchor=(1.05,1))
+       ax4.legend(bbox_to_anchor=(1.05,1))
        plt.draw()
        plt.show()
-       plt.savefig('imu_perf.jpg',dpi=300)
+       print "saving plot as imu_data.pdf"
+       fig.savefig("imu_data.pdf",dpi=300)
+       print "Ready to save data to csv as imu_data.csv"
+       print "Files saved to current working directory"
        plt.close()
-   
-       
+  
+       with open('imu_data.csv','w') as f:
+          fieldnames=['Gyr_x','Gyr_y','Gyr_z','Acc_x','Acc_y','Acc_z','Mag_x','Mag_y','Mag_z','Temp']
+          writer=csv.writer(f,delimiter=',')
+          writer.writerow(fieldnames)
+          for i in range(0,n):
+           writer.writerow([gyr_x[i],gyr_y[i],gyr_z[i],acc_x[i],acc_y[i],acc_z[i],mag_x[i],mag_y[i],mag_z[i],temp[i]])
+       f.close()      
 
 def main():
-	s = init_serial(9600)
+	s = init_serial(115200)
         print "Analysing serial input..."
 
-        capture_data_block(s,100) # serial port and samples
+        capture_data_block(s,500) # serial port and samples
 
 # this is the code for just displaying the data, thx to pythons wonderfully simple commenting it is a pita to comment out
 

@@ -1,11 +1,11 @@
 
-// UART passthrough  with debug code
+// UART passthrough code
 //
-// Suzanna Lucarotti (c) 13/9/2017
+// Suzanna Lucarotti (c) 11/8/2017
 //
 // for use with the UoS3 Cubesat
 //
-// should effectively remove module, allowing testing of interfaces through board, with codes coming back converted into hex for clarity
+// should effectively remove module, allowing testing of interfaces through board
 
 
 #include "../firmware.h"
@@ -52,7 +52,7 @@ int main(void)
   {    
     char c; // echo back to sending port
     if (UART_getc_nonblocking(GPS_SERIAL,&c)) {UART_putc_nonblocking(CAM_SERIAL,c); } // input
-    if (UART_getc_nonblocking(CAM_SERIAL,&c)) {UART_putc_nonblocking(GPS_SERIAL,c); } //output
+    if (UART_getc_nonblocking(CAM_SERIAL,&c)) {UART_putstr(GPS_SERIAL,"[",c,"]");  } //output
   
    }
   WDT_kick();

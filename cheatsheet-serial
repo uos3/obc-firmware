@@ -6,3 +6,7 @@ screen /dev/ttyACM1 9600
 to exit it
 
 Ctrl-A then k then y
+
+to close process when incorrectly exitted, screen -dr will reattach to it
+and then can exit
+

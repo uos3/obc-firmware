@@ -72,7 +72,7 @@ int main(void)
   Board_init(); // start the board
   WDT_kick(); // kick the watchdog
 
-  UART_init(DEBUG_SERIAL, 9600);   //DISP1("\n\n\r   I2C Satellite I2C IMU test.\n")
+  UART_init(DEBUG_SERIAL, 115200);   //DISP1("\n\n\r   I2C Satellite I2C IMU test.\n")
 
  // start the console, print bootup message (below)
 
