@@ -7,7 +7,8 @@ FW_ROOT=../../..
 include ${FW_ROOT}/src/firmware.mk
 BOARD_INCLUDE="-DBOARD_INCLUDE=\"board/${BOARD}/board.h\""
 
-CFLAGS += -Wall \
+CFLAGS += -std=gnu99 \
+      -Wall \
 			-Wextra \
 			-Wpedantic \
 			-Wswitch-default \
@@ -30,13 +31,24 @@ else
   CFLAGS += -O0
 endif
 
+ifneq ($(TESTVERBOSE_ON),)
+  CFLAGS += -DTEST_VERBOSE=true
+endif
+
 SRCS = $(FW_SRCS) \
 	$(wildcard ./*.c)
 
 LIBS = -lm -lrt
 
 compile:
-	$(CC) $(USE_OPT) $(CFLAGS) $(BOARD_INCLUDE) $(DEFINES) $(SRCS) -o ${FW_ROOT}/${OUTDIR}/${OUTFILE} $(LIBS)
+	@mkdir -p ${FW_ROOT}/${OUTDIR}/
+	@if [ 'x${VERBOSE_ON}' = x ];                               \
+	then                                                    \
+	    echo "Compiling..";                                \
+	else                                                    \
+	    echo $(CC) $(USE_OPT) $(CFLAGS) $(BOARD_INCLUDE) $(DEFINES) $(SRCS) -o ${FW_ROOT}/${OUTDIR}/${OUTFILE} $(LIBS); \
+	fi
+	@$(CC) $(USE_OPT) $(CFLAGS) $(BOARD_INCLUDE) $(DEFINES) $(SRCS) -o ${FW_ROOT}/${OUTDIR}/${OUTFILE} $(LIBS)
 
 clean:
-	rm -frv *.o ${FW_ROOT}/${OUTDIR}/${OUTFILE}
+	@rm -fr *.o ${FW_ROOT}/${OUTDIR}/${OUTFILE}

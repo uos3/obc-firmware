@@ -3,8 +3,10 @@
 #ifndef __FIRMWARE_H__
 #define __FIRMWARE_H__
 
+#include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 /* Board-specific header file, completed by macro: 'board/<board>/board.h' */
 #include BOARD_INCLUDE
@@ -22,6 +24,11 @@
 /* radio stuff */
 #include "cc1125/cc112x_spi.h"
 #include "cc1125/cc1125.h"
+
+/* Packet */
+#include "packet/packet.h"
+#include "packet/sha3.h"
+#include "packet/crc16.h"
 
 /* get Suzi's modules */
 

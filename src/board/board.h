@@ -1,8 +1,7 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "../firmware.h"
 
 void Board_init(void);
 
