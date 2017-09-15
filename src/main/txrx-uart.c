@@ -25,10 +25,10 @@ char uart_in_buff[UART_BUFF_LEN] = {0};
 char uart_out_buff[UART_BUFF_LEN] = {0};
 
 
-void SysTickIntHandler(void)
-{
-    WDT_kick();
-}
+//void SysTickIntHandler(void)
+//{
+//    WDT_kick();
+//}
 
 
 int main(void)
