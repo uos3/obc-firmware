@@ -27,7 +27,6 @@ env:
   - A=build P=uos3-proto M=serial-test
   - A=build P=uos3-proto M=tx-test
   - A=build P=uos3-proto M=txrx-uart
-  - A=build P=uos3-proto M=i2ctest
 
 
 script: ./$A -w $P $M
