@@ -207,6 +207,8 @@ void tx_packets_option(void){
 
       SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
       uint32_t ui32Loop;
+      
+      //TODO: wait for packet to end instead of jsut having a wait
       for(ui32Loop = 0; ui32Loop < 3000000; ui32Loop++) {};
       
    }

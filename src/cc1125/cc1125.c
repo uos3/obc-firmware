@@ -53,18 +53,20 @@ uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *d
       e--;
       m = (uint8_t)(((((uint64_t)(*deviation) * (1<<24))/CC_XO_FREQ) >> e) - 256); 
    }
+   if (e > 7)
+      return 1;
    
    //symbol rate
    uint64_t s,s1;
    uint32_t ms;
    uint8_t es;
    
-   s = ((uint64_t)(*symbol_rate) * ((uint64_t)1<<39))/((uint64_t)CC_XO_FREQ*1000);
+   s = ((uint64_t)(*symbol_rate) * ((uint64_t)1<<39))/((uint64_t)CC_XO_FREQ);
    s1 = s >> 20;
    
    if (s1 < 2){
       es = 0;
-      ms = (uint32_t)(((uint64_t)(*symbol_rate) * ((uint64_t)1<<38))/((uint64_t)CC_XO_FREQ*1000));
+      ms = (uint32_t)(((uint64_t)(*symbol_rate) * ((uint64_t)1<<38))/((uint64_t)CC_XO_FREQ));
    }
    else{
       es = 0;
@@ -73,16 +75,11 @@ uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *d
          es++;
       }
       es--;
-      ms = (uint32_t)(((((uint64_t)(*symbol_rate) * ((uint64_t)1<<39))/((uint64_t)CC_XO_FREQ*1000)) >> es) - ((uint64_t)1<<20)); 
+      ms = (uint32_t)(((((uint64_t)(*symbol_rate) * ((uint64_t)1<<39))/((uint64_t)CC_XO_FREQ)) >> es) - ((uint64_t)1<<20)); 
    }
-   
-   
-   //char buff[30];
-   //snprintf(buff, 30, "\n\n%li, %i, %i, %lli, %lli\n\n",*deviation, e,m,d1,d);
-   //UART_puts(UART_CAM_HEADER, buff);
-   //snprintf(buff, 30, "\n\n%li, %i, %li, %lli, %lli,   %lli  %lli\n\n",*deviation, es,ms,s1,s);
-   //UART_puts(UART_CAM_HEADER, buff);
-   
+   if (es > 15)
+      return 1;
+  
    
    
    // work back to calculate the actual values
@@ -92,9 +89,9 @@ uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *d
       *deviation = (uint32_t)((CC_XO_FREQ * (256+(uint64_t)m) ) >> (24-e));
    
    if (es == 0)
-      *symbol_rate = (uint32_t)((((uint64_t)CC_XO_FREQ*1000) * ms ) >> 38);
+      *symbol_rate = (uint32_t)((((uint64_t)CC_XO_FREQ) * ms ) >> 38);
    else
-      *symbol_rate = (uint32_t)((((uint64_t)CC_XO_FREQ*1000) * ((1<<20)+(uint64_t)ms) ) >> (39-es));
+      *symbol_rate = (uint32_t)((((uint64_t)CC_XO_FREQ) * ((1<<20)+(uint64_t)ms) ) >> (39-es));
    
 
    uint8_t writebyte;
@@ -106,9 +103,17 @@ uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *d
    cc112xSpiWriteReg(radio_id, CC112X_SYMBOL_RATE2, &writebyte);
    
    cc112xSpiWriteReg(radio_id, CC112X_DEVIATION_M , &m);
-   writebyte = (uint8_t)(((e<<4) & 0x07) | (0 << 3) |  (0<<6));  // (0<<3) - FSK mode
+   writebyte = (uint8_t)((e & 0x07) | (0 << 3) |  (0<<6));  // (0<<3) - FSK mode
    cc112xSpiWriteReg(radio_id, CC112X_MODCFG_DEV_E , &writebyte);
 
+      
+   
+   char buff[30];
+   snprintf(buff, 30, "\n\n%02x  %02x  %02x\n\n",((ms>>16) & 0x0F) | ((es<<4) & 0xF0), (ms>>8) & 0xFF,  (ms & 0xFF) );
+   UART_puts(UART_CAM_HEADER, buff);
+   snprintf(buff, 30, "\n\n%02x  %02x \n\n",(uint8_t)((e & 0x07) | (0 << 3) |  (0<<6)), m);
+   UART_puts(UART_CAM_HEADER, buff);
+   
    
    return 0;  
    

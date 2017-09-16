@@ -2,10 +2,10 @@
 
 static const registerSetting_t preferredSettings_fsk[]= 
 {
-  {CC112X_IOCFG3,            0xB0},
-  {CC112X_IOCFG2,            0x06},
+  {CC112X_IOCFG3,            0x59},
+  {CC112X_IOCFG2,            0x13},
   {CC112X_IOCFG1,            0xB0},
-  {CC112X_IOCFG0,            0x40},
+  {CC112X_IOCFG0,            0x06},
   {CC112X_SYNC_CFG1,         0x0B},
   {CC112X_DEVIATION_M,       0xDA},
   {CC112X_MODCFG_DEV_E,      0x00},
@@ -25,6 +25,7 @@ static const registerSetting_t preferredSettings_fsk[]=
   {CC112X_SETTLING_CFG,      0x03},
   {CC112X_FS_CFG,            0x1B},
   {CC112X_PKT_CFG0,          0x20},
+  {CC112X_PKT_CFG1,          0x05},
   {CC112X_PA_CFG0,           0x7E},
   {CC112X_PKT_LEN,           0xFF},
   {CC112X_IF_MIX_CFG,        0x00},
