@@ -7,13 +7,14 @@ echo 'Checking git branch'
 # Exit unless we're on the master branch
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if [[ "$BRANCH" != "master" ]]; then
+  echo 'Git branch is not master. Branch is ${BRANCH}';
   exit 0;
 fi
 
 # Exit with nonzero exit code if anything fails
 set -e
 
-echo 'Setting up SSH key'
+echo 'Decrypting SSH key'
 # Get the deploy key by using Travis's stored variables to decrypt travis-deploy.enc
 openssl aes-256-cbc -iv ${DEPLOY_KEY_IV} -K ${DEPLOY_KEY_KEY} -in travis-deploy.enc -out deploy_key -d
 chmod 600 deploy_key
