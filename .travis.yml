@@ -20,6 +20,16 @@ install:
   - if [ ! -e $GCC_DIR/bin/arm-none-eabi-gcc ]; then wget -nv $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME/compilers; fi
   - export PATH=$PATH:$GCC_DIR/bin
 
+# Install doxygen dependencies
+addons:
+  apt:
+    packages:
+      - doxygen
+      - doxygen-doc
+      - doxygen-latex
+      - doxygen-gui
+      - graphviz
+
 env:
   - A=test P=gnulinux M=packet
   
@@ -30,3 +40,6 @@ env:
 
 
 script: ./$A -w $P $M
+
+after_success:
+  - tools/travis_doxygen_docs.sh
