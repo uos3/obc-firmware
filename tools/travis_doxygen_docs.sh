@@ -1,4 +1,4 @@
-#!/usr/bin/env /bin/bash
+#!/usr/bin/env bash
 
 COLOUR_GREEN='\033[0;32m'
 COLOUR_YELLOW='\033[1;33m'
@@ -10,6 +10,10 @@ CLEAR_LINE='\033[2K'
 _ERROR_="$COLOUR_RED[ERROR]$COLOUR_OFF"
 _INFO_="$COLOUR_PURPLE[INFO]$COLOUR_OFF"
 _DEBUG_="$COLOUR_YELLOW[DEBUG]$COLOUR_OFF"
+
+print() {
+    echo -e $@
+}
 
 # Exit with nonzero exit code if anything fails
 set -e
