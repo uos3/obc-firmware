@@ -41,5 +41,7 @@ env:
 
 script: ./$A -w $P $M
 
-after_success:
-  - tools/travis_doxygen_docs.sh
+jobs:
+  include:
+    - stage: Doxygen
+      script: tools/travis_doxygen_docs.sh
