@@ -21,14 +21,7 @@ install:
   - export PATH=$PATH:$GCC_DIR/bin
 
 # Install doxygen dependencies
-addons:
-  apt:
-    packages:
-      - doxygen
-      - doxygen-doc
-      - doxygen-latex
-      - doxygen-gui
-      - graphviz
+
 
 env:
   - A=test P=gnulinux M=packet
@@ -44,4 +37,12 @@ script: ./$A -w $P $M
 jobs:
   include:
     - stage: Doxygen
+      addons:
+        apt:
+          packages:
+            - doxygen
+            - doxygen-doc
+            - doxygen-latex
+            - doxygen-gui
+            - graphviz
       script: tools/travis_doxygen_docs.sh
