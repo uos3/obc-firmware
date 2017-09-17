@@ -7,7 +7,7 @@ echo 'Checking git branch'
 # Exit unless we're on the master branch
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if [[ "$BRANCH" != "master" ]]; then
-  echo 'Git branch is not master. Branch is ${BRANCH}';
+  echo "Git branch is not master. Branch is ${BRANCH}";
   exit 0;
 fi
 
