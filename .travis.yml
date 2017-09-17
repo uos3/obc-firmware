@@ -45,4 +45,6 @@ jobs:
             - doxygen-latex
             - doxygen-gui
             - graphviz
+      env: 
+      install: skip
       script: tools/travis_doxygen_docs.sh
