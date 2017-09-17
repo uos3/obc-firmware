@@ -37,6 +37,8 @@ script: ./$A -w $P $M
 jobs:
   include:
     - stage: Doxygen
+      if: branch = master
+      install: skip
       addons:
         apt:
           packages:
@@ -46,5 +48,4 @@ jobs:
             - doxygen-gui
             - graphviz
       env: 
-      install: skip
       script: tools/travis_doxygen_docs.sh
