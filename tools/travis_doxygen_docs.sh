@@ -1,7 +1,7 @@
 #!/usr/bin/env /bin/bash
 
 source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
-cd "$source_dir"0;
+cd "$source_dir";
 
 # Exit with nonzero exit code if anything fails
 set -e

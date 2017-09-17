@@ -38,6 +38,7 @@ jobs:
   include:
     - stage: Doxygen
       if: branch = master
+      cache: skip
       install: skip
       addons:
         apt:
