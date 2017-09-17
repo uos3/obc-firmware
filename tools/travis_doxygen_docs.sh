@@ -15,7 +15,7 @@ ssh-add deploy_key
 
 echo 'Cloning repository'
 # Get the current gh-pages branch
-git clone -b gh-pages $GH_REPO_REF gh-pages
+git clone -b gh-pages ssh://git@github.com:/${TRAVIS_REPO_SLUG} gh-pages
 cd gh-pages
 
 echo 'Configuring git'
