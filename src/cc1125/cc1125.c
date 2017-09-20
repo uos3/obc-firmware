@@ -19,6 +19,75 @@ bool cc1125_pollGPIO(uint8_t gpio_pin)
 }
 
 /*******************************************************************************
+*   @fn         radio_set_rxbw_param
+*
+*   @brief      Sets the RX bandwidth. Will overwrite the input value with the
+*               actual value. Call only when in 'idle' state.
+*
+*   @param      radio_id - select the radio to use
+*               *rxbw - pointer to the requested RX bandwidth (Hz)
+*
+*   @return     0 - changed sucessfully; 1 - error, freq not set
+*/
+uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw){ //, uint32_t *symrate){
+   
+   
+   uint8_t d_fact[4]
+   uint8_t i,sm;
+   uint32_t err, sm_err;
+   int32_t bw[4];
+   
+   // first try with cic = 20
+   d_fact[0] = (uint32_t)CC_XO_FREQ/(*rxbw)/8/20;
+   d_fact[1] = d_fact[0]+1;
+   
+   // also try with cic = 32
+   d_fact[2] = (uint32_t)CC_XO_FREQ/(*rxbw)/8/32;
+   d_fact[3] = d_fact[2]+1;
+   
+   //set limits
+   for (i = 0; i < 4; i++){
+      if (d_fact[i] < 1)
+         d_fact[i] = 1;
+      if (d_fact[i] > 44)
+         d_fact[i] = 44;
+   }
+   
+   //work back to get the actual BWs   
+   bw[0] = (uint32_t)CC_XO_FREQ/d_fact[0]/8/20;
+   bw[1] = (uint32_t)CC_XO_FREQ/d_fact[1]/8/20;
+   bw[2] = (uint32_t)CC_XO_FREQ/d_fact[2]/8/32;
+   bw[3] = (uint32_t)CC_XO_FREQ/d_fact[3]/8/32;
+     
+   
+   sm_err = 1<<30;
+   sm = 0;
+   for (i = 0; i < 4; i++){
+      err = abs(bw[0]-(int32_t)(*rxbw));
+      if (err < sm_err){
+         sm_err = err;
+         sm = i;
+      }
+   }
+   
+   uint8_t reg = 0;
+   
+   // set ADC_CIC_DECFACT to 20 (0) or 32 (1)
+   if (sm <= 1)
+      reg = (0<<6);
+   else
+      reg = (1<<6);
+   
+   reg |= (d_fact[sm] & 0x3F);
+   
+   *rxbw = bw[sm];
+   
+   return 0;   
+   
+}
+
+
+/*******************************************************************************
 *   @fn         radio_set_fsk_param
 *
 *   @brief      Sets the FSK symbol rate and deviation to the requested values.
@@ -107,13 +176,13 @@ uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *d
    cc112xSpiWriteReg(radio_id, CC112X_MODCFG_DEV_E , &writebyte);
 
       
-   
+   /*
    char buff[30];
    snprintf(buff, 30, "\n\n%02x  %02x  %02x\n\n",((ms>>16) & 0x0F) | ((es<<4) & 0xF0), (ms>>8) & 0xFF,  (ms & 0xFF) );
    UART_puts(UART_CAM_HEADER, buff);
    snprintf(buff, 30, "\n\n%02x  %02x \n\n",(uint8_t)((e & 0x07) | (0 << 3) |  (0<<6)), m);
    UART_puts(UART_CAM_HEADER, buff);
-   
+   */
    
    return 0;  
    

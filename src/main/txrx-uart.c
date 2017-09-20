@@ -17,9 +17,12 @@
 
 void cw_tone_option(void);
 void tx_packets_option(void);
-uint8_t ui_set_freq_power(void);
-
+uint8_t ui_set_sym_dev(uint8_t radio_id);
+uint8_t ui_set_freq_power(uint8_t radio_id);
+uint8_t ui_set_power(uint8_t radio_id);
+uint8_t ui_set_freq(uint8_t radio_id);
 char wait_for_response_char(void);
+
 uint16_t wait_for_response_ln(void);
 
 #define UART_BUFF_LEN 100
@@ -116,53 +119,11 @@ uint16_t wait_for_response_ln(void){
    return p;   
 }
 
-uint8_t ui_set_freq_power(void){
-   double pwr, freq;
-   uint8_t r;
-   uint8_t pwr_reg=0;
-   
-   UART_puts(UART, "Enter frequency (MHz): ");
-   //uint16_t res = wait_for_response_ln();
-   wait_for_response_ln();
-   freq = atof(uart_in_buff);
-   r = radio_set_freq_f(SPI_RADIO_TX, &freq);
-   snprintf(uart_out_buff, UART_BUFF_LEN, "%3.3f MHz\n", freq);
-   if (r){
-      UART_puts(UART, "Error in frequency entered: ");
-      UART_puts(UART, uart_out_buff);
-      return 1;
-   }
-   UART_puts(UART, "Setting frequency to ");
-   UART_puts(UART, uart_out_buff);
-   
-   UART_puts(UART, "Enter power (dBm): ");
-   
-   //res = wait_for_response_ln();
-   wait_for_response_ln();
-   pwr = atof(uart_in_buff);
-   r = radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
-   snprintf(uart_out_buff, UART_BUFF_LEN, "%2.1f dBm (reg = %i)\n", pwr, pwr_reg);
-   if (r){
-      UART_puts(UART, "Error in power entered: ");
-      UART_puts(UART, uart_out_buff);
-      return 1;
-   }
-   UART_puts(UART, "Setting power to ");
-   UART_puts(UART, uart_out_buff);
-   return 0;
-}
-
-void tx_packets_option(void){
-   
+uint8_t ui_set_sym_dev(uint8_t radio_id){
    uint32_t symrate, deviation;
    uint8_t r;
-   
-   UART_puts(UART, "\nTX FSK packets selected\n");
-   
-   radio_reset_config(SPI_RADIO_TX, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
       
-   if (ui_set_freq_power())
-      return;
+   
    
    UART_puts(UART, "Enter symbol rate (/sec, default: 1000 /sec): ");
    wait_for_response_ln();
@@ -178,21 +139,123 @@ void tx_packets_option(void){
    if (deviation == 0)
       deviation = 2000;
    
-   r = radio_set_fsk_param(SPI_RADIO_TX, &symrate, &deviation);
+   r = radio_set_fsk_param(radio_id, &symrate, &deviation);
    snprintf(uart_out_buff, UART_BUFF_LEN, "%li, %li\n", symrate, deviation);
    if (r){
       UART_puts(UART, "\nError in symbol rate, deviation settings entered: ");
       UART_puts(UART, uart_out_buff);
-      return;
+      return 1;
    }
    UART_puts(UART, "\nSetting symbol rate, deviation settings to ");
    UART_puts(UART, uart_out_buff);
    
+   return 0;
+}
+
+uint8_t ui_set_freq_power(uint8_t radio_id){
+   
+   if(ui_set_freq(radio_id))
+      return 1;
+   
+   if(ui_set_power(radio_id)
+      return 1;   
+   
+   return 0;
+}
+uint8_t ui_set_power(uint8_t radio_id){
+   double pwr;
+   uint8_t r;
+   uint8_t pwr_reg=0;
+   
+   UART_puts(UART, "Enter power (dBm): ");
+   
+   //res = wait_for_response_ln();
+   wait_for_response_ln();
+   pwr = atof(uart_in_buff);
+   r = radio_set_pwr_f(radio_id, &pwr, &pwr_reg);
+   snprintf(uart_out_buff, UART_BUFF_LEN, "%2.1f dBm (reg = %i)\n", pwr, pwr_reg);
+   if (r){
+      UART_puts(UART, "Error in power entered: ");
+      UART_puts(UART, uart_out_buff);
+      return 1;
+   }
+   UART_puts(UART, "Setting power to ");
+   UART_puts(UART, uart_out_buff);
+   return 0;
+}
+uint8_t ui_set_freq(uint8_t radio_id){
+   double freq;
+   uint8_t r;
+
+   
+   UART_puts(UART, "Enter frequency (MHz): ");
+   //uint16_t res = wait_for_response_ln();
+   wait_for_response_ln();
+   freq = atof(uart_in_buff);
+   r = radio_set_freq_f(radio_id, &freq);
+   snprintf(uart_out_buff, UART_BUFF_LEN, "%3.3f MHz\n", freq);
+   if (r){
+      UART_puts(UART, "Error in frequency entered: ");
+      UART_puts(UART, uart_out_buff);
+      return 1;
+   }
+   UART_puts(UART, "Setting frequency to ");
+   UART_puts(UART, uart_out_buff);
+   
+  
+   return 0;
+}
+
+void rx_packets_option(void){
+   
+   UART_puts(UART, "\nRX FSK packets selected\n");
+   
+   radio_reset_config(radio_id, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
+      
+   if (ui_set_freq(SPI_RADIO_RX))
+      return;
+   
+   if (ui_set_sym_dev(SPI_RADIO_RX))
+      return;
+   
+   uint8_t r;
+   uint32_t symrate, rxbw;
+   
+   r = radio_set_rxbw_param(radio_id, &rxbw); //, &symrate);
+   snprintf(uart_out_buff, UART_BUFF_LEN, "%li\n", rxbw);
+   if (r){
+      UART_puts(UART, "\nError in RX bandwidth entered: ");
+      UART_puts(UART, uart_out_buff);
+      return 1;
+   }
+   UART_puts(UART, "\nSetting RX bandwidth to ");
+   UART_puts(UART, uart_out_buff);
+   
+   manualCalibration(SPI_RADIO_RX);
+   
+   while(1){};
+   
+}
+
+void tx_packets_option(void){
+   
+   uint8_t r;
+   
+   UART_puts(UART, "\nTX FSK packets selected\n");
+   
+   radio_reset_config(radio_id, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
+      
+   if (ui_set_freq_power(SPI_RADIO_TX))
+      return;
+   
+   if (ui_set_sym_dev(SPI_RADIO_TX))
+      return;
+   
    //while(wait_for_response_char() != 'q'){};
     
-   UART_puts(UART, "\nEnter packet length (default: 200 bits): ");
+   //UART_puts(UART, "\nEnter packet length (default: 200 bits): ");
    
-   UART_puts(UART, "\nEnter off-time (msec, default: 100 msec): ");
+   //UART_puts(UART, "\nEnter off-time (msec, default: 100 msec): ");
    
    manualCalibration(SPI_RADIO_TX);
    
@@ -208,8 +271,15 @@ void tx_packets_option(void){
       SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
       uint32_t ui32Loop;
       
-      //TODO: wait for packet to end instead of jsut having a wait
-      for(ui32Loop = 0; ui32Loop < 3000000; ui32Loop++) {};
+      while(1){
+         
+         // wait for the packet to send
+         while( cc1125_pollGPIO(GPIO0_RADIO_TX)) {} ;
+
+         // wait a little
+         for(ui32Loop = 0; ui32Loop < 1000000; ui32Loop++) {};
+
+      }
       
    }
    
@@ -225,7 +295,7 @@ void cw_tone_option(void){
    radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
    manualCalibration(SPI_RADIO_TX);
    
-   if (ui_set_freq_power())
+   if (ui_set_freq_power(SPI_RADIO_TX))
       return;
    
    // turn on radio   
