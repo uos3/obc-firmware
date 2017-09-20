@@ -140,7 +140,7 @@ def main():
 	s = init_serial(115200)
         print "Analysing serial input..."
 
-        capture_data_block(s,500) # serial port and samples
+        capture_data_block(s,5000) # serial port and samples
 
 # this is the code for just displaying the data, thx to pythons wonderfully simple commenting it is a pita to comment out
 
