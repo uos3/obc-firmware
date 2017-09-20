@@ -96,7 +96,8 @@ bool match_string(char *data)
 int main(void)
 {  
   Board_init(); // start the board
-  WDT_kick(); // kick the watchdog
+  setupwatchdoginterrupt();
+ // WDT_kick(); // kick the watchdog
 
   UART_init(DEBUG_SERIAL, 115200);   DISP1("\n\n\r   I2C Satellite I2C Camera test.\n\rWaiting for power on\n\r")
   UART_init(CAM_SERIAL, 115200);   
@@ -115,7 +116,7 @@ int main(void)
     // main loop here
     if (match_string(LK_POWERUP)) DISP1("FOUND POWERUP!");
     }
-  WDT_kick();
+ // WDT_kick();
  }
 }
 

@@ -67,11 +67,11 @@
 
 int main(void)
 {  
-  InitI2C2(); // initialise correct interface on processor
 
   Board_init(); // start the board
-  WDT_kick(); // kick the watchdog
-
+  InitI2C2(); // initialise correct interface on processor
+  setupwatchdoginterrupt();
+  
   UART_init(DEBUG_SERIAL, 115200);   //DISP1("\n\n\r   I2C Satellite I2C IMU test.\n")
 
  // start the console, print bootup message (below)
@@ -110,19 +110,15 @@ int main(void)
 
 signed short acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z,temp;
 
-unsigned int wdt_start=100; // loops before kick, not too long or too short or hardware will reset
-
 // some macros to simplify repeated I2c calls - deliberately kept near where used
 #define MPUGET(x) I2CReceive16(SLAVE_ADDRESS,x); // wrapper for I2C call to MPU
 #define MAGGET(x) I2CReceive16r(MAG_PASS_THROUGH_I2C_ADDR, x); // wrapper for I2C call to Magnetometer
 
-   while(1) // infinite loop
- {
-    DISP1("\n\n\n\rI2C IMU test - python compressed data version (use I2Ctest for human readable):\n\n")
-    wait(1000); // so can see this if monitoring in terminal
+DISP1("\n\n\n\rI2C IMU test - python compressed data version (use I2Ctest for human readable):\n\n")
+wait(1000); // so can see this if monitoring in terminal
 
- for (unsigned int wdt_kicker=wdt_start;wdt_kicker>0;wdt_kicker--) // repeat this to kick wdt at correct time.
-  {    
+  while(1) // infinite loop
+ {    
     acc_x=MPUGET(MPU_ACCEL_XOUT) acc_y=MPUGET( MPU_ACCEL_YOUT) acc_z=MPUGET(MPU_ACCEL_ZOUT)
     gyr_x=MPUGET(MPU_GYRO_XOUT) gyr_y=MPUGET(MPU_GYRO_YOUT) gyr_z=MPUGET(MPU_GYRO_ZOUT)
     temp=MPUGET(MPU_TEMP_OUT)
@@ -140,9 +136,7 @@ unsigned int wdt_start=100; // loops before kick, not too long or too short or h
     DISPW(gyr_x) DISPW(gyr_y) DISPW(gyr_z)
     DISPW(temp)
     DISPW(mag_x) DISPW(mag_y) DISPW(mag_z)
-  }
-  WDT_kick();
- }
+}
 }
 
 

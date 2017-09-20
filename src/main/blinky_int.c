@@ -9,6 +9,8 @@
 int main(void)
 {
     Board_init();
+    SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN); // turn on clock
+
     WDT_kick();
     LED_off(LED_B);
     Delay_ms(1000); // so can be clearly seen when watchdog kicking

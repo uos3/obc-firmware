@@ -37,7 +37,7 @@ static char I2CReceiveBuffer[I2CRECVMAXBUFFERLEN+1]; // this is the receive arra
 
 void InitI2C2(void) // initialise board for I2C capability
 {
-    SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN |  SYSCTL_XTAL_16MHZ); // set the system clock
+ //   SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN |  SYSCTL_XTAL_16MHZ); // set the system clock
     
     SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C2);//enable I2C module 2
     SysCtlPeripheralReset(SYSCTL_PERIPH_I2C2);//reset module

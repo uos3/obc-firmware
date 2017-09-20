@@ -41,11 +41,11 @@ void Timer0IntHandler(void)
 void setupwatchdoginterrupt(void)
  {
 	unsigned long ulPeriod;
-	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN); // turn on clock
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0); // turn on timer
 	while (!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0)) {} // wait for timer to be ready
 	TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC); // set it to periodically trigger interrupt
-	ulPeriod = (SysCtlClockGet() / 10) / 2; // how often it triggers (counts down)
+	ulPeriod = (SysCtlClockGet()  / 4) ; // how often it triggers (counts down) (half will miss watchdog)
+	 // third will miss sometimes if processor busy
 	TimerLoadSet(TIMER0_BASE, TIMER_A, ulPeriod-1); // prime it
 	TimerIntRegister(TIMER0_BASE,TIMER_A,Timer0IntHandler); // this is for dynamic interrupt compilation
 	TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT); // enable interrupt

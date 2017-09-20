@@ -32,4 +32,3 @@
 #include "driverlib/timer.h"
 
 void setupwatchdoginterrupt(void); // this routine enables regular watchdog kicking on interrupt
-void Timer0IntHandler(void); // this is the interrupt handler
