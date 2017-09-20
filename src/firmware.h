@@ -20,6 +20,7 @@
 #include "board/spi.h"
 #include "board/gpio.h"
 #include "board/debug.h"
+#include "board/watchdog_int.h"
 
 /* radio stuff */
 #include "cc1125/cc112x_spi.h"
