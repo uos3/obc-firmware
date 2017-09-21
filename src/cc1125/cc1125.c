@@ -32,17 +32,17 @@ bool cc1125_pollGPIO(uint8_t gpio_pin)
 uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw){ //, uint32_t *symrate){
    
    
-   uint8_t d_fact[4]
+   uint8_t d_fact[4];
    uint8_t i,sm;
    uint32_t err, sm_err;
    int32_t bw[4];
    
    // first try with cic = 20
-   d_fact[0] = (uint32_t)CC_XO_FREQ/(*rxbw)/8/20;
-   d_fact[1] = d_fact[0]+1;
+   d_fact[0] = (uint8_t)((uint32_t)CC_XO_FREQ/(*rxbw)/8/20);
+   d_fact[1] = d_fact[0]+(uint8_t)1;
    
    // also try with cic = 32
-   d_fact[2] = (uint32_t)CC_XO_FREQ/(*rxbw)/8/32;
+   d_fact[2] = (uint8_t)((uint32_t)CC_XO_FREQ/(*rxbw)/8/32);
    d_fact[3] = d_fact[2]+1;
    
    //set limits
@@ -80,7 +80,10 @@ uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw){ //, uint32_t *sy
    
    reg |= (d_fact[sm] & 0x3F);
    
-   *rxbw = bw[sm];
+   cc112xSpiWriteReg(radio_id, CC112X_CHAN_BW, &reg);
+   
+   *rxbw = (uint32_t)bw[sm];
+   
    
    return 0;   
    

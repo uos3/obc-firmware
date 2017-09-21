@@ -22,6 +22,7 @@ uint8_t ui_set_freq_power(uint8_t radio_id);
 uint8_t ui_set_power(uint8_t radio_id);
 uint8_t ui_set_freq(uint8_t radio_id);
 char wait_for_response_char(void);
+void rx_packets_option(void);
 
 uint16_t wait_for_response_ln(void);
 
@@ -157,7 +158,7 @@ uint8_t ui_set_freq_power(uint8_t radio_id){
    if(ui_set_freq(radio_id))
       return 1;
    
-   if(ui_set_power(radio_id)
+   if(ui_set_power(radio_id))
       return 1;   
    
    return 0;
@@ -210,7 +211,7 @@ void rx_packets_option(void){
    
    UART_puts(UART, "\nRX FSK packets selected\n");
    
-   radio_reset_config(radio_id, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
+   radio_reset_config(SPI_RADIO_RX, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
       
    if (ui_set_freq(SPI_RADIO_RX))
       return;
@@ -219,31 +220,85 @@ void rx_packets_option(void){
       return;
    
    uint8_t r;
-   uint32_t symrate, rxbw;
+   uint32_t rxbw;
    
-   r = radio_set_rxbw_param(radio_id, &rxbw); //, &symrate);
+   r = radio_set_rxbw_param(SPI_RADIO_RX, &rxbw); //, &symrate);
    snprintf(uart_out_buff, UART_BUFF_LEN, "%li\n", rxbw);
    if (r){
       UART_puts(UART, "\nError in RX bandwidth entered: ");
       UART_puts(UART, uart_out_buff);
-      return 1;
+      return;
    }
    UART_puts(UART, "\nSetting RX bandwidth to ");
    UART_puts(UART, uart_out_buff);
    
    manualCalibration(SPI_RADIO_RX);
    
-   while(1){};
+   uint8_t num_bytes, marcState;
+   uint8_t rxBuff[256]; // can only read the 128 FIFO bytes for now though
+   uint8_t i;
+   
+   while(1){
+      
+      //wait for packet
+      while(cc1125_pollGPIO(GPIO0_RADIO_RX) == 0){};
+		while(cc1125_pollGPIO(GPIO0_RADIO_RX) > 0){};
+           
+           
+      //move to the cc1125 file      
+      
+      // see how long the packet is
+      cc112xSpiReadReg(SPI_RADIO_RX, CC112X_NUM_RXBYTES, &num_bytes);
+      if(num_bytes) {
+
+          // Read MARCSTATE to check for RX FIFO error
+          cc112xSpiReadReg(SPI_RADIO_RX, CC112X_MARCSTATE, &marcState);
+          if((marcState & 0x1F) == 0x11) {  // == RX_FIFO_ERROR?
+              UART_puts(UART, "\nError, FIFO error... :/\n");
+              // Flush RX FIFO
+              SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SFRX);
+          } else {
+
+
+              cc112xSpiReadRxFifo(SPI_RADIO_RX, rxBuff, num_bytes);
+
+              // Check CRC ok (CRC_OK: bit7 in second status byte)
+              // This assumes status bytes are appended in RX_FIFO
+              // (PKT_CFG1.APPEND_STATUS = 1)
+              // If CRC is disabled the CRC_OK field will read 1
+              if(rxBuff[num_bytes - 1] & 0x80) {
+                  snprintf(uart_out_buff, UART_BUFF_LEN, "Rx OK   (%d bytes) - ", num_bytes);
+
+              }else{
+                  snprintf(uart_out_buff, UART_BUFF_LEN, "CRC ERR (%d bytes) - ", num_bytes);
+              }
+              UART_puts(UART, uart_out_buff);
+              
+              for (i = 0; i < num_bytes; i++){
+                 snprintf(uart_out_buff, UART_BUFF_LEN, "%02x ", rxBuff[i]);
+                 UART_puts(UART, uart_out_buff);
+              }
+              UART_puts(UART, "    ");
+              for (i = 0; i < num_bytes; i++){
+                 UART_putc(UART, (char)rxBuff[i]);
+              }
+                 
+          }
+      }
+      else
+         UART_puts(UART, "\nError, Pin asserted, but no bytes in FIFO! :/\n");
+      
+      
+   }
    
 }
 
 void tx_packets_option(void){
-   
-   uint8_t r;
+  
    
    UART_puts(UART, "\nTX FSK packets selected\n");
    
-   radio_reset_config(radio_id, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
+   radio_reset_config(SPI_RADIO_TX, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
       
    if (ui_set_freq_power(SPI_RADIO_TX))
       return;
