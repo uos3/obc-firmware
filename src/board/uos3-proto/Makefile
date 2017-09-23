@@ -131,11 +131,13 @@ all: ${FW_ROOT}/${OUTDIR}/${OUTFILE}
 #
 # The rule to clean out all the build products.
 #
-clean:
-	@rm -rf ${wildcard ${FW_ROOT}/${OUTDIR}/${OUTFILE}.*}
-	@rm -rf ${wildcard *.o} ${wildcard *~}
+src-clean:
+	@rm -rf ${wildcard *.o}
 	@rm -rf $(patsubst %.c,%.o,${FW_SRCS})
 	@rm -rf $(patsubst %.c,%.d,${FW_SRCS})
+
+clean: src-clean
+	@rm -rf ${wildcard ${FW_ROOT}/${OUTDIR}/*}
 
 #
 # The rule to create the target directory.
@@ -198,6 +200,7 @@ ${FW_ROOT}/${OUTDIR}/${OUTFILE}:
 	      '${LIBM}' '${LIBC}' '${LIBGCC}';                          
 	@${OBJCOPY} -O elf32-littlearm ${@}.axf ${@};
 	@rm -f ${@}.axf;
+	@$(MAKE) -s src-clean;
 
 #
 # Rules for building the blinky example.
