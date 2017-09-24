@@ -57,7 +57,7 @@ char LK_JPEGSIZE_RE[]	= {0x76, 0x00, 0x34, 0x00, 0x04}; //, 0x00, 0x00, 0x00, 0x
 char LK_STOP[]		= {0x56, 0x00, 0x36, 0x01, 0x03};
 char LK_STOP_RE[]		= {0x76, 0x00, 0x36, 0x00, 0x00};
 
-char LK_READPICTURE[]	= {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A, 0x00, 0x00};
+char LK_READPICTURE[]	= {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A};
 char LK_PICTURE_TIME[]	= {0x00, 0x0A}; // .1 ms
 char LK_READPICTURE_RE[] 	= {0x76, 0x00, 0x32, 0x00, 0x00};
 char JPEG_START[] 		= {0xFF, 0xD8};
@@ -113,7 +113,7 @@ void mem_packet_send (char *start_addr, unsigned int len) // this copied over fr
 bool match_string(char *data, unsigned int len) // packed to call with sz(data)
  {
  // DISP1("Matching '");UART_putb(DEBUG_SERIAL,data,len);DISP1("'\n\r");
-  for (int i=0;i<len;i++) {  char c=UART_getc(CAM_SERIAL); /*DISP3("*",c,"*");*/  if (c!=data[i]) return false; }
+  for (int i=0;i<len;i++) {  char c=UART_getc(CAM_SERIAL); /*DISP3("*",c,"*"); */ if (c!=data[i]) return false; }
 return true;
  }
 
@@ -140,87 +140,115 @@ return true;
 
  #define CAMWRITE(a) UART_putb(CAM_SERIAL,a,sizeof(a)); // send this message
 
- #define CAMREAD(a) while (!match_string(a,sizeof(a))) {UART_putc(DEBUG_SERIAL,'.');} // wait for this sequence (forever if necessary)
+ #define CAMREAD(a) while (!match_string(a,sizeof(a))) {/*UART_putc(DEBUG_SERIAL,'.');*/} // wait for this sequence (forever if necessary)
  
-unsigned int take_picture(char *picture_storage)
+unsigned int get_picture_part(unsigned int offset, unsigned int len, char *storage_addr)
  {
-   if (((unsigned int) picture_storage)&3!=0) {DISP1("address must be word aligned");return 0;}
+  if (((((int)storage_addr)>>10)*1024)!=storage_addr) DISP3("Bad storage address for picture part",storage_addr,"\n\r");
+  offset=offset; // must be 8 byte boundary
+  DISP1("GET PICTURE PART\r\n");
+  DISP3("Offset: ",offset,"\r\n");
+  DISP3("Length: ",len,"\r\n");
+  DISP3("Storage Addr: ",storage_addr,"\r\n");
 
-   DISP3(" Take Picture Storage Address: ",picture_storage,"\n\r");
-  
-  CAMWRITE(LK_RESET);CAMREAD(LK_RESET_RE);DISP1("Initialised OK\n\r"); // initialise camera
-  CAMWRITE(LK_RESOLUTION_VGA);CAMREAD(LK_RESOLUTION_RE);DISP1("Resolution OK\n\r"); // set resolution
-  CAMWRITE(LK_COMPRESSION);UART_putc(CAM_SERIAL,0x10);CAMREAD(LK_COMPRESSION_RE);DISP1("Compression OK\n\r"); // set compression
-  CAMWRITE(LK_PICTURE);CAMREAD(LK_PICTURE_RE);DISP1("Take Picture OK\n\r"); // take picture
-  CAMWRITE(LK_JPEGSIZE);CAMREAD(LK_JPEGSIZE_RE);unsigned int jpegsize=getcamword(); // file size (lowest 32 bits)
-  DISP3("Picture size is ",jpegsize," bytes of image data\n\r");
-
-  CAMWRITE(LK_READPICTURE);UART_putc(CAM_SERIAL,0);UART_putc(CAM_SERIAL,0); // offset in file start (0 here)
-  writecamword(jpegsize); // write length to obtain
-  CAMWRITE(LK_PICTURE_TIME);
-  CAMREAD(LK_READPICTURE_RE);DISP1("PICTURE READ arranged\n\r");
-
-  //char *picture_storage=0x10000; // store it here
-
-  unsigned int pages_to_clear=(jpegsize+1023)>>10; // this processor's flash is in 1k blocks, these need to be erased before writing to
-  
+  unsigned int pages_to_clear=(len+1023)>>10; // this processor's flash is in 1k blocks, these need to be erased before writing to
 
   DISP3("Pages to clear",pages_to_clear,"\r\n");
   for (int i=0;i<pages_to_clear;i++)
-	FlashErase(picture_storage+(i<<10));
+	FlashErase(storage_addr+(i<<10));
 
   DISP1("Erased\r\n");
 
- char flash_word_size=4;
- char flash_buffer[flash_word_size];
+  char flash_word_size=4;
+  char flash_buffer[flash_word_size];
 
   char endfoundcount=0;
   unsigned int i=0;
   unsigned int j=0; // counter for flash writes
  
- DISP1("Copying to flash\r\n")
+  DISP1("Sending message...\n\r")
  
+  CAMWRITE(LK_READPICTURE);
+  writecamword(offset); // offset in file start (0 here)
+  writecamword(len-1); // write length to obtain +8 bytes?
+  CAMWRITE(LK_PICTURE_TIME);//DISP1("awaiting read response\n\r");
+  CAMREAD(LK_READPICTURE_RE);//DISP1("PICTURE READ part requested\n\r");
 
-  while (endfoundcount<2)
+  i=0;
+  char c;
+
+ // DISP1("Copying to flash\r\n");
+ 
+  while ((endfoundcount<2) && (i<len))
 	{
+ //  DISP3("i = ",i,"\r\n")
+//   DISP3("j = ",j,"\r\n")
+ //  DISP3("efc = ",endfoundcount,"\r\n")
 	  char c=UART_getc(CAM_SERIAL);
 	  if (c==JPEG_END[endfoundcount]) endfoundcount+=1; else endfoundcount=0; // should progress through end template
 	  flash_buffer[j++]=c;
-	  if (j==flash_word_size) {j=0;FlashProgram(flash_buffer,picture_storage+i,flash_word_size);i+=flash_word_size;}
-	//  if (endfoundcount==2) {DISP3(".",i,"<");DISP3("",c,">");}
+	  if (j==flash_word_size) {j=0; 
+	  	FlashProgram(flash_buffer,storage_addr+i,flash_word_size);
+     //   if ((i&63)==56) {DISP3(" <",i,">");}
+    //    if (i>1015) {  DISP3("i = ",i,"");DISP3("j = ",j,"\r\n");DISP3("efc = ",endfoundcount,"\r\n");}
+   
+	  	i+=flash_word_size;}
 	}
 
+   DISP3("i = ",i,"\r\n")
+   DISP3("j = ",j,"\r\n")
+   DISP3("efc = ",endfoundcount,"\r\n")
 
-//for (i=0;i<jpegsize;i+=flash_word_size)
- //   {  
-//	DISP3("i = ",i,"\r\n");
-//	for (j=0;j<flash_word_size;j++)
-//	    {
-//	    DISP3("j = ",j,"\r\n");
-//		if ((i+j)<jpegsize) {flash_buffer[j]=UART_getc(CAM_SERIAL);} else {flash_buffer[j]=0;}
-	    //flash_buffer[j]=0x37;
-//	    }
-//	DISP3("writing : ",picture_storage+i,"\r\n")
-//	FlashProgram(flash_buffer,picture_storage+i,flash_word_size);
-//	DISP3("set to ",picture_storage[i],"\r\n");
-//    }
 
-DISP1("Copy complete \r\n");
+ DISP1("Copy complete \r\n");
 
   unsigned int picturelength=i+j; //jpegsize; //i+j;
 
 	if (j>0)
 	   {
 	     while (j<flash_word_size) {flash_buffer[j++]=0;}
-		 FlashProgram(flash_buffer,picture_storage+i,flash_word_size); // do final one (excess bytes from previous)
+		 FlashProgram(flash_buffer,storage_addr+i,flash_word_size); // do final one (excess bytes from previous)
 	   }
 
-  DISP3("Last four : ",picture_storage[picturelength-3],",");DISP3(" ",picture_storage[picturelength-2],",");
-  DISP3(" ",picture_storage[picturelength-1],",");DISP3(" ",picture_storage[picturelength],"\n\r");
+  DISP3("Last four : ",storage_addr[picturelength-4],",");DISP3(" ",storage_addr[picturelength-3],",");
+  DISP3(" ",storage_addr[picturelength-2],",");DISP3(" ",storage_addr[picturelength-1],"\n\r");
 
   DISP3("ENDFOUNDCOUNT = ",endfoundcount,"\n\r")
   DISP3("Downloaded ",picturelength," bytes of image data\n\r")
- return picturelength;	
+  return picturelength;
+ }
+
+unsigned int take_picture(char *picture_storage)
+ {
+   if (((unsigned int) picture_storage)&3!=0) {DISP1("address must be word aligned");return 0;}
+
+   DISP3(" Take Picture Storage Address: ",picture_storage,"\n\r");
+  
+   CAMWRITE(LK_RESET);CAMREAD(LK_RESET_RE);DISP1("Initialised OK\n\r"); // initialise camera
+
+   Delay_ms(1000); // 2-3 sec gap required by data sheet before camera ready
+
+   CAMWRITE(LK_RESOLUTION_VGA);CAMREAD(LK_RESOLUTION_RE);DISP1("Resolution OK\n\r"); // set resolution
+   CAMWRITE(LK_COMPRESSION);UART_putc(CAM_SERIAL,0x10);CAMREAD(LK_COMPRESSION_RE);DISP1("Compression OK\n\r"); // set compression
+   CAMWRITE(LK_PICTURE);CAMREAD(LK_PICTURE_RE);DISP1("Take Picture OK\n\r"); // take picture
+   CAMWRITE(LK_JPEGSIZE);CAMREAD(LK_JPEGSIZE_RE);unsigned int jpegsize=getcamword(); // file size (lowest 32 bits)
+   DISP3("Picture size is ",jpegsize," bytes of image data\n\r");
+
+   unsigned int pages_to_clear=(jpegsize+1023)>>10; // this processor's flash is in 1k blocks, these need to be erased before writing to
+  
+   DISP3("Ready to download to board :",pages_to_clear," pages\r\n");
+   unsigned int copied=1024,i=0;
+   while (copied==1024 && i<pages_to_clear)
+      {copied=get_picture_part(i*1024,1024,picture_storage+i*1024);
+      	i++;
+      }
+
+   unsigned int picturelength=(i-1)*1024+copied; //jpegsize; //i+j;
+ 
+   DISP1("Copy complete \r\n");
+
+   DISP3("Downloaded ",picturelength," bytes of image data\n\r")
+   return picturelength;	
  }
 
   void send_packet(cmd,value)
