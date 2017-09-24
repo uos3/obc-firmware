@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/firmware/src/board/wdt.h File Reference</title>
+<title>UoS³ Flight Computer Firmware: Crc16</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -39,7 +39,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
-      <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -58,18 +58,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-  <div id="navrow2" class="tabs2">
-    <ul class="tablist">
-      <li><a href="files.html"><span>File&#160;List</span></a></li>
-      <li><a href="globals.html"><span>Globals</span></a></li>
-    </ul>
-  </div>
+</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Groups</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -78,47 +73,56 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_8ce7cd6e96eb11a61d1d013aa8c7fa46.html">board</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">wdt.h File Reference<div class="ingroups"><a class="el" href="group__drivers.html">Hardware Drivers</a></div></div>  </div>
+<div class="title">Crc16</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><a href="wdt_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a839f0e2119c8cc94b8d13881ab836b2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a> (void)</td></tr>
-<tr class="separator:a839f0e2119c8cc94b8d13881ab836b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga75c1f983902a49826f07fad3942bcb24"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__crc16.html#ga75c1f983902a49826f07fad3942bcb24">CRC16_CCITT</a> (uint8_t *buffer, uint32_t length)</td></tr>
+<tr class="separator:ga75c1f983902a49826f07fad3942bcb24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>External watchdog driver. </p>
-
-<p>Definition in file <a class="el" href="wdt_8h_source.html">wdt.h</a>.</p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a839f0e2119c8cc94b8d13881ab836b2a"></a>
+<p>Packet CRC16 Routines </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga75c1f983902a49826f07fad3942bcb24"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void WDT_kick </td>
+          <td class="memname">uint16_t CRC16_CCITT </td>
           <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Kicks the external window watchdog device.</p>
-<p>Public Functions </p>
+<p>Calculate the 16-bit CRC of the input buffer, using the CRC16-CCITT standard.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>The input buffer to calculated </td></tr>
+    <tr><td class="paramname">length</td><td>The length of the input buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The 16bit CRC of the input buffer </dd></dl>
 
-<p>Definition at line <a class="el" href="gnulinux_2wdt_8c_source.html#l00009">9</a> of file <a class="el" href="gnulinux_2wdt_8c_source.html">wdt.c</a>.</p>
+<p>Definition at line <a class="el" href="crc16_8c_source.html#l00021">21</a> of file <a class="el" href="crc16_8c_source.html">crc16.c</a>.</p>
 
 </div>
 </div>

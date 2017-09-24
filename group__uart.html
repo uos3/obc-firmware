@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/firmware/src/board/uart.h File Reference</title>
+<title>UoS³ Flight Computer Firmware: Uart</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -39,7 +39,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
-      <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -58,18 +58,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-  <div id="navrow2" class="tabs2">
-    <ul class="tablist">
-      <li><a href="files.html"><span>File&#160;List</span></a></li>
-      <li><a href="globals.html"><span>Globals</span></a></li>
-    </ul>
-  </div>
+</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Groups</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -78,52 +73,45 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_8ce7cd6e96eb11a61d1d013aa8c7fa46.html">board</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">uart.h File Reference<div class="ingroups"><a class="el" href="group__drivers.html">Hardware Drivers</a> &#124; <a class="el" href="group__drivers.html">Hardware Drivers</a></div></div>  </div>
+<div class="title">Uart</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><a href="uart_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a5016951f4d87245612746fd3b11b4e55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a5016951f4d87245612746fd3b11b4e55">UART_init</a> (uint8_t uart_num, uint32_t baudrate)</td></tr>
-<tr class="separator:a5016951f4d87245612746fd3b11b4e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08fc6898c8677f8ef896a9f76801e9d2"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a> (uint8_t uart_num)</td></tr>
-<tr class="separator:a08fc6898c8677f8ef896a9f76801e9d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a617a14954d9f85329eba15b2598fd047"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a617a14954d9f85329eba15b2598fd047">UART_putc</a> (uint8_t uart_num, char c)</td></tr>
-<tr class="separator:a617a14954d9f85329eba15b2598fd047"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe4ccbee9edc6e026aedd43bdc2cc87b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#afe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a> (uint8_t uart_num, char *str)</td></tr>
-<tr class="separator:afe4ccbee9edc6e026aedd43bdc2cc87b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4e3801dd5c875e2fd7e1fc9f23fffd9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#ab4e3801dd5c875e2fd7e1fc9f23fffd9">UART_putb</a> (uint8_t uart_num, char *str, uint32_t len)</td></tr>
-<tr class="separator:ab4e3801dd5c875e2fd7e1fc9f23fffd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae20e5be010bad7da8c736ef405e2e57f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#ae20e5be010bad7da8c736ef405e2e57f">UART_getc_nonblocking</a> (uint8_t uart_num, char *c)</td></tr>
-<tr class="separator:ae20e5be010bad7da8c736ef405e2e57f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a012341aaff3c5a7b72c5e5c65d7431b0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a012341aaff3c5a7b72c5e5c65d7431b0">UART_putc_nonblocking</a> (uint8_t uart_num, char c)</td></tr>
-<tr class="separator:a012341aaff3c5a7b72c5e5c65d7431b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:addb9d0c829ba8e19fc208528a1c2e5f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#addb9d0c829ba8e19fc208528a1c2e5f1">UART_puts_nonblocking</a> (uint8_t uart_num, char *str)</td></tr>
-<tr class="separator:addb9d0c829ba8e19fc208528a1c2e5f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac300dfb03ec03a85d390618c8134f169"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#ac300dfb03ec03a85d390618c8134f169">UART_putb_nonblocking</a> (uint8_t uart_num, char *str, uint32_t len)</td></tr>
-<tr class="separator:ac300dfb03ec03a85d390618c8134f169"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b79448040e7a7d88c440395f383a138"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a5b79448040e7a7d88c440395f383a138">UART_busy</a> (uint8_t uart_num)</td></tr>
-<tr class="separator:a5b79448040e7a7d88c440395f383a138"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5946888ecba5e11c06a81429e358bbdf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a5946888ecba5e11c06a81429e358bbdf">UART_charsAvail</a> (uint8_t uart_num)</td></tr>
-<tr class="separator:a5946888ecba5e11c06a81429e358bbdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5016951f4d87245612746fd3b11b4e55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a> (uint8_t uart_num, uint32_t baudrate)</td></tr>
+<tr class="separator:ga5016951f4d87245612746fd3b11b4e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga08fc6898c8677f8ef896a9f76801e9d2"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a> (uint8_t uart_num)</td></tr>
+<tr class="separator:ga08fc6898c8677f8ef896a9f76801e9d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga617a14954d9f85329eba15b2598fd047"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a> (uint8_t uart_num, char c)</td></tr>
+<tr class="separator:ga617a14954d9f85329eba15b2598fd047"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafe4ccbee9edc6e026aedd43bdc2cc87b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a> (uint8_t uart_num, char *str)</td></tr>
+<tr class="separator:gafe4ccbee9edc6e026aedd43bdc2cc87b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab4e3801dd5c875e2fd7e1fc9f23fffd9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#gab4e3801dd5c875e2fd7e1fc9f23fffd9">UART_putb</a> (uint8_t uart_num, char *str, uint32_t len)</td></tr>
+<tr class="separator:gab4e3801dd5c875e2fd7e1fc9f23fffd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae20e5be010bad7da8c736ef405e2e57f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#gae20e5be010bad7da8c736ef405e2e57f">UART_getc_nonblocking</a> (uint8_t uart_num, char *c)</td></tr>
+<tr class="separator:gae20e5be010bad7da8c736ef405e2e57f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga012341aaff3c5a7b72c5e5c65d7431b0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#ga012341aaff3c5a7b72c5e5c65d7431b0">UART_putc_nonblocking</a> (uint8_t uart_num, char c)</td></tr>
+<tr class="separator:ga012341aaff3c5a7b72c5e5c65d7431b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaddb9d0c829ba8e19fc208528a1c2e5f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#gaddb9d0c829ba8e19fc208528a1c2e5f1">UART_puts_nonblocking</a> (uint8_t uart_num, char *str)</td></tr>
+<tr class="separator:gaddb9d0c829ba8e19fc208528a1c2e5f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac300dfb03ec03a85d390618c8134f169"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#gac300dfb03ec03a85d390618c8134f169">UART_putb_nonblocking</a> (uint8_t uart_num, char *str, uint32_t len)</td></tr>
+<tr class="separator:gac300dfb03ec03a85d390618c8134f169"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5b79448040e7a7d88c440395f383a138"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#ga5b79448040e7a7d88c440395f383a138">UART_busy</a> (uint8_t uart_num)</td></tr>
+<tr class="separator:ga5b79448040e7a7d88c440395f383a138"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5946888ecba5e11c06a81429e358bbdf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__uart.html#ga5946888ecba5e11c06a81429e358bbdf">UART_charsAvail</a> (uint8_t uart_num)</td></tr>
+<tr class="separator:ga5946888ecba5e11c06a81429e358bbdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Time delay driver.</p>
-<p><a class="el" href="struct_u_a_r_t.html">UART</a> Peripheral driver. </p>
-
-<p>Definition in file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a5016951f4d87245612746fd3b11b4e55"></a>
+<p><a class="el" href="struct_u_a_r_t.html">UART</a> Peripheral Driver.</p>
+<p>Hardware <a class="el" href="struct_u_a_r_t.html">UART</a> Peripheral Driver.</p>
+<p><a class="el" href="struct_u_a_r_t.html">UART</a> ports for each board are defined in ${board}/board.h </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga5016951f4d87245612746fd3b11b4e55"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -160,7 +148,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a08fc6898c8677f8ef896a9f76801e9d2"></a>
+<a class="anchor" id="ga08fc6898c8677f8ef896a9f76801e9d2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -186,7 +174,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a617a14954d9f85329eba15b2598fd047"></a>
+<a class="anchor" id="ga617a14954d9f85329eba15b2598fd047"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -222,7 +210,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="afe4ccbee9edc6e026aedd43bdc2cc87b"></a>
+<a class="anchor" id="gafe4ccbee9edc6e026aedd43bdc2cc87b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -258,7 +246,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ab4e3801dd5c875e2fd7e1fc9f23fffd9"></a>
+<a class="anchor" id="gab4e3801dd5c875e2fd7e1fc9f23fffd9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -301,7 +289,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ae20e5be010bad7da8c736ef405e2e57f"></a>
+<a class="anchor" id="gae20e5be010bad7da8c736ef405e2e57f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -338,7 +326,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a012341aaff3c5a7b72c5e5c65d7431b0"></a>
+<a class="anchor" id="ga012341aaff3c5a7b72c5e5c65d7431b0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -375,7 +363,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="addb9d0c829ba8e19fc208528a1c2e5f1"></a>
+<a class="anchor" id="gaddb9d0c829ba8e19fc208528a1c2e5f1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -412,7 +400,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ac300dfb03ec03a85d390618c8134f169"></a>
+<a class="anchor" id="gac300dfb03ec03a85d390618c8134f169"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -456,7 +444,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5b79448040e7a7d88c440395f383a138"></a>
+<a class="anchor" id="ga5b79448040e7a7d88c440395f383a138"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -482,7 +470,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5946888ecba5e11c06a81429e358bbdf"></a>
+<a class="anchor" id="ga5946888ecba5e11c06a81429e358bbdf"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">

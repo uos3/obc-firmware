@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hardware_20drivers',['Hardware Drivers',['../group__drivers.html',1,'']]]
+  ['tests',['Tests',['../group__tests.html',1,'']]]
 ];
