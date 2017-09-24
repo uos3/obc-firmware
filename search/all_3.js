@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['gpio',['GPIO',['../struct_g_p_i_o.html',1,'']]],
+  ['gpio',['GPIO',['../struct_g_p_i_o.html',1,'GPIO'],['../group__gpio.html',1,'(Global Namespace)']]],
   ['gpio_2eh',['gpio.h',['../gpio_8h.html',1,'']]],
   ['gpio_5fread',['GPIO_read',['../gpio_8h.html#a24240b39692e8d071ec146f7dca5532d',1,'gpio.c']]],
   ['gpio_5freset',['GPIO_reset',['../gpio_8h.html#a682d0b6da45b7d2adb5ad7d68165cd9b',1,'gpio.c']]],

@@ -9,9 +9,9 @@ var indexSectionsWithContent =
 {
   0: "bcdglmprstuw",
   1: "cglrsuw",
-  2: "bcdglrst",
-  3: "bcdglmrsuw",
-  4: "cdmpuw",
+  2: "bcdglprstuw",
+  3: "bdglmprsuw",
+  4: "bcdglmprsuw",
   5: "u"
 };
 

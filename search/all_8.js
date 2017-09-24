@@ -1,7 +1,7 @@
 var searchData=
 [
   ['sha3_5fctx_5ft',['sha3_ctx_t',['../structsha3__ctx__t.html',1,'']]],
-  ['spi',['SPI',['../struct_s_p_i.html',1,'']]],
+  ['spi',['SPI',['../struct_s_p_i.html',1,'SPI'],['../group__spi.html',1,'(Global Namespace)']]],
   ['spi_2eh',['spi.h',['../spi_8h.html',1,'']]],
   ['spi_5fburstread16',['SPI_burstread16',['../spi_8h.html#a94a9828b4185d47320af38b037e29b4c',1,'spi.c']]],
   ['spi_5fburstread8',['SPI_burstread8',['../spi_8h.html#aeb97ff1125bc25cc974dd58e02035f72',1,'spi.c']]],

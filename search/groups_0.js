@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['cc1125_20driver',['CC1125 Driver',['../group__cc1125.html',1,'']]],
-  ['crc16',['Crc16',['../group__crc16.html',1,'']]]
+  ['board_2fplatform_20hardware_20drivers',['Board/Platform Hardware Drivers',['../group__drivers.html',1,'']]]
 ];
