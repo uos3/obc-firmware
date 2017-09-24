@@ -7,10 +7,12 @@
 
 var indexSectionsWithContent =
 {
-  0: "cglrsuw",
+  0: "bcghlmprstuw",
   1: "cglrsuw",
-  2: "c",
-  3: "u"
+  2: "crt",
+  3: "bcmr",
+  4: "hmp",
+  5: "u"
 };
 
 var indexSectionNames =
@@ -18,7 +20,9 @@ var indexSectionNames =
   0: "all",
   1: "classes",
   2: "files",
-  3: "pages"
+  3: "functions",
+  4: "groups",
+  5: "pages"
 };
 
 function convertToId(search)

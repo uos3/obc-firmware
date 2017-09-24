@@ -37,6 +37,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -60,6 +61,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="files.html"><span>File&#160;List</span></a></li>
+      <li><a href="globals.html"><span>Globals</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -67,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -87,108 +89,111 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/* @file interleave.c</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * @addtogroup packet</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @{</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define swap(a0, a1, j, m) t = (a0 ^ (a1 &gt;&gt; j)) &amp; m; \</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">                           a0 = a0 ^ t; \</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">                           a1 = a1 ^ (t &lt;&lt; j)</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">void</span> packet_interleave_32x32(uint8_t *buffer)</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;{</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;   uint32_t m, t;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;   uint32_t *A = (uint32_t*)buffer;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;   m = 0x0000FFFF;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;   swap(A[0],  A[16], 16, m);</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;   swap(A[1],  A[17], 16, m);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;   swap(A[2],  A[18], 16, m);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;   swap(A[3],  A[19], 16, m);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;   swap(A[4],  A[20], 16, m);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;   swap(A[5],  A[21], 16, m);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;   swap(A[6],  A[22], 16, m);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;   swap(A[7],  A[23], 16, m);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;   swap(A[8],  A[24], 16, m);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;   swap(A[9],  A[25], 16, m);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;   swap(A[10], A[26], 16, m);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;   swap(A[11], A[27], 16, m);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;   swap(A[12], A[28], 16, m);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;   swap(A[13], A[29], 16, m);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;   swap(A[14], A[30], 16, m);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;   swap(A[15], A[31], 16, m);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;   m = 0x00FF00FF;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;   swap(A[0],  A[8],   8, m);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;   swap(A[1],  A[9],   8, m);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;   swap(A[2],  A[10],  8, m);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;   swap(A[3],  A[11],  8, m);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;   swap(A[4],  A[12],  8, m);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;   swap(A[5],  A[13],  8, m);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;   swap(A[6],  A[14],  8, m);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;   swap(A[7],  A[15],  8, m);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;   swap(A[16], A[24],  8, m);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;   swap(A[17], A[25],  8, m);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;   swap(A[18], A[26],  8, m);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;   swap(A[19], A[27],  8, m);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;   swap(A[20], A[28],  8, m);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;   swap(A[21], A[29],  8, m);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;   swap(A[22], A[30],  8, m);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;   swap(A[23], A[31],  8, m);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;   m = 0x0F0F0F0F;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;   swap(A[0],  A[4],   4, m);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;   swap(A[1],  A[5],   4, m);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;   swap(A[2],  A[6],   4, m);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;   swap(A[3],  A[7],   4, m);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;   swap(A[8],  A[12],  4, m);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;   swap(A[9],  A[13],  4, m);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;   swap(A[10], A[14],  4, m);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;   swap(A[11], A[15],  4, m);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;   swap(A[16], A[20],  4, m);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;   swap(A[17], A[21],  4, m);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;   swap(A[18], A[22],  4, m);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;   swap(A[19], A[23],  4, m);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;   swap(A[24], A[28],  4, m);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;   swap(A[25], A[29],  4, m);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;   swap(A[26], A[30],  4, m);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;   swap(A[27], A[31],  4, m);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;   m = 0x33333333;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;   swap(A[0],  A[2],   2, m);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;   swap(A[1],  A[3],   2, m);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;   swap(A[4],  A[6],   2, m);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;   swap(A[5],  A[7],   2, m);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;   swap(A[8],  A[10],  2, m);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;   swap(A[9],  A[11],  2, m);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;   swap(A[12], A[14],  2, m);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;   swap(A[13], A[15],  2, m);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;   swap(A[16], A[18],  2, m);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;   swap(A[17], A[19],  2, m);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;   swap(A[20], A[22],  2, m);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;   swap(A[21], A[23],  2, m);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;   swap(A[24], A[26],  2, m);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;   swap(A[25], A[27],  2, m);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;   swap(A[28], A[30],  2, m);</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;   swap(A[29], A[31],  2, m);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;   m = 0x55555555;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;   swap(A[0],  A[1],   1, m);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;   swap(A[2],  A[3],   1, m);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;   swap(A[4],  A[5],   1, m);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;   swap(A[6],  A[7],   1, m);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;   swap(A[8],  A[9],   1, m);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;   swap(A[10], A[11],  1, m);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;   swap(A[12], A[13],  1, m);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;   swap(A[14], A[15],  1, m);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;   swap(A[16], A[17],  1, m);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;   swap(A[18], A[19],  1, m);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;   swap(A[20], A[21],  1, m);</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;   swap(A[22], A[23],  1, m);</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;   swap(A[24], A[25],  1, m);</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;   swap(A[26], A[27],  1, m);</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;   swap(A[28], A[29],  1, m);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;   swap(A[30], A[31],  1, m);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @author Phil Crump</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * @ingroup packet</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * @{</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#define swap(a0, a1, j, m) t = (a0 ^ (a1 &gt;&gt; j)) &amp; m; \</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">                           a0 = a0 ^ t; \</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">                           a1 = a1 ^ (t &lt;&lt; j)</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">void</span> packet_interleave_32x32(uint8_t *buffer)</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;{</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;   uint32_t m, t;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;   uint32_t *A = (uint32_t*)buffer;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;   m = 0x0000FFFF;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;   swap(A[0],  A[16], 16, m);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;   swap(A[1],  A[17], 16, m);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;   swap(A[2],  A[18], 16, m);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;   swap(A[3],  A[19], 16, m);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;   swap(A[4],  A[20], 16, m);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;   swap(A[5],  A[21], 16, m);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;   swap(A[6],  A[22], 16, m);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;   swap(A[7],  A[23], 16, m);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;   swap(A[8],  A[24], 16, m);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;   swap(A[9],  A[25], 16, m);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;   swap(A[10], A[26], 16, m);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;   swap(A[11], A[27], 16, m);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;   swap(A[12], A[28], 16, m);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;   swap(A[13], A[29], 16, m);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;   swap(A[14], A[30], 16, m);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;   swap(A[15], A[31], 16, m);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;   m = 0x00FF00FF;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;   swap(A[0],  A[8],   8, m);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;   swap(A[1],  A[9],   8, m);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;   swap(A[2],  A[10],  8, m);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;   swap(A[3],  A[11],  8, m);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;   swap(A[4],  A[12],  8, m);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;   swap(A[5],  A[13],  8, m);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;   swap(A[6],  A[14],  8, m);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;   swap(A[7],  A[15],  8, m);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;   swap(A[16], A[24],  8, m);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;   swap(A[17], A[25],  8, m);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;   swap(A[18], A[26],  8, m);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;   swap(A[19], A[27],  8, m);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;   swap(A[20], A[28],  8, m);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;   swap(A[21], A[29],  8, m);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;   swap(A[22], A[30],  8, m);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;   swap(A[23], A[31],  8, m);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;   m = 0x0F0F0F0F;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;   swap(A[0],  A[4],   4, m);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;   swap(A[1],  A[5],   4, m);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;   swap(A[2],  A[6],   4, m);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;   swap(A[3],  A[7],   4, m);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;   swap(A[8],  A[12],  4, m);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;   swap(A[9],  A[13],  4, m);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;   swap(A[10], A[14],  4, m);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;   swap(A[11], A[15],  4, m);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;   swap(A[16], A[20],  4, m);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;   swap(A[17], A[21],  4, m);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;   swap(A[18], A[22],  4, m);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;   swap(A[19], A[23],  4, m);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;   swap(A[24], A[28],  4, m);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;   swap(A[25], A[29],  4, m);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;   swap(A[26], A[30],  4, m);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;   swap(A[27], A[31],  4, m);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;   m = 0x33333333;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;   swap(A[0],  A[2],   2, m);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;   swap(A[1],  A[3],   2, m);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;   swap(A[4],  A[6],   2, m);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;   swap(A[5],  A[7],   2, m);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;   swap(A[8],  A[10],  2, m);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;   swap(A[9],  A[11],  2, m);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;   swap(A[12], A[14],  2, m);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;   swap(A[13], A[15],  2, m);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;   swap(A[16], A[18],  2, m);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;   swap(A[17], A[19],  2, m);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;   swap(A[20], A[22],  2, m);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;   swap(A[21], A[23],  2, m);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;   swap(A[24], A[26],  2, m);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;   swap(A[25], A[27],  2, m);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;   swap(A[28], A[30],  2, m);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;   swap(A[29], A[31],  2, m);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;   m = 0x55555555;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;   swap(A[0],  A[1],   1, m);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;   swap(A[2],  A[3],   1, m);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;   swap(A[4],  A[5],   1, m);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;   swap(A[6],  A[7],   1, m);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;   swap(A[8],  A[9],   1, m);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;   swap(A[10], A[11],  1, m);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;   swap(A[12], A[13],  1, m);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;   swap(A[14], A[15],  1, m);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;   swap(A[16], A[17],  1, m);</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;   swap(A[18], A[19],  1, m);</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;   swap(A[20], A[21],  1, m);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;   swap(A[22], A[23],  1, m);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;   swap(A[24], A[25],  1, m);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;   swap(A[26], A[27],  1, m);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;   swap(A[28], A[29],  1, m);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;   swap(A[30], A[31],  1, m);</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
