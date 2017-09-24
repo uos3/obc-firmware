@@ -4,3 +4,8 @@
  * @details APIs for board-abstracted hardware interfacing.
  *
  */
+
+ /**
+ * @defgroup boards Hardware Boards/Platforms
+ *
+ */
