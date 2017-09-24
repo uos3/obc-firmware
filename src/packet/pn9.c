@@ -6,7 +6,7 @@
  * @{
  */
 
- #include "../firmware.h"
+#include "../firmware.h"
 
 void packet_pn9_xor(uint8_t *buffer, uint32_t length)
 {
