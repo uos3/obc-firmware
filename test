@@ -155,7 +155,7 @@ fi
 outdir="builds"
 filename="test-$(hyphenjoin $module $flags $githash)"
 
-flags="BOARD=${board} MAIN=../${module}/test/${module} OUTDIR=${outdir} OUTFILE=\"${filename}\""
+flags="BOARD=${board} RUNTESTS=true MAIN=../test OUTDIR=${outdir} OUTFILE=\"${filename}\""
 
 if $opt_osize; then
   print "$_INFO_ Compiler optimise for size (-Os):$COLOUR_RED ON $COLOUR_OFF"

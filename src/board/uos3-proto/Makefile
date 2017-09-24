@@ -42,6 +42,11 @@ STACKSIZE = 0x800
 # Include the common make definitions.
 #
 include ${FW_ROOT}/src/firmware.mk
+
+ifneq ($(RUNTESTS),)
+  include ${FW_ROOT}/src/test.mk
+endif
+
 BOARD_INCLUDE="-DBOARD_INCLUDE=\"board/${BOARD}/board.h\""
 
 # Moved from makedefs

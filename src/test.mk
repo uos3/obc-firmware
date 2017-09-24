@@ -1,0 +1,1 @@
+FW_SRCS+= $(wildcard $(FW_ROOT)/src/packet/test/*.c)
