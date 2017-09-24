@@ -41,7 +41,7 @@
 
 #endif /*  __FIRMWARE_H__ */
 
-/*! \mainpage UoS³ Flight Computer Firmware
+/*! \mainpage UoS³ Flight Computer Firmware Documentation
  *
  * The firmware is built from a top-level C program file and resolves all the references and includes from the src/ and specified hardware folders
  *
