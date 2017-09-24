@@ -27,8 +27,8 @@ SOFTWARE.
 
 */
 
-#ifndef SHA3_H
-#define SHA3_H
+#ifndef __PACKET_SHA3_H__
+#define __PACKET_SHA3_H__
 
 #include "../firmware.h"
 
@@ -60,5 +60,5 @@ void *sha3(const void *in, size_t inlen, void *md, int mdlen);
 void shake_xof(sha3_ctx_t *c);
 void shake_out(sha3_ctx_t *c, void *out, size_t len);
 
-#endif
+#endif /* __PACKET_SHA3_H__ */
 

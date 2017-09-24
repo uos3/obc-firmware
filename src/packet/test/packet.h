@@ -12,6 +12,7 @@
 
 bool test_pn9(void);
 bool test_interleave(void);
+bool test_shake(void);
 
 bool packet_tests(void);
 
