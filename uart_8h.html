@@ -85,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">uart.h File Reference<div class="ingroups"><a class="el" href="group__drivers.html">Hardware Drivers</a></div></div>  </div>
+<div class="title">uart.h File Reference<div class="ingroups"><a class="el" href="group__drivers.html">Hardware Drivers</a> &#124; <a class="el" href="group__drivers.html">Hardware Drivers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -118,10 +118,344 @@ Functions</h2></td></tr>
 <tr class="separator:a5946888ecba5e11c06a81429e358bbdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="struct_u_a_r_t.html">UART</a> Peripheral driver. </p>
+<div class="textblock"><p>Time delay driver.</p>
+<p><a class="el" href="struct_u_a_r_t.html">UART</a> Peripheral driver. </p>
 
 <p>Definition in file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a5016951f4d87245612746fd3b11b4e55"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UART_init </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>baudrate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initialises the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral at the given baudrate.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
+    <tr><td class="paramname">baudrate</td><td>buadrate to be used on the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Public Functions </p>
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00057">57</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a08fc6898c8677f8ef896a9f76801e9d2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char UART_getc </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_num</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Retrieves a byte from the RX FIFO of the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, waits for a byte if RX FIFO is empty.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>byte received from <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </dd></dl>
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00092">92</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a617a14954d9f85329eba15b2598fd047"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UART_putc </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a byte from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, waits to send if TX FIFO is full.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
+    <tr><td class="paramname">c</td><td>byte to send </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00100">100</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afe4ccbee9edc6e026aedd43bdc2cc87b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UART_puts </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a null-terminated string from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, waits to send if TX FIFO is full.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
+    <tr><td class="paramname">str</td><td>pointer to the string to send </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00108">108</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab4e3801dd5c875e2fd7e1fc9f23fffd9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UART_putb </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a buffer from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, waits to send if TX FIFO is full.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
+    <tr><td class="paramname">str</td><td>pointer to the string to send </td></tr>
+    <tr><td class="paramname">len</td><td>number of bytes in the buffer to send </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00116">116</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae20e5be010bad7da8c736ef405e2e57f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool UART_getc_nonblocking </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Retrieves a byte from the RX FIFO of the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, returns if RX FIFO is empty.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
+    <tr><td class="paramname">c</td><td>pointer to a variable for the received byte </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if a byte was retrieved, false otherwise </dd></dl>
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00124">124</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a012341aaff3c5a7b72c5e5c65d7431b0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool UART_putc_nonblocking </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a byte from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral,, returns if TX FIFO is full.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
+    <tr><td class="paramname">c</td><td>byte to send </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the byte was sent, false otherwise </dd></dl>
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00142">142</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="addb9d0c829ba8e19fc208528a1c2e5f1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool UART_puts_nonblocking </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a null-terminated string from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, returns if TX FIFO is full.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
+    <tr><td class="paramname">str</td><td>pointer to the string to send </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the string was sent, false otherwise </dd></dl>
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00150">150</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac300dfb03ec03a85d390618c8134f169"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool UART_putb_nonblocking </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a buffer from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, returns if TX FIFO is full.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
+    <tr><td class="paramname">str</td><td>pointer to the string to send </td></tr>
+    <tr><td class="paramname">len</td><td>number of bytes in the buffer to send </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the string was sent, false otherwise </dd></dl>
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00162">162</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a5b79448040e7a7d88c440395f383a138"></a>
 <div class="memitem">
 <div class="memproto">
@@ -171,339 +505,6 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>true if there are bytes waiting in the RX FIFO, false otherwise </dd></dl>
 
 <p>Definition at line <a class="el" href="uart_8c_source.html#l00182">182</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a08fc6898c8677f8ef896a9f76801e9d2"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">char UART_getc </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>uart_num</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Retrieves a byte from the RX FIFO of the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, waits for a byte if RX FIFO is empty.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>byte received from <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </dd></dl>
-
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00092">92</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ae20e5be010bad7da8c736ef405e2e57f"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool UART_getc_nonblocking </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>uart_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Retrieves a byte from the RX FIFO of the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, returns if RX FIFO is empty.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
-    <tr><td class="paramname">c</td><td>pointer to a variable for the received byte </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>true if a byte was retrieved, false otherwise </dd></dl>
-
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00124">124</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a5016951f4d87245612746fd3b11b4e55"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void UART_init </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>uart_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>baudrate</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Initialises the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral at the given baudrate.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
-    <tr><td class="paramname">baudrate</td><td>buadrate to be used on the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Public Functions </p>
-
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00057">57</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ab4e3801dd5c875e2fd7e1fc9f23fffd9"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void UART_putb </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>uart_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>str</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Sends a buffer from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, waits to send if TX FIFO is full.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
-    <tr><td class="paramname">str</td><td>pointer to the string to send </td></tr>
-    <tr><td class="paramname">len</td><td>number of bytes in the buffer to send </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00116">116</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ac300dfb03ec03a85d390618c8134f169"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool UART_putb_nonblocking </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>uart_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>str</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Sends a buffer from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, returns if TX FIFO is full.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
-    <tr><td class="paramname">str</td><td>pointer to the string to send </td></tr>
-    <tr><td class="paramname">len</td><td>number of bytes in the buffer to send </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the string was sent, false otherwise </dd></dl>
-
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00162">162</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a617a14954d9f85329eba15b2598fd047"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void UART_putc </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>uart_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Sends a byte from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, waits to send if TX FIFO is full.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
-    <tr><td class="paramname">c</td><td>byte to send </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00100">100</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a012341aaff3c5a7b72c5e5c65d7431b0"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool UART_putc_nonblocking </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>uart_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Sends a byte from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral,, returns if TX FIFO is full.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
-    <tr><td class="paramname">byte</td><td>to send </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the byte was sent, false otherwise </dd></dl>
-
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00142">142</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="afe4ccbee9edc6e026aedd43bdc2cc87b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void UART_puts </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>uart_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>str</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Sends a null-terminated string from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, waits to send if TX FIFO is full.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
-    <tr><td class="paramname">str</td><td>pointer to the string to send </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00108">108</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="addb9d0c829ba8e19fc208528a1c2e5f1"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool UART_puts_nonblocking </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>uart_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>str</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Sends a null-terminated string from the specified <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral, returns if TX FIFO is full.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uart_num</td><td>ID of the <a class="el" href="struct_u_a_r_t.html">UART</a> peripheral </td></tr>
-    <tr><td class="paramname">str</td><td>pointer to the string to send </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the string was sent, false otherwise </dd></dl>
-
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00150">150</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
 
 </div>
 </div>

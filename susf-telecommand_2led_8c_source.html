@@ -120,7 +120,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  *led-&gt;peripheral_register |= _BV(led-&gt;peripheral);</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keywordtype">void</span> LED_on(uint8_t led_num)</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keywordtype">void</span> <a class="code" href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a>(uint8_t led_num)</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;{</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordflow">if</span>(led_num &gt;= NUMBER_OF_LEDS)</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">return</span>;</div>
@@ -132,7 +132,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  LED_leds[led_num].state = state_ON;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keywordtype">void</span> LED_off(uint8_t led_num)</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keywordtype">void</span> <a class="code" href="led_8h.html#a8bfaf273399874243979d43beaa7fd77">LED_off</a>(uint8_t led_num)</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordflow">if</span>(led_num &gt;= NUMBER_OF_LEDS)</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">return</span>;</div>
@@ -144,21 +144,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  LED_leds[led_num].state = state_OFF;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keywordtype">void</span> LED_set(uint8_t led_num, <span class="keywordtype">bool</span> state)</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keywordtype">void</span> <a class="code" href="led_8h.html#a44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a>(uint8_t led_num, <span class="keywordtype">bool</span> state)</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;{</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordflow">if</span>(led_num &gt;= NUMBER_OF_LEDS)</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  </div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">if</span>(state==<span class="keyword">true</span>)</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    LED_on(led_num);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <a class="code" href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a>(led_num);</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  }</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    LED_off(led_num);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <a class="code" href="led_8h.html#a8bfaf273399874243979d43beaa7fd77">LED_off</a>(led_num);</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  }</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}</div>
 <div class="ttc" id="struct_l_e_d_html"><div class="ttname"><a href="struct_l_e_d.html">LED</a></div><div class="ttdef"><b>Definition:</b> <a href="susf-telecommand_2led_8c_source.html#l00005">led.c:5</a></div></div>
+<div class="ttc" id="led_8h_html_a44f0dcd60cca69dfed79d7c6388e4e9c"><div class="ttname"><a href="led_8h.html#a44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a></div><div class="ttdeci">void LED_set(uint8_t led_number, bool state)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00015">led.c:15</a></div></div>
+<div class="ttc" id="led_8h_html_a6e5e12aa6561da857f0d546c229110f1"><div class="ttname"><a href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a></div><div class="ttdeci">void LED_on(uint8_t led_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00005">led.c:5</a></div></div>
+<div class="ttc" id="led_8h_html_a8bfaf273399874243979d43beaa7fd77"><div class="ttname"><a href="led_8h.html#a8bfaf273399874243979d43beaa7fd77">LED_off</a></div><div class="ttdeci">void LED_off(uint8_t led_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00010">led.c:10</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

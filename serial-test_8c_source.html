@@ -96,14 +96,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;  Board_init();</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;  <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  LED_on(LED_B);</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  <a class="code" href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a>(LED_B);</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <a class="code" href="uart_8h.html#a5016951f4d87245612746fd3b11b4e55">UART_init</a>(UART_CAM_HEADER, 9600);</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <a class="code" href="uart_8h.html#a5016951f4d87245612746fd3b11b4e55">UART_init</a>(UART_PC104_HEADER, 9600);</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keywordflow">while</span>(1)</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    LED_off(LED_B);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <a class="code" href="led_8h.html#a8bfaf273399874243979d43beaa7fd77">LED_off</a>(LED_B);</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="uart_8h.html#a617a14954d9f85329eba15b2598fd047">UART_putc</a>(UART_CAM_HEADER, <span class="charliteral">&#39;U&#39;</span>);</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="uart_8h.html#a617a14954d9f85329eba15b2598fd047">UART_putc</a>(UART_PC104_HEADER, <span class="charliteral">&#39;U&#39;</span>);</div>
@@ -112,7 +112,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    Delay_ms(750);</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    LED_on(LED_B);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a>(LED_B);</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="uart_8h.html#afe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(UART_CAM_HEADER, <span class="stringliteral">&quot;\r\nCamera Header\r\n&quot;</span>);</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="uart_8h.html#afe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(UART_PC104_HEADER, <span class="stringliteral">&quot;\r\nPC104 Header\r\n&quot;</span>);</div>
@@ -126,6 +126,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="uart_8h_html_afe4ccbee9edc6e026aedd43bdc2cc87b"><div class="ttname"><a href="uart_8h.html#afe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a></div><div class="ttdeci">void UART_puts(uint8_t uart_num, char *str)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00108">uart.c:108</a></div></div>
 <div class="ttc" id="test_8c_html_a840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdoc">Runs all module tests. </div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00019">test.c:19</a></div></div>
 <div class="ttc" id="uart_8h_html_a617a14954d9f85329eba15b2598fd047"><div class="ttname"><a href="uart_8h.html#a617a14954d9f85329eba15b2598fd047">UART_putc</a></div><div class="ttdeci">void UART_putc(uint8_t uart_num, char c)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00100">uart.c:100</a></div></div>
+<div class="ttc" id="led_8h_html_a6e5e12aa6561da857f0d546c229110f1"><div class="ttname"><a href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a></div><div class="ttdeci">void LED_on(uint8_t led_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00005">led.c:5</a></div></div>
+<div class="ttc" id="led_8h_html_a8bfaf273399874243979d43beaa7fd77"><div class="ttname"><a href="led_8h.html#a8bfaf273399874243979d43beaa7fd77">LED_off</a></div><div class="ttdeci">void LED_off(uint8_t led_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00010">led.c:10</a></div></div>
 <div class="ttc" id="wdt_8h_html_a839f0e2119c8cc94b8d13881ab836b2a"><div class="ttname"><a href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a></div><div class="ttdeci">void WDT_kick(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2wdt_8c_source.html#l00009">wdt.c:9</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

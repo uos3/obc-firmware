@@ -89,31 +89,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a href="crc16_8c.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;crc16.h&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="crc16_8c.html#a75c1f983902a49826f07fad3942bcb24">   17</a></span>&#160;uint16_t <a class="code" href="crc16_8c.html#a75c1f983902a49826f07fad3942bcb24">CRC16_CCITT</a>(uint8_t *buffer, uint32_t length)</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  uint32_t i;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  uint16_t j, crc;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  crc = 0xFFFF;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keywordflow">for</span> (i=0; i&lt;length; i++)</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    crc = (uint16_t)(crc ^ ((uint16_t)buffer[i] &lt;&lt; 8));</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">for</span> (j=0; j&lt;8; j++)</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      <span class="keywordflow">if</span> (crc &amp; 0x8000)</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        crc = (uint16_t)(crc &lt;&lt; 1) ^ 0x1021;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        crc = (uint16_t)(crc &lt;&lt; 1);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    }</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  }</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordflow">return</span> crc;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="ttc" id="crc16_8c_html_a75c1f983902a49826f07fad3942bcb24"><div class="ttname"><a href="crc16_8c.html#a75c1f983902a49826f07fad3942bcb24">CRC16_CCITT</a></div><div class="ttdeci">uint16_t CRC16_CCITT(uint8_t *buffer, uint32_t length)</div><div class="ttdef"><b>Definition:</b> <a href="crc16_8c_source.html#l00017">crc16.c:17</a></div></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;crc16.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="crc16_8c.html#a75c1f983902a49826f07fad3942bcb24">   19</a></span>&#160;uint16_t <a class="code" href="crc16_8c.html#a75c1f983902a49826f07fad3942bcb24">CRC16_CCITT</a>(uint8_t *buffer, uint32_t length)</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;{</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  uint32_t i;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  uint16_t j, crc;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  crc = 0xFFFF;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordflow">for</span> (i=0; i&lt;length; i++)</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    crc = (uint16_t)(crc ^ ((uint16_t)buffer[i] &lt;&lt; 8));</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordflow">for</span> (j=0; j&lt;8; j++)</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      <span class="keywordflow">if</span> (crc &amp; 0x8000)</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        crc = (uint16_t)(crc &lt;&lt; 1) ^ 0x1021;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        crc = (uint16_t)(crc &lt;&lt; 1);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    }</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  }</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">return</span> crc;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="ttc" id="crc16_8c_html_a75c1f983902a49826f07fad3942bcb24"><div class="ttname"><a href="crc16_8c.html#a75c1f983902a49826f07fad3942bcb24">CRC16_CCITT</a></div><div class="ttdeci">uint16_t CRC16_CCITT(uint8_t *buffer, uint32_t length)</div><div class="ttdef"><b>Definition:</b> <a href="crc16_8c_source.html#l00019">crc16.c:19</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
