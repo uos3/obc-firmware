@@ -42,19 +42,19 @@
 int main(void)
 {  
   Board_init(); // start the board
-  WDT_kick(); // kick the watchdog 
+  setupwatchdoginterrupt();
 
 // UART at 115200, unreliable at 9600
 
-  UART_init(CAM_SERIAL, 115200);  UART_puts(CAM_SERIAL,"\nreset\n\r");
-  UART_init(GPS_SERIAL, 115200);  UART_puts(GPS_SERIAL,"\nreset\n\r");
+  UART_init(CAM_SERIAL, 115200);  
+  UART_init(GPS_SERIAL, 115200);  
+
+  UART_puts(DEBUG_PORT,"\n\rreset\n\r");
 
    while(1) // infinite loop
  {
  char buffer[4];
 
- for (unsigned int wdt_kicker=100000;wdt_kicker>0;wdt_kicker--) // repeat this to kick wdt at correct time.
-  {    
     char c; // echo back to sending port
     if (UART_getc_nonblocking(DEBUG_PORT,&c)) {UART_putc_nonblocking(NORMAL_PORT,c); } // input
     if (UART_getc_nonblocking(NORMAL_PORT,&c)) {//UART_putc_nonblocking(GPS_SERIAL,c);
@@ -64,13 +64,13 @@ int main(void)
         //         UART_putc_nonblocking(DEBUG_PORT,'[');
                  UART_putc_nonblocking(DEBUG_PORT,buffer[0]);
                  UART_putc_nonblocking(DEBUG_PORT,buffer[1]);
+                 if (c==0) UART_putc_nonblocking(DEBUG_PORT,'\n');
+                 if (c==0) UART_putc_nonblocking(DEBUG_PORT,'\r');
                 // UART_putb(DEBUG_PORT,buffer,2); // using this instead slows it down, not slowing down means odd behaviour, unmatched brackets etc
           //       UART_putc_nonblocking(DEBUG_PORT,']');  
        } //output
   
-   }
-  WDT_kick();
- }
+  }
 }
 
 

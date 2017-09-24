@@ -31,16 +31,18 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/gpio.h"
 #include "driverlib/timer.h"
+#include "../led.h"
 
 void Timer0IntHandler(void) 
 {
 // Clear the timer interrupt
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
     WDT_kick(); // kick the watchdog
+    LED_toggle(LED_B);
 }
 void setupwatchdoginterrupt(void)
  {
-	unsigned long ulPeriod;
+ 	unsigned long ulPeriod;
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0); // turn on timer
 	while (!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0)) {} // wait for timer to be ready
 	TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC); // set it to periodically trigger interrupt

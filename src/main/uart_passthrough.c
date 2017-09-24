@@ -38,8 +38,8 @@
 int main(void)
 {  
   Board_init(); // start the board
-  WDT_kick(); // kick the watchdog 
-
+ // WDT_kick(); // kick the watchdog 
+ setupwatchdoginterrupt();
 // UART at 115200, unreliable at 9600
 
   UART_init(CAM_SERIAL, 115200); // UART_puts(CAM_SERIAL,"UART_passthrough");
@@ -47,16 +47,10 @@ int main(void)
 
    while(1) // infinite loop
  {
-
- for (unsigned int wdt_kicker=100000;wdt_kicker>0;wdt_kicker--) // repeat this to kick wdt at correct time.
-  {    
     char c; // echo back to sending port
     if (UART_getc_nonblocking(GPS_SERIAL,&c)) {UART_putc_nonblocking(CAM_SERIAL,c); } // input
     if (UART_getc_nonblocking(CAM_SERIAL,&c)) {UART_putc_nonblocking(GPS_SERIAL,c); } //output
-  
    }
-  WDT_kick();
- }
 }
 
 

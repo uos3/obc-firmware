@@ -7,5 +7,7 @@
 void LED_on(uint8_t led_number);
 void LED_off(uint8_t led_number);
 void LED_set(uint8_t led_number, bool state);
+void LED_toggle(uint8_t led_num);
+
 
 #endif /*  __LED_H__ */

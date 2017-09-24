@@ -6,7 +6,6 @@
 # MIT License
 #
 # usage: python linksprite_grab picture.jpg
-# modified S Lucarotti to test with UART_passthrough
 
 import serial, time, sys
 
@@ -14,14 +13,12 @@ def a2s(arr):
 	return ''.join(chr(b) for b in arr)
 
 # OLD: LK_POWERUP = a2s([0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a])
-#LK_POWERUP = a2s([0x0d, 0x0a, 0x00, 0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a])
-
-LK_POWERUP = a2s([0x0d,0x0a,0,4,0,0x49,0x68,0x69,0x68,0x20,0x65,0xc,0])
+LK_POWERUP = a2s([0x0d, 0x0a, 0x00, 0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65])
 
 LK_BAUDRATE_19200	= a2s([0x56, 0x00, 0x24, 0x03, 0x01, 0x56, 0xe4])
 LK_BAUDRATE_38400	= a2s([0x56, 0x00, 0x24, 0x03, 0x01, 0x2a, 0xf2])
 LK_BAUDRATE_RE	= a2s([0x76, 0x00, 0x24, 0x00, 0x00])
- 
+
 LK_RESOLUTION_VGA = a2s([0x56, 0x00, 0x54, 0x01, 0x00])
 LK_RESOLUTION_800 = a2s([0x56, 0x00, 0x54, 0x01, 0x1D])
 LK_RESOLUTION_1280 = a2s([0x56, 0x00, 0x54, 0x01, 0x1B])
@@ -34,8 +31,9 @@ LK_COMPRESSION_RE = a2s([0x76, 0x00, 0x31, 0x00, 0x00])
 LK_RESET 		= a2s([0x56, 0x00, 0x26, 0x00])
 # OLD: LK_RESET_RE 		= a2s([0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a])
 # LEGIT: LK_RESET_RE 		= a2s([0x76,0x00,0x31,0x00,0x00])
-LK_RESET_RE 		= a2s([0x76,0x00,0x54,0x00,0x00])
-LK_RESET_RE2 		= a2s([0x76,0x00,0x31,0x00,0x00])
+#LK_RESET_RE 		= a2s([0x76,0x00,0x54,0x00,0x00])
+#LK_RESET_RE2 		= a2s([0x76,0x00,0x31,0x00,0x00])
+LK_RESET_RE = a2s([0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a])
 
 LK_PICTURE 		= a2s([0x56, 0x00, 0x36, 0x01, 0x00])
 LK_PICTURE_RE		= a2s([0x76, 0x00, 0x36, 0x00, 0x00])
@@ -56,22 +54,11 @@ def init_serial(baudrate):
 def main():
 	s = init_serial('115200')
 
-#	while(1):
-#		re = s.read(1)
-#		print ':'.join(x.encode('hex') for x in re)
-
-	print "Waiting for powerup"
-	newdata = s.read(len(LK_POWERUP))
-	while(newdata != LK_POWERUP): 
-                debug="."
-                print len(newdata)
-                print tuple(newdata)
-                for c in tuple(newdata):
-                    debug+=".{0:x}".format(ord(c))
-                print debug
-		newdata = s.read(len(LK_POWERUP))
-
-	print "Received Powerup!"
+	#print "Waiting for powerup"
+	#newdata = s.read(len(LK_POWERUP))
+	#while(newdata != LK_POWERUP):
+	#	newdata = s.read(len(LK_POWERUP))
+	#print "Received Powerup!"
 
 	if(not link_reset(s)):
 		#print "Attempting 38400 baud.."
@@ -87,9 +74,6 @@ def main():
 	#s.close()
 	#s = init_serial('38400')
 
-	s.flushInput()
-	s.write(LK_RESET)
-
 	while(not set_resolution(s, LK_RESOLUTION_1600)):
 		time.sleep(.1)
 	time.sleep(.2)
@@ -98,9 +82,7 @@ def main():
 		time.sleep(.1)
 	time.sleep(.2)
 
-        print "taking picture..."
 	take_picture(s)
-        print "checking it..."
 	time.sleep(.5)
 
 	size = check_picturesize(s)
@@ -135,11 +117,10 @@ def change_baudrate(s, cmd):
 		return False
 	
 def link_reset(s):
-        print "trying link reset"
 	s.flushInput()
 	s.write(LK_RESET)
 	re = s.read(len(LK_RESET_RE))
-	if(re == LK_RESET_RE or re == LK_RESET_RE2):
+	if(re == LK_RESET_RE):
 		print "Reset response OK"
 		print ':'.join(x.encode('hex') for x in re)
 		return True
