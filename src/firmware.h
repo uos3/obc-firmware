@@ -49,7 +49,9 @@
  *
  * For installation instructions, see README.md in the Repository
  *
- * \subsection doc_links Documentation Areas
+ * \section doc_links Documentation Areas
+ *
+ * \ref mains "Main Applications"
  *
  * \ref drivers "Hardware Driver Layer"
  *
@@ -57,11 +59,19 @@
  *
  * \ref cc1125 "CC1125 RF Transceiver Driver"
  *
- * \subsection install_sec External Links
+ * \section external_links External Links
  *
- * <a href="https://github.com/uos3/firmware">UoS³ Flight Computer Firmware Github Repository</a>
+ * <a href="https://github.com/uos3/firmware">Github Code Repository</a>
  *
- * <a href="https://travis-ci.org/uos3/firmware">Travis Continuous Integration Testing</a>
+ * <a href="https://travis-ci.org/uos3/firmware">Continuous Integration Testing (Travis CI)</a>
+ *
+ * \section authors Authors
+ *
+ * Suzanna Lucarotti
+ *
+ * Matthew Brejza
+ *
+ * Phil Crump
  *
  * @defgroup group_main Project Modules
  * @brief Project modules listing
@@ -69,6 +79,9 @@
  * @{
  */
 
+/** @defgroup mains Main Applications
+ *	Main Application Entry Files
+ */
 /** @defgroup drivers Hardware Drivers
  *	Drivers for platform & board hardware.
  */

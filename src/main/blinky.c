@@ -1,7 +1,11 @@
-/* firmware.h contains all relevant headers */
+/** @file blinky.c
+ *
+ * LED Blink Example Application
+ *
+ * @ingroup mains
+ * @{
+ */
 #include "../firmware.h"
-
-/* A very simple example that blinks the on-board LED. */
 
 int main(void)
 {
@@ -23,3 +27,7 @@ int main(void)
     WDT_kick();
   }
 }
+
+/**
+ * @}
+ */
