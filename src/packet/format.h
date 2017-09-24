@@ -1,5 +1,9 @@
 /* @file format.h
+ *
+ * Packet Format Definitions
+ *
  * @ingroup packet
+ *
  * @{
  */
 

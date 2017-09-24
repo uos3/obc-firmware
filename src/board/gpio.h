@@ -1,4 +1,7 @@
-/* @file gpio.h
+/** @file gpio.h
+ *
+ * GPIO Peripheral driver.
+ *
  * @ingroup drivers
  * @{
  */

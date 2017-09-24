@@ -1,6 +1,8 @@
 /* @file packet.c
+ *
  * @author Phil Crump
- * @addtogroup tests
+ *
+ * @ingroup tests
  * @{
  */
 

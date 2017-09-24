@@ -49,11 +49,19 @@
  *
  * For installation instructions, see README.md in the Repository
  *
- * \section install_sec Related Links
+ * \subsection doc_links Documentation Areas
  *
- * <a href="https://github.com/uos3/firmware">Github Repository</a>
+ * \ref drivers "Hardware Driver Layer"
  *
- * <a href="https://travis-ci.org/uos3/firmware">Travis CI</a>
+ * \ref packet "Packet Functions"
+ *
+ * \ref cc1125 "CC1125 RF Transceiver Driver"
+ *
+ * \subsection install_sec External Links
+ *
+ * <a href="https://github.com/uos3/firmware">UoS³ Flight Computer Firmware Github Repository</a>
+ *
+ * <a href="https://travis-ci.org/uos3/firmware">Travis Continuous Integration Testing</a>
  *
  * @defgroup group_main Project Modules
  * @brief Project modules listing
@@ -66,6 +74,9 @@
  */
 /** @defgroup packet  Packet Modules
  *  High-level Data Packet Modules
+ */
+/** @defgroup cc1125  CC1125 Driver
+ *  Driver for the TI CC1125 ISM Transceiver
  */
 /** @defgroup tests   Module Tests 
  *  Tests of High-level modules.

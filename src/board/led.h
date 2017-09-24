@@ -1,4 +1,7 @@
-/* @file led.h
+/** @file led.h
+ *
+ * LED driver.
+ *
  * @ingroup drivers
  * @{
  */

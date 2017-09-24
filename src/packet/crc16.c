@@ -1,5 +1,7 @@
-/**
- * @file crc16.c
+/** @file crc16.c
+ *
+ * Packet CRC16 Routines
+ *
  * @ingroup packet
  * @{
  */

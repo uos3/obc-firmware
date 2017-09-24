@@ -1,4 +1,7 @@
-/* @file debug.h
+/** @file debug.h
+ *
+ * Debug output driver.
+ *
  * @ingroup drivers
  * @{
  */

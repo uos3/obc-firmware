@@ -1,5 +1,7 @@
 /* @file packet.h
+ *
  * @ingroup tests
+ *
  * @{
  */
 

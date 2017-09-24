@@ -1,5 +1,7 @@
 /* @file interleave.h
+ *
  * @ingroup packet
+ *
  * @{
  */
 

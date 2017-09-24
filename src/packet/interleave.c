@@ -1,5 +1,7 @@
 /* @file interleave.c
  *
+ * Packet Interleaving Functions
+ *
  * @author Phil Crump
  *
  * @ingroup packet

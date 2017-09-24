@@ -1,4 +1,7 @@
-/* @file delay.h
+/** @file uart.h
+ *
+ * Time delay driver.
+ *
  * @ingroup drivers
  * @{
  */

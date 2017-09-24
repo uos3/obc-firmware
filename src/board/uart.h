@@ -73,7 +73,7 @@ bool UART_getc_nonblocking(uint8_t uart_num, char *c);
  *  returns if TX FIFO is full.
  *
  * @param uart_num ID of the UART peripheral
- * @param byte to send
+ * @param c byte to send
  * @returns true if the byte was sent, false otherwise
  */
 bool UART_putc_nonblocking(uint8_t uart_num, char c);
