@@ -38,7 +38,7 @@ jobs:
       env: 
       script: ./test -w
     - stage: Doxygen
-      if: branch = phil-work
+      if: branch = master
       cache: skip
       install: skip
       addons:
