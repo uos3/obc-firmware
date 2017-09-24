@@ -1,10 +1,19 @@
-/** @file gpio.h
+/**
+ * @defgroup gpio GPIO
  *
- * GPIO Peripheral driver.
+ * @brief GPIO Peripheral Driver
+ *
+ * @details Hardware GPIO Peripheral Driver.
+ *
+ * GPIO pins for each board are defined in ${board}/board.h
  *
  * @ingroup drivers
+ *
+ * @file gpio.h
+ *
  * @{
  */
+
 
 #ifndef __GPIO_H__
 #define __GPIO_H__

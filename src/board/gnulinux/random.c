@@ -1,10 +1,6 @@
-/** @file random.c
+/** @file gnulinux/random.c
  *
- * Random driver.
- *
- * @author Phil Crump
- *
- * @ingroup drivers
+ * @ingroup random
  * @{
  */
 

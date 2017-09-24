@@ -1,5 +1,14 @@
-/* @file pn9.h
- * @addtogroup packet
+/**
+ * @defgroup pn9 PN9
+ *
+ * @brief Packet PN9 Routines
+ *
+ * @details 
+ *
+ * @ingroup packet
+ *
+ * @file pn9.h
+ *
  * @{
  */
 #ifndef __PACKET_PN9_H__

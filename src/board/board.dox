@@ -1,7 +1,5 @@
 /**
- * @defgroup drivers
- *
- * Hardware Drivers
+ * @defgroup drivers Board/Platform Hardware Drivers
  *
  * @details APIs for board-abstracted hardware interfacing.
  *

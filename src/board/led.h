@@ -1,10 +1,19 @@
-/** @file led.h
+/**
+ * @defgroup led LED
  *
- * LED driver.
+ * @brief LED Peripheral Driver
+ *
+ * @details Hardware LED Peripheral Driver.
+ *
+ * LEDs for each board are defined in ${board}/board.h
  *
  * @ingroup drivers
+ *
+ * @file led.h
+ *
  * @{
  */
+
 
 #ifndef __LED_H__
 #define __LED_H__

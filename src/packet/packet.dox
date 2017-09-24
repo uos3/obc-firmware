@@ -1,5 +1,5 @@
 /** 
- * @defgroup packet
+ * @defgroup packet Packet Functions
  * 
- * High-level Data Packet Modules
+ * @details Functions for Packet Operations
  */

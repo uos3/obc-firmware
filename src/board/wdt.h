@@ -1,11 +1,14 @@
-/** 
- * @defgroup wdt
+/**
+ * @defgroup wdt WDT
  *
- * External watchdog driver.
+ * @brief External watchdog driver
  *
  * @details Driver for kicking the external window watchdog device.
  *
  * @ingroup drivers
+ *
+ * @file wdt.h
+ *
  * @{
  */
 

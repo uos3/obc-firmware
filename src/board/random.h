@@ -1,8 +1,12 @@
-/** @file random.h
+/**
+ * @defgroup random Random Number
  *
- * Random driver.
+ * @brief Random Number Driver
  *
  * @ingroup drivers
+ *
+ * @file random.h
+ *
  * @{
  */
 

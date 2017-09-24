@@ -1,4 +1,12 @@
-#include "../firmware.h"
+/**
+ * @ingroup pn9
+ *
+ * @file pn9.c
+ *
+ * @{
+ */
+
+ #include "../firmware.h"
 
 void packet_pn9_xor(uint8_t *buffer, uint32_t length)
 {
@@ -24,3 +32,6 @@ void packet_pn9_xor(uint8_t *buffer, uint32_t length)
   }
 }
 
+/**
+ * @}
+ */

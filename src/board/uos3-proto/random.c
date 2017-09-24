@@ -1,4 +1,10 @@
-#include "board.h"
+/** @file uos3-proto/random.c
+ *
+ * @ingroup random
+ * @{
+ */
+
+ #include "board.h"
 
 #include "../random.h"
 
@@ -27,3 +33,7 @@ uint32_t Random(uint32_t max)
 
   return (uint32_t)((float)out * ((float)max / (float)RAND_MAX));
 }
+
+/**
+ * @}
+ */

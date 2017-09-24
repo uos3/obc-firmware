@@ -1,10 +1,15 @@
-/** @file delay.h
+/**
+ * @defgroup delay Delay
  *
- * Time delay driver.
+ * @brief Time Delay Driver
  *
  * @ingroup drivers
+ *
+ * @file delay.h
+ *
  * @{
  */
+
 
 #ifndef __DELAY_H__
 #define __DELAY_H__

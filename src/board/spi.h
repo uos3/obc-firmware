@@ -1,8 +1,16 @@
-/** @file spi.h
+/**
+ * @defgroup spi SPI
  *
- * SPI Peripheral driver.
+ * @brief SPI Peripheral Driver
+ *
+ * @details Hardware SPI Peripheral Driver.
+ *
+ * SPI ports for each board are defined in ${board}/board.h
  *
  * @ingroup drivers
+ *
+ * @file spi.h
+ *
  * @{
  */
 
