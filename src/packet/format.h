@@ -1,5 +1,5 @@
 /* @file format.h
- * @addtogroup packet
+ * @ingroup packet
  * @{
  */
 

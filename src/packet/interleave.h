@@ -1,5 +1,5 @@
 /* @file interleave.h
- * @addtogroup packet
+ * @ingroup packet
  * @{
  */
 

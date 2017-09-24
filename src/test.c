@@ -1,10 +1,10 @@
-/* @file test.c
+/** @file test.c
  *
  * This file contains the main function for the module tests.
  *
  * @author Phil Crump
  *
- * @addtogroup tests
+ * @ingroup tests
  * @{
  */
 

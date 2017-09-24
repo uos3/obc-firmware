@@ -1,4 +1,4 @@
-/* @file test.h
+/** @file test.h
  *
  * This file contains defines and helper macros for use in test files
  *

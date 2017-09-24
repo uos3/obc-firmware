@@ -41,7 +41,7 @@
 
 #endif /*  __FIRMWARE_H__ */
 
-/*! \mainpage UoS³ Flight Computer Firmware Documentation
+/** \mainpage UoS³ Flight Computer Firmware Documentation
  *
  * The firmware is built from a top-level C program file and resolves all the references and includes from the src/ and specified hardware folders
  *
@@ -54,4 +54,15 @@
  * <a href="https://github.com/uos3/firmware">Github Repository</a>
  *
  * <a href="https://travis-ci.org/uos3/firmware">Travis CI</a>
+ *
+ * @defgroup group_main Project Modules
+ * @brief Project modules listing
+ *
+ * @{
  */
+
+/** @defgroup drivers Hardware Drivers */
+/** @defgroup tests   Module Tests     */
+/** @defgroup packet  Packet Modules   */
+
+/** @} */

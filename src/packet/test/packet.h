@@ -1,5 +1,5 @@
 /* @file packet.h
- * @addtogroup tests
+ * @ingroup tests
  * @{
  */
 

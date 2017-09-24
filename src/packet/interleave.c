@@ -1,5 +1,8 @@
 /* @file interleave.c
- * @addtogroup packet
+ *
+ * @author Phil Crump
+ *
+ * @ingroup packet
  * @{
  */
 

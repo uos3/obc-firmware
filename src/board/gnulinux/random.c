@@ -1,3 +1,13 @@
+/** @file random.c
+ *
+ * Random driver.
+ *
+ * @author Phil Crump
+ *
+ * @ingroup drivers
+ * @{
+ */
+
 #include "board.h"
 
 #include "../random.h"
@@ -8,6 +18,12 @@
 
 static bool rng_seeded = false;
 
+/**
+ * @brief Returns an unsigned random integer of less than or equal to a given value;
+ *
+ * @param max maximum output value
+ * @returns random integer
+ */
 uint32_t Random(uint32_t max)
 {
   uint32_t prev, out;
@@ -28,3 +44,7 @@ uint32_t Random(uint32_t max)
 
   return (uint32_t)((float)out * ((float)max / (float)RAND_MAX));
 }
+
+/**
+ * @}
+ */

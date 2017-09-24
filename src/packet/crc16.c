@@ -1,5 +1,6 @@
-/* @file crc16.c
- * @addtogroup packet
+/**
+ * @file crc16.c
+ * @ingroup packet
  * @{
  */
 
