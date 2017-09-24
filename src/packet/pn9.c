@@ -24,15 +24,3 @@ void packet_pn9_xor(uint8_t *buffer, uint32_t length)
   }
 }
 
-void packet_interleave(uint8_t *in, uint8_t *out, uint32_t x, uint32_t y)
-{
-  uint32_t i, j;
-
-  for(i=0; i<x; i++)
-  {
-    for(j=0; j<y; j++)
-    {
-      out[(i*y)+j] = in[(j*x)+i];
-    }
-  }
-}

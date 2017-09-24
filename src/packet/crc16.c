@@ -1,9 +1,22 @@
+/* @file crc16.c
+ * @addtogroup packet
+ * @{
+ */
+
 #include "crc16.h"
 
+/**
+ * Calculate the 16-bit CRC of the input buffer,
+ * using the CRC16-CCITT standard.
+ *
+ * @param buffer The input buffer to calculated
+ * @param length The length of the input buffer
+ * @returns The 16bit CRC of the input buffer
+ */
 uint16_t CRC16_CCITT(uint8_t *buffer, uint32_t length)
 {
-  uint32_t i, j;
-  uint16_t crc;
+  uint32_t i;
+  uint16_t j, crc;
  
   crc = 0xFFFF;
   
@@ -21,3 +34,7 @@ uint16_t CRC16_CCITT(uint8_t *buffer, uint32_t length)
  
   return crc;
 }
+
+/**
+ * @}
+ */
