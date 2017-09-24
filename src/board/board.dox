@@ -1,0 +1,8 @@
+/**
+ * @defgroup drivers
+ *
+ * Hardware Drivers
+ *
+ * @details APIs for board-abstracted hardware interfacing.
+ *
+ */
