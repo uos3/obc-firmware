@@ -52,7 +52,7 @@ print "$_DEBUG_ Generating Doxygen code documentation"
 doxygen ../doxyfile 2>&1 | tee doxygen.log
 
 # Bail out if there's no changes
-if [ -z `git diff --exit-code` ]; then
+if [ -z `git diff -s --exit-code` ]; then
     print "$_INFO_ No doc changes on this push; exiting."
     exit 0
 fi
