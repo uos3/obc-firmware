@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['uos³_20flight_20computer_20firmware_20documentation',['UoS³ Flight Computer Firmware Documentation',['../index.html',1,'']]],
-  ['uart',['UART',['../struct_u_a_r_t.html',1,'']]],
-  ['uart_2eh',['uart.h',['../uart_8h.html',1,'']]],
   ['uart_5fbusy',['UART_busy',['../uart_8h.html#a5b79448040e7a7d88c440395f383a138',1,'uart.c']]],
   ['uart_5fcharsavail',['UART_charsAvail',['../uart_8h.html#a5946888ecba5e11c06a81429e358bbdf',1,'uart.c']]],
   ['uart_5fgetc',['UART_getc',['../uart_8h.html#a08fc6898c8677f8ef896a9f76801e9d2',1,'uart.c']]],

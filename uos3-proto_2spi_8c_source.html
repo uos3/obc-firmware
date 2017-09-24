@@ -170,7 +170,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">while</span>(SSIDataGetNonBlocking(base_spi, &amp;d));</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;}</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keywordtype">void</span> SPI_init(uint8_t spi_num)</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keywordtype">void</span> <a class="code" href="spi_8h.html#a138ad778c02212e029a14d8be2a335dc">SPI_init</a>(uint8_t spi_num)</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;{</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  check_spi_num(spi_num,);</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -231,7 +231,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  }</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;}</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd)</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;uint8_t <a class="code" href="spi_8h.html#a5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a>(uint8_t spi_num, uint8_t cmd)</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;{</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  check_spi_num(spi_num, 0);</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -252,7 +252,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="keywordflow">return</span>((uint8_t)readValue);</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;}</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;uint8_t <a class="code" href="spi_8h.html#a8fe538eee897354b740b621714219221">SPI_read8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;{</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  check_spi_num(spi_num, 0);</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -282,7 +282,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordflow">return</span>((uint8_t)readValue);</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;uint8_t <a class="code" href="spi_8h.html#aeb97ff1125bc25cc974dd58e02035f72">SPI_burstread8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;{</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  check_spi_num(spi_num, 0);</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -314,7 +314,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <span class="keywordflow">return</span>((uint8_t)readValue);</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;}</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;uint8_t <a class="code" href="spi_8h.html#a87d05cd990d395f3549c441bae821779">SPI_write8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;{</div>
 <div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  check_spi_num(spi_num, 0);</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -344,7 +344,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;  <span class="keywordflow">return</span>((uint8_t)readValue);</div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;}</div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;uint8_t <a class="code" href="spi_8h.html#ac6d27cd7e85842858f3ef2c70e06a7b9">SPI_burstwrite8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;{</div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  check_spi_num(spi_num, 0);</div>
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -377,7 +377,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="keywordflow">return</span>((uint8_t)readValue);</div>
 <div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;}</div>
 <div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;uint8_t <a class="code" href="spi_8h.html#aa35780863fbba18a68b3faa30c34710a">SPI_read16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;{</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  check_spi_num(spi_num, 0);</div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -414,7 +414,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="keywordflow">return</span>((uint8_t)readValue);</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;}</div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;uint8_t <a class="code" href="spi_8h.html#a94a9828b4185d47320af38b037e29b4c">SPI_burstread16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div>
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;{</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  check_spi_num(spi_num, 0);</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -453,7 +453,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;  <span class="keywordflow">return</span>((uint8_t)readValue);</div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;}</div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;uint8_t <a class="code" href="spi_8h.html#a0be32d4795e246e876418b9928d42714">SPI_write16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;{</div>
 <div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  check_spi_num(spi_num, 0);</div>
 <div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -489,7 +489,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;  <span class="keywordflow">return</span>((uint8_t)readValue);</div>
 <div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;}</div>
 <div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;uint8_t <a class="code" href="spi_8h.html#af87f3fefe290fc4a250a8f9a3be20225">SPI_burstwrite16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div>
 <div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;{</div>
 <div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;  check_spi_num(spi_num, 0);</div>
 <div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
@@ -527,8 +527,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;  <span class="comment">/* return the status byte value */</span></div>
 <div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;  <span class="keywordflow">return</span>((uint8_t)readValue);</div>
 <div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;}</div>
+<div class="ttc" id="spi_8h_html_a5c82eae20b2408611e1b89d80934c320"><div class="ttname"><a href="spi_8h.html#a5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a></div><div class="ttdeci">uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00010">spi.c:10</a></div></div>
+<div class="ttc" id="spi_8h_html_af87f3fefe290fc4a250a8f9a3be20225"><div class="ttname"><a href="spi_8h.html#af87f3fefe290fc4a250a8f9a3be20225">SPI_burstwrite16</a></div><div class="ttdeci">uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00084">spi.c:84</a></div></div>
+<div class="ttc" id="spi_8h_html_aeb97ff1125bc25cc974dd58e02035f72"><div class="ttname"><a href="spi_8h.html#aeb97ff1125bc25cc974dd58e02035f72">SPI_burstread8</a></div><div class="ttdeci">uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00027">spi.c:27</a></div></div>
+<div class="ttc" id="spi_8h_html_aa35780863fbba18a68b3faa30c34710a"><div class="ttname"><a href="spi_8h.html#aa35780863fbba18a68b3faa30c34710a">SPI_read16</a></div><div class="ttdeci">uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00056">spi.c:56</a></div></div>
 <div class="ttc" id="struct_s_p_i_html"><div class="ttname"><a href="struct_s_p_i.html">SPI</a></div><div class="ttdef"><b>Definition:</b> <a href="uos3-proto_2spi_8c_source.html#l00052">spi.c:52</a></div></div>
+<div class="ttc" id="spi_8h_html_a8fe538eee897354b740b621714219221"><div class="ttname"><a href="spi_8h.html#a8fe538eee897354b740b621714219221">SPI_read8</a></div><div class="ttdeci">uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00018">spi.c:18</a></div></div>
+<div class="ttc" id="spi_8h_html_a0be32d4795e246e876418b9928d42714"><div class="ttname"><a href="spi_8h.html#a0be32d4795e246e876418b9928d42714">SPI_write16</a></div><div class="ttdeci">uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00075">spi.c:75</a></div></div>
+<div class="ttc" id="spi_8h_html_a87d05cd990d395f3549c441bae821779"><div class="ttname"><a href="spi_8h.html#a87d05cd990d395f3549c441bae821779">SPI_write8</a></div><div class="ttdeci">uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00037">spi.c:37</a></div></div>
+<div class="ttc" id="spi_8h_html_a138ad778c02212e029a14d8be2a335dc"><div class="ttname"><a href="spi_8h.html#a138ad778c02212e029a14d8be2a335dc">SPI_init</a></div><div class="ttdeci">void SPI_init(uint8_t spi_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00005">spi.c:5</a></div></div>
 <div class="ttc" id="struct_s_p_i__port_html"><div class="ttname"><a href="struct_s_p_i__port.html">SPI_port</a></div><div class="ttdef"><b>Definition:</b> <a href="uos3-proto_2spi_8c_source.html#l00018">spi.c:18</a></div></div>
+<div class="ttc" id="spi_8h_html_ac6d27cd7e85842858f3ef2c70e06a7b9"><div class="ttname"><a href="spi_8h.html#ac6d27cd7e85842858f3ef2c70e06a7b9">SPI_burstwrite8</a></div><div class="ttdeci">uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00046">spi.c:46</a></div></div>
+<div class="ttc" id="spi_8h_html_a94a9828b4185d47320af38b037e29b4c"><div class="ttname"><a href="spi_8h.html#a94a9828b4185d47320af38b037e29b4c">SPI_burstread16</a></div><div class="ttdeci">uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00065">spi.c:65</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

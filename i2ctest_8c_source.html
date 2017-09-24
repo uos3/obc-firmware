@@ -151,9 +151,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  InitI2C2(); <span class="comment">// initialise correct interface on processor</span></div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  Board_init(); <span class="comment">// start the board</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  WDT_kick(); <span class="comment">// kick the watchdog</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>(); <span class="comment">// kick the watchdog</span></div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  UART_init(DEBUG_SERIAL, 9600);   DISP1(<span class="stringliteral">&quot;\n\n\r   I2C Satellite I2C IMU test.\n&quot;</span>)</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="uart_8h.html#a5016951f4d87245612746fd3b11b4e55">UART_init</a>(DEBUG_SERIAL, 9600);   DISP1(<span class="stringliteral">&quot;\n\n\r   I2C Satellite I2C IMU test.\n&quot;</span>)</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; <span class="comment">// start the console, print bootup message (below)</span></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
@@ -217,12 +217,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    DISP3(&quot;Temp:(&quot;,temp,&quot;)&quot;)</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    DISP3(&quot; M:(&quot;,mag_x,&quot;,&quot;) DISP2(mag_y,&quot;,&quot;) DISP2(mag_z,&quot;) &quot;)</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  }</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  WDT_kick();</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; }</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
+<div class="ttc" id="uart_8h_html_a5016951f4d87245612746fd3b11b4e55"><div class="ttname"><a href="uart_8h.html#a5016951f4d87245612746fd3b11b4e55">UART_init</a></div><div class="ttdeci">void UART_init(uint8_t uart_num, uint32_t baudrate)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00057">uart.c:57</a></div></div>
 <div class="ttc" id="test_8c_html_a840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdoc">Runs all module tests. </div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00019">test.c:19</a></div></div>
+<div class="ttc" id="wdt_8h_html_a839f0e2119c8cc94b8d13881ab836b2a"><div class="ttname"><a href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a></div><div class="ttdeci">void WDT_kick(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2wdt_8c_source.html#l00009">wdt.c:9</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

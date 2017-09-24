@@ -124,15 +124,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  </div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="comment">//uint8_t rxBuffer[128] = {0};  </span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  UART_init(UART_PC104_HEADER, 500000);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  UART_putc(UART_PC104_HEADER, <span class="charliteral">&#39;\r&#39;</span>);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  UART_putc(UART_PC104_HEADER, <span class="charliteral">&#39;\n&#39;</span>);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="uart_8h.html#a5016951f4d87245612746fd3b11b4e55">UART_init</a>(UART_PC104_HEADER, 500000);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <a class="code" href="uart_8h.html#a617a14954d9f85329eba15b2598fd047">UART_putc</a>(UART_PC104_HEADER, <span class="charliteral">&#39;\r&#39;</span>);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="uart_8h.html#a617a14954d9f85329eba15b2598fd047">UART_putc</a>(UART_PC104_HEADER, <span class="charliteral">&#39;\n&#39;</span>);</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">for</span>(ui32Loop = 0; ui32Loop &lt; 300000; ui32Loop++) {};</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  UART_putc(UART_PC104_HEADER, <span class="charliteral">&#39;M&#39;</span>);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <a class="code" href="uart_8h.html#a617a14954d9f85329eba15b2598fd047">UART_putc</a>(UART_PC104_HEADER, <span class="charliteral">&#39;M&#39;</span>);</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  SPI_init(SPI_RADIO_TX);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  SPI_init(SPI_RADIO_RX);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="spi_8h.html#a138ad778c02212e029a14d8be2a335dc">SPI_init</a>(SPI_RADIO_TX);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="spi_8h.html#a138ad778c02212e029a14d8be2a335dc">SPI_init</a>(SPI_RADIO_RX);</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  </div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="comment">// Reset radio</span></div>
@@ -176,13 +176,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    </div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="comment">//cc112xSpiWriteTxFifo(RADIO_TX, buff, sizeof(buff));</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="spi_8h.html#a5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a>(SPI_RADIO_RX, CC112X_SRX);</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    </div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <span class="comment">// Strobe TX to send packet</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <a class="code" href="spi_8h.html#a5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a>(SPI_RADIO_TX, CC112X_STX);</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    </div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordflow">while</span>(1){</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      WDT_kick();</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;      <span class="comment">// Delay for a bit.</span></div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keywordflow">for</span>(ui32Loop = 0; ui32Loop &lt; 300000; ui32Loop++) {};</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
@@ -239,8 +239,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    }</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;}</div>
 <div class="ttc" id="cc1120__rx__sniff__mode__reg__config_8h_html"><div class="ttname"><a href="cc1120__rx__sniff__mode__reg__config_8h.html">cc1120_rx_sniff_mode_reg_config.h</a></div><div class="ttdoc">CC1120 register export from SmartRF Studio. </div></div>
+<div class="ttc" id="spi_8h_html_a5c82eae20b2408611e1b89d80934c320"><div class="ttname"><a href="spi_8h.html#a5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a></div><div class="ttdeci">uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00010">spi.c:10</a></div></div>
+<div class="ttc" id="uart_8h_html_a5016951f4d87245612746fd3b11b4e55"><div class="ttname"><a href="uart_8h.html#a5016951f4d87245612746fd3b11b4e55">UART_init</a></div><div class="ttdeci">void UART_init(uint8_t uart_num, uint32_t baudrate)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00057">uart.c:57</a></div></div>
 <div class="ttc" id="test_8c_html_a840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdoc">Runs all module tests. </div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00019">test.c:19</a></div></div>
+<div class="ttc" id="uart_8h_html_a617a14954d9f85329eba15b2598fd047"><div class="ttname"><a href="uart_8h.html#a617a14954d9f85329eba15b2598fd047">UART_putc</a></div><div class="ttdeci">void UART_putc(uint8_t uart_num, char c)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00100">uart.c:100</a></div></div>
 <div class="ttc" id="structregister_setting__t_html"><div class="ttname"><a href="structregister_setting__t.html">registerSetting_t</a></div><div class="ttdef"><b>Definition:</b> <a href="cc1125_8h_source.html#l00006">cc1125.h:6</a></div></div>
+<div class="ttc" id="spi_8h_html_a138ad778c02212e029a14d8be2a335dc"><div class="ttname"><a href="spi_8h.html#a138ad778c02212e029a14d8be2a335dc">SPI_init</a></div><div class="ttdeci">void SPI_init(uint8_t spi_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00005">spi.c:5</a></div></div>
+<div class="ttc" id="wdt_8h_html_a839f0e2119c8cc94b8d13881ab836b2a"><div class="ttname"><a href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a></div><div class="ttdeci">void WDT_kick(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2wdt_8c_source.html#l00009">wdt.c:9</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
