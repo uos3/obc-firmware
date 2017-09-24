@@ -9,14 +9,16 @@ var indexSectionsWithContent =
 {
   0: "cglrsuw",
   1: "cglrsuw",
-  2: "c"
+  2: "c",
+  3: "u"
 };
 
 var indexSectionNames =
 {
   0: "all",
   1: "classes",
-  2: "files"
+  2: "files",
+  3: "pages"
 };
 
 function convertToId(search)
