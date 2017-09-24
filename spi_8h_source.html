@@ -88,45 +88,44 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">spi.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="spi_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#ifndef __SPI_H__</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __SPI_H__</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;stdbool.h&gt;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">void</span> <a class="code" href="spi_8h.html#a138ad778c02212e029a14d8be2a335dc">SPI_init</a>(uint8_t spi_num);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;uint8_t <a class="code" href="spi_8h.html#a8fe538eee897354b740b621714219221">SPI_read8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;uint8_t <a class="code" href="spi_8h.html#a87d05cd990d395f3549c441bae821779">SPI_write8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;uint8_t <a class="code" href="spi_8h.html#aeb97ff1125bc25cc974dd58e02035f72">SPI_burstread8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;uint8_t <a class="code" href="spi_8h.html#ac6d27cd7e85842858f3ef2c70e06a7b9">SPI_burstwrite8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;uint8_t <a class="code" href="spi_8h.html#aa35780863fbba18a68b3faa30c34710a">SPI_read16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;uint8_t <a class="code" href="spi_8h.html#a0be32d4795e246e876418b9928d42714">SPI_write16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data);</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;uint8_t <a class="code" href="spi_8h.html#a94a9828b4185d47320af38b037e29b4c">SPI_burstread16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;uint8_t <a class="code" href="spi_8h.html#af87f3fefe290fc4a250a8f9a3be20225">SPI_burstwrite16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len);</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;uint8_t <a class="code" href="spi_8h.html#a5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a>(uint8_t spi_num, uint8_t cmd);</div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#ifndef __SPI_H__</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __SPI_H__</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;stdbool.h&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__spi.html#ga138ad778c02212e029a14d8be2a335dc">SPI_init</a>(uint8_t spi_num);</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;uint8_t <a class="code" href="group__spi.html#ga8fe538eee897354b740b621714219221">SPI_read8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;uint8_t <a class="code" href="group__spi.html#ga87d05cd990d395f3549c441bae821779">SPI_write8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;uint8_t <a class="code" href="group__spi.html#gaeb97ff1125bc25cc974dd58e02035f72">SPI_burstread8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;uint8_t <a class="code" href="group__spi.html#gac6d27cd7e85842858f3ef2c70e06a7b9">SPI_burstwrite8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;uint8_t <a class="code" href="group__spi.html#gaa35780863fbba18a68b3faa30c34710a">SPI_read16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;uint8_t <a class="code" href="group__spi.html#ga0be32d4795e246e876418b9928d42714">SPI_write16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;uint8_t <a class="code" href="group__spi.html#ga94a9828b4185d47320af38b037e29b4c">SPI_burstread16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len);</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*  __SPI_H__ */</span><span class="preprocessor"></span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="preprocessor"></span></div>
-<div class="ttc" id="spi_8h_html_a5c82eae20b2408611e1b89d80934c320"><div class="ttname"><a href="spi_8h.html#a5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a></div><div class="ttdeci">uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00010">spi.c:10</a></div></div>
-<div class="ttc" id="spi_8h_html_af87f3fefe290fc4a250a8f9a3be20225"><div class="ttname"><a href="spi_8h.html#af87f3fefe290fc4a250a8f9a3be20225">SPI_burstwrite16</a></div><div class="ttdeci">uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00084">spi.c:84</a></div></div>
-<div class="ttc" id="spi_8h_html_aeb97ff1125bc25cc974dd58e02035f72"><div class="ttname"><a href="spi_8h.html#aeb97ff1125bc25cc974dd58e02035f72">SPI_burstread8</a></div><div class="ttdeci">uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00027">spi.c:27</a></div></div>
-<div class="ttc" id="spi_8h_html_aa35780863fbba18a68b3faa30c34710a"><div class="ttname"><a href="spi_8h.html#aa35780863fbba18a68b3faa30c34710a">SPI_read16</a></div><div class="ttdeci">uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00056">spi.c:56</a></div></div>
-<div class="ttc" id="spi_8h_html_a8fe538eee897354b740b621714219221"><div class="ttname"><a href="spi_8h.html#a8fe538eee897354b740b621714219221">SPI_read8</a></div><div class="ttdeci">uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00018">spi.c:18</a></div></div>
-<div class="ttc" id="spi_8h_html_a0be32d4795e246e876418b9928d42714"><div class="ttname"><a href="spi_8h.html#a0be32d4795e246e876418b9928d42714">SPI_write16</a></div><div class="ttdeci">uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00075">spi.c:75</a></div></div>
-<div class="ttc" id="spi_8h_html_a87d05cd990d395f3549c441bae821779"><div class="ttname"><a href="spi_8h.html#a87d05cd990d395f3549c441bae821779">SPI_write8</a></div><div class="ttdeci">uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00037">spi.c:37</a></div></div>
-<div class="ttc" id="spi_8h_html_a138ad778c02212e029a14d8be2a335dc"><div class="ttname"><a href="spi_8h.html#a138ad778c02212e029a14d8be2a335dc">SPI_init</a></div><div class="ttdeci">void SPI_init(uint8_t spi_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00005">spi.c:5</a></div></div>
-<div class="ttc" id="spi_8h_html_ac6d27cd7e85842858f3ef2c70e06a7b9"><div class="ttname"><a href="spi_8h.html#ac6d27cd7e85842858f3ef2c70e06a7b9">SPI_burstwrite8</a></div><div class="ttdeci">uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00046">spi.c:46</a></div></div>
-<div class="ttc" id="spi_8h_html_a94a9828b4185d47320af38b037e29b4c"><div class="ttname"><a href="spi_8h.html#a94a9828b4185d47320af38b037e29b4c">SPI_burstread16</a></div><div class="ttdeci">uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00065">spi.c:65</a></div></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;uint8_t <a class="code" href="group__spi.html#gaf87f3fefe290fc4a250a8f9a3be20225">SPI_burstwrite16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;uint8_t <a class="code" href="group__spi.html#ga5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a>(uint8_t spi_num, uint8_t cmd);</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*  __SPI_H__ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="group__spi_html_ga138ad778c02212e029a14d8be2a335dc"><div class="ttname"><a href="group__spi.html#ga138ad778c02212e029a14d8be2a335dc">SPI_init</a></div><div class="ttdeci">void SPI_init(uint8_t spi_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00015">spi.c:15</a></div></div>
+<div class="ttc" id="group__spi_html_ga94a9828b4185d47320af38b037e29b4c"><div class="ttname"><a href="group__spi.html#ga94a9828b4185d47320af38b037e29b4c">SPI_burstread16</a></div><div class="ttdeci">uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00075">spi.c:75</a></div></div>
+<div class="ttc" id="group__spi_html_gaf87f3fefe290fc4a250a8f9a3be20225"><div class="ttname"><a href="group__spi.html#gaf87f3fefe290fc4a250a8f9a3be20225">SPI_burstwrite16</a></div><div class="ttdeci">uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00094">spi.c:94</a></div></div>
+<div class="ttc" id="group__spi_html_ga87d05cd990d395f3549c441bae821779"><div class="ttname"><a href="group__spi.html#ga87d05cd990d395f3549c441bae821779">SPI_write8</a></div><div class="ttdeci">uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00047">spi.c:47</a></div></div>
+<div class="ttc" id="group__spi_html_ga0be32d4795e246e876418b9928d42714"><div class="ttname"><a href="group__spi.html#ga0be32d4795e246e876418b9928d42714">SPI_write16</a></div><div class="ttdeci">uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00085">spi.c:85</a></div></div>
+<div class="ttc" id="group__spi_html_ga8fe538eee897354b740b621714219221"><div class="ttname"><a href="group__spi.html#ga8fe538eee897354b740b621714219221">SPI_read8</a></div><div class="ttdeci">uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00028">spi.c:28</a></div></div>
+<div class="ttc" id="group__spi_html_gaa35780863fbba18a68b3faa30c34710a"><div class="ttname"><a href="group__spi.html#gaa35780863fbba18a68b3faa30c34710a">SPI_read16</a></div><div class="ttdeci">uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00066">spi.c:66</a></div></div>
+<div class="ttc" id="group__spi_html_ga5c82eae20b2408611e1b89d80934c320"><div class="ttname"><a href="group__spi.html#ga5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a></div><div class="ttdeci">uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00020">spi.c:20</a></div></div>
+<div class="ttc" id="group__spi_html_gaeb97ff1125bc25cc974dd58e02035f72"><div class="ttname"><a href="group__spi.html#gaeb97ff1125bc25cc974dd58e02035f72">SPI_burstread8</a></div><div class="ttdeci">uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00037">spi.c:37</a></div></div>
+<div class="ttc" id="group__spi_html_gac6d27cd7e85842858f3ef2c70e06a7b9"><div class="ttname"><a href="group__spi.html#gac6d27cd7e85842858f3ef2c70e06a7b9">SPI_burstwrite8</a></div><div class="ttdeci">uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00056">spi.c:56</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

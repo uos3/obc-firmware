@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['wdt',['WDT',['../group__wdt.html',1,'']]]
+  ['uart',['Uart',['../group__uart.html',1,'']]]
 ];

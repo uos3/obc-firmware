@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: Random Number</title>
+<title>UoS³ Flight Computer Firmware: Random</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -75,9 +75,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="summary">
-<a href="#files">Files</a>  </div>
+<a href="#files">Files</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Random Number<div class="ingroups"><a class="el" href="group__drivers.html">Board/Platform Hardware Drivers</a></div></div>  </div>
+<div class="title">Random<div class="ingroups"><a class="el" href="group__drivers.html">Board/Platform Hardware Drivers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -87,12 +88,46 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
 Files</h2></td></tr>
 <tr class="memitem:gnulinux_2random_8c"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gnulinux_2random_8c.html">random.c</a></td></tr>
+<tr class="memdesc:gnulinux_2random_8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Random Driver - gnulinux platform. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:uos3-proto_2random_8c"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uos3-proto_2random_8c.html">random.c</a></td></tr>
+<tr class="memdesc:uos3-proto_2random_8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Random Driver - uos3-proto board. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga23779fe7c1855dd5459e2b45620493b8"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__random.html#ga23779fe7c1855dd5459e2b45620493b8">Random</a> (uint32_t max)</td></tr>
+<tr class="separator:ga23779fe7c1855dd5459e2b45620493b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Random Number Driver. </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga23779fe7c1855dd5459e2b45620493b8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t Random </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns an unsigned random integer of less than or equal to the given parameter.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">max</td><td>maximum output value </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>unsigned integer less than or equal to 'max' </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2random_8c_source.html#l00021">21</a> of file <a class="el" href="gnulinux_2random_8c_source.html">random.c</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

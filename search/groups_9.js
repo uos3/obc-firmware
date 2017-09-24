@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['uart',['UART',['../group__uart.html',1,'']]]
+  ['spi',['Spi',['../group__spi.html',1,'']]]
 ];

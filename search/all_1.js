@@ -4,6 +4,5 @@ var searchData=
   ['cc1125_20driver',['CC1125 Driver',['../group__cc1125.html',1,'']]],
   ['coded_5fdata',['coded_data',['../structcoded__data.html',1,'']]],
   ['crc',['CRC',['../group__crc.html',1,'']]],
-  ['crc16_2ec',['crc16.c',['../crc16_8c.html',1,'']]],
-  ['crc16_2eh',['crc16.h',['../crc16_8h.html',1,'']]]
+  ['crc16_2ec',['crc16.c',['../crc16_8c.html',1,'']]]
 ];

@@ -75,7 +75,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="summary">
-<a href="#files">Files</a>  </div>
+<a href="#files">Files</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">CRC<div class="ingroups"><a class="el" href="group__packet.html">Packet Modules</a></div></div>  </div>
 </div><!--header-->
@@ -88,9 +89,52 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Files</h2></td></tr>
 <tr class="memitem:crc16_8c"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="crc16_8c.html">crc16.c</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga72ca4469f205a4d6813c9f68d81584cf"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__crc.html#ga72ca4469f205a4d6813c9f68d81584cf">Packet_CRC16_CCITT</a> (uint8_t *buffer, uint32_t length)</td></tr>
+<tr class="separator:ga72ca4469f205a4d6813c9f68d81584cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Packet CRC Routines. </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga72ca4469f205a4d6813c9f68d81584cf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t Packet_CRC16_CCITT </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate the 16-bit CRC of the input buffer, using the CRC16-CCITT standard.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>The input buffer to calculated </td></tr>
+    <tr><td class="paramname">length</td><td>The length of the input buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The 16bit CRC of the input buffer </dd></dl>
+
+<p>Definition at line <a class="el" href="crc16_8c_source.html#l00012">12</a> of file <a class="el" href="crc16_8c_source.html">crc16.c</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -88,49 +88,51 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">led.c</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;board.h&quot;</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &quot;../gpio.h&quot;</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;../led.h&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">/* LED description struct */</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="struct_l_e_d.html">LED</a> {</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  uint8_t gpio;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  <span class="keywordtype">bool</span> state;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;} <a class="code" href="struct_l_e_d.html">LED</a>;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">/* Array of connected LEDs */</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">static</span> <a class="code" href="struct_l_e_d.html">LED</a> LED_leds[2] = </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  { { GPIO_PC2, <span class="keyword">false</span> } <span class="comment">// LED A</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  , { GPIO_PB1, <span class="keyword">false</span> } <span class="comment">// LED B</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  };</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#define NUMBER_OF_LEDS  ( sizeof(LED_leds) / sizeof(LED) )</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keywordtype">void</span> <a class="code" href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a>(uint8_t led_num)</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;{</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <a class="code" href="led_8h.html#a44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a>(led_num, <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keywordtype">void</span> <a class="code" href="led_8h.html#a8bfaf273399874243979d43beaa7fd77">LED_off</a>(uint8_t led_num)</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="led_8h.html#a44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a>(led_num, <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keywordtype">void</span> <a class="code" href="led_8h.html#a44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a>(uint8_t led_num, <span class="keywordtype">bool</span> state)</div>
+<a href="uos3-proto_2led_8c.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;board.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;../gpio.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../led.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">/* LED description struct */</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="struct_l_e_d.html">LED</a> {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  uint8_t gpio;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordtype">bool</span> state;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;} <a class="code" href="struct_l_e_d.html">LED</a>;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">/* Array of connected LEDs */</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">static</span> <a class="code" href="struct_l_e_d.html">LED</a> LED_leds[2] = </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  { { GPIO_PC2, <span class="keyword">false</span> } <span class="comment">// LED A</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  , { GPIO_PB1, <span class="keyword">false</span> } <span class="comment">// LED B</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  };</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#define NUMBER_OF_LEDS  ( sizeof(LED_leds) / sizeof(LED) )</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="group__led.html#ga6e5e12aa6561da857f0d546c229110f1">   31</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__led.html#ga6e5e12aa6561da857f0d546c229110f1">LED_on</a>(uint8_t led_num)</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">if</span>(led_num &gt;= NUMBER_OF_LEDS)</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <a class="code" href="struct_l_e_d.html">LED</a> *led = &amp;LED_leds[led_num];</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <a class="code" href="gpio_8h.html#a60b88b12b51bfd31be09e19f189cf1b6">GPIO_write</a>(led-&gt;gpio, state);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  led-&gt;state = state;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <a class="code" href="group__led.html#ga44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a>(led_num, <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="group__led.html#ga8bfaf273399874243979d43beaa7fd77">   36</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__led.html#ga8bfaf273399874243979d43beaa7fd77">LED_off</a>(uint8_t led_num)</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="group__led.html#ga44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a>(led_num, <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="group__led.html#ga44f0dcd60cca69dfed79d7c6388e4e9c">   41</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__led.html#ga44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a>(uint8_t led_num, <span class="keywordtype">bool</span> state)</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;{</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">if</span>(led_num &gt;= NUMBER_OF_LEDS)</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="struct_l_e_d.html">LED</a> *led = &amp;LED_leds[led_num];</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="group__gpio.html#ga60b88b12b51bfd31be09e19f189cf1b6">GPIO_write</a>(led-&gt;gpio, state);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  led-&gt;state = state;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="ttc" id="struct_l_e_d_html"><div class="ttname"><a href="struct_l_e_d.html">LED</a></div><div class="ttdef"><b>Definition:</b> <a href="susf-telecommand_2led_8c_source.html#l00005">led.c:5</a></div></div>
-<div class="ttc" id="led_8h_html_a44f0dcd60cca69dfed79d7c6388e4e9c"><div class="ttname"><a href="led_8h.html#a44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a></div><div class="ttdeci">void LED_set(uint8_t led_number, bool state)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00015">led.c:15</a></div></div>
-<div class="ttc" id="led_8h_html_a6e5e12aa6561da857f0d546c229110f1"><div class="ttname"><a href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a></div><div class="ttdeci">void LED_on(uint8_t led_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00005">led.c:5</a></div></div>
-<div class="ttc" id="led_8h_html_a8bfaf273399874243979d43beaa7fd77"><div class="ttname"><a href="led_8h.html#a8bfaf273399874243979d43beaa7fd77">LED_off</a></div><div class="ttdeci">void LED_off(uint8_t led_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00010">led.c:10</a></div></div>
-<div class="ttc" id="gpio_8h_html_a60b88b12b51bfd31be09e19f189cf1b6"><div class="ttname"><a href="gpio_8h.html#a60b88b12b51bfd31be09e19f189cf1b6">GPIO_write</a></div><div class="ttdeci">void GPIO_write(uint8_t gpio_number, bool state)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00013">gpio.c:13</a></div></div>
+<div class="ttc" id="group__led_html_ga44f0dcd60cca69dfed79d7c6388e4e9c"><div class="ttname"><a href="group__led.html#ga44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a></div><div class="ttdeci">void LED_set(uint8_t led_num, bool state)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00025">led.c:25</a></div></div>
+<div class="ttc" id="group__led_html_ga8bfaf273399874243979d43beaa7fd77"><div class="ttname"><a href="group__led.html#ga8bfaf273399874243979d43beaa7fd77">LED_off</a></div><div class="ttdeci">void LED_off(uint8_t led_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00020">led.c:20</a></div></div>
+<div class="ttc" id="group__led_html_ga6e5e12aa6561da857f0d546c229110f1"><div class="ttname"><a href="group__led.html#ga6e5e12aa6561da857f0d546c229110f1">LED_on</a></div><div class="ttdeci">void LED_on(uint8_t led_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00015">led.c:15</a></div></div>
+<div class="ttc" id="group__gpio_html_ga60b88b12b51bfd31be09e19f189cf1b6"><div class="ttname"><a href="group__gpio.html#ga60b88b12b51bfd31be09e19f189cf1b6">GPIO_write</a></div><div class="ttdeci">void GPIO_write(uint8_t gpio_num, bool state)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00023">gpio.c:23</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

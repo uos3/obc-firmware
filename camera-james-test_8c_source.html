@@ -270,11 +270,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  UARTCharPut(UART0_BASE, <span class="charliteral">&#39;S&#39;</span>);</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    <a class="code" href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a>(LED_B);</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <a class="code" href="delay_8h.html#a14c78822167012f0af4f073eb33f00e7">Delay_ms</a>(500);</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    <a class="code" href="led_8h.html#a8bfaf273399874243979d43beaa7fd77">LED_off</a>(LED_B);</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    <a class="code" href="group__led.html#ga6e5e12aa6561da857f0d546c229110f1">LED_on</a>(LED_B);</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <a class="code" href="group__delay.html#ga14c78822167012f0af4f073eb33f00e7">Delay_ms</a>(500);</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    <a class="code" href="group__led.html#ga8bfaf273399874243979d43beaa7fd77">LED_off</a>(LED_B);</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="comment">//UARTCharPut(UART0_BASE, &#39;S&#39;);</span></div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  uint8_t rep;</div>
@@ -336,16 +336,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;      (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;</div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  delay(200);</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  SendResetCmd(); <span class="comment">//Wait 2-3 second to send take picture command</span></div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  UARTCharPut(UART0_BASE, <span class="charliteral">&#39;R&#39;</span>);</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  delay(1000);</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  delay(1000);</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  UARTConfigSetExpClk(UART3_BASE, SysCtlClockGet(), 115200,</div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;      (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));</div>
@@ -353,7 +353,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  UARTCharPut(UART0_BASE, <span class="charliteral">&#39;B&#39;</span>);</div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  delay(100);</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;</div>
 <div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="comment">//mySerial.begin(38400);</span></div>
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;</div>
@@ -361,13 +361,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;      (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));</div>
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  delay(100);</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;</div>
 <div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  SetImageSizeCmd(0x21);</div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  UARTCharPut(UART0_BASE, <span class="charliteral">&#39;I&#39;</span>);</div>
 <div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;</div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  delay(1000);</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  <span class="comment">//image qual</span></div>
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <span class="comment">/*UARTCharPut(UART3_BASE, 0x56);</span></div>
 <div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="comment">  UARTCharPut(UART3_BASE, 0x00);</span></div>
@@ -383,7 +383,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  SendTakePhotoCmd();</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  UARTCharPut(UART0_BASE, <span class="charliteral">&#39;C&#39;</span>);</div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  delay(500);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  UARTCharPut(UART3_BASE, 0x56);</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  UARTCharPut(UART3_BASE, 0x00);</div>
@@ -392,17 +392,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  UARTCharPut(UART3_BASE, 0x00);</div>
 <div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  UARTCharPut(UART0_BASE, <span class="charliteral">&#39;X&#39;</span>);</div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  delay(100);</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;</div>
 <div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  <span class="keywordflow">while</span> (UARTCharsAvail(UART3_BASE)) {</div>
 <div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    delayMicroseconds(100);</div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    rep = UARTCharGet(UART3_BASE);</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    <span class="comment">//UARTCharPut(UART0_BASE, rep);</span></div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;      <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;      <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  }</div>
 <div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  UARTCharPut(UART0_BASE, <span class="charliteral">&#39;A&#39;</span>);</div>
 <div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  delay(100);</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;</div>
 <div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  uint8_t incomingbyte;</div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  <span class="keywordtype">long</span> <span class="keywordtype">int</span> j = 0, k = 0, count = 0, i = 0x0000;</div>
@@ -443,8 +443,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      <span class="keywordflow">while</span>(!UARTCharsAvail(UART3_BASE))</div>
 <div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;      {</div>
 <div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;        UARTCharPut(UART0_BASE, <span class="charliteral">&#39;N&#39;</span>);</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;          <a class="code" href="delay_8h.html#a14c78822167012f0af4f073eb33f00e7">Delay_ms</a>(200);</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;          <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;          <a class="code" href="group__delay.html#ga14c78822167012f0af4f073eb33f00e7">Delay_ms</a>(200);</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;          <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;      }</div>
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;        UARTCharPut(UART0_BASE, <span class="charliteral">&#39;Y&#39;</span>);</div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;      incomingbyte = UARTCharGet(UART3_BASE);</div>
@@ -468,7 +468,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        j++;</div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        count++;</div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;      }</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;        <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;        <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    }</div>
 <div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;</div>
 <div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;    <span class="keywordflow">for</span> (j = 0; j &lt; count; j++) {</div>
@@ -477,20 +477,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;      <span class="comment">//  Serial.print(a[j], HEX);    // observe the image through serial port</span></div>
 <div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;      <span class="comment">//Serial.print(&quot; &quot;);</span></div>
 <div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;      <span class="keywordflow">while</span> (UARTBusy(UART0_BASE)) {</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;          <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;          <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;      }</div>
 <div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;      UARTCharPut(UART0_BASE, a[j]);</div>
 <div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;    }</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;      <a class="code" href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;      <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
 <div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  }</div>
 <div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;</div>
 <div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;}</div>
-<div class="ttc" id="struct_u_a_r_t_html"><div class="ttname"><a href="struct_u_a_r_t.html">UART</a></div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00013">uart.c:13</a></div></div>
+<div class="ttc" id="group__delay_html_ga14c78822167012f0af4f073eb33f00e7"><div class="ttname"><a href="group__delay.html#ga14c78822167012f0af4f073eb33f00e7">Delay_ms</a></div><div class="ttdeci">void Delay_ms(uint32_t milliseconds)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2delay_8c_source.html#l00019">delay.c:19</a></div></div>
+<div class="ttc" id="group__led_html_ga8bfaf273399874243979d43beaa7fd77"><div class="ttname"><a href="group__led.html#ga8bfaf273399874243979d43beaa7fd77">LED_off</a></div><div class="ttdeci">void LED_off(uint8_t led_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00020">led.c:20</a></div></div>
+<div class="ttc" id="struct_u_a_r_t_html"><div class="ttname"><a href="struct_u_a_r_t.html">UART</a></div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00023">uart.c:23</a></div></div>
 <div class="ttc" id="test_8c_html_a840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdoc">Runs all module tests. </div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00019">test.c:19</a></div></div>
-<div class="ttc" id="delay_8h_html_a14c78822167012f0af4f073eb33f00e7"><div class="ttname"><a href="delay_8h.html#a14c78822167012f0af4f073eb33f00e7">Delay_ms</a></div><div class="ttdeci">void Delay_ms(uint32_t milliseconds)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2delay_8c_source.html#l00009">delay.c:9</a></div></div>
-<div class="ttc" id="led_8h_html_a6e5e12aa6561da857f0d546c229110f1"><div class="ttname"><a href="led_8h.html#a6e5e12aa6561da857f0d546c229110f1">LED_on</a></div><div class="ttdeci">void LED_on(uint8_t led_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00005">led.c:5</a></div></div>
-<div class="ttc" id="led_8h_html_a8bfaf273399874243979d43beaa7fd77"><div class="ttname"><a href="led_8h.html#a8bfaf273399874243979d43beaa7fd77">LED_off</a></div><div class="ttdeci">void LED_off(uint8_t led_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00010">led.c:10</a></div></div>
-<div class="ttc" id="wdt_8h_html_a839f0e2119c8cc94b8d13881ab836b2a"><div class="ttname"><a href="wdt_8h.html#a839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a></div><div class="ttdeci">void WDT_kick(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2wdt_8c_source.html#l00009">wdt.c:9</a></div></div>
+<div class="ttc" id="group__wdt_html_ga839f0e2119c8cc94b8d13881ab836b2a"><div class="ttname"><a href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a></div><div class="ttdeci">void WDT_kick(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2wdt_8c_source.html#l00019">wdt.c:19</a></div></div>
+<div class="ttc" id="group__led_html_ga6e5e12aa6561da857f0d546c229110f1"><div class="ttname"><a href="group__led.html#ga6e5e12aa6561da857f0d546c229110f1">LED_on</a></div><div class="ttdeci">void LED_on(uint8_t led_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00015">led.c:15</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

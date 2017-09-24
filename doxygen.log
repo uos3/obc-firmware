@@ -7,6 +7,14 @@ Warning: ignoring unsupported tag `MAN_SUBDIR             =' at line 1827, file 
 Warning: ignoring unsupported tag `DOCBOOK_PROGRAMLISTING =' at line 1890, file ../doxyfile
 Warning: ignoring unsupported tag `PLANTUML_JAR_PATH      =' at line 2319, file ../doxyfile
 Warning: ignoring unsupported tag `PLANTUML_INCLUDE_PATH  =' at line 2324, file ../doxyfile
+/home/travis/build/uos3/firmware/src/board/board.h:2: warning: missing title after \defgroup board
+/home/travis/build/uos3/firmware/src/board/debug.h:2: warning: missing title after \defgroup debug
+/home/travis/build/uos3/firmware/src/board/delay.h:2: warning: missing title after \defgroup delay
+/home/travis/build/uos3/firmware/src/board/gpio.h:2: warning: missing title after \defgroup gpio
+/home/travis/build/uos3/firmware/src/board/led.h:2: warning: missing title after \defgroup led
+/home/travis/build/uos3/firmware/src/board/random.h:2: warning: missing title after \defgroup random
+/home/travis/build/uos3/firmware/src/board/spi.h:2: warning: missing title after \defgroup spi
+/home/travis/build/uos3/firmware/src/board/uart.h:2: warning: missing title after \defgroup uart
 Searching for include files...
 Searching for example files...
 Searching for images...
@@ -70,7 +78,8 @@ Parsing file /home/travis/build/uos3/firmware/src/board/uart.h...
 Reading /home/travis/build/uos3/firmware/src/board/uos3-proto/board.c...
 Parsing file /home/travis/build/uos3/firmware/src/board/uos3-proto/board.c...
 Reading /home/travis/build/uos3/firmware/src/board/uos3-proto/board.h...
-Parsing file /home/travis/build/uos3/firmware/src/board/uos3-proto/board.h...
+Parsing file/home/travis/build/uos3/firmware/src/board/wdt.h:2: warning: missing title after \defgroup wdt
+ /home/travis/build/uos3/firmware/src/board/uos3-proto/board.h...
 Reading /home/travis/build/uos3/firmware/src/board/uos3-proto/debug.c...
 Parsing file /home/travis/build/uos3/firmware/src/board/uos3-proto/debug.c...
 Reading /home/travis/build/uos3/firmware/src/board/uos3-proto/delay.c...
@@ -137,16 +146,16 @@ Please use a more specific name by including a (larger) part of the path!
 /home/travis/build/uos3/firmware/src/suz/uartbase.c:15: warning: found documented #define but ignoring it because ENABLE_PREPROCESSING is NO.
 
 /home/travis/build/uos3/firmware/src/cc1125/cc1125.h:7: warning: Compound registerSetting_t is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/wdt.c:8: warning: Compound WDT is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:52: warning: Compound SPI is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/led.c:7: warning: Compound LED is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/wdt.c:18: warning: Compound WDT is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:62: warning: Compound SPI is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/led.c:17: warning: Compound LED is not documented.
 /home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:5: warning: Compound LED is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:18: warning: Compound SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:28: warning: Compound SPI_port is not documented.
 /home/travis/build/uos3/firmware/src/packet/format.h:17: warning: Compound coded_data is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:9: warning: Compound GPIO is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:20: warning: Compound GPIO is not documented.
 /home/travis/build/uos3/firmware/src/packet/sha3.h:36: warning: Compound sha3_ctx_t is not documented.
 /home/travis/build/uos3/firmware/src/main/gpstest.c:30: warning: Compound UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:13: warning: Compound UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:23: warning: Compound UART is not documented.
 rsing file /home/travis/build/uos3/firmware/src/main/uart_debug.c...
 Reading /home/travis/build/uos3/firmware/src/main/uart_echo.c...
 Parsing file /home/travis/build/uos3/firmware/src/main/uart_echo.c...
@@ -284,32 +293,8 @@ Generating code for file /home/travis/build/uos3/firmware/src/firmware.h...
 Generating code for file /home/travis/build/uos3/firmware/src/main/blinky.c...
 Generating code for file /home/travis/build/uos3/firmware/src/main/camera-james-test.c...
 Generating code for file /home/travis/build/uos3/firmware/src/main/camtest.c...
-Generating code for file /home/travis/build/uos3/firmware/src/main/cc1120_rx_sn/home/travis/build/uos3/firmware/src/board/gnulinux/led.c:3: warning: argument 'led_number' of command @param is not found in the argument list of LED_on(uint8_t led_num)
-/home/travis/build/uos3/firmware/src/board/gnulinux/led.c:3: warning: The following parameters of LED_on(uint8_t led_num) are not documented:
-  parameter 'led_num'
-/home/travis/build/uos3/firmware/src/main/cc1120_rx_sniff_mode_reg_config.h:72: warning: Member preferredSettings[] (variable) of file cc1120_rx_sniff_mode_reg_config.h is not documented.
-/home/travis/build/uos3/firmware/src/main/cc1120_rx_sniff_mode_reg_config.h:116: warning: Member preferredSettings_cw[] (variable) of file cc1120_rx_sniff_mode_reg_config.h is not documented.
-/home/travis/build/uos3/firmware/src/packet/format.h:18: warning: Member spacecraft (variable) of class coded_data is not documented.
-/home/travis/build/uos3/firmware/src/packet/format.h:19: warning: Member type (variable) of class coded_data is not documented.
-/home/travis/build/uos3/firmware/src/packet/format.h:20: warning: Member _unused (variable) of class coded_data is not documented.
-/home/travis/build/uos3/firmware/src/packet/format.h:21: warning: Member data[1024] (variable) of class coded_data is not documented.
-/home/travis/build/uos3/firmware/src/packet/format.h:22: warning: Member hash[16] (variable) of class coded_data is not documented.
-/home/travis/build/uos3/firmware/src/packet/format.h:23: warning: Member crc (variable) of class coded_data is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:10: warning: Member peripheral (variable) of class GPIO is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:11: warning: Member port (variable) of class GPIO is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:12: warning: Member pin (variable) of class GPIO is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:13: warning: Member initialised (variable) of class GPIO is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:14: warning: Member mode (variable) of class GPIO is not documented.
-/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:6: warning: Member peripheral_register (variable) of class LED is not documented.
-/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:7: warning: Member peripheral (variable) of class LED is not documented.
-/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:8: warning: Member port (variable) of class LED is not documented.
-/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:9: warning: Member pin (variable) of class LED is not documented.
-/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:10: warning: Member initialised (variable) of class LED is not documented.
-/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:13: warning: Member state (variable) of class LED is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/led.c:8: warning: Member gpio (variable) of class LED is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/led.c:9: warning: Member state (variable) of class LED is not documented.
-/home/travis/build/uos3/firmware/src/cc1125/cc1125.h:8: warning: Member addr (variable) of class registerSetting_t is not documented.
-/home/travis/build/uos3/firmware/src/cc1125/cc1125.h:9: warning: Member data (variable) of class registerSetting_t is not documented.
+Generating code for file /home/travis/build/uos3/firmware/src/main/cc1120_rx_sn/home/travis/build/uos3/firmware/src/board/uos3-proto/debug.c:6: warning: Unsupported xml/html tag <NOT> found
+/home/travis/build/uos3/firmware/src/board/uos3-proto/debug.c:6: warning: Unsupported xml/html tag <NOT> found
 iff_mode_reg_config.h...
 Generating code for file /home/travis/build/uos3/firmware/src/main/gpstest.c...
 Generating code for file /home/travis/build/uos3/firmware/src/main/i2cpythontest.c...
@@ -341,21 +326,122 @@ Generating code for file /home/travis/build/uos3/firmware/src/suz/uartbase.h...
 Generating code for file /home/travis/build/uos3/firmware/src/test.c...
 Generating code for file /home/travis/build/uos3/firmware/src/test.h...
 Generating file documentation...
-Generating docs for file /home/travis/build/uos3/firmware/src/board/debug.h...
-Generating docs for file /home/travis/build/uos3/firmware/src/board/delay.h...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/gnulinux/board.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/uos3-proto/board.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/gnulinux/debug.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/uos3-proto/debug.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/gnulinux/delay.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/uos3-proto/delay.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/gnulinux/gpio.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/gnulinux/led.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/uos3-proto/led.c...
 Generating docs for file /home/travis/build/uos3/firmware/src/board/gnulinux/random.c...
 Generating docs for file /home/travis/build/uos3/firmware/src/board/uos3-proto/random.c...
-Generating docs for file /home/travis/build/uos3/firmware/src/board/gpio.h...
-Generating docs for file /home/travis/build/uos3/firmware/src/board/led.h...
-Generating docs for file /home/travis/build/uos3/firmware/src/board/random.h...
-Generating docs for file /home/travis/build/uos3/firmware/src/board/spi.h...
-Generating docs for file /home/travis/build/uos3/firmware/src/board/uart.h...
-Generating docs for file /home/travis/build/uos3/firmware/src/board/wdt.h...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/gnulinux/spi.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/gnulinux/wdt.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/uos3-proto/wdt.c...
+Generating docs for file /home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c...
 Generating docs for file /home/travis/build/uos3/firmware/src/main/blinky.c...
-Generating docs for file /home/travis/build/uos3/firmware/src/main/cc1120_rx_sniff_mode_reg_config.h...
+Generating docs for file /home/travis/build/uos3/firmware/src/main/cc1120_rx_sniff_mode_reg_config/home/travis/build/uos3/firmware/src/main/cc1120_rx_sniff_mode_reg_config.h:72: warning: Member preferredSettings[] (variable) of file cc1120_rx_sniff_mode_reg_config.h is not documented.
+/home/travis/build/uos3/firmware/src/main/cc1120_rx_sniff_mode_reg_config.h:116: warning: Member preferredSettings_cw[] (variable) of file cc1120_rx_sniff_mode_reg_config.h is not documented.
+/home/travis/build/uos3/firmware/src/board/board.h:15: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/debug.h:4: warning: Unsupported xml/html tag <NOT> found
+/home/travis/build/uos3/firmware/src/board/debug.h:17: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/gnulinux/delay.c:17: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/delay.h:25: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/gpio.h:22: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/gpio.h:32: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/gpio.h:42: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/gpio.h:53: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/gnulinux/led.c:13: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/gnulinux/led.c:13: warning: argument 'led_number' of command @param is not found in the argument list of LED_on(uint8_t led_num)
+/home/travis/build/uos3/firmware/src/board/gnulinux/led.c:13: warning: The following parameters of LED_on(uint8_t led_num) are not documented:
+  parameter 'led_num'
+/home/travis/build/uos3/firmware/src/board/led.h:30: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/led.h:40: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/random.h:16: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/gnulinux/spi.c:13: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/spi.h:30: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/spi.h:43: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/spi.h:56: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/spi.h:70: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/spi.h:84: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/spi.h:97: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/spi.h:110: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/spi.h:124: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/spi.h:138: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:65: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:31: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:43: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:55: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:67: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:81: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:94: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:107: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:120: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:134: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/uart.h:145: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/board/gnulinux/wdt.c:17: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/test.h:36: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/test.h:47: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/test.h:58: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/packet/crc16.h:17: warning: Found unknown command `\function'
+/home/travis/build/uos3/firmware/src/packet/format.h:18: warning: Member spacecraft (variable) of class coded_data is not documented.
+/home/travis/build/uos3/firmware/src/packet/format.h:19: warning: Member type (variable) of class coded_data is not documented.
+/home/travis/build/uos3/firmware/src/packet/format.h:20: warning: Member _unused (variable) of class coded_data is not documented.
+/home/travis/build/uos3/firmware/src/packet/format.h:21: warning: Member data[1024] (variable) of class coded_data is not documented.
+/home/travis/build/uos3/firmware/src/packet/format.h:22: warning: Member hash[16] (variable) of class coded_data is not documented.
+/home/travis/build/uos3/firmware/src/packet/format.h:23: warning: Member crc (variable) of class coded_data is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:21: warning: Member peripheral (variable) of class GPIO is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:22: warning: Member port (variable) of class GPIO is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:23: warning: Member pin (variable) of class GPIO is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:24: warning: Member initialised (variable) of class GPIO is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/gpio.c:25: warning: Member mode (variable) of class GPIO is not documented.
+/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:6: warning: Member peripheral_register (variable) of class LED is not documented.
+/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:7: warning: Member peripheral (variable) of class LED is not documented.
+/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:8: warning: Member port (variable) of class LED is not documented.
+/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:9: warning: Member pin (variable) of class LED is not documented.
+/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:10: warning: Member initialised (variable) of class LED is not documented.
+/home/travis/build/uos3/firmware/src/board/susf-telecommand/led.c:13: warning: Member state (variable) of class LED is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/led.c:18: warning: Member gpio (variable) of class LED is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/led.c:19: warning: Member state (variable) of class LED is not documented.
+/home/travis/build/uos3/firmware/src/cc1125/cc1125.h:8: warning: Member addr (variable) of class registerSetting_t is not documented.
+/home/travis/build/uos3/firmware/src/cc1125/cc1125.h:9: warning: Member data (variable) of class registerSetting_t is not documented.
+/home/travis/build/uos3/firmware/src/packet/sha3.h:40: warning: Member st (variable) of class sha3_ctx_t is not documented.
+/home/travis/build/uos3/firmware/src/packet/sha3.h:41: warning: Member pt (variable) of class sha3_ctx_t is not documented.
+/home/travis/build/uos3/firmware/src/packet/sha3.h:41: warning: Member rsiz (variable) of class sha3_ctx_t is not documented.
+/home/travis/build/uos3/firmware/src/packet/sha3.h:41: warning: Member mdlen (variable) of class sha3_ctx_t is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:63: warning: Member port (variable) of class SPI is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:64: warning: Member gpio_cs (variable) of class SPI is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:65: warning: Member initialised (variable) of class SPI is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:29: warning: Member peripheral_gpio (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:30: warning: Member peripheral_spi (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:31: warning: Member base_gpio (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:32: warning: Member base_spi (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:33: warning: Member pin_clk_function (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:34: warning: Member pin_miso_function (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:35: warning: Member pin_mosi_function (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:36: warning: Member pin_clk (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:37: warning: Member pin_miso (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:38: warning: Member pin_mosi (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:39: warning: Member clockrate (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:40: warning: Member initialised (variable) of class SPI_port is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:24: warning: Member peripheral_gpio (variable) of class UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:25: warning: Member peripheral_uart (variable) of class UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:26: warning: Member base_gpio (variable) of class UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:27: warning: Member base_uart (variable) of class UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:28: warning: Member pin_rx_function (variable) of class UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:29: warning: Member pin_tx_function (variable) of class UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:30: warning: Member pin_rx (variable) of class UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:31: warning: Member pin_tx (variable) of class UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:32: warning: Member initialised (variable) of class UART is not documented.
+/home/travis/build/uos3/firmware/src/board/uos3-proto/wdt.c:19: warning: Member gpio (variable) of class WDT is not documented.
+</home/travis/build/uos3/firmware/src/board/uos3-proto/>:1: warning: Unsupported xml/html tag <NOT> found
+/home/travis/build/uos3/firmware/src/board/uos3-proto/debug.c:6: warning: Unsupported xml/html tag <NOT> found
+.h...
 Generating docs for file /home/travis/build/uos3/firmware/src/packet/crc16.c...
-Generating docs for file /home/travis/build/uos3/firmware/src/packet/crc16.h...
-Generating docs for file /home/travis/build/uos3/firmware/src/packet/pn9.h...
 Generating docs for file /home/travis/build/uos3/firmware/src/test.c...
 Generating docs for file /home/travis/build/uos3/firmware/src/test.h...
 Generating page documentation...
@@ -365,36 +451,7 @@ Generating docs for compound coded_data...
 Generating docs for compound GPIO...
 Generating docs for compound LED...
 Generating docs for compound registerSetting_t...
-Generating docs for compound sha3_ctx_t../home/travis/build/uos3/firmware/src/packet/sha3.h:40: warning: Member st (variable) of class sha3_ctx_t is not documented.
-/home/travis/build/uos3/firmware/src/packet/sha3.h:41: warning: Member pt (variable) of class sha3_ctx_t is not documented.
-/home/travis/build/uos3/firmware/src/packet/sha3.h:41: warning: Member rsiz (variable) of class sha3_ctx_t is not documented.
-/home/travis/build/uos3/firmware/src/packet/sha3.h:41: warning: Member mdlen (variable) of class sha3_ctx_t is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:53: warning: Member port (variable) of class SPI is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:54: warning: Member gpio_cs (variable) of class SPI is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:55: warning: Member initialised (variable) of class SPI is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:19: warning: Member peripheral_gpio (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:20: warning: Member peripheral_spi (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:21: warning: Member base_gpio (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:22: warning: Member base_spi (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:23: warning: Member pin_clk_function (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:24: warning: Member pin_miso_function (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:25: warning: Member pin_mosi_function (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:26: warning: Member pin_clk (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:27: warning: Member pin_miso (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:28: warning: Member pin_mosi (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:29: warning: Member clockrate (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/spi.c:30: warning: Member initialised (variable) of class SPI_port is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:14: warning: Member peripheral_gpio (variable) of class UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:15: warning: Member peripheral_uart (variable) of class UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:16: warning: Member base_gpio (variable) of class UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:17: warning: Member base_uart (variable) of class UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:18: warning: Member pin_rx_function (variable) of class UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:19: warning: Member pin_tx_function (variable) of class UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:20: warning: Member pin_rx (variable) of class UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:21: warning: Member pin_tx (variable) of class UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/uart.c:22: warning: Member initialised (variable) of class UART is not documented.
-/home/travis/build/uos3/firmware/src/board/uos3-proto/wdt.c:9: warning: Member gpio (variable) of class WDT is not documented.
-.
+Generating docs for compound sha3_ctx_t...
 Generating docs for compound SPI...
 Generating docs for compound SPI_port...
 Generating docs for compound UART...
@@ -415,5 +472,5 @@ Generating file index...
 Generating file member index...
 Generating example index...
 finalizing index lists...
-lookup cache used 222/65536 hits=1291 misses=224
+lookup cache used 222/65536 hits=1361 misses=224
 finished...

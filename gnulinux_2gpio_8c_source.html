@@ -88,34 +88,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">gpio.c</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;../gpio.h&quot;</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
-<div class="line"><a name="l00003"></a><span class="lineno"><a class="line" href="gpio_8h.html#a0559be5948862fcbfb98c61cff501b45">    3</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="gpio_8h.html#a0559be5948862fcbfb98c61cff501b45">GPIO_set</a>(uint8_t gpio_num)</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;{</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;  (void) gpio_num;</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;}</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="gpio_8h.html#a682d0b6da45b7d2adb5ad7d68165cd9b">    8</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="gpio_8h.html#a682d0b6da45b7d2adb5ad7d68165cd9b">GPIO_reset</a>(uint8_t gpio_num)</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  (void) gpio_num;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;}</div>
+<a href="gnulinux_2gpio_8c.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;../gpio.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="gpio_8h.html#a60b88b12b51bfd31be09e19f189cf1b6">   13</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="gpio_8h.html#a60b88b12b51bfd31be09e19f189cf1b6">GPIO_write</a>(uint8_t gpio_num, <span class="keywordtype">bool</span> state)</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="group__gpio.html#ga0559be5948862fcbfb98c61cff501b45">   13</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__gpio.html#ga0559be5948862fcbfb98c61cff501b45">GPIO_set</a>(uint8_t gpio_num)</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  (void) gpio_num;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  (void) state;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;}</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="gpio_8h.html#a24240b39692e8d071ec146f7dca5532d">   19</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="gpio_8h.html#a24240b39692e8d071ec146f7dca5532d">GPIO_read</a>(uint8_t gpio_num)</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;{</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  (void) gpio_num;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="group__gpio.html#ga682d0b6da45b7d2adb5ad7d68165cd9b">   18</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__gpio.html#ga682d0b6da45b7d2adb5ad7d68165cd9b">GPIO_reset</a>(uint8_t gpio_num)</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  (void) gpio_num;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
-<div class="ttc" id="gpio_8h_html_a682d0b6da45b7d2adb5ad7d68165cd9b"><div class="ttname"><a href="gpio_8h.html#a682d0b6da45b7d2adb5ad7d68165cd9b">GPIO_reset</a></div><div class="ttdeci">void GPIO_reset(uint8_t gpio_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00008">gpio.c:8</a></div></div>
-<div class="ttc" id="gpio_8h_html_a24240b39692e8d071ec146f7dca5532d"><div class="ttname"><a href="gpio_8h.html#a24240b39692e8d071ec146f7dca5532d">GPIO_read</a></div><div class="ttdeci">bool GPIO_read(uint8_t gpio_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00019">gpio.c:19</a></div></div>
-<div class="ttc" id="gpio_8h_html_a0559be5948862fcbfb98c61cff501b45"><div class="ttname"><a href="gpio_8h.html#a0559be5948862fcbfb98c61cff501b45">GPIO_set</a></div><div class="ttdeci">void GPIO_set(uint8_t gpio_number)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00003">gpio.c:3</a></div></div>
-<div class="ttc" id="gpio_8h_html_a60b88b12b51bfd31be09e19f189cf1b6"><div class="ttname"><a href="gpio_8h.html#a60b88b12b51bfd31be09e19f189cf1b6">GPIO_write</a></div><div class="ttdeci">void GPIO_write(uint8_t gpio_number, bool state)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00013">gpio.c:13</a></div></div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="group__gpio.html#ga60b88b12b51bfd31be09e19f189cf1b6">   23</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__gpio.html#ga60b88b12b51bfd31be09e19f189cf1b6">GPIO_write</a>(uint8_t gpio_num, <span class="keywordtype">bool</span> state)</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  (void) gpio_num;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  (void) state;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="group__gpio.html#ga24240b39692e8d071ec146f7dca5532d">   29</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__gpio.html#ga24240b39692e8d071ec146f7dca5532d">GPIO_read</a>(uint8_t gpio_num)</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;{</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  (void) gpio_num;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="ttc" id="group__gpio_html_ga24240b39692e8d071ec146f7dca5532d"><div class="ttname"><a href="group__gpio.html#ga24240b39692e8d071ec146f7dca5532d">GPIO_read</a></div><div class="ttdeci">bool GPIO_read(uint8_t gpio_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00029">gpio.c:29</a></div></div>
+<div class="ttc" id="group__gpio_html_ga0559be5948862fcbfb98c61cff501b45"><div class="ttname"><a href="group__gpio.html#ga0559be5948862fcbfb98c61cff501b45">GPIO_set</a></div><div class="ttdeci">void GPIO_set(uint8_t gpio_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00013">gpio.c:13</a></div></div>
+<div class="ttc" id="group__gpio_html_ga60b88b12b51bfd31be09e19f189cf1b6"><div class="ttname"><a href="group__gpio.html#ga60b88b12b51bfd31be09e19f189cf1b6">GPIO_write</a></div><div class="ttdeci">void GPIO_write(uint8_t gpio_num, bool state)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00023">gpio.c:23</a></div></div>
+<div class="ttc" id="group__gpio_html_ga682d0b6da45b7d2adb5ad7d68165cd9b"><div class="ttname"><a href="group__gpio.html#ga682d0b6da45b7d2adb5ad7d68165cd9b">GPIO_reset</a></div><div class="ttdeci">void GPIO_reset(uint8_t gpio_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2gpio_8c_source.html#l00018">gpio.c:18</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

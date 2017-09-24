@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['led',['LED',['../group__led.html',1,'']]]
+  ['hardware_20boards_2fplatforms',['Hardware Boards/Platforms',['../group__boards.html',1,'']]]
 ];

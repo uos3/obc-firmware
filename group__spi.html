@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: SPI</title>
+<title>UoS³ Flight Computer Firmware: Spi</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -74,16 +74,497 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#files">Files</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">SPI<div class="ingroups"><a class="el" href="group__drivers.html">Board/Platform Hardware Drivers</a></div></div>  </div>
+<div class="title">Spi<div class="ingroups"><a class="el" href="group__drivers.html">Board/Platform Hardware Drivers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p><a class="el" href="struct_s_p_i.html">SPI</a> Peripheral Driver.  
 <a href="#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
+Files</h2></td></tr>
+<tr class="memitem:gnulinux_2spi_8c"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gnulinux_2spi_8c.html">spi.c</a></td></tr>
+<tr class="memdesc:gnulinux_2spi_8c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="struct_s_p_i.html">SPI</a> Driver - gnulinux platform. <br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:uos3-proto_2spi_8c"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uos3-proto_2spi_8c.html">spi.c</a></td></tr>
+<tr class="memdesc:uos3-proto_2spi_8c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="struct_s_p_i.html">SPI</a> Driver - uos3-proto board. <br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga138ad778c02212e029a14d8be2a335dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#ga138ad778c02212e029a14d8be2a335dc">SPI_init</a> (uint8_t spi_num)</td></tr>
+<tr class="separator:ga138ad778c02212e029a14d8be2a335dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8fe538eee897354b740b621714219221"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#ga8fe538eee897354b740b621714219221">SPI_read8</a> (uint8_t spi_num, uint8_t addr, uint8_t *data)</td></tr>
+<tr class="separator:ga8fe538eee897354b740b621714219221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga87d05cd990d395f3549c441bae821779"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#ga87d05cd990d395f3549c441bae821779">SPI_write8</a> (uint8_t spi_num, uint8_t addr, uint8_t *data)</td></tr>
+<tr class="separator:ga87d05cd990d395f3549c441bae821779"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaeb97ff1125bc25cc974dd58e02035f72"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#gaeb97ff1125bc25cc974dd58e02035f72">SPI_burstread8</a> (uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</td></tr>
+<tr class="separator:gaeb97ff1125bc25cc974dd58e02035f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac6d27cd7e85842858f3ef2c70e06a7b9"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#gac6d27cd7e85842858f3ef2c70e06a7b9">SPI_burstwrite8</a> (uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)</td></tr>
+<tr class="separator:gac6d27cd7e85842858f3ef2c70e06a7b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa35780863fbba18a68b3faa30c34710a"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#gaa35780863fbba18a68b3faa30c34710a">SPI_read16</a> (uint8_t spi_num, uint16_t addr, uint8_t *data)</td></tr>
+<tr class="separator:gaa35780863fbba18a68b3faa30c34710a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0be32d4795e246e876418b9928d42714"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#ga0be32d4795e246e876418b9928d42714">SPI_write16</a> (uint8_t spi_num, uint16_t addr, uint8_t *data)</td></tr>
+<tr class="separator:ga0be32d4795e246e876418b9928d42714"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga94a9828b4185d47320af38b037e29b4c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#ga94a9828b4185d47320af38b037e29b4c">SPI_burstread16</a> (uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</td></tr>
+<tr class="separator:ga94a9828b4185d47320af38b037e29b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf87f3fefe290fc4a250a8f9a3be20225"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#gaf87f3fefe290fc4a250a8f9a3be20225">SPI_burstwrite16</a> (uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)</td></tr>
+<tr class="separator:gaf87f3fefe290fc4a250a8f9a3be20225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5c82eae20b2408611e1b89d80934c320"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#ga5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a> (uint8_t spi_num, uint8_t cmd)</td></tr>
+<tr class="separator:ga5c82eae20b2408611e1b89d80934c320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p><a class="el" href="struct_s_p_i.html">SPI</a> Peripheral Driver. </p>
 <p>Hardware <a class="el" href="struct_s_p_i.html">SPI</a> Peripheral Driver.</p>
 <p><a class="el" href="struct_s_p_i.html">SPI</a> ports for each board are defined in ${board}/board.h </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga138ad778c02212e029a14d8be2a335dc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SPI_init </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initialises the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Public Functions </p>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00015">15</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga8fe538eee897354b740b621714219221"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t SPI_read8 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reads a byte from an address of the slave device on the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral </td></tr>
+    <tr><td class="paramname">addr</td><td>Address of the slave device register </td></tr>
+    <tr><td class="paramname">data</td><td>Pointer to a byte for storage of the data retrieved </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status byte </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00028">28</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga87d05cd990d395f3549c441bae821779"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t SPI_write8 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Writes a byte to an address of the slave device on the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral </td></tr>
+    <tr><td class="paramname">addr</td><td>Address of the slave device register </td></tr>
+    <tr><td class="paramname">data</td><td>Pointer to a byte containing the data to be written </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status byte </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00047">47</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaeb97ff1125bc25cc974dd58e02035f72"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t SPI_burstread8 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reads a number of bytes from an address of the slave device on the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral </td></tr>
+    <tr><td class="paramname">addr</td><td>Address of the slave device register </td></tr>
+    <tr><td class="paramname">data</td><td>Pointer to bytes for storage of the data retrieved </td></tr>
+    <tr><td class="paramname">len</td><td>Number of bytes to be read </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status byte </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00037">37</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gac6d27cd7e85842858f3ef2c70e06a7b9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t SPI_burstwrite8 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Writes a number of bytes to an address of the slave device on the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral </td></tr>
+    <tr><td class="paramname">addr</td><td>Address of the slave device register </td></tr>
+    <tr><td class="paramname">data</td><td>Pointer to bytes containing the data to be written </td></tr>
+    <tr><td class="paramname">len</td><td>Number of bytes to be written </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status byte </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00056">56</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaa35780863fbba18a68b3faa30c34710a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t SPI_read16 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reads a byte from an extended address of the slave device on the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral </td></tr>
+    <tr><td class="paramname">addr</td><td>Extended address of the slave device register </td></tr>
+    <tr><td class="paramname">data</td><td>Pointer to a byte for storage of the data retrieved </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status byte </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00066">66</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga0be32d4795e246e876418b9928d42714"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t SPI_write16 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Writes a byte to an extended address of the slave device on the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral </td></tr>
+    <tr><td class="paramname">addr</td><td>Extended address of the slave device register </td></tr>
+    <tr><td class="paramname">data</td><td>Pointer to a byte containing the data to be written </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status byte </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00085">85</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga94a9828b4185d47320af38b037e29b4c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t SPI_burstread16 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reads a number of bytes from an extended address of the slave device on the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral </td></tr>
+    <tr><td class="paramname">addr</td><td>Extended address of the slave device register </td></tr>
+    <tr><td class="paramname">data</td><td>Pointer to bytes for storage of the data retrieved </td></tr>
+    <tr><td class="paramname">len</td><td>Number of bytes to be read </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status byte </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00075">75</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaf87f3fefe290fc4a250a8f9a3be20225"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t SPI_burstwrite16 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Writes a number of bytes to an extended address of the slave device on the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral </td></tr>
+    <tr><td class="paramname">addr</td><td>Extended address of the slave device register </td></tr>
+    <tr><td class="paramname">data</td><td>Pointer to bytes containing the data to be written </td></tr>
+    <tr><td class="paramname">len</td><td>Number of bytes to be written </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status byte </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00094">94</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga5c82eae20b2408611e1b89d80934c320"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t SPI_cmdstrobe </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>spi_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>cmd</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sends a TI 'Command Strobe' byte on the specified <a class="el" href="struct_s_p_i.html">SPI</a> peripheral</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spi_num</td><td>ID of the <a class="el" href="struct_s_p_i.html">SPI</a> peripheral </td></tr>
+    <tr><td class="paramname">cmd</td><td>Command byte to be sent </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status byte </dd></dl>
+
+<p>Definition at line <a class="el" href="gnulinux_2spi_8c_source.html#l00020">20</a> of file <a class="el" href="gnulinux_2spi_8c_source.html">spi.c</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
