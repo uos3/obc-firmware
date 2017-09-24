@@ -15,9 +15,6 @@ print() {
     echo -e $@
 }
 
-# Exit with nonzero exit code if anything fails
-set -e
-
 # Change to script source directory
 source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 cd "$source_dir";
@@ -52,7 +49,8 @@ print "$_DEBUG_ Generating Doxygen code documentation"
 doxygen ../doxyfile 2>&1 | tee doxygen.log
 
 # Bail out if there's no changes
-if [ -z `git diff -s --exit-code` ]; then
+git diff -s --exit-code
+if [ $? -eq 0 ]; then
     print "$_INFO_ No doc changes on this push; exiting."
     exit 0
 fi
