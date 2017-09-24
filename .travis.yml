@@ -21,21 +21,22 @@ install:
   - if [ ! -e $GCC_DIR/bin/arm-none-eabi-gcc ]; then wget -nv $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME/compilers; fi
   - export PATH=$PATH:$GCC_DIR/bin
 
-# List of tests to run ( `./$A -w $P $M` )
+# List of tests to run ( `./build -w $BOARD $MAIN` )
 env:
-  - A=test P=gnulinux M=packet
-  
-  - A=build P=uos3-proto M=blinky
-  - A=build P=uos3-proto M=serial-test
-  - A=build P=uos3-proto M=tx-test
-  - A=build P=uos3-proto M=txrx-uart
+  - BOARD=uos3-proto MAIN=blinky
+  - BOARD=uos3-proto MAIN=serial-test
+  - BOARD=uos3-proto MAIN=tx-test
+  - BOARD=uos3-proto MAIN=txrx-uart
 
 # Command to run tests
-script: ./$A -w $P $M
+script: ./build -w $BOARD $MAIN
 
-# Additional job for Doxygen documentation (only on master branch)
+# Additional jobs for Tests, and Doxygen documentation (only on master branch)
 jobs:
   include:
+    - stage: Module Tests
+      env: 
+      script: ./test -w
     - stage: Doxygen
       if: branch = phil-work
       cache: skip
