@@ -45,7 +45,5 @@ jobs:
         apt:
           packages:
             - doxygen
-            - doxygen-latex
-            - graphviz
       env: 
       script: tools/travis_doxygen_docs.sh
