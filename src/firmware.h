@@ -61,8 +61,14 @@
  * @{
  */
 
-/** @defgroup drivers Hardware Drivers */
-/** @defgroup tests   Module Tests     */
-/** @defgroup packet  Packet Modules   */
+/** @defgroup drivers Hardware Drivers
+ *	Drivers for platform & board hardware.
+ */
+/** @defgroup packet  Packet Modules
+ *  High-level Data Packet Modules
+ */
+/** @defgroup tests   Module Tests 
+ *  Tests of High-level modules.
+ */
 
 /** @} */
