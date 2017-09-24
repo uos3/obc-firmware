@@ -1,5 +1,5 @@
 /**
- * @defgroup uart UART
+ * @defgroup uart
  *
  * @brief UART Peripheral Driver
  *
@@ -8,10 +8,6 @@
  * UART ports for each board are defined in ${board}/board.h
  *
  * @ingroup drivers
- *
- * @file uart.h
- *
- * @{
  */
 
 #ifndef __UART_H__
@@ -21,6 +17,9 @@
 #include <stdbool.h>
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Initialises the specified UART peripheral at the given baudrate.
  *
  * @param uart_num ID of the UART peripheral
@@ -29,6 +28,9 @@
 void UART_init(uint8_t uart_num, uint32_t baudrate);
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Retrieves a byte from the RX FIFO of the specified UART peripheral,
  *  waits for a byte if RX FIFO is empty.
  *
@@ -38,6 +40,9 @@ void UART_init(uint8_t uart_num, uint32_t baudrate);
 char UART_getc(uint8_t uart_num);
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Sends a byte from the specified UART peripheral,
  *  waits to send if TX FIFO is full.
  *
@@ -47,6 +52,9 @@ char UART_getc(uint8_t uart_num);
 void UART_putc(uint8_t uart_num, char c);
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Sends a null-terminated string from the specified UART peripheral,
  *  waits to send if TX FIFO is full.
  *
@@ -56,6 +64,9 @@ void UART_putc(uint8_t uart_num, char c);
 void UART_puts(uint8_t uart_num, char *str);
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Sends a buffer from the specified UART peripheral,
  *  waits to send if TX FIFO is full.
  *
@@ -67,6 +78,9 @@ void UART_putb(uint8_t uart_num, char *str, uint32_t len);
 
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Retrieves a byte from the RX FIFO of the specified UART peripheral,
  *  returns if RX FIFO is empty.
  *
@@ -77,6 +91,9 @@ void UART_putb(uint8_t uart_num, char *str, uint32_t len);
 bool UART_getc_nonblocking(uint8_t uart_num, char *c);
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Sends a byte from the specified UART peripheral,,
  *  returns if TX FIFO is full.
  *
@@ -87,6 +104,9 @@ bool UART_getc_nonblocking(uint8_t uart_num, char *c);
 bool UART_putc_nonblocking(uint8_t uart_num, char c);
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Sends a null-terminated string from the specified UART peripheral,
  *  returns if TX FIFO is full.
  *
@@ -97,6 +117,9 @@ bool UART_putc_nonblocking(uint8_t uart_num, char c);
 bool UART_puts_nonblocking(uint8_t uart_num, char *str);
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Sends a buffer from the specified UART peripheral,
  *  returns if TX FIFO is full.
  *
@@ -108,6 +131,9 @@ bool UART_puts_nonblocking(uint8_t uart_num, char *str);
 bool UART_putb_nonblocking(uint8_t uart_num, char *str, uint32_t len);
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Retrieves the TX FIFO status of the specified UART peripheral.
  *
  * @param uart_num ID of the UART peripheral
@@ -116,6 +142,9 @@ bool UART_putb_nonblocking(uint8_t uart_num, char *str, uint32_t len);
 bool UART_busy(uint8_t uart_num);
 
 /**
+ * @function
+ * @ingroup uart
+ *
  * Retrieves the RX FIFO status of the specified UART peripheral.
  *
  * @param uart_num ID of the UART peripheral
@@ -124,7 +153,3 @@ bool UART_busy(uint8_t uart_num);
 bool UART_charsAvail(uint8_t uart_num);
 
 #endif /*  __UART_H__ */
-
-/**
- * @}
- */

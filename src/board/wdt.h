@@ -1,15 +1,11 @@
 /**
- * @defgroup wdt WDT
+ * @defgroup wdt
  *
  * @brief External watchdog driver
  *
  * @details Driver for kicking the external window watchdog device.
  *
  * @ingroup drivers
- *
- * @file wdt.h
- *
- * @{
  */
 
 #ifndef __WDT_H__
@@ -19,12 +15,11 @@
 #include <stdbool.h>
 
 /**
+ * @function
+ * @ingroup wdt
+ *
  * Kicks the external window watchdog device.
  */
 void WDT_kick(void);
 
 #endif /*  __LED_H__ */
-
-/**
- * @}
- */

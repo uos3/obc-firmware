@@ -1,3 +1,13 @@
+/**
+ * @ingroup uos3-proto
+ * @ingroup spi
+ *
+ * @file uos3-proto/spi.c
+ * @brief SPI Driver - uos3-proto board
+ *
+ * @{
+ */
+
 #include "board.h"
 #include "../spi.h"
 #include "../gpio.h"
@@ -439,3 +449,7 @@ uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t
   /* return the status byte value */
   return((uint8_t)readValue);
 }
+
+/**
+ * @}
+ */

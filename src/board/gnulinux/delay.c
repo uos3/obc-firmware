@@ -1,3 +1,13 @@
+/**
+ * @ingroup gnulinux
+ * @ingroup delay
+ *
+ * @file gnulinux/delay.c
+ * @brief Time Delay Driver - gnulinux platform
+ *
+ * @{
+ */
+
 #include "../delay.h"
 
 #include <time.h>
@@ -23,3 +33,7 @@ void Delay_us(uint32_t microseconds)
     req = rem;
   }
 }
+
+/**
+ * @}
+ */

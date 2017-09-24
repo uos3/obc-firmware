@@ -1,5 +1,5 @@
 /**
- * @defgroup led LED
+ * @defgroup led
  *
  * @brief LED Peripheral Driver
  *
@@ -8,12 +8,7 @@
  * LEDs for each board are defined in ${board}/board.h
  *
  * @ingroup drivers
- *
- * @file led.h
- *
- * @{
  */
-
 
 #ifndef __LED_H__
 #define __LED_H__
@@ -22,6 +17,9 @@
 #include <stdbool.h>
 
 /**
+ * @function
+ * @ingroup led
+ *
  * Switches on the specified LED peripheral
  *
  * @param led_number ID of the LED peripheral
@@ -29,6 +27,9 @@
 void LED_on(uint8_t led_number);
 
 /**
+ * @function
+ * @ingroup led
+ *
  * Switches off the specified LED peripheral
  *
  * @param led_number ID of the LED peripheral
@@ -36,6 +37,9 @@ void LED_on(uint8_t led_number);
 void LED_off(uint8_t led_number);
 
 /**
+ * @function
+ * @ingroup led
+ *
  * Sets the state of the specified LED peripheral
  *
  * @param led_number ID of the LED peripheral
@@ -44,7 +48,3 @@ void LED_off(uint8_t led_number);
 void LED_set(uint8_t led_number, bool state);
 
 #endif /*  __LED_H__ */
-
-/**
- * @}
- */

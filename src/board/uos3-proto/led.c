@@ -1,3 +1,13 @@
+/**
+ * @ingroup uos3-proto
+ * @ingroup led
+ *
+ * @file uos3-proto/led.c
+ * @brief LED Driver - uos3-proto board
+ *
+ * @{
+ */
+
 #include "board.h"
 #include "../gpio.h"
 
@@ -38,3 +48,7 @@ void LED_set(uint8_t led_num, bool state)
 
   led->state = state;
 }
+
+/**
+ * @}
+ */

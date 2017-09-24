@@ -6,10 +6,6 @@
  * @details 
  *
  * @ingroup packet
- *
- * @file crc16.h
- *
- * @{
  */
 
 #ifndef __PACKET_CRC16_H__
@@ -18,6 +14,9 @@
 #include "../firmware.h"
 
 /**
+ * @function
+ * @ingroup crc
+ *
  * Calculate the 16-bit CRC of the input buffer,
  * using the CRC16-CCITT standard.
  *
@@ -28,7 +27,3 @@
 uint16_t Packet_CRC16_CCITT(uint8_t *buffer, uint32_t length);
 
 #endif /* __PACKET_CRC16_H__ */
-
-/**
- * @}
- */

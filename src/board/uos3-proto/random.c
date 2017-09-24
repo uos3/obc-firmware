@@ -1,10 +1,14 @@
-/** @file uos3-proto/random.c
- *
+/**
+ * @ingroup uos3-proto
  * @ingroup random
+ *
+ * @file uos3-proto/random.c
+ * @brief Random Driver - uos3-proto board
+ *
  * @{
  */
 
- #include "board.h"
+#include "board.h"
 
 #include "../random.h"
 

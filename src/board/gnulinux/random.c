@@ -1,6 +1,10 @@
-/** @file gnulinux/random.c
- *
+/**
+ * @ingroup gnulinux
  * @ingroup random
+ *
+ * @file gnulinux/random.c
+ * @brief Random Driver - gnulinux platform
+ *
  * @{
  */
 

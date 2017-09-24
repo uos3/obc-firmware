@@ -5,7 +5,6 @@
  * @author Phil Crump
  *
  * @addtogroup tests
- * @{
  */
 
 #ifndef __TEST_H__
@@ -33,14 +32,39 @@
     state = false;                                              \
   }
 
+/**
+ * @function
+ * @ingroup tests
+ *
+ * Prints out out a buffer in decimal bytes
+ *
+ * @param buffer Input buffer pointer
+ * @param length Length of input buffer in bytes
+ */
 void buffer_print_dec(uint8_t *buffer, uint32_t length);
+
+/**
+ * @function
+ * @ingroup tests
+ *
+ * Prints out out a buffer in hexadecimal bytes
+ *
+ * @param buffer Input buffer pointer
+ * @param length Length of input buffer in bytes
+ */
 void buffer_print_hex(uint8_t *buffer, uint32_t length);
+
+/**
+ * @function
+ * @ingroup tests
+ *
+ * Prints out out a buffer in binary digits
+ *
+ * @param buffer Input buffer pointer
+ * @param length Length of input buffer in bytes
+ */
 void buffer_print_bin(uint8_t *buffer, uint32_t length);
 
 #include "packet/test/packet.h"
 
 #endif /*  __TEST_H__ */
-
-/**
- * @}
- */

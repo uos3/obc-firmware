@@ -1,3 +1,13 @@
+/**
+ * @ingroup uos3-proto
+ * @ingroup delay
+ *
+ * @file uos3-proto/delay.c
+ * @brief Time Delay Driver - uos3-proto board
+ *
+ * @{
+ */
+
 #include "../delay.h"
 
 #include "inc/tm4c123gh6pm.h"
@@ -16,3 +26,7 @@ void Delay_us(uint32_t microseconds)
 {
   SysCtlDelay(13 * microseconds);    // empirical
 }
+
+/**
+ * @}
+ */

@@ -1,7 +1,18 @@
+/**
+ * @ingroup uos3-proto
+ * @ingroup gpio
+ *
+ * @file uos3-proto/gpio.c
+ * @brief GPIO Driver - uos3-proto board
+ *
+ * @{
+ */
+
 #include "board.h"
 #include "../gpio.h"
 
 #include "inc/hw_memmap.h"
+
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 
@@ -143,3 +154,7 @@ bool GPIO_read(uint8_t gpio_num)
 
   return GPIO_Pin_Read(gpio);
 }
+
+/**
+ * @}
+ */

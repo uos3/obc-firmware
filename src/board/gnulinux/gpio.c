@@ -1,3 +1,13 @@
+/**
+ * @ingroup gnulinux
+ * @ingroup gpio
+ *
+ * @file gnulinux/gpio.c
+ * @brief GPIO Driver - gnulinux platform
+ *
+ * @{
+ */
+
 #include "../gpio.h"
 
 void GPIO_set(uint8_t gpio_num)
@@ -22,3 +32,7 @@ bool GPIO_read(uint8_t gpio_num)
 
   return false;
 }
+
+/**
+ * @}
+ */

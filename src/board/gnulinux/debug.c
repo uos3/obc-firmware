@@ -1,3 +1,13 @@
+/**
+ * @ingroup gnulinux
+ * @ingroup debug
+ *
+ * @file gnulinux/debug.c
+ * @brief Debug message print - gnulinux platform
+ *
+ * @{
+ */
+
 #include "../debug.h"
 
 #include <stdarg.h>
@@ -9,3 +19,7 @@ void Debug_print(char* fmt, ...) {
   vprintf(fmt, arg);
   va_end(arg);
 }
+
+/**
+ * @}
+ */

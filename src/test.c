@@ -30,12 +30,6 @@ int main(void)
     return -1;
 }
 
-/**
- * @brief Prints out out a buffer in decimal bytes
- *
- * @param buffer Input buffer pointer
- * @param length Length of input buffer in bytes
- */
 void buffer_print_dec(uint8_t *buffer, uint32_t length)
 {
   uint32_t i = 0;
@@ -54,12 +48,6 @@ void buffer_print_dec(uint8_t *buffer, uint32_t length)
   Debug_print("\r\n");
 }
 
-/**
- * @brief Prints out out a buffer in hexadecimal bytes
- *
- * @param buffer Input buffer pointer
- * @param length Length of input buffer in bytes
- */
 void buffer_print_hex(uint8_t *buffer, uint32_t length)
 {
   uint32_t i = 0;
@@ -78,12 +66,6 @@ void buffer_print_hex(uint8_t *buffer, uint32_t length)
   Debug_print("\r\n");
 }
 
-/**
- * @brief Prints out out a buffer in binary digits
- *
- * @param buffer Input buffer pointer
- * @param length Length of input buffer in bytes
- */
 void buffer_print_bin(uint8_t *buffer, uint32_t length)
 {
   uint32_t i = 0, j, m;

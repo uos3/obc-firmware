@@ -1,3 +1,13 @@
+/**
+ * @ingroup uos3-proto
+ * @ingroup wdt
+ *
+ * @file uos3-proto/wdt.c
+ * @brief WDT Driver - uos3-proto board
+ *
+ * @{
+ */
+
 #include "board.h"
 #include "../gpio.h"
 #include "../delay.h"
@@ -20,3 +30,7 @@ void WDT_kick(void)
   Delay_us(10);
   GPIO_reset(wdt.gpio);
 }
+
+/**
+ * @}
+ */
