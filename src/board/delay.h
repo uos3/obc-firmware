@@ -1,4 +1,4 @@
-/** @file uart.h
+/** @file delay.h
  *
  * Time delay driver.
  *

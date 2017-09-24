@@ -1,6 +1,11 @@
-/** @file uart.h
+/**
+ * @defgroup uart
  *
- * UART Peripheral driver.
+ * UART Peripheral Driver.
+ *
+ * @details Hardware UART Peripheral Driver.
+ *
+ * UART ports for each board are defined in ${board}/board.h
  *
  * @ingroup drivers
  * @{

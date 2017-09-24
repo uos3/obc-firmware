@@ -1,6 +1,9 @@
-/** @file wdt.h
+/** 
+ * @defgroup wdt
  *
  * External watchdog driver.
+ *
+ * @details Driver for kicking the external window watchdog device.
  *
  * @ingroup drivers
  * @{
