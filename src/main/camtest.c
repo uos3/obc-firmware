@@ -145,19 +145,19 @@ return true;
 unsigned int get_picture_part(unsigned int offset, unsigned int len, char *storage_addr)
  {
   if (((((int)storage_addr)>>10)*1024)!=storage_addr) DISP3("Bad storage address for picture part",storage_addr,"\n\r");
-  offset=offset; // must be 8 byte boundary
-  DISP1("GET PICTURE PART\r\n");
-  DISP3("Offset: ",offset,"\r\n");
-  DISP3("Length: ",len,"\r\n");
-  DISP3("Storage Addr: ",storage_addr,"\r\n");
+ // offset=offset; // must be 8 byte boundary
+  //DISP1("GET PICTURE PART\r\n");
+  //DISP3("Offset: ",offset,"\r\n");
+  //DISP3("Length: ",len,"\r\n");
+  //DISP3("Storage Addr: ",storage_addr,"\r\n");
 
-  //unsigned int pages_to_clear=(len+1023)>>10; // this processor's flash is in 1k blocks, these need to be erased before writing to
+  unsigned int pages_to_clear=(len+1023)>>10; // this processor's flash is in 1k blocks, these need to be erased before writing to
 
   //DISP3("Pages to clear",pages_to_clear,"\r\n");
- // for (int i=0;i<pages_to_clear;i++)
-	FlashErase(storage_addr);
+  for (int i=0;i<pages_to_clear;i++)
+	   if (FlashErase(storage_addr)==-1) DISP1("PROTECTED FLASH!");
 
-  DISP1("Erased\r\n");
+  //DISP1("Erased\r\n");
 
   char flash_word_size=4;
   char flash_buffer[flash_word_size];
@@ -168,13 +168,13 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
  
   //DISP1("Preparing buffers")
 
-  while (UART_busy(DEBUG_SERIAL) || UART_busy(CAM_SERIAL)) {} // wait for tx buffer clear
+  //while (UART_busy(DEBUG_SERIAL) || UART_busy(CAM_SERIAL)) {} // wait for tx buffer clear
  
-  while (UART_charsAvail(CAM_SERIAL)) {char c=UART_getc(CAM_SERIAL);} // empty receive buffer
+  //while (UART_charsAvail(CAM_SERIAL)) {char c=UART_getc(CAM_SERIAL);} // empty receive buffer
 
-  Delay_ms(1000); // is this a speed thing?
+  Delay_ms(100); // is this a speed thing? - too fast and it crashes after 3 calls
 
-  DISP1("Sending message...\n\r")
+  DISP1("Sending message.\n")
  
   CAMWRITE(LK_READPICTURE);
   writecamword(offset); // offset in file start (0 here)
@@ -189,14 +189,14 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
  
   while ((endfoundcount<2) && (i<len))
 	{
- //  DISP3("i = ",i,"\r\n")
+  // DISP3("i = ",i,"\r\n")
 //   DISP3("j = ",j,"\r\n")
  //  DISP3("efc = ",endfoundcount,"\r\n")
 	  char c=UART_getc(CAM_SERIAL);
 	  if (c==JPEG_END[endfoundcount]) endfoundcount+=1; else endfoundcount=0; // should progress through end template
 	  flash_buffer[j++]=c;
 	  if (j==flash_word_size) {j=0; 
-	  	FlashProgram(flash_buffer,storage_addr+i,flash_word_size);
+	  	if (FlashProgram(flash_buffer,storage_addr+i,flash_word_size)==-1) {DISP3("FLASH PROGRAMMING ERROR ",storage_addr+i,"\r\n");}
      //   if ((i&63)==56) {DISP3(" <",i,">");}
     //    if (i>1015) {  DISP3("i = ",i,"");DISP3("j = ",j,"\r\n");DISP3("efc = ",endfoundcount,"\r\n");}
    
@@ -222,7 +222,7 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
  // DISP3(" ",storage_addr[picturelength-2],",");DISP3(" ",storage_addr[picturelength-1],"\n\r");
 
 //  DISP3("ENDFOUNDCOUNT = ",endfoundcount,"\n\r")
-  DISP3("Downloaded ",picturelength," bytes of image data\n\r")
+ // DISP3("Downloaded ",picturelength," bytes of image data\n\r")
   return picturelength;
  }
 
@@ -242,6 +242,8 @@ unsigned int take_picture(char *picture_storage)
    CAMWRITE(LK_JPEGSIZE);CAMREAD(LK_JPEGSIZE_RE);unsigned int jpegsize=getcamword(); // file size (lowest 32 bits)
    DISP3("Picture size is ",jpegsize," bytes of image data\n\r");
 
+
+/*
    unsigned int pages_to_clear=(jpegsize+1023)>>10; // this processor's flash is in 1k blocks, these need to be erased before writing to
   
    DISP3("Ready to download to board :",pages_to_clear," pages\r\n");
@@ -251,8 +253,10 @@ unsigned int take_picture(char *picture_storage)
       	i++;
       }
 
-   unsigned int picturelength=(i-1)*1024+copied; //jpegsize; //i+j;
- 
+  ;; unsigned int picturelength=(i-1)*1024+copied; //jpegsize; //i+j;
+ */
+   unsigned int picturelength=get_picture_part(0,jpegsize,picture_storage);
+
    DISP1("Copy complete \r\n");
 
    DISP3("Downloaded ",picturelength," bytes of image data\n\r")
