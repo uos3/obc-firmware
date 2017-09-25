@@ -146,8 +146,8 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
  {
   if (((((int)storage_addr)>>10)*1024)!=storage_addr) DISP3("Bad storage address for picture part",storage_addr,"\n\r");
   offset=offset; // must be 8 byte boundary
-  //DISP1("GET PICTURE PART\r\n");
-  //DISP3("Offset: ",offset,"\r\n");
+  DISP1("GET PICTURE PART\r\n");
+  DISP3("Offset: ",offset,"\r\n");
   DISP3("Length: ",len,"\r\n");
   DISP3("Storage Addr: ",storage_addr,"\r\n");
 
@@ -170,7 +170,7 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
 
   while (UART_busy(DEBUG_SERIAL) || UART_busy(CAM_SERIAL)) {} // wait for tx buffer clear
  
- // while (UART_charsAvail(CAM_SERIAL)) {char c=UART_getc(CAM_SERIAL);} // empty receive buffer
+  while (UART_charsAvail(CAM_SERIAL)) {char c=UART_getc(CAM_SERIAL);} // empty receive buffer
 
   DISP1("Sending message...\n\r")
  
