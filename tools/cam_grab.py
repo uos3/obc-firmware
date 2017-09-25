@@ -34,7 +34,7 @@ def read_word4(s):
      b2=ord(s.read()) 
      b3=ord(s.read()) 
      b4=ord(s.read())
-     print "reading word {0:x},{1:x},{2:x},{3:x}".format(b1,b2,b3,b4)
+    # print "reading word {0:x},{1:x},{2:x},{3:x}".format(b1,b2,b3,b4)
      return (b1<<24)|(b2<<16)|(b3<<8)|b4
 
 def write_file(fname,data):
@@ -67,7 +67,7 @@ def get_mem(start,length,s):
              re=s.read(1) # skip any rubbish on line
              print re,
         ret=s.read(length+2)
-        print "read length : 0x{0:x}".format(len(ret))
+ #       print "read length : 0x{0:x}".format(len(ret))
        # wait=raw_input()
         if (len(ret)<length+2):
                length=len(ret)-2 # adjust length to read as much as possible
@@ -98,16 +98,16 @@ def get_chunks(base_addr,total_size,chunksize,s):
      ch=[]
      cur_chunk=chunksize
      chunks=((total_size-1)/chunksize)+1
-     print "Getting chunks"
-     print "total_size = {0}".format(total_size)
-     print "chunksize = {0}".format(chunksize)
-     print "chunks = {0}".format(chunks)
-     print "remainder = {0}".format(total_size-(chunks-1)*chunksize)
-     print "press a key"
-     wait=raw_input()
+   #  print "Getting chunks"
+   #  print "total_size = {0}".format(total_size)
+   #  print "chunksize = {0}".format(chunksize)
+   #  print "chunks = {0}".format(chunks)
+   #  print "remainder = {0}".format(total_size-(chunks-1)*chunksize)
+   #  print "press a key"
+   #  wait=raw_input()
    #  chunksize=0x4000
      for j in range(0,chunks):
-        print j
+    #    print j
         if (j==chunks-1): 
             cur_chunk=total_size-j*chunksize
         ch+=get_mem(base_addr+j*chunksize,cur_chunk,s)
@@ -122,18 +122,18 @@ def show_debug(wait_char):
             else:
                 print " [{0:x}]".format(ord(c)),
 
-        else:
-            print ".(empty UART)",
+  #      else:
+  #          print ".(empty UART)",
         c=s.read()     
 
 def send_packet(cmd,value):
     packet_not_sent=True
     while packet_not_sent:
-        print "sending packet {0}".format(cmd)
+    #    print "sending packet {0}".format(cmd)
         s.write(cmd) 
         write_word4(s,value) # this takes picture and stores in memory
         s.flush()
-        print "awaiting acknowledgement"
+   #     print "awaiting acknowledgement"
       #  time.sleep(.1) # delay so can catch acknowledgement
         c=s.read()
      #   print "'{0}'".format(c)
@@ -141,28 +141,28 @@ def send_packet(cmd,value):
             c=s.read(3)
             if (len(c)>=3 and (c[0]=='C') and c[1]=='K' and c[2]==cmd): 
                 packet_not_sent=False
-    print "packet successfully received"
+  #  print "packet successfully received"
 
 def receive_packet(cmd):
-    print "Receiving packet of type : '{0}'".format(cmd)
+ #   print "Receiving packet of type : '{0}'".format(cmd)
     c=s.read()
     while c!=cmd:
         if (c!=''):
             print c,
         c=s.read()
     data=read_word4(s)
-    print "received data : {0}".format(data)
+ #   print "received data : {0}".format(data)
     s.write("ACK")
     s.write(cmd)
     s.flush()
-    print "acknowledgement sent"
+ #   print "acknowledgement sent"
     return data
 
 def main():
     global s
     
     s = init_serial('115200')
-    print "Taking picture"
+    print "Initialising"
 
     storage_address=0x8000
 
@@ -170,19 +170,13 @@ def main():
    #write_file("before.dat",before);
 
     show_debug(':')
-    print "press enter"
+    print "Prepare to take picture"
     wait=raw_input()
 
     send_packet('#',storage_address) # this takes picture and stores in memory
     length=receive_packet('$')
     #length=4
  
-    print "waiting for response."
-    
-    show_debug(':')
-    print "press enter"
-    wait=raw_input()
-
     show_debug(':')
 
     #after=get_chunks(storage_address,256,256,s)
@@ -192,11 +186,11 @@ def main():
     print "Received picture length is : 0x{0:x}".format(length)
    
 
-    print("Prepare to get chunks")
+    print("Prepare to save to file")
     wait = raw_input("PRESS ENTER TO CONTINUE.")
-    print("something2")
+  #  print("something2")
 
-    print "getting chunks ({0})".format(length)
+   # print "getting chunks ({0})".format(length)
 
 
     picture=get_chunks(storage_address,length,256,s) # this downloads it from memory

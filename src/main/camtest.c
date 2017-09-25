@@ -146,16 +146,16 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
  {
   if (((((int)storage_addr)>>10)*1024)!=storage_addr) DISP3("Bad storage address for picture part",storage_addr,"\n\r");
   offset=offset; // must be 8 byte boundary
-  DISP1("GET PICTURE PART\r\n");
+  //DISP1("GET PICTURE PART\r\n");
   DISP3("Offset: ",offset,"\r\n");
   DISP3("Length: ",len,"\r\n");
   DISP3("Storage Addr: ",storage_addr,"\r\n");
 
-  unsigned int pages_to_clear=(len+1023)>>10; // this processor's flash is in 1k blocks, these need to be erased before writing to
+  //unsigned int pages_to_clear=(len+1023)>>10; // this processor's flash is in 1k blocks, these need to be erased before writing to
 
-  DISP3("Pages to clear",pages_to_clear,"\r\n");
-  for (int i=0;i<pages_to_clear;i++)
-	FlashErase(storage_addr+(i<<10));
+  //DISP3("Pages to clear",pages_to_clear,"\r\n");
+ // for (int i=0;i<pages_to_clear;i++)
+	FlashErase(storage_addr);
 
   DISP1("Erased\r\n");
 
@@ -166,6 +166,12 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
   unsigned int i=0;
   unsigned int j=0; // counter for flash writes
  
+  //DISP1("Preparing buffers")
+
+  while (UART_busy(DEBUG_SERIAL) || UART_busy(CAM_SERIAL)) {} // wait for tx buffer clear
+ 
+ // while (UART_charsAvail(CAM_SERIAL)) {char c=UART_getc(CAM_SERIAL);} // empty receive buffer
+
   DISP1("Sending message...\n\r")
  
   CAMWRITE(LK_READPICTURE);
@@ -195,12 +201,12 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
 	  	i+=flash_word_size;}
 	}
 
-   DISP3("i = ",i,"\r\n")
-   DISP3("j = ",j,"\r\n")
-   DISP3("efc = ",endfoundcount,"\r\n")
+  // DISP3("i = ",i,"\r\n")
+ //  DISP3("j = ",j,"\r\n")
+ //  DISP3("efc = ",endfoundcount,"\r\n")
 
 
- DISP1("Copy complete \r\n");
+ //DISP1("Copy complete \r\n");
 
   unsigned int picturelength=i+j; //jpegsize; //i+j;
 
@@ -210,10 +216,10 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
 		 FlashProgram(flash_buffer,storage_addr+i,flash_word_size); // do final one (excess bytes from previous)
 	   }
 
-  DISP3("Last four : ",storage_addr[picturelength-4],",");DISP3(" ",storage_addr[picturelength-3],",");
-  DISP3(" ",storage_addr[picturelength-2],",");DISP3(" ",storage_addr[picturelength-1],"\n\r");
+ // DISP3("Last four : ",storage_addr[picturelength-4],",");DISP3(" ",storage_addr[picturelength-3],",");
+ // DISP3(" ",storage_addr[picturelength-2],",");DISP3(" ",storage_addr[picturelength-1],"\n\r");
 
-  DISP3("ENDFOUNDCOUNT = ",endfoundcount,"\n\r")
+//  DISP3("ENDFOUNDCOUNT = ",endfoundcount,"\n\r")
   DISP3("Downloaded ",picturelength," bytes of image data\n\r")
   return picturelength;
  }
@@ -298,7 +304,7 @@ char *picture_storage;
 
 while (1)
  {
-   DISP1("Ready for command:"); // ':' is command ready
+   DISP1(":"); // ':' is command ready
    char cmd=UART_getc(DEBUG_SERIAL);
    char *ad;unsigned int len;
    switch (cmd)
@@ -321,13 +327,13 @@ while (1)
    	   break;
 
    	case '@':	 
-          ack('~'); // not @ or confuses python
- 	      DISP1(" Download memory Cmd received.\r\n")
+     //     ack('~'); // not @ or confuses python
+ 	  //    DISP1(" Download memory Cmd received.\r\n")
 
  		  ad=UART_getw4(DEBUG_SERIAL);
 		  len=UART_getw(DEBUG_SERIAL);
-		  DISP3("address = ",(int)ad,"\r\n");
-		  DISP3("len = ",len,"\r\n");
+	//	  DISP3("address = ",(int)ad,"\r\n");
+	//	  DISP3("len = ",len,"\r\n");
 		  mem_packet_send(ad,len);
 		  break;
 
