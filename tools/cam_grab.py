@@ -164,7 +164,7 @@ def main():
     s = init_serial('115200')
     print "Initialising"
 
-    storage_address=0x8000
+    storage_address=0x7000
 
     #before=get_chunks(storage_address,1,256,s)
    #write_file("before.dat",before);

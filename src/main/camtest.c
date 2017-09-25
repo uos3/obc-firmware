@@ -155,7 +155,7 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
 
   //DISP3("Pages to clear",pages_to_clear,"\r\n");
   for (int i=0;i<pages_to_clear;i++)
-	   if (FlashErase(storage_addr)==-1) DISP1("PROTECTED FLASH!");
+	   if (FlashErase(storage_addr+i*1024)==-1) DISP1("PROTECTED FLASH!");
 
   //DISP1("Erased\r\n");
 
@@ -196,7 +196,12 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
 	  if (c==JPEG_END[endfoundcount]) endfoundcount+=1; else endfoundcount=0; // should progress through end template
 	  flash_buffer[j++]=c;
 	  if (j==flash_word_size) {j=0; 
-	  	if (FlashProgram(flash_buffer,storage_addr+i,flash_word_size)==-1) {DISP3("FLASH PROGRAMMING ERROR ",storage_addr+i,"\r\n");}
+	  	if (FlashProgram(flash_buffer,storage_addr+i,flash_word_size)==-1) 
+        {
+          DISP3("FLASH PROGRAMMING ERROR ",storage_addr+i,"\r\n");
+          DISP3("tried to set to ",(unsigned int) *flash_buffer,"\r\n");
+          DISP3("actually set to ",(unsigned int) storage_addr[i],"\r\n");
+      }
      //   if ((i&63)==56) {DISP3(" <",i,">");}
     //    if (i>1015) {  DISP3("i = ",i,"");DISP3("j = ",j,"\r\n");DISP3("efc = ",endfoundcount,"\r\n");}
    
