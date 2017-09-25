@@ -147,7 +147,7 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
   if (((((int)storage_addr)>>10)*1024)!=storage_addr) DISP3("Bad storage address for picture part",storage_addr,"\n\r");
   offset=offset; // must be 8 byte boundary
   //DISP1("GET PICTURE PART\r\n");
-  DISP3("Offset: ",offset,"\r\n");
+  //DISP3("Offset: ",offset,"\r\n");
   DISP3("Length: ",len,"\r\n");
   DISP3("Storage Addr: ",storage_addr,"\r\n");
 
