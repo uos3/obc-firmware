@@ -19,8 +19,8 @@ int main(void)
 
 	while(1)
     {
-     LED_on(LED_B);Delay_ms(100);
-     LED_off(LED_B);Delay_ms(100);
+ //    LED_on(LED_B);Delay_ms(100); // now done automatically on wdt
+  //   LED_off(LED_B);Delay_ms(100);
     }
 
 }
