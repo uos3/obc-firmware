@@ -172,6 +172,8 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
  
   while (UART_charsAvail(CAM_SERIAL)) {char c=UART_getc(CAM_SERIAL);} // empty receive buffer
 
+  Delay_ms(1000); // is this a speed thing?
+
   DISP1("Sending message...\n\r")
  
   CAMWRITE(LK_READPICTURE);
