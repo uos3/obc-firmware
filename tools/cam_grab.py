@@ -193,7 +193,7 @@ def main():
    # print "getting chunks ({0})".format(length)
 
 
-    picture=get_chunks(storage_address,length,65536,s) # this downloads it from memory
+    picture=get_chunks(storage_address,length,256,s) # this downloads it from memory
     # chop end off picture, delete extraneous bytes, shouldnt be longer than length
 
     s.close()

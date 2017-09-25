@@ -172,7 +172,7 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
  
   //while (UART_charsAvail(CAM_SERIAL)) {char c=UART_getc(CAM_SERIAL);} // empty receive buffer
 
-  Delay_ms(100); // is this a speed thing? - too fast and it crashes after 3 calls
+//  Delay_ms(100); // is this a speed thing? - too fast and it crashes after 3 calls
 
   DISP1("Sending message.\n")
  
@@ -241,7 +241,7 @@ unsigned int take_picture(char *picture_storage)
 
    Delay_ms(1000); // 2-3 sec gap required by data sheet before camera ready
 
-   CAMWRITE(LK_RESOLUTION_VGA);CAMREAD(LK_RESOLUTION_RE);DISP1("Resolution OK\n\r"); // set resolution
+   CAMWRITE(LK_RESOLUTION_1600);CAMREAD(LK_RESOLUTION_RE);DISP1("Resolution OK\n\r"); // set resolution
    CAMWRITE(LK_COMPRESSION);UART_putc(CAM_SERIAL,0x10);CAMREAD(LK_COMPRESSION_RE);DISP1("Compression OK\n\r"); // set compression
    CAMWRITE(LK_PICTURE);CAMREAD(LK_PICTURE_RE);DISP1("Take Picture OK\n\r"); // take picture
    CAMWRITE(LK_JPEGSIZE);CAMREAD(LK_JPEGSIZE_RE);unsigned int jpegsize=getcamword(); // file size (lowest 32 bits)
