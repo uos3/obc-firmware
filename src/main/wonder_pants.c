@@ -55,27 +55,34 @@ void deploy_antenna(void) // one 5s burn is the description // may need to be cl
  	// then read slave address, then receive 2 bytes
 
  const unsigned char pct2075_address=0x48; // %1001000;
- signed int data = I2CReceive16(pct2075_address,0,I2C0_BASE);
+ signed int data = I2CReceive16(pct2075_address,0,I2C0_BASE)>>5; // for temp in C divide by 8 - bottom 5 bits worthless
  return data;
  }
 
- //signed int read_
+ signed int read_tmp100_temp(void) // radio amplifier temperature slave address 1001 000 (or 1001001 or 1001010) depending on pins
+ {  //  register with temp data is 00, others are configuration, tlow and thigh
+ 	// temp is 2 byte, MSB then LSB, 2s complement. each is .125C bottom 5 bits ignored
+ 	// to read 1. scl sda free, send slave address, pointer ,write bit
+ 	// then read slave address, then receive 2 bytes
 
- //void tmp_
+ const unsigned char tmp100_address=0x49; // %1001000;
+ signed int data = I2CReceive16(tmp100_address,0,I2C0_BASE)>>5; // for temp in C divide by 8 - bottom 5 bits worthless
+ return data;
+ }
+
 
 int main(void)
 {
-    Board_init();
     SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN); // turn on clock
+    Board_init();
 
     UART_init(DEBUG_SERIAL, 115200);  UART_puts(DEBUG_SERIAL,"\n\n\r    Wonder Pants!\n\r");
-    UART_init(CAM_SERIAL, 115200);    UART_puts(CAM_SERIAL,"\n\n\r    Wonder Pants!\n\r");
     
     Delay_ms(1000); // so can be clearly seen when watchdog kicking
 
     setupwatchdoginterrupt();	// kick the watchdog on interrupt
 
- //   antenna_initialise();
+    //antenna_initialise();
     initialise_radio_thermistors();
 
 	while(1)
@@ -83,9 +90,10 @@ int main(void)
    // 	deploy_antenna();
    // 	bool x=read_antenna_deployment_switch();
 
-    	signed int temp=read_pct2075_temp();
+    	signed int temp1=read_pct2075_temp();
+    	signed int temp2=read_tmp100_temp();
 
-    	DISP3("Temp = ",temp,"\r\n");
+    	DISP3("Temp = ",temp1,",");DISP3(" and ",temp2,"\r\n");
      }
 
 }
