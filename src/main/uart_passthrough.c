@@ -42,8 +42,8 @@ int main(void)
  setupwatchdoginterrupt();
 // UART at 115200, unreliable at 9600
 
-  UART_init(CAM_SERIAL, 115200); // UART_puts(CAM_SERIAL,"UART_passthrough");
-  UART_init(GPS_SERIAL, 115200); // UART_puts(GPS_SERIAL,"UART_passthrough");
+  UART_init(CAM_SERIAL, 115200);  UART_puts(CAM_SERIAL,"UART_passthrough");
+  UART_init(GPS_SERIAL, 9600); // UART_puts(GPS_SERIAL,"UART_passthrough");
 
    while(1) // infinite loop
  {
