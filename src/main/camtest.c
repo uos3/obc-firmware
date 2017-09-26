@@ -227,7 +227,7 @@ unsigned int get_picture_part(unsigned int offset, unsigned int len, char *stora
  // DISP3(" ",storage_addr[picturelength-2],",");DISP3(" ",storage_addr[picturelength-1],"\n\r");
 
 //  DISP3("ENDFOUNDCOUNT = ",endfoundcount,"\n\r")
- // DISP3("Downloaded ",picturelength," bytes of image data\n\r")
+  DISP3("Downloaded ",picturelength," bytes of image data\n\r")
   return picturelength;
  }
 

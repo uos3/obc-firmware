@@ -177,7 +177,7 @@ uint16_t I2CReceive16(uint32_t slave_addr,uint8_t reg,int i2cbase) // lets get 2
  return *(uint16_t *)ans;
  }
 
-uint16_t I2CReceive16r(uint32_t slave_addr,int i2cbase,uint8_t reg) // lets get 2 byte value reversed (for other endian words)
+uint16_t I2CReceive16r(uint32_t slave_addr,uint8_t reg,int i2cbase) // lets get 2 byte value reversed (for other endian words)
  {
  char *ans=I2CReceiveGP(slave_addr,reg,2,i2cbase,true);
   if (ans==NULL) return 0; // error handling

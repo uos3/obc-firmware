@@ -88,21 +88,21 @@ int main(void)
 
  char i2cstring[3]; // static buffer for i2c calls here
  i2cstring[0]=MPU_INT_BYPASS_ENABLE; // int pin /bypass enable configuration
- char i2cstatus=I2CReceive(SLAVE_ADDRESS,MPU_INT_BYPASS_ENABLE);
+ char i2cstatus=I2CReceive(SLAVE_ADDRESS,MPU_INT_BYPASS_ENABLE,I2C2_BASE);
  i2cstring[1]=i2cstatus | MPU_INT_BYPASS_ENABLE; // flag bypass on
  i2cstring[3]=0; // null terminated string
- I2CSendString(SLAVE_ADDRESS, i2cstring); // turn on bypass to Magnetometer so visible on I2C
+ I2CSendString(SLAVE_ADDRESS, i2cstring,I2C2_BASE); // turn on bypass to Magnetometer so visible on I2C
 
 // setup magnetometer
 
  i2cstring[0]=MAG_CNTL1;
  i2cstring[2]=0;
  i2cstring[1]=0; // set mode to zero before changing mode
- I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); // set Magnetometer to safe mode before mode change 
+ I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring,I2C2_BASE); // set Magnetometer to safe mode before mode change 
  i2cstring[1]=1 | 0; // continuous (16hz) mode with 14bit range
- I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); // set Magnetometer to continuous shot mode with 16bit range, single shot needs updating and has delay 
+ I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring,I2C2_BASE); // set Magnetometer to continuous shot mode with 16bit range, single shot needs updating and has delay 
 
- char mag_id=I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,0); // magnetometer ID (hopefully)
+ char mag_id=I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,0,I2C2_BASE); // magnetometer ID (hopefully)
 
 //DISP3("\r I2Cstatus old: ",i2cstatus,"\n")
 //DISP3("\r I2Cstatus new (After enabling passthrough for Magnetometer): ",I2CReceive(SLAVE_ADDRESS,55),"\n")
@@ -111,8 +111,8 @@ int main(void)
 signed short acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z,temp;
 
 // some macros to simplify repeated I2c calls - deliberately kept near where used
-#define MPUGET(x) I2CReceive16(SLAVE_ADDRESS,x); // wrapper for I2C call to MPU
-#define MAGGET(x) I2CReceive16r(MAG_PASS_THROUGH_I2C_ADDR, x); // wrapper for I2C call to Magnetometer
+#define MPUGET(x) I2CReceive16(SLAVE_ADDRESS,x,I2C2_BASE); // wrapper for I2C call to MPU
+#define MAGGET(x) I2CReceive16r(MAG_PASS_THROUGH_I2C_ADDR, x,I2C2_BASE); // wrapper for I2C call to Magnetometer
 
 DISP1("\n\n\n\rI2C IMU test - python compressed data version (use I2Ctest for human readable):\n\n")
 wait(1000); // so can see this if monitoring in terminal
@@ -124,10 +124,10 @@ wait(1000); // so can see this if monitoring in terminal
     temp=MPUGET(MPU_TEMP_OUT)
     
     // magnetometer should be in power down mode with data ready, if not wait for it
-    while ((I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,MAG_STA1)&1)!=1) {}
+    while ((I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,MAG_STA1,I2C2_BASE)&1)!=1) {}
     mag_x=MAGGET(MAG_HXL) mag_y=MAGGET(MAG_HYL)  mag_z=MAGGET(MAG_HZL)
 
-    I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); // prepare magnetometer for next call (delay, so give lead in
+    I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring,I2C2_BASE); // prepare magnetometer for next call (delay, so give lead in
     
    // now send the packets for python
 
