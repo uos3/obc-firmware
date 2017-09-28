@@ -43,7 +43,7 @@ int main(void)
    WDT_kick();
    
    SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
-   IntMasterEnable();
+   //IntMasterEnable();
    //SysTickIntEnable();
    //SysTickEnable();
 
@@ -62,7 +62,7 @@ int main(void)
       UART_puts(UART, "4) RX FSK packets (stats only)\n");
       UART_puts(UART, "5) RX FSK packets (logtail)\n");
       
-       WDT_kick();
+      WDT_kick();
       
       char res = wait_for_response_char();
       
@@ -83,11 +83,13 @@ int main(void)
          
             break;
          case '5':
-         
+            rx_packets_option();
             break;
          default:
             break;
       }
+      
+      UART_puts(UART, "Next...\n");
       
    }
       
@@ -222,6 +224,12 @@ void rx_packets_option(void){
    uint8_t r;
    uint32_t rxbw;
    
+   UART_puts(UART, "Enter RX bandwidth (Hz, default: 8000 Hz): ");
+   wait_for_response_ln();
+   rxbw = (uint32_t)atoi(uart_in_buff);
+   if (rxbw == 0)
+      rxbw = 8000;
+   
    r = radio_set_rxbw_param(SPI_RADIO_RX, &rxbw); //, &symrate);
    snprintf(uart_out_buff, UART_BUFF_LEN, "%li\n", rxbw);
    if (r){
@@ -237,6 +245,8 @@ void rx_packets_option(void){
    uint8_t num_bytes, marcState;
    uint8_t rxBuff[256]; // can only read the 128 FIFO bytes for now though
    uint8_t i;
+   
+   SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
    
    while(1){
       
@@ -288,6 +298,7 @@ void rx_packets_option(void){
       else
          UART_puts(UART, "\nError, Pin asserted, but no bytes in FIFO! :/\n");
       
+      SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
       
    }
    
@@ -311,7 +322,7 @@ void tx_packets_option(void){
    //UART_puts(UART, "\nEnter packet length (default: 200 bits): ");
    
    //UART_puts(UART, "\nEnter off-time (msec, default: 100 msec): ");
-   
+    while(1){
    manualCalibration(SPI_RADIO_TX);
    
    uint8_t buff[64+1];
@@ -320,21 +331,21 @@ void tx_packets_option(void){
    for (i = 1; i < 64+1; i++)
       buff[i] = i;
    
-   while(1){
+  
       cc112xSpiWriteTxFifo(SPI_RADIO_TX, buff, sizeof(buff));
 
       SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
       uint32_t ui32Loop;
       
-      while(1){
+
          
-         // wait for the packet to send
-         while( cc1125_pollGPIO(GPIO0_RADIO_TX)) {} ;
+      // wait for the packet to send
+      while( cc1125_pollGPIO(GPIO0_RADIO_TX)) {} ;
 
-         // wait a little
-         for(ui32Loop = 0; ui32Loop < 1000000; ui32Loop++) {};
+      // wait a little
+      for(ui32Loop = 0; ui32Loop < 3000000; ui32Loop++) {};
 
-      }
+
       
    }
    

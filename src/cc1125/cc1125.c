@@ -63,7 +63,7 @@ uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw){ //, uint32_t *sy
    sm_err = 1<<30;
    sm = 0;
    for (i = 0; i < 4; i++){
-      err = abs(bw[0]-(int32_t)(*rxbw));
+      err = (uint32_t)abs(bw[0]-(int32_t)(*rxbw));
       if (err < sm_err){
          sm_err = err;
          sm = i;
@@ -84,6 +84,12 @@ uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw){ //, uint32_t *sy
    
    *rxbw = (uint32_t)bw[sm];
    
+/*
+   char buff[30];
+   snprintf(buff, 30, "\n\n%02x\n\n",(reg & 0xFF) );
+   UART_puts(UART_CAM_HEADER, buff);
+
+   */
    
    return 0;   
    
@@ -178,14 +184,6 @@ uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *d
    writebyte = (uint8_t)((e & 0x07) | (0 << 3) |  (0<<6));  // (0<<3) - FSK mode
    cc112xSpiWriteReg(radio_id, CC112X_MODCFG_DEV_E , &writebyte);
 
-      
-   /*
-   char buff[30];
-   snprintf(buff, 30, "\n\n%02x  %02x  %02x\n\n",((ms>>16) & 0x0F) | ((es<<4) & 0xF0), (ms>>8) & 0xFF,  (ms & 0xFF) );
-   UART_puts(UART_CAM_HEADER, buff);
-   snprintf(buff, 30, "\n\n%02x  %02x \n\n",(uint8_t)((e & 0x07) | (0 << 3) |  (0<<6)), m);
-   UART_puts(UART_CAM_HEADER, buff);
-   */
    
    return 0;  
    
