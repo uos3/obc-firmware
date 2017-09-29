@@ -191,7 +191,7 @@ uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *d
 
 
 /*******************************************************************************
-*   @fn         radio_set_wr_f
+*   @fn         radio_set_pwr_f
 *
 *   @brief      Sets the power to the requested floating point value in dBm. Will
 *               overwrite the input value with the actual value. Call only when
