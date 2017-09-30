@@ -25,13 +25,14 @@ char wait_for_response_char(void);
 char peek_for_response_char(void);
 void rx_packets_option(void);
 uint32_t ui_set_packet_len(uint32_t max_len, uint32_t min_len);
-uint16_t ui_set_packet_wait(void);
+uint16_t ui_get_packet_wait(void);
 void tx_packets_pwrsweep_option(void);
 void rx_packets_stats_option(void);
 
 uint16_t wait_for_response_ln(void);
 double current_pwr = -500;
 uint8_t current_pwr_reg = 0;
+double current_freq = 0;
 
 #define UART_BUFF_LEN 100
 char uart_in_buff[UART_BUFF_LEN] = {0};
@@ -219,6 +220,7 @@ uint8_t ui_set_freq(uint8_t radio_id){
       UART_puts(UART, uart_out_buff);
       return 1;
    }
+   current_freq = freq;
    UART_puts(UART, "Setting frequency to ");
    UART_puts(UART, uart_out_buff);
    
@@ -243,7 +245,7 @@ uint32_t ui_set_packet_len(uint32_t max_len, uint32_t min_len){
    return (uint32_t)len;
 }
 
-uint16_t ui_set_packet_wait(void){
+uint16_t ui_get_packet_wait(void){
    UART_puts(UART, "\nEnter packet wait period (default: 300 ms): ");
    wait_for_response_ln();
    int32_t p = atoi(uart_in_buff);
@@ -519,11 +521,13 @@ void tx_packets_option(void){
    if (len < 1)
       return;
    
-   uint16_t wait = ui_set_packet_wait();
+   uint16_t wait = ui_get_packet_wait();
       
    uint32_t cnt=0;
+   char c;
    
-   //UART_puts(UART, "\nEnter off-time (msec, default: 100 msec): ");
+    UART_puts(UART, "w/s - Increase/decrease power in ~0.5dB increments\n");
+    UART_puts(UART, "a/d - Increase/decrease frequency in 500Hz increments\n\n");
     while(1){
       manualCalibration(SPI_RADIO_TX);
       
@@ -554,6 +558,43 @@ void tx_packets_option(void){
       for(w2 = 0; w2 < wait; w2++){
          for(w1 = 0; w1 < 1000; w1++) {};
       }
+      
+      c = peek_for_response_char();
+      if (c == 'w'){
+         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
+         if (radio_set_pwr_reg(SPI_RADIO_TX, current_pwr_reg+1)==0){
+            current_pwr_reg++;
+            snprintf(uart_out_buff, UART_BUFF_LEN, "Power register set to: %i (~%2.1f dBm)\n", current_pwr_reg, radio_pwr_reg_to_dbm(current_pwr_reg));
+            UART_puts(UART, uart_out_buff);            
+         }
+      }
+      if (c == 's'){
+         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
+         if (radio_set_pwr_reg(SPI_RADIO_TX, current_pwr_reg-1)==0){
+            current_pwr_reg--;
+            snprintf(uart_out_buff, UART_BUFF_LEN, "Power register set to: %i (~%2.1f dBm)\n", current_pwr_reg, radio_pwr_reg_to_dbm(current_pwr_reg));
+            UART_puts(UART, uart_out_buff);            
+         }
+      }
+      if (c == 'd'){
+         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
+         current_freq += 0.0005;
+         radio_set_freq_f(SPI_RADIO_TX, &current_freq);
+         snprintf(uart_out_buff, UART_BUFF_LEN, "Frequency set to: %3.4f MHz\n", current_freq);
+         UART_puts(UART, uart_out_buff);
+      }
+      if (c == 'a'){
+         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
+         current_freq -= 0.0005;
+         radio_set_freq_f(SPI_RADIO_TX, &current_freq);
+         snprintf(uart_out_buff, UART_BUFF_LEN, "Frequency set to: %3.4f MHz\n", current_freq);
+         UART_puts(UART, uart_out_buff);
+      }
+      
+      
+      
+      if (c == 'q')
+         return;
     
    }
    
@@ -578,7 +619,7 @@ void tx_packets_pwrsweep_option(void){
    if (len < 1)
       return;
    
-   uint16_t wait = ui_set_packet_wait();
+   uint16_t wait = ui_get_packet_wait();
       
    uint32_t cnt=1;
    uint8_t pwr_reg = 3;

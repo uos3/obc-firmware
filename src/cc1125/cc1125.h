@@ -16,5 +16,7 @@ uint8_t radio_set_pwr_f(uint8_t radio_id, double *pwr, uint8_t *reg_value);
 uint8_t radio_set_freq_f(uint8_t radio_id, double *freq);
 uint8_t radio_set_fsk_param(uint8_t radio_id, uint32_t *symbol_rate, uint32_t *deviation);
 uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw);
+uint8_t radio_set_pwr_reg(uint8_t radio_id, uint8_t reg_value);
+double radio_pwr_reg_to_dbm(uint8_t reg_value);
 
 #endif /* __CC112x_H__ */

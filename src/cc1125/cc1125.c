@@ -219,7 +219,7 @@ uint8_t radio_set_pwr_f(uint8_t radio_id, double *pwr, uint8_t *reg_value){
    pwr_reg = pwr_reg & 0x3F;
    
    // work back to calculate the actual freq
-   p = ((double)pwr_reg+1)/2-18;
+   p = radio_pwr_reg_to_dbm((uint8_t)pwr_reg);
    
    *pwr = p;
    *reg_value = (uint8_t)pwr_reg;
@@ -228,6 +228,46 @@ uint8_t radio_set_pwr_f(uint8_t radio_id, double *pwr, uint8_t *reg_value){
    //cc112xSpiWriteReg(radio_id, CC112X_PA_CFG2, (1<<6) | pwr_reg, 1);
    uint8_t writebyte;
    writebyte = (uint8_t)((1<<6) | pwr_reg);
+   cc112xSpiWriteReg(radio_id, CC112X_PA_CFG2, &writebyte);   
+   
+   return 0;  
+   
+}
+
+/*******************************************************************************
+*   @fn         radio_pwr_reg_to_dbm
+*
+*   @brief      Converts the 0x03 - 0x3f power register value to a dBm value.
+*                Note: this is approximate, and also depends on output circuitry
+*
+*   @param      reg_value - the value to set to the register
+*               
+*   @return     power value (dBm)
+*/
+double radio_pwr_reg_to_dbm(uint8_t reg_value){
+   return ((double)reg_value+1)/2-18;;  
+   
+} 
+
+/*******************************************************************************
+*   @fn         radio_set_pwr_reg
+*
+*   @brief      Sets the power to the requested register value. Allowable range
+*                0x03 - 0x3F
+*
+*   @param      radio_id - select the radio to use
+*               reg_value - the value to set to the register
+*
+*   @return     0 - changed sucessfully; 1 - error, power not set
+*/
+uint8_t radio_set_pwr_reg(uint8_t radio_id, uint8_t reg_value){
+   
+   if ((reg_value < 3) || (reg_value > 0x3F))
+      return 1;
+   
+   
+   uint8_t writebyte;
+   writebyte = (uint8_t)((1<<6) | (reg_value&0x3F));
    cc112xSpiWriteReg(radio_id, CC112X_PA_CFG2, &writebyte);   
    
    return 0;  
