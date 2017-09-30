@@ -22,10 +22,12 @@ uint8_t ui_set_freq_power(uint8_t radio_id);
 uint8_t ui_set_power(uint8_t radio_id);
 uint8_t ui_set_freq(uint8_t radio_id);
 char wait_for_response_char(void);
+char peek_for_response_char(void);
 void rx_packets_option(void);
 uint32_t ui_set_packet_len(uint32_t max_len, uint32_t min_len);
 uint16_t ui_set_packet_wait(void);
 void tx_packets_pwrsweep_option(void);
+void rx_packets_stats_option(void);
 
 uint16_t wait_for_response_ln(void);
 double current_pwr = -500;
@@ -85,7 +87,7 @@ int main(void)
             tx_packets_pwrsweep_option();
             break;
          case '4':
-         
+            rx_packets_stats_option();
             break;
          case '5':
             rx_packets_option();
@@ -101,6 +103,14 @@ int main(void)
    //// wait for WDT reset
    //while(1){};
 
+}
+
+char peek_for_response_char(void){
+   
+   if(!(UART_charsAvail(UART) == 0))   
+      return UART_getc(UART);
+   else
+      return 0;
 }
 
 char wait_for_response_char(void){
@@ -234,15 +244,177 @@ uint32_t ui_set_packet_len(uint32_t max_len, uint32_t min_len){
 }
 
 uint16_t ui_set_packet_wait(void){
-   UART_puts(UART, "\nEnter packet wait period (default: 200 ms): ");
+   UART_puts(UART, "\nEnter packet wait period (default: 300 ms): ");
    wait_for_response_ln();
    int32_t p = atoi(uart_in_buff);
    if (p <= 0)
-      p = 200;
+      p = 300;
    snprintf(uart_out_buff, UART_BUFF_LEN, "%li ms\n", p);
    UART_puts(UART, "Setting packet wait period to ");
    UART_puts(UART, uart_out_buff);
    return (uint16_t)p;
+}
+
+uint8_t ui_set_rxbw(uint8_t radio_id){
+   
+   uint32_t rxbw;
+   uint8_t r;
+   
+   UART_puts(UART, "Enter RX bandwidth (Hz, default: 8000 Hz): ");
+   wait_for_response_ln();
+   rxbw = (uint32_t)atoi(uart_in_buff);
+   if (rxbw == 0)
+      rxbw = 8000;
+   
+   r = radio_set_rxbw_param(radio_id, &rxbw); //, &symrate);
+   snprintf(uart_out_buff, UART_BUFF_LEN, "%li\n", rxbw);
+   if (r){
+      UART_puts(UART, "\nError in RX bandwidth entered: ");
+      UART_puts(UART, uart_out_buff);
+      return 1;
+   }
+   UART_puts(UART, "\nSetting RX bandwidth to ");
+   UART_puts(UART, uart_out_buff);
+  
+   return 0;
+}
+
+void rx_packets_stats_option(void){
+   
+   UART_puts(UART, "\nRX FSK packets stats selected\n");
+   
+   radio_reset_config(SPI_RADIO_RX, preferredSettings_fsk, sizeof(preferredSettings_fsk)/sizeof(registerSetting_t));
+      
+   if (ui_set_freq(SPI_RADIO_RX))
+      return;
+   
+   if (ui_set_sym_dev(SPI_RADIO_RX))
+      return;
+   
+   
+   if (ui_set_rxbw(SPI_RADIO_RX))
+      return;
+   
+   manualCalibration(SPI_RADIO_RX);
+   
+   uint8_t num_bytes, marcState;
+   uint8_t rxBuff[256]; // can only read the 128 FIFO bytes for now though
+   
+   SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
+   
+   #define CONFIG_CNT 200
+   uint16_t config_list[CONFIG_CNT] = {0xFFFF};
+   uint32_t last_id_list[CONFIG_CNT] = {0};
+   uint32_t err_cnt_list[CONFIG_CNT] = {0};
+   uint32_t suc_cnt_list[CONFIG_CNT] = {0};
+   uint16_t list_top = 0;
+   uint32_t lowest_id = 0xFFFFFFFF;
+   uint8_t restart = 0;
+   char c;
+   
+   while(1){
+      
+      //wait for packet
+      while(cc1125_pollGPIO(GPIO0_RADIO_RX) == 0){
+         c = peek_for_response_char();
+         if (c == 'r')
+            restart = 1;
+         if (c == 'q')
+            return;
+      }
+		while(cc1125_pollGPIO(GPIO0_RADIO_RX) > 0){
+         c = peek_for_response_char();
+         if (c == 'r')
+            restart = 1;
+         if (c == 'q')
+            return;
+      }
+      
+      if (restart){
+         restart = 0;
+         lowest_id = 0xFFFFFFFF;
+         list_top = 0;
+      }
+         
+         
+           
+           
+      //move to the cc1125 file      
+      
+      // see how long the packet is
+      cc112xSpiReadReg(SPI_RADIO_RX, CC112X_NUM_RXBYTES, &num_bytes);
+      if(num_bytes) {
+
+         // Read MARCSTATE to check for RX FIFO error
+         cc112xSpiReadReg(SPI_RADIO_RX, CC112X_MARCSTATE, &marcState);
+         if((marcState & 0x1F) == 0x11) {  // == RX_FIFO_ERROR?
+         UART_puts(UART, "\nError, FIFO error... :/\n");
+         // Flush RX FIFO
+         SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SFRX);
+         } else {
+
+
+            cc112xSpiReadRxFifo(SPI_RADIO_RX, rxBuff, num_bytes);
+
+            if (num_bytes > 6){
+
+               uint8_t crc;
+               uint16_t cfg;
+               uint32_t packetid;
+
+               packetid = rxBuff[2] | (rxBuff[3] << 8) | (rxBuff[4] << 16) | (rxBuff[5] << 24);                 
+               cfg = rxBuff[1];
+               crc = rxBuff[num_bytes - 1] & 0x80;
+               if (crc){
+                  
+                  if (lowest_id == 0xFFFFFFFF)
+                     lowest_id = packetid;
+               
+                  // search to see if we've already stored this cfg
+                  uint16_t i;
+                  uint8_t found = 0;
+                  for (i = 0; i < list_top; i++){
+                     if (config_list[i] == cfg){
+                        found = 1;
+                        break;
+                     }
+                  }
+                  if (found == 0){
+                     if (!(list_top >= CONFIG_CNT)){
+                        i = list_top;
+                        list_top++;
+                        config_list[i] = cfg;
+                        last_id_list[i] = lowest_id;
+                        err_cnt_list[i] = 0;
+                        suc_cnt_list[i] = 0;
+                        found = 1;
+                     }
+                  }
+                  
+                  // update cfg
+                  if (found && (packetid > lowest_id)){
+                     uint32_t missing = packetid - last_id_list[i] - 1;
+                     last_id_list[i] = packetid;
+                     err_cnt_list[i] += missing;
+                     if (crc)
+                        suc_cnt_list[i] += 1;
+                     else
+                        err_cnt_list[i] += 1;
+                     snprintf(uart_out_buff, UART_BUFF_LEN, "id: %li, cfg: %i, crc?: %i ", packetid,cfg,crc);
+                     UART_puts(UART, uart_out_buff);
+                     snprintf(uart_out_buff, UART_BUFF_LEN, "tot pass: %li, tot fail: %li\n", suc_cnt_list[i], err_cnt_list[i]);
+                     UART_puts(UART, uart_out_buff);
+                  }
+               }
+            }
+         }
+      }
+      else
+         UART_puts(UART, "\nError, Pin asserted, but no bytes in FIFO! :/\n");
+      
+      SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
+      
+   }   
 }
 
 void rx_packets_option(void){
@@ -256,25 +428,10 @@ void rx_packets_option(void){
    
    if (ui_set_sym_dev(SPI_RADIO_RX))
       return;
+  
    
-   uint8_t r;
-   uint32_t rxbw;
-   
-   UART_puts(UART, "Enter RX bandwidth (Hz, default: 8000 Hz): ");
-   wait_for_response_ln();
-   rxbw = (uint32_t)atoi(uart_in_buff);
-   if (rxbw == 0)
-      rxbw = 8000;
-   
-   r = radio_set_rxbw_param(SPI_RADIO_RX, &rxbw); //, &symrate);
-   snprintf(uart_out_buff, UART_BUFF_LEN, "%li\n", rxbw);
-   if (r){
-      UART_puts(UART, "\nError in RX bandwidth entered: ");
-      UART_puts(UART, uart_out_buff);
+   if (ui_set_rxbw(SPI_RADIO_RX))
       return;
-   }
-   UART_puts(UART, "\nSetting RX bandwidth to ");
-   UART_puts(UART, uart_out_buff);
    
    manualCalibration(SPI_RADIO_RX);
    
@@ -423,49 +580,47 @@ void tx_packets_pwrsweep_option(void){
    
    uint16_t wait = ui_set_packet_wait();
       
-   uint32_t cnt=0;
+   uint32_t cnt=1;
    uint8_t pwr_reg = 3;
    uint8_t writebyte;
    
     while(1){
        
-      
-      writebyte = (uint8_t)((1<<6) | pwr_reg);
-      cc112xSpiWriteReg(SPI_RADIO_TX, CC112X_PA_CFG2, &writebyte);
-      
-      pwr_reg++;
-      if (pwr_reg > 0x3F)
-         pwr_reg = 3;
-       
-      manualCalibration(SPI_RADIO_TX);
-      
-      uint8_t buff[256];
-      uint8_t i;
-      cnt++;
-      buff[0] = (uint8_t)len;
-      buff[1] = pwr_reg;
-      buff[2] = (uint8_t)(cnt & 0xFF);
-      buff[3] = (uint8_t)((cnt>>8) & 0xFF);
-      buff[4] = (uint8_t)((cnt>>16) & 0xFF);
-      buff[5] = (uint8_t)((cnt>>24) & 0xFF);
-      for (i = 6; i < len+1; i++)
-         buff[i] = i;
-      
-     
-      cc112xSpiWriteTxFifo(SPI_RADIO_TX, buff, (uint8_t)(len+1));
-
-      SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
-      uint32_t w1,w2;
-      
-
+      for (pwr_reg = 3; pwr_reg < 0x3F; pwr_reg++){
+         writebyte = (uint8_t)((1<<6) | pwr_reg);
+         cc112xSpiWriteReg(SPI_RADIO_TX, CC112X_PA_CFG2, &writebyte);
+          
+         manualCalibration(SPI_RADIO_TX);
          
-      // wait for the packet to send
-      while( cc1125_pollGPIO(GPIO0_RADIO_TX)) {} ;
+         uint8_t buff[256];
+         uint8_t i;
+         
+         buff[0] = (uint8_t)len;
+         buff[1] = pwr_reg;
+         buff[2] = (uint8_t)(cnt & 0xFF);
+         buff[3] = (uint8_t)((cnt>>8) & 0xFF);
+         buff[4] = (uint8_t)((cnt>>16) & 0xFF);
+         buff[5] = (uint8_t)((cnt>>24) & 0xFF);
+         for (i = 6; i < len+1; i++)
+            buff[i] = i;
+         
+        
+         cc112xSpiWriteTxFifo(SPI_RADIO_TX, buff, (uint8_t)(len+1));
 
-      // wait a little
-      for(w2 = 0; w2 < wait; w2++){
-         for(w1 = 0; w1 < 1000; w1++) {};
+         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
+         uint32_t w1,w2;
+         
+
+            
+         // wait for the packet to send
+         while( cc1125_pollGPIO(GPIO0_RADIO_TX)) {} ;
+
+         // wait a little
+         for(w2 = 0; w2 < wait; w2++){
+            for(w1 = 0; w1 < 1000; w1++) {};
+         }
       }
+      cnt++;
     
    }
    
