@@ -3,13 +3,27 @@
  *
  * @file sha3.c
  *
- * Copyright (c) 2015 Markku-Juhani O. Saarinen
- * The MIT License (MIT)
- *
  * @{
  */
 
 #include "../firmware.h"
+
+void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)
+{
+  sha3_ctx_t sha3;
+  shake128_init(&sha3);
+
+  shake_update(&sha3, input, input_length);
+  shake_update(&sha3, key, key_length);
+
+  shake_xof(&sha3);
+  shake_out(&sha3, output, 16);
+}
+
+/*
+ * Copyright (c) 2015 Markku-Juhani O. Saarinen
+ * The MIT License (MIT)
+ */
 
 #ifndef KECCAKF_ROUNDS
 #define KECCAKF_ROUNDS 24

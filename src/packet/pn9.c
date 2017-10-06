@@ -8,7 +8,7 @@
 
 #include "../firmware.h"
 
-void packet_pn9_xor(uint8_t *buffer, uint32_t length)
+void Packet_pn9_xor(uint8_t *buffer, uint32_t length)
 {
   /* Uses CC1120 PN9 Sequence */
 

@@ -27,6 +27,7 @@
 #include "cc1125/cc1125.h"
 
 /* Packet */
+#include "packet/packet.h"
 #include "packet/sha3.h"
 #include "packet/crc16.h"
 #include "packet/pn9.h"

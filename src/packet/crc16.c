@@ -9,26 +9,24 @@
 #include "../firmware.h"
 #include "crc16.h"
 
-uint16_t Packet_CRC16_CCITT(uint8_t *buffer, uint32_t length)
+void Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output)
 {
   uint32_t i;
-  uint16_t j, crc;
+  uint16_t j;
  
-  crc = 0xFFFF;
+  *output = 0xFFFF;
   
   for (i=0; i<length; i++)
   {
-    crc = (uint16_t)(crc ^ ((uint16_t)buffer[i] << 8));
+    *output = (uint16_t)(*output ^ ((uint16_t)input[i] << 8));
     for (j=0; j<8; j++)
     {
-      if (crc & 0x8000)
-        crc = (uint16_t)(crc << 1) ^ 0x1021;
+      if (*output & 0x8000)
+        *output = (uint16_t)(*output << 1) ^ 0x1021;
       else
-        crc = (uint16_t)(crc << 1);
+        *output = (uint16_t)(*output << 1);
     }
   }
- 
-  return crc;
 }
 
 /**

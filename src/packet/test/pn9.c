@@ -73,7 +73,7 @@ bool test_pn9(void)
   {
     Debug_print("PN9 XORing null packet..\r\n");
   }
-  packet_pn9_xor(packet_test, PACKET_LENGTH);
+  Packet_pn9_xor(packet_test, PACKET_LENGTH);
 
   if(TEST_VERBOSE)
   {
@@ -92,7 +92,7 @@ bool test_pn9(void)
   {
     Debug_print("PN9 XORing test packet..\r\n");
   }
-  packet_pn9_xor(packet_test, PACKET_LENGTH);
+  Packet_pn9_xor(packet_test, PACKET_LENGTH);
 
   if(TEST_VERBOSE)
   {

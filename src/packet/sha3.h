@@ -16,6 +16,8 @@
 
 #include "../firmware.h"
 
+void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output);
+
 // state context
 typedef struct {
     union {                                 // state:
