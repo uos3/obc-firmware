@@ -1,4 +1,4 @@
-# UoS³ Flight Computer Firmware [![Build Status](https://travis-ci.org/uos3/firmware.svg?branch=master)](https://travis-ci.org/uos3/firmware)
+# UoS³ Flight Computer Firmware [![Build Status](https://travis-ci.org/uos3/obc-firmware.svg?branch=master)](https://travis-ci.org/uos3/obc-firmware)
 
 This folder contains all the source (apart from licensed drivers) to build the executable file to be flashed directly to the hardware.
 
