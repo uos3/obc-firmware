@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/firmware/src/packet/crc16.h Source File</title>
+<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/firmware/src/packet/sha3.c File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -85,20 +85,41 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">crc16.h</div>  </div>
+<div class="title">sha3.c File Reference<div class="ingroups"><a class="el" href="group__sha3.html">Sha3</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef __PACKET_CRC16_H__</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __PACKET_CRC16_H__</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">Packet_crc16</a>(uint8_t *input, uint32_t length, uint16_t *output);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* __PACKET_CRC16_H__ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="group__crc_html_gad514a3af471c92b05d6c46c986a79440"><div class="ttname"><a href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">Packet_crc16</a></div><div class="ttdeci">void Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output)</div><div class="ttdef"><b>Definition:</b> <a href="crc16_8c_source.html#l00012">crc16.c:12</a></div></div>
-</div><!-- fragment --></div><!-- contents -->
+
+<p><a href="sha3_8c_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:a24cdccdf7ce12eab9c4ec08adf0b43df"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a24cdccdf7ce12eab9c4ec08adf0b43df"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Packet_sign_shake128</b> (uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)</td></tr>
+<tr class="separator:a24cdccdf7ce12eab9c4ec08adf0b43df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac78218ab825ef2879ce67a59b4095ded"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac78218ab825ef2879ce67a59b4095ded"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>sha3_keccakf</b> (uint64_t st[25])</td></tr>
+<tr class="separator:ac78218ab825ef2879ce67a59b4095ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eaf522fd0d019b77988c3bb42248545"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3eaf522fd0d019b77988c3bb42248545"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sha3_init</b> (<a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *c, int mdlen)</td></tr>
+<tr class="separator:a3eaf522fd0d019b77988c3bb42248545"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2bf4e69c1fdf05f141849e43e477ba9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2bf4e69c1fdf05f141849e43e477ba9"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sha3_update</b> (<a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *c, const void *data, size_t len)</td></tr>
+<tr class="separator:ac2bf4e69c1fdf05f141849e43e477ba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a738e64b728c413a1db48ecb1b150014b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a738e64b728c413a1db48ecb1b150014b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>sha3_final</b> (void *md, <a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *c)</td></tr>
+<tr class="separator:a738e64b728c413a1db48ecb1b150014b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a651a3bf5f9ae80259b29e92718889bca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a651a3bf5f9ae80259b29e92718889bca"></a>
+void *&#160;</td><td class="memItemRight" valign="bottom"><b>sha3</b> (const void *in, size_t inlen, void *md, int mdlen)</td></tr>
+<tr class="separator:a651a3bf5f9ae80259b29e92718889bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39a58a18510856e0ea2345b492a644e9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39a58a18510856e0ea2345b492a644e9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>shake_xof</b> (<a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *c)</td></tr>
+<tr class="separator:a39a58a18510856e0ea2345b492a644e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c14050724bec7aa9669d45db2a93c6e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4c14050724bec7aa9669d45db2a93c6e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>shake_out</b> (<a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *c, void *out, size_t len)</td></tr>
+<tr class="separator:a4c14050724bec7aa9669d45db2a93c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

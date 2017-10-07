@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: coded_data Struct Reference</title>
+<title>UoS³ Flight Computer Firmware: Sha3</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -38,7 +38,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
+      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -58,12 +58,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-  <div id="navrow2" class="tabs2">
-    <ul class="tablist">
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
-      <li><a href="classes.html"><span>Data&#160;Structure&#160;Index</span></a></li>
-    </ul>
-  </div>
+</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -78,42 +73,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-</div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-attribs">Data Fields</a>  </div>
+<a href="#files">Files</a>  </div>
   <div class="headertitle">
-<div class="title">coded_data Struct Reference</div>  </div>
+<div class="title">Sha3<div class="ingroups"><a class="el" href="group__packet.html">Packet Modules</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Packet SHA-3 Hash Routines.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Data Fields</h2></td></tr>
-<tr class="memitem:a9c7c12d04993ed7207c212d4937a9b3b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c7c12d04993ed7207c212d4937a9b3b"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>spacecraft</b></td></tr>
-<tr class="separator:a9c7c12d04993ed7207c212d4937a9b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ddb7af984dd0fb78351b5565f13b990"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ddb7af984dd0fb78351b5565f13b990"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>type</b></td></tr>
-<tr class="separator:a5ddb7af984dd0fb78351b5565f13b990"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a4a9461959352ccbc9ef116c60ad95b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5a4a9461959352ccbc9ef116c60ad95b"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>_unused</b></td></tr>
-<tr class="separator:a5a4a9461959352ccbc9ef116c60ad95b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64c619002a4ac06fd7a122b673a66a01"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a64c619002a4ac06fd7a122b673a66a01"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> [1024]</td></tr>
-<tr class="separator:a64c619002a4ac06fd7a122b673a66a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1045b3085107ae80d6cf204b4d6653af"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1045b3085107ae80d6cf204b4d6653af"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>hash</b> [16]</td></tr>
-<tr class="separator:a1045b3085107ae80d6cf204b4d6653af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af928ba0acaa248141cb373e862f97471"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af928ba0acaa248141cb373e862f97471"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>crc</b></td></tr>
-<tr class="separator:af928ba0acaa248141cb373e862f97471"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
+Files</h2></td></tr>
+<tr class="memitem:sha3_8c"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sha3_8c.html">sha3.c</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="format_8h_source.html#l00017">17</a> of file <a class="el" href="format_8h_source.html">format.h</a>.</p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/travis/build/uos3/firmware/src/packet/<a class="el" href="format_8h_source.html">format.h</a></li>
-</ul>
+<p>Packet SHA-3 Hash Routines. </p>
+<p>Copyright (c) 2015 Markku-Juhani O. Saarinen The MIT License (MIT) </p>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

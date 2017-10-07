@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['sha3',['Sha3',['../group__sha3.html',1,'']]],
+  ['sha3_2ec',['sha3.c',['../sha3_8c.html',1,'']]],
   ['sha3_5fctx_5ft',['sha3_ctx_t',['../structsha3__ctx__t.html',1,'']]],
   ['spi',['SPI',['../struct_s_p_i.html',1,'SPI'],['../group__spi.html',1,'(Global Namespace)']]],
   ['spi_2ec',['spi.c',['../gnulinux_2spi_8c.html',1,'']]],

@@ -75,24 +75,97 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="summary">
-<a href="#groups">Modules</a>  </div>
+<a href="#groups">Modules</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Packet Modules<div class="ingroups"><a class="el" href="group__group__main.html">Project Modules</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Packet Functions &amp; Definitions.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group__crc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__crc.html">CRC</a></td></tr>
+<tr class="memitem:group__crc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__crc.html">Crc</a></td></tr>
 <tr class="memdesc:group__crc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packet CRC Routines. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:group__pn9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__pn9.html">PN9</a></td></tr>
 <tr class="memdesc:group__pn9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packet PN9 Routines. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:group__sha3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__sha3.html">Sha3</a></td></tr>
+<tr class="memdesc:group__sha3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packet SHA-3 Hash Routines. <br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga9352a9df79251b2024a0ee7104f584f4"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__packet.html#ga9352a9df79251b2024a0ee7104f584f4">Packet_telemetry_1024_encode</a> (<a class="el" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *packet, uint16_t origin, uint8_t *key, uint32_t key_length)</td></tr>
+<tr class="separator:ga9352a9df79251b2024a0ee7104f584f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae297de3b11d21a99c5634079493bcf43"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae297de3b11d21a99c5634079493bcf43"></a>
+uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>Packet_telecommand_512_encode</b> (<a class="el" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *packet, uint16_t origin, uint8_t *key, uint32_t key_length)</td></tr>
+<tr class="separator:gae297de3b11d21a99c5634079493bcf43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaa305339391f6688c74ff33aab626474"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaaa305339391f6688c74ff33aab626474"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Packet_telemetry_1024_decode</b> (uint8_t *input_buffer, <a class="el" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *output, uint8_t *key, uint32_t key_length)</td></tr>
+<tr class="separator:gaaa305339391f6688c74ff33aab626474"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<p>Packet Functions &amp; Definitions. </p>
 <p>High-level Data Packet Modules</p>
 <p>Functions for Packet Operations </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga9352a9df79251b2024a0ee7104f584f4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t* Packet_telemetry_1024_encode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *&#160;</td>
+          <td class="paramname"><em>packet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>key_length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Prepare a data-populated packet struct for transmission.</p>
+<p>Before using this function, the data and type fields must be populated.</p>
+<p>Returns a binary buffer for direct transmission (excluding preamble and sync)</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">packet</td><td>Pointer to the packet struct to be prepared </td></tr>
+    <tr><td class="paramname">origin</td><td>Spacecraft ID of origin </td></tr>
+    <tr><td class="paramname">key</td><td>Pointer to the key to be signed with </td></tr>
+    <tr><td class="paramname">key_length</td><td>Length of the key in bytes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the packet buffer ready for transmission </dd></dl>
+
+<p>Definition at line <a class="el" href="packet_8c_source.html#l00011">11</a> of file <a class="el" href="packet_8c_source.html">packet.c</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
