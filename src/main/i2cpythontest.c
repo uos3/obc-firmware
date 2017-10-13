@@ -134,8 +134,10 @@ wait(1000); // so can see this if monitoring in terminal
     DISP('@') // frame start
     DISPW(acc_x) DISPW(acc_y) DISPW(acc_z)
     DISPW(gyr_x) DISPW(gyr_y) DISPW(gyr_z)
-    DISPW(temp)
     DISPW(mag_x) DISPW(mag_y) DISPW(mag_z)
+   // DISPW(20000) DISPW(-20000) DISPW (10000)
+    DISPW(temp)
+ 
 }
 }
 
