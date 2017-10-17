@@ -41,6 +41,8 @@ typedef struct packet_telemetry_1024_crc {
   uint16_t crc;
 } packet_telemetry_1024_crc;
 
+// Telecommand with 256 bit (: 128b hash: 10 bytes data, 64b hash: 18 bytes data
+
 
 typedef struct packet_telecommand_512 {
   uint16_t spacecraft;

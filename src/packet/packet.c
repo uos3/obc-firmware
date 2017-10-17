@@ -35,7 +35,7 @@ uint8_t *Packet_telecommand_512_encode(packet_telecommand_512 *packet, uint16_t 
 
   Packet_pn9_xor((uint8_t *)packet, 64);
 
-  /* TODO: r=1/2, k=512, n=1024 131.0-B-2 LDPC FEC */
+  /* TODO: r=1/2, k=256, n=512 131.0-B-2 LDPC FEC */
 
   Packet_interleave_32x32((uint8_t *)packet);
 

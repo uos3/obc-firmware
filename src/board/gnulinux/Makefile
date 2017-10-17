@@ -41,7 +41,8 @@ ifneq ($(TESTVERBOSE_ON),)
 endif
 
 SRCS = $(FW_SRCS) \
-	$(wildcard ./*.c)
+	$(wildcard ./*.c) \
+	liblabrador_ldpc.a
 
 LIBS = -lm -lrt
 

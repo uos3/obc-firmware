@@ -21,6 +21,7 @@
 #include "board/gpio.h"
 #include "board/debug.h"
 #include "board/random.h"
+#include "board/ldpc.h"
 
 /* radio stuff */
 #include "cc1125/cc112x_spi.h"

@@ -120,7 +120,7 @@ ifneq ($(TESTVERBOSE_ON),)
   CFLAGS += -DTEST_VERBOSE=true
 endif
 
-FW_SRCS+= $(wildcard ./*.c)
+FW_SRCS+= $(wildcard ./*.c) liblabrador_ldpc.a
 
 #
 # Where to find header files that do not live in the source directory.
@@ -138,8 +138,8 @@ all: ${FW_ROOT}/${OUTDIR}/${OUTFILE}
 #
 src-clean:
 	@rm -rf ${wildcard *.o}
-	@rm -rf $(patsubst %.c,%.o,${FW_SRCS})
-	@rm -rf $(patsubst %.c,%.d,${FW_SRCS})
+	@rm -rf $(patsubst %.c,%.o,$(filter %.c,${FW_SRCS}))
+	@rm -rf $(patsubst %.c,%.d,$(filter %.c,${FW_SRCS}))
 
 clean: src-clean
 	@rm -rf ${wildcard ${FW_ROOT}/${OUTDIR}/*}
