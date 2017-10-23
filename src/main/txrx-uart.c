@@ -21,6 +21,7 @@ uint8_t ui_set_sym_dev(uint8_t radio_id);
 uint8_t ui_set_freq_power(uint8_t radio_id);
 uint8_t ui_set_power(uint8_t radio_id);
 uint8_t ui_set_freq(uint8_t radio_id);
+uint8_t ui_set_rxbw(uint8_t radio_id);
 char wait_for_response_char(void);
 char peek_for_response_char(void);
 void rx_packets_option(void);
@@ -235,7 +236,7 @@ uint32_t ui_set_packet_len(uint32_t max_len, uint32_t min_len){
    if (len == 0)
       len = 20;
    snprintf(uart_out_buff, UART_BUFF_LEN, "%li bytes\n", len);
-   if ((len > max_len) || (len < min_len)){
+   if ((len > (int32_t)max_len) || (len < (int32_t)min_len)){
       UART_puts(UART, "Error in length entered: ");
       UART_puts(UART, uart_out_buff);
       return 0;
@@ -364,7 +365,7 @@ void rx_packets_stats_option(void){
                uint16_t cfg;
                uint32_t packetid;
 
-               packetid = rxBuff[2] | (rxBuff[3] << 8) | (rxBuff[4] << 16) | (rxBuff[5] << 24);                 
+               packetid = (uint32_t)(rxBuff[2] | (rxBuff[3] << 8) | (rxBuff[4] << 16) | (rxBuff[5] << 24));                 
                cfg = rxBuff[1];
                crc = rxBuff[num_bytes - 1] & 0x80;
                if (crc){
@@ -562,7 +563,7 @@ void tx_packets_option(void){
       c = peek_for_response_char();
       if (c == 'w'){
          SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
-         if (radio_set_pwr_reg(SPI_RADIO_TX, current_pwr_reg+1)==0){
+         if (radio_set_pwr_reg(SPI_RADIO_TX, (uint8_t)(current_pwr_reg+1))==0){
             current_pwr_reg++;
             snprintf(uart_out_buff, UART_BUFF_LEN, "Power register set to: %i (~%2.1f dBm)\n", current_pwr_reg, radio_pwr_reg_to_dbm(current_pwr_reg));
             UART_puts(UART, uart_out_buff);            
@@ -570,7 +571,7 @@ void tx_packets_option(void){
       }
       if (c == 's'){
          SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
-         if (radio_set_pwr_reg(SPI_RADIO_TX, current_pwr_reg-1)==0){
+         if (radio_set_pwr_reg(SPI_RADIO_TX, (uint8_t)(current_pwr_reg-1))==0){
             current_pwr_reg--;
             snprintf(uart_out_buff, UART_BUFF_LEN, "Power register set to: %i (~%2.1f dBm)\n", current_pwr_reg, radio_pwr_reg_to_dbm(current_pwr_reg));
             UART_puts(UART, uart_out_buff);            
