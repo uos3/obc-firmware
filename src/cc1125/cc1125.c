@@ -39,11 +39,11 @@ uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw){ //, uint32_t *sy
    
    // first try with cic = 20
    d_fact[0] = (uint8_t)((uint32_t)CC_XO_FREQ/(*rxbw)/8/20);
-   d_fact[1] = d_fact[0]+(uint8_t)1;
+   d_fact[1] = (uint8_t)(d_fact[0]+1);
    
    // also try with cic = 32
    d_fact[2] = (uint8_t)((uint32_t)CC_XO_FREQ/(*rxbw)/8/32);
-   d_fact[3] = d_fact[2]+1;
+   d_fact[3] = (uint8_t)(d_fact[2]+1);
    
    //set limits
    for (i = 0; i < 4; i++){
@@ -54,10 +54,10 @@ uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw){ //, uint32_t *sy
    }
    
    //work back to get the actual BWs   
-   bw[0] = (uint32_t)CC_XO_FREQ/d_fact[0]/8/20;
-   bw[1] = (uint32_t)CC_XO_FREQ/d_fact[1]/8/20;
-   bw[2] = (uint32_t)CC_XO_FREQ/d_fact[2]/8/32;
-   bw[3] = (uint32_t)CC_XO_FREQ/d_fact[3]/8/32;
+   bw[0] = (int32_t)CC_XO_FREQ/d_fact[0]/8/20;
+   bw[1] = (int32_t)CC_XO_FREQ/d_fact[1]/8/20;
+   bw[2] = (int32_t)CC_XO_FREQ/d_fact[2]/8/32;
+   bw[3] = (int32_t)CC_XO_FREQ/d_fact[3]/8/32;
      
    
    sm_err = 1<<30;
@@ -78,7 +78,7 @@ uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw){ //, uint32_t *sy
    else
       reg = (1<<6);
    
-   reg |= (d_fact[sm] & 0x3F);
+   reg = (uint8_t)(reg | (d_fact[sm] & 0x3F));
    
    cc112xSpiWriteReg(radio_id, CC112X_CHAN_BW, &reg);
    
