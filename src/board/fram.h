@@ -11,7 +11,9 @@
 #ifndef __FRAM_H__
 #define __FRAM_H__
 
-#include "../firmware.h"
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 /**
  * @function

@@ -22,6 +22,7 @@
 #include "board/debug.h"
 #include "board/random.h"
 #include "board/ldpc.h"
+#include "board/fram.h"
 
 /* radio stuff */
 #include "cc1125/cc112x_spi.h"
@@ -33,9 +34,6 @@
 #include "packet/crc16.h"
 #include "packet/pn9.h"
 #include "packet/interleave.h"
-
-/* FRAM Driver */
-#include "fram/fram.h"
 
 /* get Suzi's modules */
 

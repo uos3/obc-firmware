@@ -1,4 +1,5 @@
 /**
+ * @ingroup uos3-proto
  * @ingroup fram
  *
  * @file fram.c
@@ -6,7 +7,11 @@
  * @{
  */
 
-#include "../firmware.h"
+#include "board.h"
+#include "../spi.h"
+#include "../fram.h"
+
+#include <string.h>
 
 #define FRAM_OPCODE_WREN  0x06 // Set write enable latch
 #define FRAM_OPCODE_WRDI  0x04 // Reset write enable latch

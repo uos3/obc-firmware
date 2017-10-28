@@ -13,12 +13,13 @@
 
 #include "../firmware.h"
 
+
 typedef struct packet_telemetry_realtime {
   uint8_t obc_temperature;
   uint8_t receiver_temperature;
   uint8_t transmitter_temperature;
   uint8_t pa_temperature;
-  
+
 } packet_telemetry_realtime;
 
 
