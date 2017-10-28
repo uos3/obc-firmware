@@ -220,7 +220,7 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)
   return (uint8_t)r;
 }
 
-uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)
+uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len)
 {
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
@@ -293,7 +293,7 @@ uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)
   return (uint8_t)r;
 }
 
-uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)
+uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len)
 {
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
@@ -372,7 +372,7 @@ uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   return (uint8_t)r;
 }
 
-uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)
+uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len)
 {
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
@@ -455,7 +455,7 @@ uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   return (uint8_t)r;
 }
 
-uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)
+uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len)
 {
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
@@ -545,7 +545,7 @@ uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data)
   return (uint8_t)r;
 }
 
-uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint16_t len)
+uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len)
 {
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
@@ -636,7 +636,7 @@ uint8_t SPI_write32(uint8_t spi_num, uint32_t addr, uint8_t *data)
   return (uint8_t)r;
 }
 
-uint8_t SPI_burstwrite32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint16_t len)
+uint8_t SPI_burstwrite32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len)
 {
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];

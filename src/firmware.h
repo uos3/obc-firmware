@@ -34,6 +34,9 @@
 #include "packet/pn9.h"
 #include "packet/interleave.h"
 
+/* FRAM Driver */
+#include "fram/fram.h"
+
 /* get Suzi's modules */
 
 #include "suz/i2cbase.h"
