@@ -51,7 +51,7 @@ int main(void)
    Board_init();
    WDT_kick();
    
-   SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+   //SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
    //IntMasterEnable();
    //SysTickIntEnable();
    //SysTickEnable();
@@ -303,7 +303,7 @@ void rx_packets_stats_option(void){
    uint8_t num_bytes, marcState;
    uint8_t rxBuff[256]; // can only read the 128 FIFO bytes for now though
    
-   SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
+   SPI_cmd(SPI_RADIO_RX, CC112X_SRX);
    
    #define CONFIG_CNT 200
    uint16_t config_list[CONFIG_CNT] = {0xFFFF};
@@ -353,7 +353,7 @@ void rx_packets_stats_option(void){
          if((marcState & 0x1F) == 0x11) {  // == RX_FIFO_ERROR?
          UART_puts(UART, "\nError, FIFO error... :/\n");
          // Flush RX FIFO
-         SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SFRX);
+         SPI_cmd(SPI_RADIO_RX, CC112X_SFRX);
          } else {
 
 
@@ -415,7 +415,7 @@ void rx_packets_stats_option(void){
       else
          UART_puts(UART, "\nError, Pin asserted, but no bytes in FIFO! :/\n");
       
-      SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
+      SPI_cmd(SPI_RADIO_RX, CC112X_SRX);
       
    }   
 }
@@ -442,7 +442,7 @@ void rx_packets_option(void){
    uint8_t rxBuff[256]; // can only read the 128 FIFO bytes for now though
    uint8_t i;
    
-   SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
+   SPI_cmd(SPI_RADIO_RX, CC112X_SRX);
    
    while(1){
       
@@ -462,7 +462,7 @@ void rx_packets_option(void){
           if((marcState & 0x1F) == 0x11) {  // == RX_FIFO_ERROR?
               UART_puts(UART, "\nError, FIFO error... :/\n");
               // Flush RX FIFO
-              SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SFRX);
+              SPI_cmd(SPI_RADIO_RX, CC112X_SFRX);
           } else {
 
 
@@ -498,7 +498,7 @@ void rx_packets_option(void){
       else
          UART_puts(UART, "\nError, Pin asserted, but no bytes in FIFO! :/\n");
       
-      SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
+      SPI_cmd(SPI_RADIO_RX, CC112X_SRX);
       
    }
    
@@ -547,7 +547,7 @@ void tx_packets_option(void){
      
       cc112xSpiWriteTxFifo(SPI_RADIO_TX, buff, (uint8_t)(len+1));
 
-      SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
+      SPI_cmd(SPI_RADIO_TX, CC112X_STX);
       uint32_t w1,w2;
       
 
@@ -562,7 +562,7 @@ void tx_packets_option(void){
       
       c = peek_for_response_char();
       if (c == 'w'){
-         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
+         SPI_cmd(SPI_RADIO_TX, CC112X_SIDLE);
          if (radio_set_pwr_reg(SPI_RADIO_TX, (uint8_t)(current_pwr_reg+1))==0){
             current_pwr_reg++;
             snprintf(uart_out_buff, UART_BUFF_LEN, "Power register set to: %i (~%2.1f dBm)\n", current_pwr_reg, radio_pwr_reg_to_dbm(current_pwr_reg));
@@ -570,7 +570,7 @@ void tx_packets_option(void){
          }
       }
       if (c == 's'){
-         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
+         SPI_cmd(SPI_RADIO_TX, CC112X_SIDLE);
          if (radio_set_pwr_reg(SPI_RADIO_TX, (uint8_t)(current_pwr_reg-1))==0){
             current_pwr_reg--;
             snprintf(uart_out_buff, UART_BUFF_LEN, "Power register set to: %i (~%2.1f dBm)\n", current_pwr_reg, radio_pwr_reg_to_dbm(current_pwr_reg));
@@ -578,14 +578,14 @@ void tx_packets_option(void){
          }
       }
       if (c == 'd'){
-         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
+         SPI_cmd(SPI_RADIO_TX, CC112X_SIDLE);
          current_freq += 0.0005;
          radio_set_freq_f(SPI_RADIO_TX, &current_freq);
          snprintf(uart_out_buff, UART_BUFF_LEN, "Frequency set to: %3.4f MHz\n", current_freq);
          UART_puts(UART, uart_out_buff);
       }
       if (c == 'a'){
-         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_SIDLE);
+         SPI_cmd(SPI_RADIO_TX, CC112X_SIDLE);
          current_freq -= 0.0005;
          radio_set_freq_f(SPI_RADIO_TX, &current_freq);
          snprintf(uart_out_buff, UART_BUFF_LEN, "Frequency set to: %3.4f MHz\n", current_freq);
@@ -649,7 +649,7 @@ void tx_packets_pwrsweep_option(void){
         
          cc112xSpiWriteTxFifo(SPI_RADIO_TX, buff, (uint8_t)(len+1));
 
-         SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
+         SPI_cmd(SPI_RADIO_TX, CC112X_STX);
          uint32_t w1,w2;
          
 
@@ -683,7 +683,7 @@ void cw_tone_option(void){
    
    // turn on radio   
    UART_puts(UART, "CW tone on. Press q to quit\n");   
-   SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
+   SPI_cmd(SPI_RADIO_TX, CC112X_STX);
    
    while(wait_for_response_char() != 'q'){};
    radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));

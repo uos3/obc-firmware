@@ -62,20 +62,29 @@ static SPI_port SPI_ports[1] =
 typedef struct SPI {
   SPI_port *port;
   uint8_t  gpio_cs;           // CS GPIO Reference
+  bool     wait_miso;         // Whether the SPI peripheral waits for SO low (required for cc1120)
   bool     initialised;
 } SPI;
 
 /* Array of enabled SPIs */
-static SPI SPI_spis[2] = 
+static SPI SPI_spis[3] = 
   {
     { 
       &SPI_ports[0],
       GPIO_PA3,
+      true,
       false
     },
     { 
       &SPI_ports[0],
       GPIO_PF3,
+      true,
+      false
+    },
+    { 
+      &SPI_ports[0],
+      GPIO_PC5,
+      false,
       false
     }
   };
@@ -83,12 +92,6 @@ static SPI SPI_spis[2] =
 #define NUMBER_OF_SPIS  ( sizeof(SPI_spis) / sizeof(SPI) )
 
 #define check_spi_num(x, y)  if(x >= NUMBER_OF_SPIS) { return y; }
-
-static void SPI_flush(uint32_t base_spi)
-{
-  uint32_t d;
-  while(SSIDataGetNonBlocking(base_spi, &d));
-}
 
 /** Public Functions */
 
@@ -144,7 +147,8 @@ void SPI_init(uint8_t spi_num)
       SSIEnable(spi->port->base_spi);
 
       /* Clear current pending data */
-      SPI_flush(spi->port->base_spi);
+      uint32_t d;
+      while(SSIDataGetNonBlocking(spi->port->base_spi, &d));
 
       spi->port->initialised = true;
     }
@@ -153,25 +157,33 @@ void SPI_init(uint8_t spi_num)
   }
 }
 
-uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd)
+uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd)
 {
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue;
+  uint32_t r, d;
 
   /* Pull CS_N low and wait for SO to go low before communication starts */
   GPIO_write(spi->gpio_cs, false);
 
-  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
 
   /* Send Command */
-  SSIDataPut(spi->port->base_spi, cmd);
-  SSIDataGet(spi->port->base_spi, &readValue);
+  SSIDataPut(spi->port->base_spi, (uint32_t)cmd);
+  SSIDataGet(spi->port->base_spi, &r);
 
+  /* Write CS high to finish transaction */
   GPIO_write(spi->gpio_cs, true);
   /* return the status byte value */
-  return((uint8_t)readValue);
+  return (uint8_t)r;
 }
 
 uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)
@@ -179,19 +191,23 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d;
+  uint32_t r, d;
 
-  /* Pull CS_N low and wait for SO to go low before communication starts */
+  /* Pull CS_N low */
   GPIO_write(spi->gpio_cs, false);
 
-  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
-  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
-  // do we need to flush the rx buffer first?
-  SPI_flush(spi->port->base_spi);
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
 
-  /* Transmit address with Read Bit Set */
-  SSIDataPut(spi->port->base_spi, (uint32_t)(0x80|addr));
-  SSIDataGet(spi->port->base_spi, &readValue);
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
+
+  /* Write address, read status byte */
+  SSIDataPut(spi->port->base_spi, (uint32_t)(addr));
+  SSIDataGet(spi->port->base_spi, &r);
 
   /* Read Data */
   SSIDataPut(spi->port->base_spi, 0);
@@ -201,7 +217,7 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
-  return((uint8_t)readValue);
+  return (uint8_t)r;
 }
 
 uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)
@@ -209,21 +225,25 @@ uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t le
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d;
+  uint32_t r, d;
 
-  /* Pull CS_N low and wait for SO to go low before communication starts */
+  /* Pull CS_N low */
   GPIO_write(spi->gpio_cs, false);
 
-  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
-  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
-  // do we need to flush the rx buffer first?
-  SPI_flush(spi->port->base_spi);
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
 
   /* Transmit address with Read Bit Set */
-  SSIDataPut(spi->port->base_spi, (uint32_t)(0x80|addr));
-  SSIDataGet(spi->port->base_spi, &readValue);
+  SSIDataPut(spi->port->base_spi, (uint32_t)(addr));
+  SSIDataGet(spi->port->base_spi, &r);
 
-  for(uint32_t i = 0; i < len; i++)
+  while(len--)
   {
     SSIDataPut(spi->port->base_spi, 0);
     SSIDataGet(spi->port->base_spi, &d);
@@ -233,7 +253,7 @@ uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t le
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
-  return((uint8_t)readValue);
+  return (uint8_t)r;
 }
 
 uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)
@@ -241,29 +261,36 @@ uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d, w;
+  uint32_t r, d, w;
 
-  /* Pull CS_N low and wait for SO to go low before communication starts */
+  /* Pull CS_N low */
   GPIO_write(spi->gpio_cs, false);
 
-  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
-  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
-  // do we need to flush the rx buffer first?
-  SPI_flush(spi->port->base_spi);
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
 
-  /* Transmit address without Read Bit */
-  SSIDataPut(spi->port->base_spi, (uint32_t)(0x7F & addr));
-  SSIDataGet(spi->port->base_spi, &readValue);
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
 
-  /* Transmit data */
-  w = *data;
-  SSIDataPut(spi->port->base_spi, w);
-  SSIDataGet(spi->port->base_spi, &d);
+  /* Write Address, read status byte */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr);
+  SSIDataGet(spi->port->base_spi, &r);
+
+  if(data!=NULL)
+  {
+    /* Write Data */
+    w = *data;
+    SSIDataPut(spi->port->base_spi, w);
+    SSIDataGet(spi->port->base_spi, &d);
+  }
 
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
-  return((uint8_t)readValue);
+  return (uint8_t)r;
 }
 
 uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t len)
@@ -271,21 +298,26 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t l
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d, w;
+  uint32_t r, d, w;
 
-  /* Pull CS_N low and wait for SO to go low before communication starts */
+  /* Pull CS_N low */
   GPIO_write(spi->gpio_cs, false);
-  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
-  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
-  // do we need to flush the rx buffer first?
-  SPI_flush(spi->port->base_spi);
 
-  /* Transmit address without Read Bit */
-  SSIDataPut(spi->port->base_spi, (uint32_t)(0x7F & addr));
-  SSIDataGet(spi->port->base_spi, &readValue);
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
 
-  /* Transmit data */
-  for (uint32_t i = 0; i < len; i++)
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
+
+  /* Write Address, read status byte */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr);
+  SSIDataGet(spi->port->base_spi, &r);
+
+  /* Write data */
+  while(len--)
   {
     w = *data;
     SSIDataPut(spi->port->base_spi, w);
@@ -296,7 +328,7 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint16_t l
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
-  return((uint8_t)readValue);
+  return (uint8_t)r;
 }
 
 uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)
@@ -304,22 +336,26 @@ uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d;
+  uint32_t r, d;
 
   uint8_t addr_msb  = (uint8_t)(addr >> 8);
   uint8_t addr_lsb = (uint8_t)(addr & 0x00FF);
 
-  /* Pull CS_N low and wait for SO to go low before communication starts */
+  /* Pull CS_N low */
   GPIO_write(spi->gpio_cs, false);
 
-  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
-  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso){};
-  // do we need to flush the rx buffer first?
-  SPI_flush(spi->port->base_spi);
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
  
-  /* Transmit MSB address with Read Bit Set */
-  SSIDataPut(spi->port->base_spi, (uint32_t)(0x80|addr_msb));
-  SSIDataGet(spi->port->base_spi, &readValue);
+  /* Transmit MSB address */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_msb);
+  SSIDataGet(spi->port->base_spi, &r);
 
   /* Transmit LSB address */
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
@@ -333,7 +369,7 @@ uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
-  return((uint8_t)readValue);
+  return (uint8_t)r;
 }
 
 uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)
@@ -341,28 +377,32 @@ uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t 
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d;
+  uint32_t r, d;
 
   uint8_t addr_msb  = (uint8_t)(addr >> 8);
   uint8_t addr_lsb = (uint8_t)(addr & 0x00FF);
 
-  /* Pull CS_N low and wait for SO to go low before communication starts */
+  /* Pull CS_N low */
   GPIO_write(spi->gpio_cs, false);
 
-  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
-  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
-  // do we need to flush the rx buffer first?
-  SPI_flush(spi->port->base_spi);
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
 
-  /* Transmit MSB address with Read Bit Set */
-  SSIDataPut(spi->port->base_spi, (uint32_t)(0x80|addr_msb));
-  SSIDataGet(spi->port->base_spi, &readValue);
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
+
+  /* Transmit MSB address */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_msb);
+  SSIDataGet(spi->port->base_spi, &r);
 
   /* Transmit LSB address */
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
   SSIDataGet(spi->port->base_spi, &d);
 
-  for(uint32_t i = 0; i < len; i++)
+  while(len--)
   {
     SSIDataPut(spi->port->base_spi, 0);
     SSIDataGet(spi->port->base_spi, &d);
@@ -372,7 +412,7 @@ uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t 
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
-  return((uint8_t)readValue);
+  return (uint8_t)r;
 }
 
 uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)
@@ -380,22 +420,26 @@ uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d, w;
+  uint32_t r, d, w;
 
   uint8_t addr_msb  = (uint8_t)(addr >> 8);
   uint8_t addr_lsb = (uint8_t)(addr & 0x00FF);
 
-  /* Pull CS_N low and wait for SO to go low before communication starts */
+  /* Pull CS_N low */
   GPIO_write(spi->gpio_cs, false);
 
-  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
-  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso){};
-  // do we need to flush the rx buffer first?
-  SPI_flush(spi->port->base_spi);
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
 
-  /* Transmit MSB address without Read Bit */
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
+
+  /* Transmit MSB address */
   SSIDataPut(spi->port->base_spi, (uint32_t)(0x7F & addr_msb));
-  SSIDataGet(spi->port->base_spi, &readValue);
+  SSIDataGet(spi->port->base_spi, &r);
 
   /* Transmit LSB address */
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
@@ -408,7 +452,7 @@ uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
-  return((uint8_t)readValue);
+  return (uint8_t)r;
 }
 
 uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t len)
@@ -416,38 +460,225 @@ uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t
   check_spi_num(spi_num, 0);
   SPI *spi = &SPI_spis[spi_num];
 
-  uint32_t readValue, d, w;
+  uint32_t r, d, w;
 
   uint8_t addr_msb  = (uint8_t)(addr >> 8);
   uint8_t addr_lsb = (uint8_t)(addr & 0x00FF);
 
-  /* Pull CS_N low and wait for SO to go low before communication starts */
+  /* Pull CS_N low */
   GPIO_write(spi->gpio_cs, false);
-  //while(TRXEM_PORT_IN & TRXEM_SPI_MISO_PIN);   <-- do we need this..?
-  while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
-  // do we need to flush the rx buffer first?
-  SPI_flush(spi->port->base_spi);
 
-  /* Transmit MSB address without Read Bit */
-  SSIDataPut(spi->port->base_spi, (uint32_t)(0x7F & addr_msb));
-  SSIDataGet(spi->port->base_spi, &readValue);
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
+
+  /* Transmit MSB address */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_msb);
+  SSIDataGet(spi->port->base_spi, &r);
 
   /* Transmit LSB address */
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
   SSIDataGet(spi->port->base_spi, &d);
 
-  for (uint32_t i = 0; i < len; i++)
+  while(len--)
   {
-    w = *data;
+    w = *(data++);
     SSIDataPut(spi->port->base_spi, w);
     SSIDataGet(spi->port->base_spi, &d);
-    data++;
   }
 
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
-  return((uint8_t)readValue);
+  return (uint8_t)r;
+}
+
+uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data)
+{
+  check_spi_num(spi_num, 0);
+  SPI *spi = &SPI_spis[spi_num];
+
+  uint32_t r, d;
+
+  uint8_t addr_mmsb  = (uint8_t)(addr >> 24);
+  uint8_t addr_msb  = (uint8_t)(addr >> 16);
+  uint8_t addr_lsb  = (uint8_t)(addr >> 8);
+  uint8_t addr_llsb = (uint8_t)(addr & 0xFF);
+
+  /* Pull CS_N low */
+  GPIO_write(spi->gpio_cs, false);
+
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
+ 
+  /* Transmit MSB address, reading back status byte */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_mmsb);
+  SSIDataGet(spi->port->base_spi, &r);
+
+  /* Send less significant address bytes */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_msb);
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
+
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  /* Read Data */
+  SSIDataPut(spi->port->base_spi, 0);
+  SSIDataGet(spi->port->base_spi, &d);
+  *data = (uint8_t)d;
+
+  GPIO_write(spi->gpio_cs, true);
+
+  /* return the status byte value */
+  return (uint8_t)r;
+}
+
+uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint16_t len)
+{
+  check_spi_num(spi_num, 0);
+  SPI *spi = &SPI_spis[spi_num];
+
+  uint32_t r, d;
+
+  uint8_t addr_mmsb  = (uint8_t)(addr >> 24);
+  uint8_t addr_msb  = (uint8_t)(addr >> 16);
+  uint8_t addr_lsb  = (uint8_t)(addr >> 8);
+  uint8_t addr_llsb = (uint8_t)(addr & 0xFF);
+
+  /* Pull CS_N low */
+  GPIO_write(spi->gpio_cs, false);
+
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
+
+  /* Transmit MSB address, reading back status byte */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_mmsb);
+  SSIDataGet(spi->port->base_spi, &r);
+
+  /* Send less significant address bytes */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_msb);
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
+
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  while(len--)
+  {
+    SSIDataPut(spi->port->base_spi, 0);
+    SSIDataGet(spi->port->base_spi, &d);
+    *data++ = (uint8_t)d;
+  }
+
+  GPIO_write(spi->gpio_cs, true);
+
+  /* return the status byte value */
+  return (uint8_t)r;
+}
+
+uint8_t SPI_write32(uint8_t spi_num, uint32_t addr, uint8_t *data)
+{
+  check_spi_num(spi_num, 0);
+  SPI *spi = &SPI_spis[spi_num];
+
+  uint32_t r, d, w;
+
+  uint8_t addr_mmsb  = (uint8_t)(addr >> 24);
+  uint8_t addr_msb  = (uint8_t)(addr >> 16);
+  uint8_t addr_lsb  = (uint8_t)(addr >> 8);
+  uint8_t addr_llsb = (uint8_t)(addr & 0xFF);
+
+  /* Pull CS_N low */
+  GPIO_write(spi->gpio_cs, false);
+
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
+
+  /* Transmit MSB address, reading back status byte */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_mmsb);
+  SSIDataGet(spi->port->base_spi, &r);
+
+  /* Send less significant address bytes */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_msb);
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
+
+  w = *data;
+  SSIDataPut(spi->port->base_spi, w);
+
+  GPIO_write(spi->gpio_cs, true);
+
+  /* return the status byte value */
+  return (uint8_t)r;
+}
+
+uint8_t SPI_burstwrite32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint16_t len)
+{
+  check_spi_num(spi_num, 0);
+  SPI *spi = &SPI_spis[spi_num];
+
+  uint32_t r, d, w;
+
+  uint8_t addr_mmsb  = (uint8_t)(addr >> 24);
+  uint8_t addr_msb  = (uint8_t)(addr >> 16);
+  uint8_t addr_lsb  = (uint8_t)(addr >> 8);
+  uint8_t addr_llsb = (uint8_t)(addr & 0xFF);
+
+  /* Pull CS_N low */
+  GPIO_write(spi->gpio_cs, false);
+
+  /* Flush Input FIFO */
+  while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
+
+  /* If configured, wait for MISO to go low (indicates clock stability for cc1120) */
+  if(spi->wait_miso)
+  {
+    while(GPIOPinRead(spi->port->base_gpio, spi->port->pin_miso) & spi->port->pin_miso) {};
+  }
+
+  /* Transmit MSB address, reading back status byte */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_mmsb);
+  SSIDataGet(spi->port->base_spi, &r);
+
+  /* Send less significant address bytes */
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_msb);
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
+  SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
+
+  while(len--)
+  {
+    w = *(data++);
+    SSIDataPut(spi->port->base_spi, w);
+  }
+
+  GPIO_write(spi->gpio_cs, true);
+
+  /* return the status byte value */
+  return (uint8_t)r;
 }
 
 /**

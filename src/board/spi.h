@@ -13,6 +13,7 @@
 #ifndef __SPI_H__
 #define __SPI_H__
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -25,6 +26,18 @@
  * @param spi_num ID of the SPI peripheral
  */
 void SPI_init(uint8_t spi_num);
+
+/**
+ * @function
+ * @ingroup spi
+ *
+ * Sends a single 'command' byte on the specified SPI peripheral
+ *
+ * @param spi_num ID of the SPI peripheral
+ * @param cmd Command byte to be sent
+ * @returns Status byte
+ */
+uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd);
 
 /**
  * @function
@@ -138,12 +151,54 @@ uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint16_t
  * @function
  * @ingroup spi
  *
- * Sends a TI 'Command Strobe' byte on the specified SPI peripheral
+ * Reads a byte from an extended address of the slave device on the specified SPI peripheral.
  *
  * @param spi_num ID of the SPI peripheral
- * @param cmd Command byte to be sent
+ * @param addr Extended address of the slave device register
+ * @param data Pointer to a byte for storage of the data retrieved
  * @returns Status byte
  */
-uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd);
+uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data);
+
+/**
+ * @function
+ * @ingroup spi
+ *
+ * Writes a byte to an extended address of the slave device on the specified SPI peripheral.
+ *
+ * @param spi_num ID of the SPI peripheral
+ * @param addr Extended address of the slave device register
+ * @param data Pointer to a byte containing the data to be written
+ * @returns Status byte
+ */
+uint8_t SPI_write32(uint8_t spi_num, uint32_t addr, uint8_t *data);
+
+/**
+ * @function
+ * @ingroup spi
+ *
+ * Reads a number of bytes from an extended address of the slave device on the specified SPI peripheral.
+ *
+ * @param spi_num ID of the SPI peripheral
+ * @param addr Extended address of the slave device register
+ * @param data Pointer to bytes for storage of the data retrieved
+ * @param len Number of bytes to be read
+ * @returns Status byte
+ */
+uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint16_t len);
+
+/**
+ * @function
+ * @ingroup spi
+ *
+ * Writes a number of bytes to an extended address of the slave device on the specified SPI peripheral.
+ *
+ * @param spi_num ID of the SPI peripheral
+ * @param addr Extended address of the slave device register
+ * @param data Pointer to bytes containing the data to be written
+ * @param len Number of bytes to be written
+ * @returns Status byte
+ */
+uint8_t SPI_burstwrite32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint16_t len);
 
 #endif /*  __SPI_H__ */

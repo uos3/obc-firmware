@@ -352,7 +352,7 @@ uint8_t radio_set_freq_f(uint8_t radio_id, double *freq){
 */
 void radio_reset_config(uint8_t radio_id, const registerSetting_t *cfg, uint16_t len){
 	
-  SPI_cmdstrobe(radio_id, CC112X_SRES);
+  SPI_cmd(radio_id, CC112X_SRES);
 	uint8_t writeByte;
 	for(uint16_t i = 0; i < len; i++) {
         writeByte = cfg[i].data;
@@ -394,7 +394,7 @@ void manualCalibration(uint8_t radio_id) {
 
     // 3) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
-    SPI_cmdstrobe(radio_id, CC112X_SCAL);
+    SPI_cmd(radio_id, CC112X_SCAL);
 
     do {
         cc112xSpiReadReg(radio_id, CC112X_MARCSTATE, &marcstate);
@@ -420,7 +420,7 @@ void manualCalibration(uint8_t radio_id) {
     // 7) Calibrate and wait for calibration to be done
     //   (radio back in IDLE state)
 
-    SPI_cmdstrobe(radio_id, CC112X_SCAL);
+    SPI_cmd(radio_id, CC112X_SCAL);
 
     do {
         cc112xSpiReadReg(radio_id, CC112X_MARCSTATE, &marcstate);
