@@ -68,7 +68,8 @@ hyphenjoin() {
 flash() {
   if $opt_flash; then
     flash_args="";
-    if $opt_sound; then flash_args="-s"; fi
+    if $opt_sound; then flash_args="$flash_args -s"; fi
+    if $opt_verbose; then flash_args="$flash_args -v"; fi
     ${source_dir}/flash ${flash_args} ${outdir}/${filename};
   fi
 }
@@ -82,13 +83,13 @@ asmdump() {
 
 print_help() {
   echo ""
-  echo " Usage: ./build [options] <board> <application> (board is assumed to be uos3-proto if missing)"
+  echo " Usage: ./build [options] <board> <application> (board is assumed to be uos3-proto if omitted)"
   echo ""
   echo " Options:"
   echo ""
   echo " -h        Display this help and exit."
   echo " -q        Hide all messages apart from errors."
-  echo " -v        Compile verbosely."
+  echo " -v        Compile (& Flash) verbosely."
   echo " -m        Also generate machine code output."
   echo " -w        Tell compiler to treat warnings as errors."
   echo " -s        Tell compiler to optimise for code size."

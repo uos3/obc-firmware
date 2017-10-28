@@ -28,7 +28,8 @@ _ERROR_="$COLOUR_RED[ERROR]$COLOUR_OFF"
 _INFO_="$COLOUR_PURPLE[INFO]$COLOUR_OFF"
 _DEBUG_="$COLOUR_YELLOW[DEBUG]$COLOUR_OFF"
 
-opt_verbose=true
+opt_verbose=false
+opt_quiet=false
 opt_sound=false
 opt_power=true
 
@@ -109,12 +110,15 @@ flash_device() {
     echo -ne "$_INFO_$COLOUR_YELLOW Scanning for board.. $spinner_char$COLOUR_OFF\r";
     flash_out=`eval $flash_cmd 2>&1`;
     echo ${flash_out} | grep -vqE 'warning|fail|Error|MIS-MATCHED'
-      if [[ $? -eq 0 ]]; then
-        flash_success=true
-        echo -e "\n${flash_out}"
-      else
-        sleep 0.2
+    if [[ $? -eq 0 ]]; then
+      flash_success=true
+      echo -e "\n${flash_out}"
+    else
+      if $opt_verbose; then
+        echo ${flash_out};
       fi
+      sleep 0.2
+    fi
   done
 }
 
@@ -130,16 +134,19 @@ fi
 
 ## Read Flags
 OPTIND=1
-while getopts ":qS" opt; do
+while getopts ":qvS" opt; do
   case "$opt" in
     q) # Quiet
       opt_quiet=true
+      ;;
+    v) # Verbose
+      opt_verbose=true
       ;;
     S) # Sound
       opt_sound=true
       ;;
     ?) # Illegal Option
-      print_err "$_ERROR_ Illegal option '$OPTARG'"
+      echo -e "$_ERROR_ Illegal option '$OPTARG'"
       exit 3
       ;;
   esac
@@ -160,7 +167,7 @@ if [[ ! -f $binary ]]; then
   exit 1
 fi
 
-if $opt_verbose; then
+if ! $opt_quiet; then
   echo -e "$_INFO_ Binary: ${binary}" >&$stdout
 fi
 
@@ -169,7 +176,7 @@ if ! hash "$flashtool" 2>/dev/null; then
   exit 1
 fi
 
-if $opt_verbose; then
+if ! $opt_quiet; then
   echo -e "$_INFO_ Flash Tool: arm-none-eabi-gdb" >&$stdout
 fi
 
@@ -195,7 +202,7 @@ elif [ ${host_platform} == "mac" ]; then
 fi
 
 echo -e "$_INFO_$COLOUR_GREEN Found Blackmagic$COLOUR_OFF" >&$stdout
-if $opt_verbose; then
+if ! $opt_quiet; then
   echo -e "$_INFO_ Programmer: $programmer" >&$stdout
 fi
 
