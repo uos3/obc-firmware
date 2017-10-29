@@ -19,6 +19,17 @@ void Buffer_FRAM_read_last_index_stored(uint16_t *index)
 }
 
 
+void Buffer_FRAM_write_last_slot_transmitted(uint16_t *slot)
+{
+  FRAM_read(BUFFER_FRAM_ADDRESS_LAST_SLOT, (uint8_t*)slot, BUFFER_FRAM_SIZE_LAST_SLOT);
+}
+
+void Buffer_FRAM_read_last_slot_transmitted(uint16_t *slot)
+{
+  FRAM_write(BUFFER_FRAM_ADDRESS_LAST_SLOT, (uint8_t*)slot, BUFFER_FRAM_SIZE_LAST_SLOT);
+}
+
+
 void Buffer_FRAM_write_occupancy(uint8_t *occupancy)
 {
   FRAM_write(BUFFER_FRAM_ADDRESS_OCCUPANCY, occupancy, BUFFER_FRAM_SIZE_OCCUPANCY);

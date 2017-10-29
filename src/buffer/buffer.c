@@ -20,6 +20,7 @@ typedef struct buffer_data {
 typedef struct buffer_cache_t {
   bool initialised;
   uint16_t last_index_stored;
+  uint16_t last_slot_transmitted;
   uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)];
   uint16_t indexes[BUFFER_SLOTS];
 } buffer_cache_t;
@@ -33,6 +34,7 @@ void Buffer_init(void)
     FRAM_init();
 
     Buffer_FRAM_read_last_index_stored(&(buffer_cache.last_index_stored));
+    Buffer_FRAM_read_last_slot_transmitted(&(buffer_cache.last_slot_transmitted));
     Buffer_FRAM_read_occupancy(buffer_cache.occupancy);
     Buffer_FRAM_read_indexes(buffer_cache.indexes);
 
@@ -42,21 +44,25 @@ void Buffer_init(void)
 
 void Buffer_reset(void)
 {
+  Buffer_init();
+
   buffer_cache.last_index_stored = 0;
   Buffer_FRAM_write_last_index_stored(&(buffer_cache.last_index_stored));
+
+  buffer_cache.last_slot_transmitted = 0;
+  Buffer_FRAM_write_last_slot_transmitted(&(buffer_cache.last_slot_transmitted));
 
   memset(buffer_cache.occupancy, 0x00, BUFFER_FRAM_SIZE_OCCUPANCY);
   Buffer_FRAM_write_occupancy(buffer_cache.occupancy);
 
   memset(buffer_cache.indexes, 0x00, BUFFER_FRAM_SIZE_INDEXES);
   Buffer_FRAM_write_indexes(buffer_cache.indexes);
-
-  buffer_cache.initialised = false;
-  Buffer_init();
 }
 
 void Buffer_store_new_data(uint8_t *data_payload)
 {
+  Buffer_init();
+
   uint16_t slot;
 
   Buffer_find_new_slot(&slot);
@@ -64,11 +70,13 @@ void Buffer_store_new_data(uint8_t *data_payload)
   Buffer_set_occupancy(slot, true);
 }
 
-bool Buffer_get_next_data(uint16_t *previous_slot, uint8_t *data_payload)
+bool Buffer_get_next_data(uint8_t *data_payload)
 {
-  if(Buffer_get_next_slot(previous_slot))
+  Buffer_init();
+  
+  if(Buffer_get_next_slot(&(buffer_cache.last_slot_transmitted)))
   {
-    Buffer_FRAM_read_data(*previous_slot, data_payload);
+    Buffer_FRAM_read_data(buffer_cache.last_slot_transmitted, data_payload);
     return true;
   }
   return false;
@@ -187,6 +195,8 @@ void Buffer_set_occupancy(uint16_t slot, bool value)
 
 uint16_t Buffer_count_occupied(void)
 {
+  Buffer_init();
+  
   uint16_t i, result = 0;
   for(i=0; i<BUFFER_SLOTS; i++)
   {
