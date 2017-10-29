@@ -33,7 +33,7 @@
 
 /* get Suzi's modules */
 
-#include "suz/i2cbase.h"
+//#include "suz/i2cbase.h"
 #include "suz/uartbase.h"
 
 /* ... */
