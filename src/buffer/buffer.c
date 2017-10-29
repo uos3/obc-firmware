@@ -59,7 +59,7 @@ void Buffer_reset(void)
   Buffer_FRAM_write_indexes(buffer_cache.indexes);
 }
 
-void Buffer_store_new_data(uint8_t *data_payload)
+void Buffer_store_new_data(uint16_t index, uint8_t *data_payload)
 {
   Buffer_init();
 
@@ -67,7 +67,14 @@ void Buffer_store_new_data(uint8_t *data_payload)
 
   Buffer_find_new_slot(&slot);
   Buffer_FRAM_write_data(slot, data_payload);
+  Buffer_set_index(slot, index);
   Buffer_set_occupancy(slot, true);
+}
+
+void Buffer_set_index(uint16_t slot, uint16_t index)
+{
+  buffer_cache.indexes[slot] = index;
+  Buffer_FRAM_write_indexes(buffer_cache.indexes);
 }
 
 bool Buffer_get_next_data(uint8_t *data_payload)

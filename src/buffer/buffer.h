@@ -35,7 +35,7 @@
 void Buffer_init(void);
 void Buffer_reset(void);
 
-void Buffer_store_new_data(uint8_t *data_payload);
+void Buffer_store_new_data(uint16_t index, uint8_t *data_payload);
 bool Buffer_get_next_data(uint8_t *data_payload);
 void Buffer_remove_index(uint16_t index);
 uint16_t Buffer_count_occupied(void);
@@ -47,6 +47,7 @@ void Buffer_find_new_slot(uint16_t *slot);
 void Buffer_find_oldest_slot(uint16_t *slot);
 bool Buffer_get_occupancy(uint16_t slot);
 void Buffer_set_occupancy(uint16_t slot, bool value);
+void Buffer_set_index(uint16_t slot, uint16_t index);
 
 
 void Buffer_FRAM_write_last_index_stored(uint16_t *index);
