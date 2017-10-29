@@ -66,5 +66,6 @@ void buffer_print_hex(uint8_t *buffer, uint32_t length);
 void buffer_print_bin(uint8_t *buffer, uint32_t length);
 
 #include "packet/test/packet.h"
+#include "buffer/test/buffer.h"
 
 #endif /*  __TEST_H__ */

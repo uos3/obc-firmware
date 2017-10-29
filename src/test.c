@@ -23,6 +23,7 @@ int main(void)
 
   /* Call module tests */
   assert_run(packet_tests(), test_state);
+  assert_run(buffer_tests(), test_state);
 
   if(test_state)
     return 0;

@@ -12,15 +12,9 @@
 
 #include <string.h>
 
-/* 1Mbit (128KB) FM25V10 */
-#define FRAM_MAX_ADDRESS	0x1FFFF
+static uint8_t fram_data[FRAM_SIZE] = { 0 };
 
-/* 4Mbit (512KB) CY15B104Q */
-//#define FRAM_MAX_ADDRESS	0x7FFFF
-
-static uint8_t fram_data[FRAM_MAX_ADDRESS + 1] = { 0 };
-
-void Fram_init(void) {}
+void FRAM_init(void) {}
 
 bool FRAM_selfTest(void)
 {

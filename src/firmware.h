@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#define ROUND_UP(N, S) ((((N) + (S) - 1) / (S)) * (S))
+
 /* Board-specific header file, completed by macro: 'board/<board>/board.h' */
 #include BOARD_INCLUDE
 
@@ -34,6 +36,9 @@
 #include "packet/crc16.h"
 #include "packet/pn9.h"
 #include "packet/interleave.h"
+
+/* Buffer */
+#include "buffer/buffer.h"
 
 /* get Suzi's modules */
 
