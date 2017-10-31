@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/obc-firmware/src/suz/i2cbase.h Source File</title>
+<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/obc-firmware/src/board/i2c.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,12 +80,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddbd72a5f4722c612e2b90831911e00b.html">suz</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_8ce7cd6e96eb11a61d1d013aa8c7fa46.html">board</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">i2cbase.h</div>  </div>
+<div class="title">i2c.h</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
@@ -97,18 +97,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// hacked together from the various datasheets</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keywordtype">void</span> InitI2C2(<span class="keywordtype">void</span>); <span class="comment">// initialise board for I2C capability</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">char</span> I2CReceive(uint32_t slave_addr, uint8_t reg);</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;uint16_t I2CReceive16(uint32_t slave_addr,uint8_t reg); <span class="comment">// lets get 2 byte value </span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;uint16_t I2CReceive16r(uint32_t slave_addr,uint8_t reg); <span class="comment">// lets get 2 byte value reversed (for other endian words)</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">//sends an array of data via I2C to the specified slave, zero terminated as a string.</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keywordtype">void</span> I2CSendString(uint32_t slave_addr, <span class="keywordtype">char</span> array[]);</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; <span class="comment">// this is the guts of the read function, called by intermediate functions to get around C&#39;s lack of function overloading</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">char</span> *I2CReceiveGP(uint32_t slave_addr, uint8_t reg,uint8_t strlen, <span class="keywordtype">bool</span> reverse); <span class="comment">// returns zero pointer if an error...</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef __I2C_H__</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __I2C_H__</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;stdbool.h&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordtype">void</span> InitI2C0(<span class="keywordtype">void</span>); <span class="comment">// initialise board for I2C capability - IMU</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keywordtype">void</span> InitI2C2(<span class="keywordtype">void</span>); <span class="comment">// initialise board for I2C capability - Radio temp sensors</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;uint8_t I2CReceive(uint8_t slave_addr, uint8_t reg,uint32_t i2cbase); <span class="comment">// i2cbase is either I2C2_BASE or I2C0_BASE by wiring. Get a byte from reg</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;uint16_t I2CReceive16(uint8_t slave_addr,uint8_t reg,uint32_t i2cbase); <span class="comment">// lets get 2 byte value </span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;uint16_t I2CReceive16r(uint8_t slave_addr,uint8_t reg,uint32_t i2cbase); <span class="comment">// lets get 2 byte value reversed (for other endian words)</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">//sends an array of data via I2C to the specified slave, zero terminated as a string.</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keywordtype">void</span> I2CSendString(uint8_t slave_addr, uint8_t array[],uint32_t i2cbase);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; <span class="comment">// this is the guts of the read function, called by intermediate functions to get around C&#39;s lack of function overloading</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;uint8_t *I2CReceiveGP(uint8_t slave_addr, uint8_t reg,uint8_t strlen,uint32_t i2cbase, <span class="keywordtype">bool</span> reverse); <span class="comment">// returns zero pointer if an error...</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#endif // __I2C_H__</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -126,35 +126,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keywordtype">int</span> <a class="code" href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a>(<span class="keywordtype">void</span>)</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{  </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="group__board.html#ga6c191e6138454022bba4dbcb4278f141">Board_init</a>(); <span class="comment">// start the board</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>(); <span class="comment">// kick the watchdog </span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; <span class="comment">// WDT_kick(); // kick the watchdog </span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; setupwatchdoginterrupt();</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">// UART at 115200, unreliable at 9600</span></div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a>(CAM_SERIAL, 115200);  <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(CAM_SERIAL,<span class="stringliteral">&quot;UART_passthrough&quot;</span>);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a>(GPS_SERIAL, 115200);  <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(GPS_SERIAL,<span class="stringliteral">&quot;UART_passthrough&quot;</span>);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a>(GPS_SERIAL, 9600); <span class="comment">// UART_puts(GPS_SERIAL,&quot;UART_passthrough&quot;);</span></div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;   <span class="keywordflow">while</span>(1) <span class="comment">// infinite loop</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> wdt_kicker=100000;wdt_kicker&gt;0;wdt_kicker--) <span class="comment">// repeat this to kick wdt at correct time.</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  {    </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">char</span> c; <span class="comment">// echo back to sending port</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="group__uart.html#gae20e5be010bad7da8c736ef405e2e57f">UART_getc_nonblocking</a>(GPS_SERIAL,&amp;c)) {<a class="code" href="group__uart.html#ga012341aaff3c5a7b72c5e5c65d7431b0">UART_putc_nonblocking</a>(CAM_SERIAL,c); } <span class="comment">// input</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="group__uart.html#gae20e5be010bad7da8c736ef405e2e57f">UART_getc_nonblocking</a>(CAM_SERIAL,&amp;c)) {<a class="code" href="group__uart.html#ga012341aaff3c5a7b72c5e5c65d7431b0">UART_putc_nonblocking</a>(GPS_SERIAL,c); } <span class="comment">//output</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;   }</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; }</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">char</span> c; <span class="comment">// echo back to sending port</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="group__uart.html#gae20e5be010bad7da8c736ef405e2e57f">UART_getc_nonblocking</a>(GPS_SERIAL,&amp;c)) {<a class="code" href="group__uart.html#ga012341aaff3c5a7b72c5e5c65d7431b0">UART_putc_nonblocking</a>(CAM_SERIAL,c); } <span class="comment">// input</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="group__uart.html#gae20e5be010bad7da8c736ef405e2e57f">UART_getc_nonblocking</a>(CAM_SERIAL,&amp;c)) {<a class="code" href="group__uart.html#ga012341aaff3c5a7b72c5e5c65d7431b0">UART_putc_nonblocking</a>(GPS_SERIAL,c); } <span class="comment">//output</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;   }</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
 <div class="ttc" id="group__uart_html_ga5016951f4d87245612746fd3b11b4e55"><div class="ttname"><a href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a></div><div class="ttdeci">void UART_init(uint8_t uart_num, uint32_t baudrate)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00067">uart.c:67</a></div></div>
 <div class="ttc" id="group__uart_html_gae20e5be010bad7da8c736ef405e2e57f"><div class="ttname"><a href="group__uart.html#gae20e5be010bad7da8c736ef405e2e57f">UART_getc_nonblocking</a></div><div class="ttdeci">bool UART_getc_nonblocking(uint8_t uart_num, char *c)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00134">uart.c:134</a></div></div>
 <div class="ttc" id="test_8c_html_a840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdoc">Runs all module tests. </div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00019">test.c:19</a></div></div>
 <div class="ttc" id="group__uart_html_ga012341aaff3c5a7b72c5e5c65d7431b0"><div class="ttname"><a href="group__uart.html#ga012341aaff3c5a7b72c5e5c65d7431b0">UART_putc_nonblocking</a></div><div class="ttdeci">bool UART_putc_nonblocking(uint8_t uart_num, char c)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00152">uart.c:152</a></div></div>
 <div class="ttc" id="group__uart_html_gafe4ccbee9edc6e026aedd43bdc2cc87b"><div class="ttname"><a href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a></div><div class="ttdeci">void UART_puts(uint8_t uart_num, char *str)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00118">uart.c:118</a></div></div>
 <div class="ttc" id="group__board_html_ga6c191e6138454022bba4dbcb4278f141"><div class="ttname"><a href="group__board.html#ga6c191e6138454022bba4dbcb4278f141">Board_init</a></div><div class="ttdeci">void Board_init(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2board_8c_source.html#l00013">board.c:13</a></div></div>
-<div class="ttc" id="group__wdt_html_ga839f0e2119c8cc94b8d13881ab836b2a"><div class="ttname"><a href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a></div><div class="ttdeci">void WDT_kick(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2wdt_8c_source.html#l00019">wdt.c:19</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

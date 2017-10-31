@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/obc-firmware/src/test.c File Reference</title>
+<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/obc-firmware/src/board/watchdog_int.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,59 +80,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_8ce7cd6e96eb11a61d1d013aa8c7fa46.html">board</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">test.c File Reference<div class="ingroups"><a class="el" href="group__tests.html">Module Tests</a></div></div>  </div>
+<div class="title">watchdog_int.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><a href="test_8c_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:a840291bc02cba5474a4cb46a9b9566fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a> (void)</td></tr>
-<tr class="memdesc:a840291bc02cba5474a4cb46a9b9566fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs all module tests.  <a href="#a840291bc02cba5474a4cb46a9b9566fe">More...</a><br/></td></tr>
-<tr class="separator:a840291bc02cba5474a4cb46a9b9566fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadb2e369a92478261d655e10bab2f71b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tests.html#gadb2e369a92478261d655e10bab2f71b8">buffer_print_dec</a> (uint8_t *buffer, uint32_t length)</td></tr>
-<tr class="separator:gadb2e369a92478261d655e10bab2f71b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf5c8b09411cbaa65b0201467dc70ffb5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tests.html#gaf5c8b09411cbaa65b0201467dc70ffb5">buffer_print_hex</a> (uint8_t *buffer, uint32_t length)</td></tr>
-<tr class="separator:gaf5c8b09411cbaa65b0201467dc70ffb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4cd7472b557863b803aa582c3979cec2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tests.html#ga4cd7472b557863b803aa582c3979cec2">buffer_print_bin</a> (uint8_t *buffer, uint32_t length)</td></tr>
-<tr class="separator:ga4cd7472b557863b803aa582c3979cec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This file contains the main function for the module tests.</p>
-<dl class="section author"><dt>Author</dt><dd>Phil Crump </dd></dl>
-
-<p>Definition in file <a class="el" href="test_8c_source.html">test.c</a>.</p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a840291bc02cba5474a4cb46a9b9566fe"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int main </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Runs all module tests. </p>
-<dl class="section return"><dt>Returns</dt><dd>0 if all tests were successful, -1 otherwise. </dd></dl>
-<p>=0x10000; // store it here </p>
-
-<p>Definition at line <a class="el" href="test_8c_source.html#l00019">19</a> of file <a class="el" href="test_8c_source.html">test.c</a>.</p>
-
-</div>
-</div>
-</div><!-- contents -->
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// this is development code to aid in implementing watchdog kicking on interrupt</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// not necessarily in Uos3 Cubesat flight software - risk that automatically kicking on interrupt</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// might prevent watchdog timer resetting when operation has actually failed</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// could set a flag regularly, but actual kicking should be done as far as possible explicitly</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">//</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">// Two ways to initialise the interrupt. Dynamically with TimerIntRegister, or statically by setting</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">// the define variable TIMER0A to the routine name (with my modified tm4c_startup_gcc.c this works)</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">// (C) Suzanna Lucarotti 20/9/17</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">// Developed for Uos3 Cubesat</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keywordtype">void</span> setupwatchdoginterrupt(<span class="keywordtype">void</span>); <span class="comment">// this routine enables regular watchdog kicking on interrupt</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keywordtype">void</span> Timer0IntHandler(<span class="keywordtype">void</span>); <span class="comment">// this is the interrupt handler</span></div>
+</div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

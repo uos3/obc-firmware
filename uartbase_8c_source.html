@@ -107,7 +107,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">void</span> UART_putnum(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> serialport,<span class="keywordtype">signed</span> <span class="keywordtype">long</span> x)</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  itoa(abs(x),string_buffer,10); <span class="comment">// 16 for hex, 10 for decimal</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  itoa(abs(x),string_buffer,16); <span class="comment">// 16 for hex, 10 for decimal</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> len=strlen(string_buffer);</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> targetlen=6-len;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  strcpy(string_buffer2,<span class="stringliteral">&quot;+00000&quot;</span>);</div>
