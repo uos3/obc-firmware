@@ -176,10 +176,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    </div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="comment">//cc112xSpiWriteTxFifo(RADIO_TX, buff, sizeof(buff));</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="group__spi.html#ga5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a>(SPI_RADIO_RX, CC112X_SRX);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="group__spi.html#ga67bf1565d4b1b483d0144a8377bddcd1">SPI_cmd</a>(SPI_RADIO_RX, CC112X_SRX);</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    </div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <span class="comment">// Strobe TX to send packet</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <a class="code" href="group__spi.html#ga5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a>(SPI_RADIO_TX, CC112X_STX);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <a class="code" href="group__spi.html#ga67bf1565d4b1b483d0144a8377bddcd1">SPI_cmd</a>(SPI_RADIO_TX, CC112X_STX);</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    </div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordflow">while</span>(1){</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
@@ -245,7 +245,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="structregister_setting__t_html"><div class="ttname"><a href="structregister_setting__t.html">registerSetting_t</a></div><div class="ttdef"><b>Definition:</b> <a href="cc1125_8h_source.html#l00006">cc1125.h:6</a></div></div>
 <div class="ttc" id="group__board_html_ga6c191e6138454022bba4dbcb4278f141"><div class="ttname"><a href="group__board.html#ga6c191e6138454022bba4dbcb4278f141">Board_init</a></div><div class="ttdeci">void Board_init(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2board_8c_source.html#l00013">board.c:13</a></div></div>
 <div class="ttc" id="group__wdt_html_ga839f0e2119c8cc94b8d13881ab836b2a"><div class="ttname"><a href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a></div><div class="ttdeci">void WDT_kick(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2wdt_8c_source.html#l00019">wdt.c:19</a></div></div>
-<div class="ttc" id="group__spi_html_ga5c82eae20b2408611e1b89d80934c320"><div class="ttname"><a href="group__spi.html#ga5c82eae20b2408611e1b89d80934c320">SPI_cmdstrobe</a></div><div class="ttdeci">uint8_t SPI_cmdstrobe(uint8_t spi_num, uint8_t cmd)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00020">spi.c:20</a></div></div>
+<div class="ttc" id="group__spi_html_ga67bf1565d4b1b483d0144a8377bddcd1"><div class="ttname"><a href="group__spi.html#ga67bf1565d4b1b483d0144a8377bddcd1">SPI_cmd</a></div><div class="ttdeci">uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00020">spi.c:20</a></div></div>
 <div class="ttc" id="group__uart_html_ga617a14954d9f85329eba15b2598fd047"><div class="ttname"><a href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a></div><div class="ttdeci">void UART_putc(uint8_t uart_num, char c)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00110">uart.c:110</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
