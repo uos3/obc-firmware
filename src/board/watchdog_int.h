@@ -15,21 +15,7 @@
 
 // Developed for Uos3 Cubesat
 
-
-//#define TIMER0A Timer0IntHandler // this is for static interrupt compilation, needs to be before building
-// tm4c_startup_gcc.c
-
 #include "../firmware.h"
-
-// this code is evolved from an online purdue uni tutorial and the ti peripheral driver manual
-
-#include "inc/hw_ints.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/interrupt.h"
-#include "driverlib/gpio.h"
-#include "driverlib/timer.h"
 
 void setupwatchdoginterrupt(void); // this routine enables regular watchdog kicking on interrupt
 void Timer0IntHandler(void); // this is the interrupt handler

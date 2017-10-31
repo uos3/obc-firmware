@@ -42,6 +42,11 @@ STACKSIZE = 0x800
 # Include the common make definitions.
 #
 include ${FW_ROOT}/src/firmware.mk
+
+ifneq ($(RUNTESTS),)
+  include ${FW_ROOT}/src/test.mk
+endif
+
 BOARD_INCLUDE="-DBOARD_INCLUDE=\"board/${BOARD}/board.h\""
 
 # Moved from makedefs
@@ -115,7 +120,7 @@ ifneq ($(TESTVERBOSE_ON),)
   CFLAGS += -DTEST_VERBOSE=true
 endif
 
-FW_SRCS+= $(wildcard ./*.c)
+FW_SRCS+= $(wildcard ./*.c) liblabrador_ldpc.a
 
 #
 # Where to find header files that do not live in the source directory.
@@ -131,11 +136,13 @@ all: ${FW_ROOT}/${OUTDIR}/${OUTFILE}
 #
 # The rule to clean out all the build products.
 #
-clean:
-	@rm -rf ${wildcard ${FW_ROOT}/${OUTDIR}/${OUTFILE}.*}
-	@rm -rf ${wildcard *.o} ${wildcard *~}
-	@rm -rf $(patsubst %.c,%.o,${FW_SRCS})
-	@rm -rf $(patsubst %.c,%.d,${FW_SRCS})
+src-clean:
+	@rm -rf ${wildcard *.o}
+	@rm -rf $(patsubst %.c,%.o,$(filter %.c,${FW_SRCS}))
+	@rm -rf $(patsubst %.c,%.d,$(filter %.c,${FW_SRCS}))
+
+clean: src-clean
+	@rm -rf ${wildcard ${FW_ROOT}/${OUTDIR}/*}
 
 #
 # The rule to create the target directory.
@@ -198,6 +205,7 @@ ${FW_ROOT}/${OUTDIR}/${OUTFILE}:
 	      '${LIBM}' '${LIBC}' '${LIBGCC}';                          
 	@${OBJCOPY} -O elf32-littlearm ${@}.axf ${@};
 	@rm -f ${@}.axf;
+	@$(MAKE) -s src-clean;
 
 #
 # Rules for building the blinky example.

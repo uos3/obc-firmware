@@ -68,6 +68,7 @@
 
 #define SPI_RADIO_RX	0x0
 #define SPI_RADIO_TX	0x1
+#define SPI_FRAM			0x2
 
 
 #define GPIO0_RADIO_RX	GPIO_PB7

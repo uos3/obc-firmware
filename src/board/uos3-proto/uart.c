@@ -1,3 +1,13 @@
+/**
+ * @ingroup uos3-proto
+ * @ingroup uart
+ *
+ * @file uos3-proto/uart.c
+ * @brief UART Driver - uos3-proto board
+ *
+ * @{
+ */
+
 #include "board.h"
 #include "../uart.h"
 
@@ -186,3 +196,7 @@ bool UART_charsAvail(uint8_t uart_num)
 
   return UARTCharsAvail(uart->base_uart);
 }
+
+/**
+ * @}
+ */

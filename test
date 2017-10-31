@@ -33,7 +33,7 @@ stderr="/proc/$$/fd/2"
 stdnull="/dev/null"
 
 usage() {
-    echo "Usage: test <module>" >&2
+    echo "Usage: test [board]" >&2
 }
 
 print() {
@@ -78,7 +78,7 @@ hyphenjoin() {
 
 print_help() {
   echo ""
-  echo " Usage: ./test <module>"
+  echo " Usage: ./test [board]"
   echo ""
   echo " Options:"
   echo ""
@@ -129,18 +129,11 @@ for i in `seq 2 $OPTIND`; do shift; done
 
 board=${1,,}
 shift 
-module=${1,,}
-shift
 
 
 ## Check <program> argument
-if [ -z "$module" ]; then
-    module=$board
+if [ -z "$board" ]; then
     board="gnulinux" ## insert default option here
-fi
-if [ ! -e "src/${module}/test/${module}.c" ]; then
-    print_err "$_ERROR_ Test file for module \"${module}\" not found"
-    exit 1
 fi
 
 
@@ -153,9 +146,9 @@ if [ -z "$(echo "$githash" | grep "dirty")" ] && [ ! -z "$(git status --porcelai
 fi
 
 outdir="builds"
-filename="test-$(hyphenjoin $module $flags $githash)"
+filename="test-$(hyphenjoin $flags $githash)"
 
-flags="BOARD=${board} MAIN=../${module}/test/${module} OUTDIR=${outdir} OUTFILE=\"${filename}\""
+flags="BOARD=${board} RUNTESTS=true MAIN=../test OUTDIR=${outdir} OUTFILE=\"${filename}\""
 
 if $opt_osize; then
   print "$_INFO_ Compiler optimise for size (-Os):$COLOUR_RED ON $COLOUR_OFF"

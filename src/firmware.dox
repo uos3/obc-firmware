@@ -1,0 +1,53 @@
+/** \mainpage UoS³ Flight Computer Firmware Documentation
+ *
+ * The firmware is built from a top-level C program file and resolves all the references and includes from the src/ and specified hardware folders
+ *
+ * The design is such so that the main hardware code and hardware can be easily varied. eg camera code which can be used with different boards goes in the src folder, but the actual board specific drivers go in the relevant board folder.
+ *
+ * For installation instructions, see README.md in the Repository
+ *
+ * \section doc_links Documentation Areas
+ *
+ * \ref mains "Main Applications"
+ *
+ * \ref drivers "Hardware Driver Layer"
+ *
+ * \ref packet "Packet Functions"
+ *
+ * \ref cc1125 "CC1125 RF Transceiver Driver"
+ *
+ * \section external_links External Links
+ *
+ * <a href="https://github.com/uos3/firmware">Github Code Repository</a>
+ *
+ * <a href="https://travis-ci.org/uos3/firmware">Continuous Integration Testing (Travis CI)</a>
+ *
+ * \section authors Authors
+ *
+ * Suzanna Lucarotti
+ *
+ * Matthew Brejza
+ *
+ * Phil Crump
+ * 
+ *
+ * @defgroup group_main Project Modules
+ * @brief Project modules listing
+ *
+ * @{
+ */
+
+/** @defgroup mains Main Applications
+ *	Main Application Entry Files
+ */
+/** @defgroup packet  Packet Modules
+ *  High-level Data Packet Modules
+ */
+/** @defgroup cc1125  CC1125 Driver
+ *  Driver for the TI CC1125 ISM Transceiver
+ */
+/** @defgroup tests   Module Tests 
+ *  Tests of High-level modules.
+ */
+
+/** @} */

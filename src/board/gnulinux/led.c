@@ -1,3 +1,13 @@
+/**
+ * @ingroup gnulinux
+ * @ingroup led
+ *
+ * @file gnulinux/led.c
+ * @brief LED Driver - gnulinux platform
+ *
+ * @{
+ */
+
 #include "../led.h"
 
 /** Public Functions */
@@ -17,3 +27,7 @@ void LED_set(uint8_t led_num, bool state)
   (void) led_num;
   (void) state;
 }
+
+/**
+ * @}
+ */

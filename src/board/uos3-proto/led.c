@@ -1,3 +1,13 @@
+/**
+ * @ingroup uos3-proto
+ * @ingroup led
+ *
+ * @file uos3-proto/led.c
+ * @brief LED Driver - uos3-proto board
+ *
+ * @{
+ */
+
 #include "board.h"
 #include "../gpio.h"
 
@@ -40,9 +50,16 @@ void LED_set(uint8_t led_num, bool state)
 }
 
 void LED_toggle(uint8_t led_num)
-{ if(led_num >= NUMBER_OF_LEDS)
+{
+  if(led_num >= NUMBER_OF_LEDS)
     return;
   LED *led = &LED_leds[led_num];
+  
   GPIO_write(led->gpio, !led->state);
+
   led->state = !led->state;
 }
+
+/**
+ * @}
+ */

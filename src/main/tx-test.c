@@ -91,10 +91,10 @@ int main(void)
 		//// Write packet to TX FIFO
         //cc112xSpiWriteTxFifo(RADIO_TX, buff, sizeof(buff));
 
-		SPI_cmdstrobe(SPI_RADIO_RX, CC112X_SRX);
+		SPI_cmd(SPI_RADIO_RX, CC112X_SRX);
 		
         // Strobe TX to send packet
-        SPI_cmdstrobe(SPI_RADIO_TX, CC112X_STX);
+        SPI_cmd(SPI_RADIO_TX, CC112X_STX);
 		
 		while(1){
 			WDT_kick();
