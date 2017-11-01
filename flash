@@ -157,8 +157,7 @@ binary="$1"
 flashtool="arm-none-eabi-gdb"
 
 if [ -z "$binary" ]; then
-  newest_binary=`ls -t builds/ | head -1`
-  binary="builds/${newest_binary}"
+  binary="builds/$(ls -t -I "*.*" builds/ | head -1)"
   echo -e "$_INFO_ Most recent build selected: ${binary}" >&$stdout
 fi
 

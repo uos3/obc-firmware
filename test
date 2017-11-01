@@ -167,9 +167,18 @@ if $opt_testverbose; then
   flags="${flags} TESTVERBOSE_ON=true"
 fi
 
+which lcov 1>/dev/null 2>&1
+if [ $? != 0 ]
+then
+  print "$_INFO_ 'lcov' not installed, test coverage report disabled."
+else
+  flags="${flags} TESTCOVERAGE_ON=true"
+fi
+
 ## Change to board directory, make clean, make, then print summary message.
 cd "src/board/${board}"
 make ${flags} clean \
+&& print "$_INFO_ Compiling..$COLOUR_OFF" \
 && make ${flags} \
 && {
 	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF"
@@ -177,11 +186,29 @@ make ${flags} clean \
 	print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF" \
 	&& exit 1
 } \
-&& print "$_INFO_$COLOUR_GREEN Running Tests..$COLOUR_OFF" \
+&& print "$_INFO_ Running Tests..$COLOUR_OFF" \
 && test_run \
 && {
   print "$_INFO_$COLOUR_GREEN Tests Passed $COLOUR_OFF"
 } || {
   print "$_ERROR_$COLOUR_RED Tests Failed $COLOUR_OFF" \
   && exit 1
+} \
+&& {
+	print "$_INFO_ Running Coverage Report..$COLOUR_OFF"
+        lcov -q --capture \
+	 --base-directory ${source_dir}/src/board/${board} \
+	 --output-file ${source_dir}/${outdir}/${filename}-coverage.info \
+	 --directory ${source_dir}/src/buffer/ \
+	 --directory ${source_dir}/src/packet/ \
+	 --no-recursion
+	find ${source_dir}/src/ -name '*.gcno' -delete
+	find ${source_dir}/src/ -name '*.gcda' -delete
+        if $opt_testverbose; then
+	  lcov -l \
+	   ${source_dir}/${outdir}/${filename}-coverage.info
+	else
+	  lcov --summary \
+	   ${source_dir}/${outdir}/${filename}-coverage.info
+	fi
 }

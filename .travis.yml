@@ -47,3 +47,7 @@ jobs:
             - doxygen
       env: 
       script: tools/travis_doxygen_docs.sh
+
+# Upload Modules Test Coverage Report
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
