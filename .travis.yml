@@ -7,6 +7,12 @@ language: c
 git:
   depth: 1
 
+# Install lcov test coverage tool
+addons:
+  apt:
+    packages:
+    - lcov
+
 # Cache the compilers folder so we don't have to download and unpack it for every build
 cache:
   directories:
