@@ -12,7 +12,7 @@
 #define __PACKET_TELEMETRY_H__
 
 #include "../firmware.h"
-
+/*
 Time  32
 time_source 2
 sequence_id 16
@@ -29,7 +29,7 @@ rx_temperature  8
 tx_temperature  8
 pa_temperature  8
 rx_noisefloor 8
-
+*/
 
 typedef struct packet_telemetry_realtime {
   uint32_t time;

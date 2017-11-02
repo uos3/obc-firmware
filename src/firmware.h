@@ -36,6 +36,7 @@
 #include "packet/crc16.h"
 #include "packet/pn9.h"
 #include "packet/interleave.h"
+#include "packet/telemetry.h"
 
 /* Buffer */
 #include "buffer/buffer.h"
