@@ -67,6 +67,7 @@ ${FW_ROOT}/${OUTDIR}/${OUTFILE}: $(OSRCS)
 	    echo $(CC) $(USE_OPT) $(CFLAGS) $(BOARD_INCLUDE) $(DEFINES) $(OSRCS) $(ASRCS) -o ${FW_ROOT}/${OUTDIR}/${OUTFILE} $(LIBS); \
 	fi
 	@$(CC) $(USE_OPT) $(CFLAGS) $(BOARD_INCLUDE) $(DEFINES) $(OSRCS) $(ASRCS) -o ${FW_ROOT}/${OUTDIR}/${OUTFILE} $(LIBS)
+	@rm -fr $(OSRCS)
 
 clean:
 	@rm -fr $(OSRCS) ${FW_ROOT}/${OUTDIR}/${OUTFILE}
