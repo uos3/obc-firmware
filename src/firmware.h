@@ -30,6 +30,7 @@
 #include "board/temperature_sensors.h"
 #include "board/watchdog_int.h"
 #include "board/imu.h"
+#include "board/camera.h"
 
 /* radio stuff */
 #include "cc1125/cc112x_spi.h"
