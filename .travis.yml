@@ -23,8 +23,9 @@ install:
 
 # List of tests to run ( `./build -w $BOARD $MAIN` )
 env:
-  - BOARD=uos3-proto MAIN=blinky
-  - BOARD=uos3-proto MAIN=serial-test
+  - BOARD=uos3-proto MAIN=demo_blinky
+  - BOARD=uos3-proto MAIN=demo_uart
+  - BOARD=uos3-proto MAIN=demo_watchdog
   - BOARD=uos3-proto MAIN=tx-test
   - BOARD=uos3-proto MAIN=txrx-uart
 
