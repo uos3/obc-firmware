@@ -18,7 +18,7 @@ static char string_buffer2[STRING_BUFFER_LENGTH];
 
 void UART_putnum(unsigned int serialport,signed long x)
  {
-  itoa(abs(x),string_buffer,10); // 16 for hex, 10 for decimal
+  itoa(abs(x),string_buffer,16); // 16 for hex, 10 for decimal
   unsigned int len=strlen(string_buffer);
   unsigned int targetlen=6-len;
   strcpy(string_buffer2,"+00000");

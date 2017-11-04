@@ -22,6 +22,7 @@
 #include "board/spi.h"
 #include "board/gpio.h"
 #include "board/debug.h"
+#include "board/watchdog_int.h"
 #include "board/random.h"
 #include "board/ldpc.h"
 #include "board/fram.h"
@@ -43,7 +44,7 @@
 
 /* get Suzi's modules */
 
-#include "suz/i2cbase.h"
+//#include "suz/i2cbase.h"
 #include "suz/uartbase.h"
 
 /* ... */
