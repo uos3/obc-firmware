@@ -23,14 +23,6 @@
 #define GPS_SERIAL UART_PC104_HEADER
 #define CAM_SERIAL UART_CAM_HEADER
 
- // the useful hardware constants (only used here so not moved away as yet)
- 
-// Wrappers for printing to serial port - always to the one specified as output, placed here close to code for clarity
-
-#define DISP3(x,y,z) UART_putstr(DEBUG_SERIAL,x,y,z); // x and z are strings, y is a number shown as signed base10 16bit
-#define DISP2(y,z) UART_putstr(DEBUG_SERIAL,NULL,y,z); 
-#define DISP1(x) UART_puts(DEBUG_SERIAL,x);
-
  //////////////////////////////////////////////////////////////////
  // the actual main code
  //////////////////////////////////////////////////////////////////

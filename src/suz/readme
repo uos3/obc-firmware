@@ -1,8 +1,0 @@
-This is where the modules building on the vendor specific code go
-
- (Basically Suzi's secret hideaway for working code that appears good)
-
-(c) Suzanna Lucarotti 2017
-
-The aim is that the common (non vendor specific) functions will be stored here eventually (with a rename, tried putting it inside src director, but this confused linker too much :-( )
-

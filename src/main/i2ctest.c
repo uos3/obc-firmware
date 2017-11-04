@@ -50,6 +50,29 @@
  
 // Wrappers for printing to serial port - always to the one specified as output, placed here close to code for clarity
 
+#define STRING_BUFFER_LENGTH 20 // rough hack for testing
+
+static char string_buffer[STRING_BUFFER_LENGTH];
+static char string_buffer2[STRING_BUFFER_LENGTH];
+
+static void UART_putnum(unsigned int serialport,signed long x)
+ {
+  itoa(abs(x),string_buffer,16); // 16 for hex, 10 for decimal
+  unsigned int len=strlen(string_buffer);
+  unsigned int targetlen=6-len;
+  strcpy(string_buffer2,"+00000");
+  strcpy(string_buffer2+targetlen,string_buffer);
+  if (x<0) string_buffer2[0]='-';
+  UART_puts(serialport,string_buffer2);
+}
+
+static void UART_putstr(unsigned int serialport, char *s1,signed long x, char *s2)
+ {
+  if (s1!=NULL) UART_puts(serialport,s1);
+  UART_putnum(serialport,x);
+  if (s2!=NULL) UART_puts(serialport,s2);
+ }  
+
 #define DISP3(x,y,z) UART_putstr(DEBUG_SERIAL,x,y,z); // x and z are strings, y is a number shown as signed base10 16bit
 #define DISP2(y,z) UART_putstr(DEBUG_SERIAL,NULL,y,z); 
 #define DISP1(x) UART_puts(DEBUG_SERIAL,x);
