@@ -41,8 +41,8 @@ jobs:
           packages:
             - lcov
       script: ./test -w
-    - stage: Docs
-      if: branch = phil-work
+    - stage: Docs & Reports
+      if: branch = master
       cache: skip
       install: skip
       addons:

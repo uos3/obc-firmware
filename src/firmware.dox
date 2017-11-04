@@ -16,11 +16,13 @@
  *
  * \ref cc1125 "CC1125 RF Transceiver Driver"
  *
- * \section external_links External Links
+ * \section external_links Links
  *
- * <a href="https://github.com/uos3/firmware">Github Code Repository</a>
+ * <a href="https://github.com/uos3/obc-firmware">Code Repository</a>
  *
- * <a href="https://travis-ci.org/uos3/firmware">Continuous Integration Testing (Travis CI)</a>
+ * <a href="https://travis-ci.org/uos3/obc-firmware">Continuous Integration Testing</a>
+ *
+ * <a href="https://uos3.github.io/obc-firmware/coverage/">Test Coverage Report</a>
  *
  * \section authors Authors
  *
