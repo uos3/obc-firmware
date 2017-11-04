@@ -48,6 +48,11 @@ print "$_DEBUG_ Generating Doxygen code documentation"
 # Redirect both stderr and stdout to the log file and the console.
 doxygen ../doxyfile 2>&1 | tee doxygen.log
 
+# Generate html coverage report
+$(cd ${source_dir}/../ && ./test)
+coverageFile="$(ls -t ${source_dir}/../builds/*-coverage.info | head -1)"
+genhtml ${coverageFile} --output-directory coverage/
+
 # Bail out if there's no changes
 git diff -s --exit-code
 if [ $? -eq 0 ]; then

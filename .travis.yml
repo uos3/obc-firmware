@@ -7,12 +7,6 @@ language: c
 git:
   depth: 1
 
-# Install lcov test coverage tool
-addons:
-  apt:
-    packages:
-    - lcov
-
 # Cache the compilers folder so we don't have to download and unpack it for every build
 cache:
   directories:
@@ -42,18 +36,19 @@ jobs:
   include:
     - stage: Module Tests
       env: 
+      addons:
+        apt:
+          packages:
+            - lcov
       script: ./test -w
-    - stage: Doxygen
-      if: branch = master
+    - stage: Docs
+      if: branch = phil-work
       cache: skip
       install: skip
       addons:
         apt:
           packages:
             - doxygen
+            - lcov
       env: 
-      script: tools/travis_doxygen_docs.sh
-
-# Upload Modules Test Coverage Report
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+      script: tools/travis_docs.sh
