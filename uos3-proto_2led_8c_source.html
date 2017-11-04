@@ -128,17 +128,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  led-&gt;state = state;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keywordtype">void</span> LED_toggle(uint8_t led_num)</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;{</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordflow">if</span>(led_num &gt;= NUMBER_OF_LEDS)</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="struct_l_e_d.html">LED</a> *led = &amp;LED_leds[led_num];</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="group__gpio.html#ga60b88b12b51bfd31be09e19f189cf1b6">GPIO_write</a>(led-&gt;gpio, !led-&gt;state);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  led-&gt;state = !led-&gt;state;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="ttc" id="struct_l_e_d_html"><div class="ttname"><a href="struct_l_e_d.html">LED</a></div><div class="ttdef"><b>Definition:</b> <a href="susf-telecommand_2led_8c_source.html#l00005">led.c:5</a></div></div>
 <div class="ttc" id="group__led_html_ga44f0dcd60cca69dfed79d7c6388e4e9c"><div class="ttname"><a href="group__led.html#ga44f0dcd60cca69dfed79d7c6388e4e9c">LED_set</a></div><div class="ttdeci">void LED_set(uint8_t led_num, bool state)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00025">led.c:25</a></div></div>
 <div class="ttc" id="group__led_html_ga8bfaf273399874243979d43beaa7fd77"><div class="ttname"><a href="group__led.html#ga8bfaf273399874243979d43beaa7fd77">LED_off</a></div><div class="ttdeci">void LED_off(uint8_t led_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00020">led.c:20</a></div></div>
