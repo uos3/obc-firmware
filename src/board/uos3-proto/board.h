@@ -62,6 +62,10 @@
 #define LED_B	0x1
 
 
+#define GPIO0_RADIO_RX	GPIO_PB7
+#define GPIO0_RADIO_TX	GPIO_PA2
+
+
 #define UART_PC104_HEADER	0x0
 #define UART_CAM_HEADER		0x1
 
@@ -71,8 +75,7 @@
 #define SPI_FRAM			0x2
 
 
-#define GPIO0_RADIO_RX	GPIO_PB7
-#define GPIO0_RADIO_TX	GPIO_PA2
-
+#define I2C_IMU				0x0
+#define I2C_TEMP			0x1
 
 #endif /*  __BOARD_UOS3_PROTO_H__ */

@@ -10,7 +10,7 @@ The design is such so that the main hardware code and hardware can be easily var
 
 Open a terminal in the root folder of this firmware repository, then run the following commands:
 
-`./build uos3-proto blinky` - will compile blinky.c with the folder 'src/board/uos3-proto/' included
+`./build uos3-proto demo_blinky` - will compile demo_blinky.c with the folder 'src/board/uos3-proto/' included
 
   * The resultant ELF filename will be 'builds/_<board>-<program>-<gitref>_' eg 'builds/uos3-proto-blinky-fd8ea0c'
 
