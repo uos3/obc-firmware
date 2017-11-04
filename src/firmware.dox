@@ -1,10 +1,10 @@
 /** \mainpage UoS³ Flight Computer Firmware Documentation
  *
- * The firmware is built from a top-level C program file and resolves all the references and includes from the src/ and specified hardware folders
+ * The firmware is built from a C main program file and resolves all the references and includes from the src/ and specified hardware folders
  *
- * The design is such so that the main hardware code and hardware can be easily varied. eg camera code which can be used with different boards goes in the src folder, but the actual board specific drivers go in the relevant board folder.
+ * The design is such so that the main hardware code and hardware can be easily varied. eg logic & processing modules go in the /src/<module>/ folder, but the actual board & hardware specific drivers go in the relevant /src/board/<board>/ folder. The main C application files are in /src/main/<application>.c
  *
- * For installation instructions, see README.md in the Repository
+ * For environment installation instructions, see README.md in the top level of the Repository.
  *
  * \section doc_links Documentation Areas
  *
@@ -23,14 +23,6 @@
  * <a href="https://travis-ci.org/uos3/obc-firmware">Continuous Integration Testing</a>
  *
  * <a href="https://uos3.github.io/obc-firmware/coverage/">Test Coverage Report</a>
- *
- * \section authors Authors
- *
- * Suzanna Lucarotti
- *
- * Matthew Brejza
- *
- * Phil Crump
  * 
  *
  * @defgroup group_main Project Modules

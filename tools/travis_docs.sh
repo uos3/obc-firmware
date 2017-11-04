@@ -49,7 +49,7 @@ print "$_DEBUG_ Generating Doxygen code documentation"
 doxygen ../doxyfile 2>&1 | tee doxygen.log
 
 # Generate html coverage report
-$(cd ${source_dir}/../ && ./test)
+$(cd ${source_dir}/../ && ./test -q)
 coverageFile="$(ls -t ${source_dir}/../builds/*-coverage.info | head -1)"
 genhtml ${coverageFile} --output-directory coverage/
 
