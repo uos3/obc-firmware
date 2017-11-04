@@ -12,6 +12,7 @@
 
 bool test_pn9(void);
 bool test_interleave(void);
+bool test_crc16(void);
 bool test_shake(void);
 bool test_ldpc(void);
 

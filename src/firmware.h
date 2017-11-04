@@ -32,7 +32,7 @@
 
 /* Packet */
 #include "packet/packet.h"
-#include "packet/sha3.h"
+#include "packet/shake.h"
 #include "packet/crc16.h"
 #include "packet/pn9.h"
 #include "packet/interleave.h"

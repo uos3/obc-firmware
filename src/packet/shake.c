@@ -25,6 +25,9 @@ void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, u
  * The MIT License (MIT)
  */
 
+// Compression function.
+void sha3_keccakf(uint64_t st[25]);
+
 #ifndef KECCAKF_ROUNDS
 #define KECCAKF_ROUNDS 24
 #endif
@@ -125,11 +128,10 @@ void sha3_keccakf(uint64_t st[25])
 #endif
 }
 
-// Initialize the context for SHA3
-
-int sha3_init(sha3_ctx_t *c, int mdlen)
+int shake128_init(sha3_ctx_t *c)
 {
     int i;
+    int mdlen = 16; // Hardcode SHAKE-128 (16 bytes)
 
     for (i = 0; i < 25; i++)
         c->st.q[i] = 0;
@@ -142,7 +144,7 @@ int sha3_init(sha3_ctx_t *c, int mdlen)
 
 // update state with more data
 
-int sha3_update(sha3_ctx_t *c, const void *data, size_t len)
+int shake_update(sha3_ctx_t *c, const void *data, size_t len)
 {
     size_t i;
     int j;
@@ -158,36 +160,6 @@ int sha3_update(sha3_ctx_t *c, const void *data, size_t len)
     c->pt = j;
 
     return 1;
-}
-
-// finalize and output a hash
-
-int sha3_final(void *md, sha3_ctx_t *c)
-{
-    int i;
-
-    c->st.b[c->pt] ^= 0x06;
-    c->st.b[c->rsiz - 1] ^= 0x80;
-    sha3_keccakf(c->st.q);
-
-    for (i = 0; i < c->mdlen; i++) {
-        ((uint8_t *) md)[i] = c->st.b[i];
-    }
-
-    return 1;
-}
-
-// compute a SHA-3 hash (md) of given byte length from "in"
-
-void *sha3(const void *in, size_t inlen, void *md, int mdlen)
-{
-    sha3_ctx_t sha3;
-
-    sha3_init(&sha3, mdlen);
-    sha3_update(&sha3, in, inlen);
-    sha3_final(md, &sha3);
-
-    return md;
 }
 
 // SHAKE128 and SHAKE256 extensible-output functionality
