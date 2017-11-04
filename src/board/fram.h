@@ -41,8 +41,28 @@ void FRAM_init(void);
  */
 bool FRAM_selfTest(void);
 
+/**
+ * @function
+ * @ingroup fram
+ *
+ * Writ data to FRAM, beginning at specified memory address.
+ *
+ * @parameter uint32_t Memory address to begin writing data.
+ * @parameter uint8_t* Pointer to data buffer.
+ * @parameter uint32_t Length to write in bytes.
+ */
 void FRAM_write(uint32_t address, uint8_t *data, uint32_t length);
 
+/**
+ * @function
+ * @ingroup fram
+ *
+ * Read data from FRAM, beginning at specified memory address.
+ *
+ * @parameter uint32_t Memory address to begin reading data.
+ * @parameter uint8_t* Pointer to data buffer.
+ * @parameter uint32_t Length to read in bytes.
+ */
 void FRAM_read(uint32_t address, uint8_t *data, uint32_t length);
 
 #endif /* __FRAM_H__ */
