@@ -19,6 +19,7 @@
  * @ingroup rtc
  *
  * Initialise Real-Time Clock.
+ * Will block for ~1500ms if RTC not already initialised.
  *
  */
 void RTC_init(void);
