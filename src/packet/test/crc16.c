@@ -1,6 +1,15 @@
 #include "../../firmware.h"
 #include "../../test.h"
 
+uint8_t pattern_0[50] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+uint32_t pattern_0_length = 50;
+uint16_t pattern_0_test_output;
+uint16_t pattern_0_expected_output = 0x570D;
+
 uint8_t pattern_a[9] = "123456789";
 uint32_t pattern_a_length = 9;
 uint16_t pattern_a_test_output;
@@ -17,6 +26,18 @@ uint16_t pattern_b_expected_output = 0x5264;
 
 bool test_crc16(void)
 {
+  Packet_crc16(pattern_0, pattern_0_length, &pattern_0_test_output);
+
+  if(TEST_VERBOSE)
+  {
+    Debug_print("CRC16 Output: 0x%04x\r\n", pattern_0_test_output);
+  }
+
+  if(pattern_0_test_output != pattern_0_expected_output)
+  {
+    return false;
+  }
+
   Packet_crc16(pattern_a, pattern_a_length, &pattern_a_test_output);
 
   if(TEST_VERBOSE)
