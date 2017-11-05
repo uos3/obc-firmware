@@ -10,6 +10,7 @@
 
 #define CONFIGURATION_EEPROM_ADDRESS 0x0000
 
+static bool Configuration_load_eeprom(void);
 static void Configuration_load_defaults(void);
 static void Configuration_update_checksum(void);
 
@@ -22,12 +23,12 @@ void Configuration_Init(void)
 
 }
 
-bool Configuration_load_eeprom(void)
+static bool Configuration_load_eeprom(void)
 {
-  if(EEPROM_selftest == false)
+  if(EEPROM_selfTest() == false)
     return false;
 
-  EEPROM_read(CONFIGURATION_EEPROM_ADDRESS, sizeof(configuration_t), (uint32_t*)(&spacecraft_configuration));
+  EEPROM_read(CONFIGURATION_EEPROM_ADDRESS, (uint32_t*)(&spacecraft_configuration), sizeof(configuration_t));
 
   return Configuration_verify_checksum();
 }
