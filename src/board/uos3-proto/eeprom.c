@@ -10,10 +10,13 @@
 #include "board.h"
 #include "../eeprom.h"
 
+#include "driverlib/sysctl.h"
 #include "driverlib/eeprom.h"
 
 void EEPROM_init(void)
 {
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_EEPROM0);
+
   EEPROMInit();
 }
 
