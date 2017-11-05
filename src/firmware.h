@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <limits.h>
 
 #define ROUND_UP(N, S) ((((N) + (S) - 1) / (S)) * (S))
 
