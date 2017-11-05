@@ -1,4 +1,9 @@
-CC=gcc
+ifneq ($(CC),)
+  CC=gcc
+else
+  CC=$(CC)
+endif
+
 FW_ROOT=../../..
 
 #

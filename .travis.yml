@@ -42,7 +42,7 @@ jobs:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - gcc-5
+            - gcc-6
             - lcov
       script: ./test -w
     - stage: Docs & Reports
@@ -55,7 +55,7 @@ jobs:
             - ubuntu-toolchain-r-test
           packages:
             - doxygen
-            - gcc-5
+            - gcc-6
             - lcov
       env: 
       script: tools/travis_docs.sh

@@ -151,6 +151,18 @@ filename="test-$(hyphenjoin $flags $githash)"
 
 flags="BOARD=${board} RUNTESTS=true MAIN=../test OUTDIR=${outdir} OUTFILE=\"${filename}\""
 
+cc="gcc-6"
+gcov="gcov-6"
+which ${cc} 1>/dev/null 2>&1
+if [ $? != 0 ]; then
+  cc="gcc"
+  gcov="gcov"
+  print "$_INFO_$COLOUR_RED Warning: GCC 6.x not installed, using GCC $(${cc} -dumpversion).$COLOUR_OFF"
+else
+  print "$_INFO_ Using GCC $(${cc} -dumpversion) $COLOUR_OFF"
+fi
+flags="${flags} CC=${cc}"
+
 if $opt_osize; then
   print "$_INFO_ Compiler optimise for size (-Os):$COLOUR_RED ON $COLOUR_OFF"
   flags="${flags} OSIZE_ON=true"
@@ -199,6 +211,7 @@ make ${flags} clean \
     if $opt_testcoverage; then
 	print "$_INFO_ Running Coverage Report..$COLOUR_OFF"
         lcov -q --capture \
+   --gcov-tool ${gcov} \
 	 --base-directory ${source_dir}/src/board/${board} \
 	 --output-file ${source_dir}/${outdir}/${filename}-coverage.info \
 	 --directory ${source_dir}/src/buffer/ \
@@ -210,10 +223,12 @@ make ${flags} clean \
 	find ${source_dir}/src/ -name '*.gcda' -delete
         if $opt_testverbose; then
 	  lcov -l \
-	   ${source_dir}/${outdir}/${filename}-coverage.info
+	   ${source_dir}/${outdir}/${filename}-coverage.info \
+     --gcov-tool ${gcov}
 	else
 	  lcov --summary \
-	   ${source_dir}/${outdir}/${filename}-coverage.info
+	   ${source_dir}/${outdir}/${filename}-coverage.info \
+     --gcov-tool ${gcov}
 	fi
     fi
 }
