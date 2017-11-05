@@ -66,23 +66,23 @@ bool IMU_selftest(void)
 	return true;
 }
 
-void IMU_read_accel(uint16_t *accel_x, uint16_t *accel_y, uint16_t *accel_z)
+void IMU_read_accel(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z)
 {
-	*accel_x = I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_ACCEL_XOUT);
-	*accel_y = I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_ACCEL_YOUT);
-	*accel_z = I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_ACCEL_ZOUT);
+	*accel_x = (int16_t)I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_ACCEL_XOUT);
+	*accel_y = (int16_t)I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_ACCEL_YOUT);
+	*accel_z = (int16_t)I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_ACCEL_ZOUT);
 }
 
-void IMU_read_gyro(uint16_t *gyro_x, uint16_t *gyro_y, uint16_t *gyro_z)
+void IMU_read_gyro(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z)
 {
-	*gyro_x = I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_GYRO_XOUT);
-	*gyro_y = I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_GYRO_YOUT);
-	*gyro_z = I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_GYRO_ZOUT);
+	*gyro_x = (int16_t)I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_GYRO_XOUT);
+	*gyro_y = (int16_t)I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_GYRO_YOUT);
+	*gyro_z = (int16_t)I2CReceive16(I2C_IMU, SLAVE_ADDRESS, MPU_GYRO_ZOUT);
 }
 
-void IMU_read_magno(uint16_t *magno_x, uint16_t *magno_y, uint16_t *magno_z)
+void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z)
 {
-	*magno_x = I2CReceive16r(I2C_IMU, MAG_PASS_THROUGH_I2C_ADDR, MAG_HXL);
-	*magno_y = I2CReceive16r(I2C_IMU, MAG_PASS_THROUGH_I2C_ADDR, MAG_HYL);
-	*magno_z = I2CReceive16r(I2C_IMU, MAG_PASS_THROUGH_I2C_ADDR, MAG_HZL);
+	*magno_x = (int16_t)I2CReceive16r(I2C_IMU, MAG_PASS_THROUGH_I2C_ADDR, MAG_HXL);
+	*magno_y = (int16_t)I2CReceive16r(I2C_IMU, MAG_PASS_THROUGH_I2C_ADDR, MAG_HYL);
+	*magno_z = (int16_t)I2CReceive16r(I2C_IMU, MAG_PASS_THROUGH_I2C_ADDR, MAG_HZL);
 }

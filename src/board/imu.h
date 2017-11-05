@@ -43,7 +43,7 @@ bool IMU_selftest(void);
  * @parameter Pointer to y-value data storage
  * @parameter Pointer to z-value data storage
  */
-void IMU_read_accel(uint16_t *accel_x, uint16_t *accel_y, uint16_t *accel_z);
+void IMU_read_accel(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z);
 
 /**
  * @function
@@ -55,7 +55,7 @@ void IMU_read_accel(uint16_t *accel_x, uint16_t *accel_y, uint16_t *accel_z);
  * @parameter Pointer to y-value data storage
  * @parameter Pointer to z-value data storage
  */
-void IMU_read_gyro(uint16_t *gyro_x, uint16_t *gyro_y, uint16_t *gyro_z);
+void IMU_read_gyro(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z);
 
 /**
  * @function
@@ -67,6 +67,6 @@ void IMU_read_gyro(uint16_t *gyro_x, uint16_t *gyro_y, uint16_t *gyro_z);
  * @parameter Pointer to y-value data storage
  * @parameter Pointer to z-value data storage
  */
-void IMU_read_magno(uint16_t *magno_x, uint16_t *magno_y, uint16_t *magno_z);
+void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z);
 
 #endif /*  __IMU_H__ */
