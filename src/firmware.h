@@ -47,10 +47,11 @@
 /* Buffer */
 #include "buffer/buffer.h"
 
-/* get Suzi's modules */
+/* Configuration */
+#include "configuration/configuration.h"
 
-//#include "suz/i2cbase.h"
-#include "suz/uartbase.h"
+/* Mission */
+#include "mission/mission.h"
 
 /* ... */
 

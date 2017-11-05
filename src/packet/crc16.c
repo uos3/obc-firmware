@@ -7,7 +7,6 @@
  */
 
 #include "../firmware.h"
-#include "crc16.h"
 
 void Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output)
 {

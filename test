@@ -203,6 +203,8 @@ make ${flags} clean \
 	 --output-file ${source_dir}/${outdir}/${filename}-coverage.info \
 	 --directory ${source_dir}/src/buffer/ \
 	 --directory ${source_dir}/src/packet/ \
+	 --directory ${source_dir}/src/configuration/ \
+	 --directory ${source_dir}/src/mission/ \
 	 --no-recursion
 	find ${source_dir}/src/ -name '*.gcno' -delete
 	find ${source_dir}/src/ -name '*.gcda' -delete
