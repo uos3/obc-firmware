@@ -8,27 +8,35 @@
 
 #include "../firmware.h"
 
-#define CONFIGURATION_EEPROM_ADDRESS 0x0000
-
-static bool Configuration_load_eeprom(void);
+static void Configuration_save_to_eeprom(void);
+static bool Configuration_load_from_eeprom(void);
 static void Configuration_load_defaults(void);
 static void Configuration_update_checksum(void);
 
 void Configuration_Init(void)
 {
-  if(Configuration_load_eeprom() == false)
+  if(Configuration_load_from_eeprom() == false)
+  {
+    /* Load defaults and save EEPROM copy */
     Configuration_load_defaults();
+    Configuration_save_to_eeprom();
+  }
 
 
 
 }
 
-static bool Configuration_load_eeprom(void)
+static void Configuration_save_to_eeprom(void)
+{
+  EEPROM_write(EEPROM_CONFIGURATION_DATA_ADDRESS, (uint32_t*)(&spacecraft_configuration), sizeof(configuration_t));
+}
+
+static bool Configuration_load_from_eeprom(void)
 {
   if(EEPROM_selfTest() == false)
     return false;
 
-  EEPROM_read(CONFIGURATION_EEPROM_ADDRESS, (uint32_t*)(&spacecraft_configuration), sizeof(configuration_t));
+  EEPROM_read(EEPROM_CONFIGURATION_DATA_ADDRESS, (uint32_t*)(&spacecraft_configuration), sizeof(configuration_t));
 
   return Configuration_verify_checksum();
 }

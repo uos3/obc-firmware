@@ -16,9 +16,12 @@
 #include <stdbool.h>
 
 /* 2KB TM4C123GH6PM */
-#define EEPROM_SIZE	0x20000
+#define EEPROM_SIZE	0x07D0
 
 #define EEPROM_MAX_ADDRESS (EEPROM_SIZE - 1)
+
+#define EEPROM_MISSION_DATA_ADDRESS 0x0000
+#define EEPROM_CONFIGURATION_DATA_ADDRESS 0x0100
 
 /**
  * @function

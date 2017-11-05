@@ -41,23 +41,29 @@ typedef enum {
 } imu_bandwidth_t;
 
 /* Refer to https://docs.google.com/spreadsheets/d/1OFgH6SIJJw-ISLHxVPTY4VEa49qBMccs4Qu1e_zjqvg/ */
-/* Booleans will be bit-packed only if needed to fit */
+/* Packing work in progress */
 typedef struct configuration_data_t {
-	bool mission_inprogress;
-	bool antennas_deployed;
-	
-	bool tx_enable;
-	uint8_t tx_interval;
+	/* 32b word */
+	bool tx_enable:1;
+	bool enable_gps_time_sync:1;
+	bool imu_accel_enabled:1;
+	bool imu_gyro_enabled:1;
+	bool imu_magno_enabled:1;
 
-	tx_datarate_t tx_datarate;
-	tx_power_t tx_power;
-	tx_power_t tx_overtemp_power;
+	/* 32b word */
+  tx_datarate_t tx_datarate:4; 
+  tx_power_t tx_power:4;
+  tx_power_t tx_overtemp_power:4;
+  imu_bandwidth_t imu_bandwidth:4;
+  image_acquisition_profile_t	image_acquisition_profile:4;
+
+	uint8_t tx_interval;
+	uint8_t tx_interval_burst;
+
 	uint8_t tx_overtemp_threshold;
 
 	uint8_t low_voltage_threshold;
 	uint8_t low_voltage_recovery;
-
-	bool enable_gps_time_sync;
 
 	uint16_t health_acquisition_interval; // seconds
 	uint16_t configuration_acquisition_interval; // seconds
@@ -65,19 +71,16 @@ typedef struct configuration_data_t {
 	uint16_t gps_acquisition_interval; // seconds
 	uint32_t image_acquisition_time; // unix epoch time
 
-	bool	imu_accel_enabled;
-	bool	imu_gyro_enabled;
-	bool	imu_magno_enabled;
+	
 	uint8_t imu_sample_count;
 	uint8_t imu_sample_interval; // *10ms
-	imu_bandwidth_t imu_bandwidth;
 
 	uint8_t gps_sample_count;
 	uint8_t gps_sample_interval; // seconds
 
-	image_acquisition_profile_t	image_acquisition_profile;
+	
 
-	uint16_t greetings_message_transmission_interval; // seconds
+	uint16_t greetings_message_transmission_interval; // packets
 } configuration_data_t;
 
 typedef struct configuration_t {
