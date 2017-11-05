@@ -21,7 +21,7 @@ int16_t Temperature_read_pct2075(void)
   // to read 1. scl sda free, send slave address, pointer ,write bit
   // then read slave address, then receive 2 bytes
 
-  const unsigned char pct2075_address=0x48; // %1001000;
+  const unsigned char pct2075_address=0x49; // %1001000;
   int16_t data = (int16_t)(I2CReceive16(I2C_TEMP, pct2075_address, 0)>>5); // for temp in C divide by 8 - bottom 5 bits worthless
   return data;
 }
@@ -34,7 +34,7 @@ int16_t Temperature_read_tmp100(void)
   // to read 1. scl sda free, send slave address, pointer ,write bit
   // then read slave address, then receive 2 bytes
 
-  const unsigned char tmp100_address=0x49; // %1001000;
+  const unsigned char tmp100_address=0x48; // %1001000;
   int16_t data = (int16_t)(I2CReceive16(I2C_TEMP, tmp100_address, 0)>>5); // for temp in C divide by 8 - bottom 5 bits worthless
   return data;
 }
