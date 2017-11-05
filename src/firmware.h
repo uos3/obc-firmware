@@ -20,7 +20,7 @@
 #include "board/delay.h"
 #include "board/wdt.h"
 #include "board/spi.h"
-#include "board/i2c.h"
+#include "board/eeprom.h"
 #include "board/gpio.h"
 #include "board/debug.h"
 #include "board/random.h"
