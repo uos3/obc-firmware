@@ -54,9 +54,17 @@ int main(void)
 2. Install Latest Official ARM-Embedded Toolchain
     * Ubuntu:
       ```
-      sudo apt-add-repository ppa:team-gcc-arm-embedded/ppa
+      sudo apt-add-repository -y ppa:team-gcc-arm-embedded/ppa
       sudo apt update
       sudo apt install gcc-arm-embedded
+      ```
+
+3. Install matching version of GNU/Linux Toolchain (only needed for compiling module tests)
+    * Ubuntu:
+      ```
+      sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
+      sudo apt update
+      sudo apt install gcc-6
       ```
 
 ### For TI tm4c (eg. UoS3)
