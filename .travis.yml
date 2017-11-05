@@ -39,7 +39,10 @@ jobs:
       env: 
       addons:
         apt:
+          sources:
+            - ubuntu-toolchain-r
           packages:
+            - gcc-5
             - lcov
       script: ./test -w
     - stage: Docs & Reports
@@ -48,8 +51,11 @@ jobs:
       install: skip
       addons:
         apt:
+          sources:
+            - ubuntu-toolchain-r
           packages:
             - doxygen
+            - gcc-5
             - lcov
       env: 
       script: tools/travis_docs.sh
