@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gpio',['Gpio',['../group__gpio.html',1,'']]]
+  ['eeprom',['Eeprom',['../group__eeprom.html',1,'']]]
 ];

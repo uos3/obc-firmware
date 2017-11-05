@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  packet-&gt;spacecraft = origin;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  Packet_sign_shake128(((<a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a> *)packet)-&gt;data, 110, key, key_length, packet-&gt;hash);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <a class="code" href="group__shake.html#ga24cdccdf7ce12eab9c4ec08adf0b43df">Packet_sign_shake128</a>(((<a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a> *)packet)-&gt;data, 110, key, key_length, packet-&gt;hash);</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <a class="code" href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">Packet_crc16</a>(((<a class="code" href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a> *)packet)-&gt;data, 126, &amp;packet-&gt;crc);</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
@@ -112,7 +112,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  packet-&gt;spacecraft = origin;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  Packet_sign_shake128(((<a class="code" href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a> *)packet)-&gt;data, 46, key, key_length, packet-&gt;hash);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <a class="code" href="group__shake.html#ga24cdccdf7ce12eab9c4ec08adf0b43df">Packet_sign_shake128</a>(((<a class="code" href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a> *)packet)-&gt;data, 46, key, key_length, packet-&gt;hash);</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <a class="code" href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">Packet_crc16</a>(((<a class="code" href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a> *)packet)-&gt;data, 62, &amp;packet-&gt;crc);</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
@@ -144,7 +144,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  uint8_t packet_hash[16];</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  Packet_sign_shake128(((<a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a> *)output)-&gt;data, 110, key, key_length, packet_hash);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <a class="code" href="group__shake.html#ga24cdccdf7ce12eab9c4ec08adf0b43df">Packet_sign_shake128</a>(((<a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a> *)output)-&gt;data, 110, key, key_length, packet_hash);</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">if</span>(memcmp(packet_hash, output-&gt;hash, 16) != 0)</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  {</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -153,7 +153,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="ttc" id="group__crc_html_gad514a3af471c92b05d6c46c986a79440"><div class="ttname"><a href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">Packet_crc16</a></div><div class="ttdeci">void Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output)</div><div class="ttdef"><b>Definition:</b> <a href="crc16_8c_source.html#l00012">crc16.c:12</a></div></div>
+<div class="ttc" id="group__shake_html_ga24cdccdf7ce12eab9c4ec08adf0b43df"><div class="ttname"><a href="group__shake.html#ga24cdccdf7ce12eab9c4ec08adf0b43df">Packet_sign_shake128</a></div><div class="ttdeci">void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00011">shake.c:11</a></div></div>
+<div class="ttc" id="group__crc_html_gad514a3af471c92b05d6c46c986a79440"><div class="ttname"><a href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">Packet_crc16</a></div><div class="ttdeci">void Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output)</div><div class="ttdef"><b>Definition:</b> <a href="crc16_8c_source.html#l00011">crc16.c:11</a></div></div>
 <div class="ttc" id="structpacket__telecommand__512__hash_html"><div class="ttname"><a href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00055">packet.h:55</a></div></div>
 <div class="ttc" id="structpacket__telemetry__1024__crc_html"><div class="ttname"><a href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00039">packet.h:39</a></div></div>
 <div class="ttc" id="structpacket__telemetry__1024__hash_html"><div class="ttname"><a href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00033">packet.h:33</a></div></div>

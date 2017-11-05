@@ -140,90 +140,114 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">// Wrappers for printing to serial port - always to the one specified as output, placed here close to code for clarity</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#define DISP3(x,y,z) UART_putstr(DEBUG_SERIAL,x,y,z); // x and z are strings, y is a number shown as signed base10 16bit</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DISP2(y,z) UART_putstr(DEBUG_SERIAL,NULL,y,z); </span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DISP1(x) UART_puts(DEBUG_SERIAL,x);</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; <span class="comment">// the actual main code</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keywordtype">int</span> <a class="code" href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a>(<span class="keywordtype">void</span>)</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;{  </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  InitI2C2(); <span class="comment">// initialise correct interface on processor</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="group__board.html#ga6c191e6138454022bba4dbcb4278f141">Board_init</a>(); <span class="comment">// start the board</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>(); <span class="comment">// kick the watchdog</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a>(DEBUG_SERIAL, 9600);   DISP1(<span class="stringliteral">&quot;\n\n\r   I2C Satellite I2C IMU test.\n&quot;</span>)</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; <span class="comment">// start the console, print bootup message (below)</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; <span class="preprocessor">#define MAG_PASS_THROUGH_I2C_ADDR 12 </span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor"> #define MAG_HXL 3</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor"></span><span class="preprocessor"> #define MAG_HYL 5</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor"></span><span class="preprocessor"> #define MAG_HZL 7 // offsets in magnetometer, note little endian, so need to be read opposite way round</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor"></span><span class="preprocessor"> #define MAG_CNTL1 10 // Magnetometer control register</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor"></span><span class="preprocessor"> #define MAG_STA1 2 // read only gives flags at 1 for DRDY and 2 for DOR (data ready and overload), used in read cycle</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#define STRING_BUFFER_LENGTH 20 // rough hack for testing</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">static</span> <span class="keywordtype">char</span> string_buffer[STRING_BUFFER_LENGTH];</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">static</span> <span class="keywordtype">char</span> string_buffer2[STRING_BUFFER_LENGTH];</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> UART_putnum(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> serialport,<span class="keywordtype">signed</span> <span class="keywordtype">long</span> x)</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  itoa(abs(x),string_buffer,16); <span class="comment">// 16 for hex, 10 for decimal</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> len=strlen(string_buffer);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> targetlen=6-len;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  strcpy(string_buffer2,<span class="stringliteral">&quot;+00000&quot;</span>);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  strcpy(string_buffer2+targetlen,string_buffer);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">if</span> (x&lt;0) string_buffer2[0]=<span class="charliteral">&#39;-&#39;</span>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(serialport,string_buffer2);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> UART_putstr(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> serialport, <span class="keywordtype">char</span> *s1,<span class="keywordtype">signed</span> <span class="keywordtype">long</span> x, <span class="keywordtype">char</span> *s2)</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordflow">if</span> (s1!=NULL) <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(serialport,s1);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  UART_putnum(serialport,x);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordflow">if</span> (s2!=NULL) <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(serialport,s2);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; }  </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#define DISP3(x,y,z) UART_putstr(DEBUG_SERIAL,x,y,z); // x and z are strings, y is a number shown as signed base10 16bit</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DISP2(y,z) UART_putstr(DEBUG_SERIAL,NULL,y,z); </span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DISP1(x) UART_puts(DEBUG_SERIAL,x);</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">// enable magnetometer to appear separately I2C by commanding MPU chip</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; <span class="keywordtype">char</span> i2cstring[3]; <span class="comment">// static buffer for i2c calls here</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; i2cstring[0]=MPU_INT_BYPASS_ENABLE; <span class="comment">// int pin /bypass enable configuration</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; <span class="keywordtype">char</span> i2cstatus=I2CReceive(SLAVE_ADDRESS,MPU_INT_BYPASS_ENABLE);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; i2cstring[1]=i2cstatus | MPU_INT_BYPASS_ENABLE; <span class="comment">// flag bypass on</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; i2cstring[3]=0; <span class="comment">// null terminated string</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; I2CSendString(SLAVE_ADDRESS, i2cstring); <span class="comment">// turn on bypass to Magnetometer so visible on I2C</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment">// setup magnetometer</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; <span class="comment">// the actual main code</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keywordtype">int</span> <a class="code" href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a>(<span class="keywordtype">void</span>)</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;{  </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  InitI2C2(); <span class="comment">// initialise correct interface on processor</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <a class="code" href="group__board.html#ga6c191e6138454022bba4dbcb4278f141">Board_init</a>(); <span class="comment">// start the board</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>(); <span class="comment">// kick the watchdog</span></div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; i2cstring[0]=MAG_CNTL1;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; i2cstring[2]=0;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; i2cstring[1]=0; <span class="comment">// set mode to zero before changing mode</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); <span class="comment">// set Magnetometer to safe mode before mode change </span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; i2cstring[1]=1 | 0; <span class="comment">// continuous (16hz) mode with 14bit range</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); <span class="comment">// set Magnetometer to continuous shot mode with 16bit range, single shot needs updating and has delay </span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; <span class="keywordtype">char</span> mag_id=I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,0); <span class="comment">// magnetometer ID (hopefully)</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;DISP3(<span class="stringliteral">&quot;\r I2Cstatus old: &quot;</span>,i2cstatus,<span class="stringliteral">&quot;\n&quot;</span>)</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;DISP3(&quot;\r I2Cstatus new (After enabling passthrough for Magnetometer): &quot;,I2CReceive(SLAVE_ADDRESS,55),&quot;\n&quot;)</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;DISP3(&quot;\r Magnetometer ID (test, should equal 72 if found): &quot;,mag_id,&quot;\n&quot;)</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="keywordtype">signed</span> <span class="keywordtype">short</span> acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z,temp;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> wdt_start=20; <span class="comment">// loops before kick, not too long or too short or hardware will reset</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment">// some macros to simplify repeated I2c calls - deliberately kept near where used</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="preprocessor">#define MPUGET(x) I2CReceive16(SLAVE_ADDRESS,x); // wrapper for I2C call to MPU</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MAGGET(x) I2CReceive16r(MAG_PASS_THROUGH_I2C_ADDR, x); // wrapper for I2C call to Magnetometer</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;   <span class="keywordflow">while</span>(1) <span class="comment">// infinite loop</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; {</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> wdt_kicker=wdt_start;wdt_kicker&gt;0;wdt_kicker--) <span class="comment">// repeat this to kick wdt at correct time.</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  {    </div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    acc_x=MPUGET(MPU_ACCEL_XOUT) acc_y=MPUGET( MPU_ACCEL_YOUT) acc_z=MPUGET(MPU_ACCEL_ZOUT)</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    gyr_x=MPUGET(MPU_GYRO_XOUT) gyr_y=MPUGET(MPU_GYRO_YOUT) gyr_z=MPUGET(MPU_GYRO_ZOUT)</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    temp=MPUGET(MPU_TEMP_OUT)</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    </div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="comment">// magnetometer should be in power down mode with data ready, if not wait for it</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    while ((I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,MAG_STA1)&amp;1)!=1) {}</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    mag_x=MAGGET(MAG_HXL) mag_y=MAGGET(MAG_HYL)  mag_z=MAGGET(MAG_HZL)</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); <span class="comment">// prepare magnetometer for next call (delay, so give lead in</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    </div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    DISP3(&quot;\r A:(&quot;,acc_x,&quot;,&quot;) DISP2(acc_y,&quot;,&quot;) DISP2(acc_z,&quot;) &quot;)</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    DISP3(&quot;G:(&quot;,gyr_x,&quot;,&quot;) DISP2(gyr_y,&quot;,&quot;) DISP2(gyr_z,&quot;) &quot;)</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    DISP3(&quot;Temp:(&quot;,temp,&quot;)&quot;)</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    DISP3(&quot; M:(&quot;,mag_x,&quot;,&quot;) DISP2(mag_y,&quot;,&quot;) DISP2(mag_z,&quot;) &quot;)</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  }</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; }</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <a class="code" href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a>(DEBUG_SERIAL, 9600);   DISP1(<span class="stringliteral">&quot;\n\n\r   I2C Satellite I2C IMU test.\n&quot;</span>)</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; <span class="comment">// start the console, print bootup message (below)</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; <span class="preprocessor">#define MAG_PASS_THROUGH_I2C_ADDR 12 </span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor"> #define MAG_HXL 3</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor"></span><span class="preprocessor"> #define MAG_HYL 5</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="preprocessor"></span><span class="preprocessor"> #define MAG_HZL 7 // offsets in magnetometer, note little endian, so need to be read opposite way round</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor"></span><span class="preprocessor"> #define MAG_CNTL1 10 // Magnetometer control register</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor"></span><span class="preprocessor"> #define MAG_STA1 2 // read only gives flags at 1 for DRDY and 2 for DOR (data ready and overload), used in read cycle</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">// enable magnetometer to appear separately I2C by commanding MPU chip</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; <span class="keywordtype">char</span> i2cstring[3]; <span class="comment">// static buffer for i2c calls here</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; i2cstring[0]=MPU_INT_BYPASS_ENABLE; <span class="comment">// int pin /bypass enable configuration</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; <span class="keywordtype">char</span> i2cstatus=I2CReceive(SLAVE_ADDRESS,MPU_INT_BYPASS_ENABLE);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; i2cstring[1]=i2cstatus | MPU_INT_BYPASS_ENABLE; <span class="comment">// flag bypass on</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; i2cstring[3]=0; <span class="comment">// null terminated string</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; I2CSendString(SLAVE_ADDRESS, i2cstring); <span class="comment">// turn on bypass to Magnetometer so visible on I2C</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="comment">// setup magnetometer</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; i2cstring[0]=MAG_CNTL1;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; i2cstring[2]=0;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; i2cstring[1]=0; <span class="comment">// set mode to zero before changing mode</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); <span class="comment">// set Magnetometer to safe mode before mode change </span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; i2cstring[1]=1 | 0; <span class="comment">// continuous (16hz) mode with 14bit range</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); <span class="comment">// set Magnetometer to continuous shot mode with 16bit range, single shot needs updating and has delay </span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; <span class="keywordtype">char</span> mag_id=I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,0); <span class="comment">// magnetometer ID (hopefully)</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;DISP3(<span class="stringliteral">&quot;\r I2Cstatus old: &quot;</span>,i2cstatus,<span class="stringliteral">&quot;\n&quot;</span>)</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;DISP3(&quot;\r I2Cstatus new (After enabling passthrough for Magnetometer): &quot;,I2CReceive(SLAVE_ADDRESS,55),&quot;\n&quot;)</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;DISP3(&quot;\r Magnetometer ID (test, should equal 72 if found): &quot;,mag_id,&quot;\n&quot;)</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="keywordtype">signed</span> <span class="keywordtype">short</span> acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z,mag_x,mag_y,mag_z,temp;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> wdt_start=20; <span class="comment">// loops before kick, not too long or too short or hardware will reset</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="comment">// some macros to simplify repeated I2c calls - deliberately kept near where used</span></div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="preprocessor">#define MPUGET(x) I2CReceive16(SLAVE_ADDRESS,x); // wrapper for I2C call to MPU</span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MAGGET(x) I2CReceive16r(MAG_PASS_THROUGH_I2C_ADDR, x); // wrapper for I2C call to Magnetometer</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;   <span class="keywordflow">while</span>(1) <span class="comment">// infinite loop</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160; {</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> wdt_kicker=wdt_start;wdt_kicker&gt;0;wdt_kicker--) <span class="comment">// repeat this to kick wdt at correct time.</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  {    </div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    acc_x=MPUGET(MPU_ACCEL_XOUT) acc_y=MPUGET( MPU_ACCEL_YOUT) acc_z=MPUGET(MPU_ACCEL_ZOUT)</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    gyr_x=MPUGET(MPU_GYRO_XOUT) gyr_y=MPUGET(MPU_GYRO_YOUT) gyr_z=MPUGET(MPU_GYRO_ZOUT)</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    temp=MPUGET(MPU_TEMP_OUT)</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    </div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="comment">// magnetometer should be in power down mode with data ready, if not wait for it</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    while ((I2CReceive(MAG_PASS_THROUGH_I2C_ADDR,MAG_STA1)&amp;1)!=1) {}</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    mag_x=MAGGET(MAG_HXL) mag_y=MAGGET(MAG_HYL)  mag_z=MAGGET(MAG_HZL)</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    I2CSendString(MAG_PASS_THROUGH_I2C_ADDR, i2cstring); <span class="comment">// prepare magnetometer for next call (delay, so give lead in</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    DISP3(&quot;\r A:(&quot;,acc_x,&quot;,&quot;) DISP2(acc_y,&quot;,&quot;) DISP2(acc_z,&quot;) &quot;)</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    DISP3(&quot;G:(&quot;,gyr_x,&quot;,&quot;) DISP2(gyr_y,&quot;,&quot;) DISP2(gyr_z,&quot;) &quot;)</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    DISP3(&quot;Temp:(&quot;,temp,&quot;)&quot;)</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    DISP3(&quot; M:(&quot;,mag_x,&quot;,&quot;) DISP2(mag_y,&quot;,&quot;) DISP2(mag_z,&quot;) &quot;)</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  }</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; }</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;}</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;</div>
 <div class="ttc" id="group__uart_html_ga5016951f4d87245612746fd3b11b4e55"><div class="ttname"><a href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a></div><div class="ttdeci">void UART_init(uint8_t uart_num, uint32_t baudrate)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00067">uart.c:67</a></div></div>
 <div class="ttc" id="test_8c_html_a840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdoc">Runs all module tests. </div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00019">test.c:19</a></div></div>
+<div class="ttc" id="group__uart_html_gafe4ccbee9edc6e026aedd43bdc2cc87b"><div class="ttname"><a href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a></div><div class="ttdeci">void UART_puts(uint8_t uart_num, char *str)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00118">uart.c:118</a></div></div>
 <div class="ttc" id="group__board_html_ga6c191e6138454022bba4dbcb4278f141"><div class="ttname"><a href="group__board.html#ga6c191e6138454022bba4dbcb4278f141">Board_init</a></div><div class="ttdeci">void Board_init(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2board_8c_source.html#l00013">board.c:13</a></div></div>
 <div class="ttc" id="group__wdt_html_ga839f0e2119c8cc94b8d13881ab836b2a"><div class="ttname"><a href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a></div><div class="ttdeci">void WDT_kick(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2wdt_8c_source.html#l00019">wdt.c:19</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

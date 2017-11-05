@@ -140,15 +140,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  };</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">/* SPI virtual port description struct */</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="struct_s_p_i.html">   62</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="struct_s_p_i.html">SPI</a> {</div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="struct_s_p_i__t.html">   62</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="struct_s_p_i__t.html">SPI_t</a> {</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <a class="code" href="struct_s_p_i__port.html">SPI_port</a> *port;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  uint8_t  gpio_cs;           <span class="comment">// CS GPIO Reference</span></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordtype">bool</span>     wait_miso;         <span class="comment">// Whether the SPI peripheral waits for SO low (required for cc1120)</span></div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">bool</span>     initialised;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;} <a class="code" href="struct_s_p_i.html">SPI</a>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;} <a class="code" href="struct_s_p_i__t.html">SPI_t</a>;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">/* Array of enabled SPIs */</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">static</span> <a class="code" href="struct_s_p_i.html">SPI</a> SPI_spis[3] = </div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">static</span> <a class="code" href="struct_s_p_i__t.html">SPI_t</a> SPI_spis[3] = </div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  {</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    { </div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      &amp;SPI_ports[0],</div>
@@ -170,14 +170,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    }</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  };</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#define NUMBER_OF_SPIS  ( sizeof(SPI_spis) / sizeof(SPI) )</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#define NUMBER_OF_SPIS  ( sizeof(SPI_spis) / sizeof(SPI_t) )</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#define check_spi_num(x, y)  if(x &gt;= NUMBER_OF_SPIS) { return y; }</span></div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="group__spi.html#ga138ad778c02212e029a14d8be2a335dc">   98</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__spi.html#ga138ad778c02212e029a14d8be2a335dc">SPI_init</a>(uint8_t spi_num)</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;{</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  check_spi_num(spi_num,);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">/* Check Virtual SPI is initialised */</span></div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordflow">if</span>(!spi-&gt;initialised)</div>
@@ -239,7 +239,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00160"></a><span class="lineno"><a class="line" href="group__spi.html#ga67bf1565d4b1b483d0144a8377bddcd1">  160</a></span>&#160;uint8_t <a class="code" href="group__spi.html#ga67bf1565d4b1b483d0144a8377bddcd1">SPI_cmd</a>(uint8_t spi_num, uint8_t cmd)</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;{</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  uint32_t r, d;</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
@@ -268,7 +268,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00189"></a><span class="lineno"><a class="line" href="group__spi.html#ga8fe538eee897354b740b621714219221">  189</a></span>&#160;uint8_t <a class="code" href="group__spi.html#ga8fe538eee897354b740b621714219221">SPI_read8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;{</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  uint32_t r, d;</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;</div>
@@ -302,7 +302,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00223"></a><span class="lineno"><a class="line" href="group__spi.html#ga0d9ee9f33f39be6ed8aedd20fde4e114">  223</a></span>&#160;uint8_t <a class="code" href="group__spi.html#ga0d9ee9f33f39be6ed8aedd20fde4e114">SPI_burstread8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len)</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;{</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  uint32_t r, d;</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;</div>
@@ -338,7 +338,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00259"></a><span class="lineno"><a class="line" href="group__spi.html#ga87d05cd990d395f3549c441bae821779">  259</a></span>&#160;uint8_t <a class="code" href="group__spi.html#ga87d05cd990d395f3549c441bae821779">SPI_write8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;{</div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;</div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  uint32_t r, d, w;</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;</div>
@@ -375,7 +375,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00296"></a><span class="lineno"><a class="line" href="group__spi.html#gabbdc49a0f7c1af6e30bca8c10f5714cb">  296</a></span>&#160;uint8_t <a class="code" href="group__spi.html#gabbdc49a0f7c1af6e30bca8c10f5714cb">SPI_burstwrite8</a>(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len)</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;{</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;</div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  uint32_t r, d, w;</div>
 <div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;</div>
@@ -413,7 +413,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00334"></a><span class="lineno"><a class="line" href="group__spi.html#gaa35780863fbba18a68b3faa30c34710a">  334</a></span>&#160;uint8_t <a class="code" href="group__spi.html#gaa35780863fbba18a68b3faa30c34710a">SPI_read16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;{</div>
 <div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;</div>
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  uint32_t r, d;</div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
@@ -454,7 +454,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00375"></a><span class="lineno"><a class="line" href="group__spi.html#ga204527ea9c7480beb11d28bc8158a814">  375</a></span>&#160;uint8_t <a class="code" href="group__spi.html#ga204527ea9c7480beb11d28bc8158a814">SPI_burstread16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len)</div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;{</div>
 <div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;</div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  uint32_t r, d;</div>
 <div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;</div>
@@ -497,7 +497,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00418"></a><span class="lineno"><a class="line" href="group__spi.html#ga0be32d4795e246e876418b9928d42714">  418</a></span>&#160;uint8_t <a class="code" href="group__spi.html#ga0be32d4795e246e876418b9928d42714">SPI_write16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;{</div>
 <div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;</div>
 <div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  uint32_t r, d, w;</div>
 <div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;</div>
@@ -537,7 +537,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00458"></a><span class="lineno"><a class="line" href="group__spi.html#gab574cdabe3e58baf0825c91bb5d28d03">  458</a></span>&#160;uint8_t <a class="code" href="group__spi.html#gab574cdabe3e58baf0825c91bb5d28d03">SPI_burstwrite16</a>(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len)</div>
 <div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;{</div>
 <div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;</div>
 <div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;  uint32_t r, d, w;</div>
 <div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;</div>
@@ -580,7 +580,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00501"></a><span class="lineno"><a class="line" href="group__spi.html#ga3eacc45e22387793784702913cf3c2c5">  501</a></span>&#160;uint8_t <a class="code" href="group__spi.html#ga3eacc45e22387793784702913cf3c2c5">SPI_read32</a>(uint8_t spi_num, uint32_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;{</div>
 <div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;</div>
 <div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;  uint32_t r, d;</div>
 <div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;</div>
@@ -627,7 +627,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00548"></a><span class="lineno"><a class="line" href="group__spi.html#gaaed8c3836261cecffa070ab1b2da88a5">  548</a></span>&#160;uint8_t <a class="code" href="group__spi.html#gaaed8c3836261cecffa070ab1b2da88a5">SPI_burstread32</a>(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len)</div>
 <div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;{</div>
 <div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;</div>
 <div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;  uint32_t r, d;</div>
 <div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;</div>
@@ -676,7 +676,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00597"></a><span class="lineno"><a class="line" href="group__spi.html#ga24d0801f2b5a6d6fe03e7ed135928f55">  597</a></span>&#160;uint8_t <a class="code" href="group__spi.html#ga24d0801f2b5a6d6fe03e7ed135928f55">SPI_write32</a>(uint8_t spi_num, uint32_t addr, uint8_t *data)</div>
 <div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;{</div>
 <div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;</div>
 <div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;  uint32_t r, d, w;</div>
 <div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;</div>
@@ -718,7 +718,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00639"></a><span class="lineno"><a class="line" href="group__spi.html#gad98c17574f09d64456702d12c265c661">  639</a></span>&#160;uint8_t <a class="code" href="group__spi.html#gad98c17574f09d64456702d12c265c661">SPI_burstwrite32</a>(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len)</div>
 <div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;{</div>
 <div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;  check_spi_num(spi_num, 0);</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;  <a class="code" href="struct_s_p_i.html">SPI</a> *spi = &amp;SPI_spis[spi_num];</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;  <a class="code" href="struct_s_p_i__t.html">SPI_t</a> *spi = &amp;SPI_spis[spi_num];</div>
 <div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;</div>
 <div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;  uint32_t r, d, w;</div>
 <div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;</div>
@@ -764,7 +764,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="group__spi_html_ga0d9ee9f33f39be6ed8aedd20fde4e114"><div class="ttname"><a href="group__spi.html#ga0d9ee9f33f39be6ed8aedd20fde4e114">SPI_burstread8</a></div><div class="ttdeci">uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00037">spi.c:37</a></div></div>
 <div class="ttc" id="group__spi_html_ga138ad778c02212e029a14d8be2a335dc"><div class="ttname"><a href="group__spi.html#ga138ad778c02212e029a14d8be2a335dc">SPI_init</a></div><div class="ttdeci">void SPI_init(uint8_t spi_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00015">spi.c:15</a></div></div>
 <div class="ttc" id="group__spi_html_gaaed8c3836261cecffa070ab1b2da88a5"><div class="ttname"><a href="group__spi.html#gaaed8c3836261cecffa070ab1b2da88a5">SPI_burstread32</a></div><div class="ttdeci">uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00113">spi.c:113</a></div></div>
-<div class="ttc" id="struct_s_p_i_html"><div class="ttname"><a href="struct_s_p_i.html">SPI</a></div><div class="ttdef"><b>Definition:</b> <a href="uos3-proto_2spi_8c_source.html#l00062">spi.c:62</a></div></div>
+<div class="ttc" id="struct_s_p_i__t_html"><div class="ttname"><a href="struct_s_p_i__t.html">SPI_t</a></div><div class="ttdef"><b>Definition:</b> <a href="uos3-proto_2spi_8c_source.html#l00062">spi.c:62</a></div></div>
 <div class="ttc" id="group__spi_html_gabbdc49a0f7c1af6e30bca8c10f5714cb"><div class="ttname"><a href="group__spi.html#gabbdc49a0f7c1af6e30bca8c10f5714cb">SPI_burstwrite8</a></div><div class="ttdeci">uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00056">spi.c:56</a></div></div>
 <div class="ttc" id="group__spi_html_ga3eacc45e22387793784702913cf3c2c5"><div class="ttname"><a href="group__spi.html#ga3eacc45e22387793784702913cf3c2c5">SPI_read32</a></div><div class="ttdeci">uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00104">spi.c:104</a></div></div>
 <div class="ttc" id="group__spi_html_ga204527ea9c7480beb11d28bc8158a814"><div class="ttname"><a href="group__spi.html#ga204527ea9c7480beb11d28bc8158a814">SPI_burstread16</a></div><div class="ttdeci">uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2spi_8c_source.html#l00075">spi.c:75</a></div></div>

@@ -88,71 +88,389 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">camtest.c</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// camera test</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// Suzanna Lucarotti (c) 01/09/2017</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// Suzanna Lucarotti (c) 22/09/2017</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// for use with the UoS3 Cubesat</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;inc/hw_memmap.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;inc/hw_types.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;driverlib/gpio.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;driverlib/i2c.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;driverlib/pin_map.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;driverlib/sysctl.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;stdarg.h&gt;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#define DEBUG_SERIAL UART_CAM_HEADER // this is the serial port debug messages will come through (UART_CAM_HEADER or UART_PC104_HEADER)</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define GPS_SERIAL UART_PC104_HEADER</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define CAM_SERIAL UART_CAM_HEADER</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#define DEBUG_SERIAL CAM_SERIAL</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">// Wrappers for printing to serial port - always to the one specified as output, placed here close to code for clarity</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#define DISP3(x,y,z) UART_putstr(DEBUG_SERIAL,x,y,z); // x and z are strings, y is a number shown as signed base10 16bit</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DISP2(y,z) UART_putstr(DEBUG_SERIAL,NULL,y,z); </span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DISP1(x) UART_puts(DEBUG_SERIAL,x);</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; <span class="comment">// the actual main code</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keywordtype">int</span> <a class="code" href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a>(<span class="keywordtype">void</span>)</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;{  </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <a class="code" href="group__board.html#ga6c191e6138454022bba4dbcb4278f141">Board_init</a>(); <span class="comment">// start the board</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>(); <span class="comment">// kick the watchdog</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;inc/hw_memmap.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;inc/hw_types.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;driverlib/gpio.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;driverlib/i2c.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;driverlib/pin_map.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;driverlib/sysctl.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;stdarg.h&gt;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">//#define DEBUG_SERIAL UART_CAM_HEADER // this is the serial port debug messages will come through (UART_CAM_HEADER or UART_PC104_HEADER)</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#define GPS_SERIAL UART_PC104_HEADER</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define CAM_SERIAL UART_CAM_HEADER</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#define DEBUG_SERIAL GPS_SERIAL</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#define sz(a) a,sizeof(a)</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">//LK_POWERUP[] = {0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keywordtype">char</span> LK_POWERUP[] = {0x0d, 0x0a, 0x00, 0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a}; <span class="comment">// Init end</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">//LK_POWERUP[] = {0x0d,0x0a,0,4,0,0x49,0x68,0x69,0x68,0x20,0x65,0xc,0};</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keywordtype">char</span> LK_BAUDRATE_19200[]  ={0x56, 0x00, 0x24, 0x03, 0x01, 0x56, 0xe4};</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keywordtype">char</span> LK_BAUDRATE_38400[]  = {0x56, 0x00, 0x24, 0x03, 0x01, 0x2a, 0xf2};</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keywordtype">char</span> LK_BAUDRATE_RE[] = {0x76, 0x00, 0x24, 0x00, 0x00};</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keywordtype">char</span> LK_RESOLUTION_VGA[] = {0x56, 0x00, 0x54, 0x01, 0x00};</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keywordtype">char</span> LK_RESOLUTION_800[] = {0x56, 0x00, 0x54, 0x01, 0x1D};</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keywordtype">char</span> LK_RESOLUTION_1280[] = {0x56, 0x00, 0x54, 0x01, 0x1B};</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keywordtype">char</span> LK_RESOLUTION_1600[] = {0x56, 0x00, 0x54, 0x01, 0x21};</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">char</span> LK_RESOLUTION_RE[] = {0x76, 0x00, 0x54, 0x00, 0x00}; <span class="comment">// v T</span></div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a>(DEBUG_SERIAL, 9600);   DISP1(<span class="stringliteral">&quot;\n\n\r   I2C Satellite I2C Camera test.\n&quot;</span>)</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; <span class="comment">// start the console, print bootup message (below)</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;   while(1) <span class="comment">// infinite loop</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keywordtype">char</span> LK_COMPRESSION[] = {0x56, 0x00, 0x31, 0x05, 0x01, 0x01, 0x12, 0x04};</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keywordtype">char</span> LK_COMPRESSION_RE[] = {0x76, 0x00, 0x31, 0x00, 0x00}; <span class="comment">// v 1</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keywordtype">char</span> LK_RESET[]     = {0x56, 0x00, 0x26, 0x00};</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">// OLD: LK_RESET_RE[]     = a2s([0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a])</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">// LEGIT: LK_RESET_RE[]     = a2s([0x76,0x00,0x31,0x00,0x00])</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keywordtype">char</span> LK_RESET_RE[]    = {0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> wdt_kicker=wdt_start;wdt_kicker&gt;0;wdt_kicker--) <span class="comment">// repeat this to kick wdt at correct time.</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  {    </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;     </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="comment">// magnetometer should be in power down mode with data ready, if not wait for it</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="comment">// main loop here</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <a class="code" href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a>();</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; }</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keywordtype">char</span> LK_PICTURE[]   = {0x56, 0x00, 0x36, 0x01, 0x00};</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keywordtype">char</span> LK_PICTURE_RE[]    = {0x76, 0x00, 0x36, 0x00, 0x00};</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keywordtype">char</span> LK_JPEGSIZE[]    = {0x56, 0x00, 0x34, 0x01, 0x00};</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keywordtype">char</span> LK_JPEGSIZE_RE[] = {0x76, 0x00, 0x34, 0x00, 0x04}; <span class="comment">//, 0x00, 0x00, 0x00, 0x00}; // then XH XL // assumption is last 4 bytes are size</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keywordtype">char</span> LK_STOP[]    = {0x56, 0x00, 0x36, 0x01, 0x03};</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keywordtype">char</span> LK_STOP_RE[]   = {0x76, 0x00, 0x36, 0x00, 0x00};</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keywordtype">char</span> LK_READPICTURE[] = {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A};</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keywordtype">char</span> LK_PICTURE_TIME[]  = {0x00, 0x0A}; <span class="comment">// .1 ms</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">char</span> LK_READPICTURE_RE[]  = {0x76, 0x00, 0x32, 0x00, 0x00};</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keywordtype">char</span> JPEG_START[]     = {0xFF, 0xD8};</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keywordtype">char</span> JPEG_END[]   = {0xFF, 0xD9};</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">// Wrappers for printing to serial port - always to the one specified as output, placed here close to code for clarity</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#define STRING_BUFFER_LENGTH 20 // rough hack for testing</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">static</span> <span class="keywordtype">char</span> string_buffer[STRING_BUFFER_LENGTH];</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">static</span> <span class="keywordtype">char</span> string_buffer2[STRING_BUFFER_LENGTH];</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> UART_putnum(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> serialport,<span class="keywordtype">signed</span> <span class="keywordtype">long</span> x)</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  itoa(abs(x),string_buffer,16); <span class="comment">// 16 for hex, 10 for decimal</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> len=strlen(string_buffer);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> targetlen=6-len;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  strcpy(string_buffer2,<span class="stringliteral">&quot;+00000&quot;</span>);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  strcpy(string_buffer2+targetlen,string_buffer);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordflow">if</span> (x&lt;0) string_buffer2[0]=<span class="charliteral">&#39;-&#39;</span>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(serialport,string_buffer2);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> UART_putstr(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> serialport, <span class="keywordtype">char</span> *s1,<span class="keywordtype">signed</span> <span class="keywordtype">long</span> x, <span class="keywordtype">char</span> *s2)</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">if</span> (s1!=NULL) <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(serialport,s1);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  UART_putnum(serialport,x);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordflow">if</span> (s2!=NULL) <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(serialport,s2);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; }  </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#define DISP3(x,y,z) UART_putstr(DEBUG_SERIAL,x,y,z); // x and z are strings, y is a number shown as signed base10 16bit</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DISP2(y,z) UART_putstr(DEBUG_SERIAL,NULL,y,z); </span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DISP1(x) UART_puts(DEBUG_SERIAL,x);</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; <span class="comment">// the actual main code</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> UART_getw(<span class="keywordtype">long</span> <span class="keywordtype">int</span> serial)</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; <span class="keywordtype">char</span> c1=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(serial),c2=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(serial);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; <span class="keywordflow">return</span> (c1&lt;&lt;8)|c2;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; }</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> UART_getw4(<span class="keywordtype">long</span> <span class="keywordtype">int</span> serial)</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; {</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; <span class="keywordtype">char</span> c1=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(serial),c2=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(serial),c3=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(serial),c4=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(serial);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; <span class="keywordflow">return</span> (c1&lt;&lt;24)|(c2&lt;&lt;16)|(c3&lt;&lt;8)|(c4&lt;&lt;0);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; }</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="keywordtype">void</span> mem_packet_send (<span class="keywordtype">char</span> *start_addr, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> len) <span class="comment">// this copied over from mem_debug</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; {</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; <span class="comment">// send byte data from a given address and send down serial line DEBUG_SERIAL</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; <span class="comment">// will hang processor if address wrong</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; <span class="comment">// lets put a CRC check on the packet</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; <span class="comment">// for CRC gonna use xor initially for speed of implementation</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(DEBUG_SERIAL,<span class="charliteral">&#39;@&#39;</span>);</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> x=0;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; <span class="keywordflow">for</span> (<span class="keywordtype">char</span> *addr=start_addr;addr&lt;start_addr+len;addr++)</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;   {</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> s_addr= (int) start_addr;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keywordtype">char</span> c=*addr;                    </div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(DEBUG_SERIAL,c);</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  x=x ^ c;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;   }</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;   <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(DEBUG_SERIAL,<span class="charliteral">&#39;|&#39;</span>);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;   <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(DEBUG_SERIAL,x); <span class="comment">// write the check byte </span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; }</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="keywordtype">bool</span> match_string(<span class="keywordtype">char</span> *data, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> len) <span class="comment">// packed to call with sz(data)</span></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160; {</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; <span class="comment">// DISP1(&quot;Matching &#39;&quot;);UART_putb(DEBUG_SERIAL,data,len);DISP1(&quot;&#39;\n\r&quot;);</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0;i&lt;len;i++) {  <span class="keywordtype">char</span> c=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(CAM_SERIAL); <span class="comment">/*DISP3(&quot;*&quot;,c,&quot;*&quot;); */</span> <span class="keywordflow">if</span> (c!=data[i]) <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; }</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160; <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getcamword()</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  {</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="keywordflow">return</span> UART_getw4(CAM_SERIAL);</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="comment">//  char c1=UART_getc(CAM_SERIAL),c2=UART_getc(CAM_SERIAL),c3=UART_getc(CAM_SERIAL),c4=UART_getc(CAM_SERIAL);</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="comment">//  return c1&lt;&lt;24|c2&lt;&lt;16|c3&lt;&lt;8|c4;</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  }</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordtype">void</span> writeword4(<span class="keywordtype">int</span> serial,<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> w)</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;   {</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(serial,(w&gt;&gt;24)&amp;255);<a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(serial,(w&gt;&gt;16)&amp;255);<a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(serial,(w&gt;&gt;8)&amp;255);<a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(serial,w &amp; 255);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="comment">//  DISP3(&quot;Just pasted0 &quot;,(w&gt;&gt;24)&amp;255,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="comment">//  DISP3(&quot;Just pasted1 &quot;,(w&gt;&gt;16)&amp;255,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="comment">//  DISP3(&quot;Just pasted2 &quot;,(w&gt;&gt;8)&amp;255,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="comment">//  DISP3(&quot;Just pasted3 &quot;,(w)&amp;255,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;   }</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <span class="keywordtype">void</span> writecamword(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> w)</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;   {</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  writeword4(CAM_SERIAL,w);</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;   }</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="preprocessor"> #define CAMWRITE(a) UART_putb(CAM_SERIAL,a,sizeof(a)); // send this message</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="preprocessor"> #define CAMREAD(a) while (!match_string(a,sizeof(a))) {</span><span class="comment">/*UART_putc(DEBUG_SERIAL,&#39;.&#39;);*/</span><span class="preprocessor">} // wait for this sequence (forever if necessary)</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="preprocessor"></span> </div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> get_picture_part(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> offset, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> len, <span class="keywordtype">char</span> *storage_addr)</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; {</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keywordflow">if</span> (((((<span class="keywordtype">int</span>)storage_addr)&gt;&gt;10)*1024)!=storage_addr) DISP3(<span class="stringliteral">&quot;Bad storage address for picture part&quot;</span>,storage_addr,<span class="stringliteral">&quot;\n\r&quot;</span>);</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160; <span class="comment">// offset=offset; // must be 8 byte boundary</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="comment">//DISP1(&quot;GET PICTURE PART\r\n&quot;);</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="comment">//DISP3(&quot;Offset: &quot;,offset,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="comment">//DISP3(&quot;Length: &quot;,len,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <span class="comment">//DISP3(&quot;Storage Addr: &quot;,storage_addr,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> pages_to_clear=(len+1023)&gt;&gt;10; <span class="comment">// this processor&#39;s flash is in 1k blocks, these need to be erased before writing to</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  <span class="comment">//DISP3(&quot;Pages to clear&quot;,pages_to_clear,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0;i&lt;pages_to_clear;i++)</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;     <span class="keywordflow">if</span> (FlashErase(storage_addr+i*1024)==-1) DISP1(<span class="stringliteral">&quot;PROTECTED FLASH!&quot;</span>);</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="comment">//DISP1(&quot;Erased\r\n&quot;);</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keywordtype">char</span> flash_word_size=4;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="keywordtype">char</span> flash_buffer[flash_word_size];</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="keywordtype">char</span> endfoundcount=0;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i=0;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j=0; <span class="comment">// counter for flash writes</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160; </div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="comment">//DISP1(&quot;Preparing buffers&quot;)</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="comment">//while (UART_busy(DEBUG_SERIAL) || UART_busy(CAM_SERIAL)) {} // wait for tx buffer clear</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160; </div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <span class="comment">//while (UART_charsAvail(CAM_SERIAL)) {char c=UART_getc(CAM_SERIAL);} // empty receive buffer</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="comment">//  Delay_ms(100); // is this a speed thing? - too fast and it crashes after 3 calls</span></div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  DISP1(<span class="stringliteral">&quot;Sending message.\n&quot;</span>)</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  CAMWRITE(LK_READPICTURE);</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  writecamword(offset); <span class="comment">// offset in file start (0 here)</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  writecamword(len-1); <span class="comment">// write length to obtain +8 bytes?</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  CAMWRITE(LK_PICTURE_TIME);<span class="comment">//DISP1(&quot;awaiting read response\n\r&quot;);</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  CAMREAD(LK_READPICTURE_RE);<span class="comment">//DISP1(&quot;PICTURE READ part requested\n\r&quot;);</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  i=0;</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  <span class="keywordtype">char</span> c;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; <span class="comment">// DISP1(&quot;Copying to flash\r\n&quot;);</span></div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160; </div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  while ((endfoundcount&lt;2) &amp;&amp; (i&lt;len))</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  {</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <span class="comment">// DISP3(&quot;i = &quot;,i,&quot;\r\n&quot;)</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="comment">//   DISP3(&quot;j = &quot;,j,&quot;\r\n&quot;)</span></div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160; <span class="comment">//  DISP3(&quot;efc = &quot;,endfoundcount,&quot;\r\n&quot;)</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keywordtype">char</span> c=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(CAM_SERIAL);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    <span class="keywordflow">if</span> (c==JPEG_END[endfoundcount]) endfoundcount+=1; <span class="keywordflow">else</span> endfoundcount=0; <span class="comment">// should progress through end template</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    flash_buffer[j++]=c;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="keywordflow">if</span> (j==flash_word_size) {j=0; </div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;      <span class="keywordflow">if</span> (FlashProgram(flash_buffer,storage_addr+i,flash_word_size)==-1) </div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        {</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;          DISP3(<span class="stringliteral">&quot;FLASH PROGRAMMING ERROR &quot;</span>,storage_addr+i,<span class="stringliteral">&quot;\r\n&quot;</span>);</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;          DISP3(<span class="stringliteral">&quot;tried to set to &quot;</span>,(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>) *flash_buffer,<span class="stringliteral">&quot;\r\n&quot;</span>);</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;          DISP3(<span class="stringliteral">&quot;actually set to &quot;</span>,(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>) storage_addr[i],<span class="stringliteral">&quot;\r\n&quot;</span>);</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;      }</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;     <span class="comment">//   if ((i&amp;63)==56) {DISP3(&quot; &lt;&quot;,i,&quot;&gt;&quot;);}</span></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="comment">//    if (i&gt;1015) {  DISP3(&quot;i = &quot;,i,&quot;&quot;);DISP3(&quot;j = &quot;,j,&quot;\r\n&quot;);DISP3(&quot;efc = &quot;,endfoundcount,&quot;\r\n&quot;);}</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;   </div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;      i+=flash_word_size;}</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  }</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <span class="comment">// DISP3(&quot;i = &quot;,i,&quot;\r\n&quot;)</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160; <span class="comment">//  DISP3(&quot;j = &quot;,j,&quot;\r\n&quot;)</span></div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160; <span class="comment">//  DISP3(&quot;efc = &quot;,endfoundcount,&quot;\r\n&quot;)</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160; <span class="comment">//DISP1(&quot;Copy complete \r\n&quot;);</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> picturelength=i+j; <span class="comment">//jpegsize; //i+j;</span></div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  <span class="keywordflow">if</span> (j&gt;0)</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;     {</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;       <span class="keywordflow">while</span> (j&lt;flash_word_size) {flash_buffer[j++]=0;}</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;     FlashProgram(flash_buffer,storage_addr+i,flash_word_size); <span class="comment">// do final one (excess bytes from previous)</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;     }</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160; <span class="comment">// DISP3(&quot;Last four : &quot;,storage_addr[picturelength-4],&quot;,&quot;);DISP3(&quot; &quot;,storage_addr[picturelength-3],&quot;,&quot;);</span></div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160; <span class="comment">// DISP3(&quot; &quot;,storage_addr[picturelength-2],&quot;,&quot;);DISP3(&quot; &quot;,storage_addr[picturelength-1],&quot;\n\r&quot;);</span></div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment">//  DISP3(&quot;ENDFOUNDCOUNT = &quot;,endfoundcount,&quot;\n\r&quot;)</span></div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  DISP3(<span class="stringliteral">&quot;Downloaded &quot;</span>,picturelength,<span class="stringliteral">&quot; bytes of image data\n\r&quot;</span>)</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  return picturelength;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160; }</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> take_picture(<span class="keywordtype">char</span> *picture_storage)</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160; {</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;   <span class="keywordflow">if</span> (((<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>) picture_storage)&amp;3!=0) {DISP1(<span class="stringliteral">&quot;address must be word aligned&quot;</span>);<span class="keywordflow">return</span> 0;}</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;   DISP3(<span class="stringliteral">&quot; Take Picture Storage Address: &quot;</span>,picture_storage,<span class="stringliteral">&quot;\n\r&quot;</span>);</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  </div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;   CAMWRITE(LK_RESET);CAMREAD(LK_RESET_RE);DISP1(<span class="stringliteral">&quot;Initialised OK\n\r&quot;</span>); <span class="comment">// initialise camera</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;   <a class="code" href="group__delay.html#ga14c78822167012f0af4f073eb33f00e7">Delay_ms</a>(1000); <span class="comment">// 2-3 sec gap required by data sheet before camera ready</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;   CAMWRITE(LK_RESOLUTION_1600);CAMREAD(LK_RESOLUTION_RE);DISP1(<span class="stringliteral">&quot;Resolution OK\n\r&quot;</span>); <span class="comment">// set resolution</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;   CAMWRITE(LK_COMPRESSION);<a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(CAM_SERIAL,0x10);CAMREAD(LK_COMPRESSION_RE);DISP1(<span class="stringliteral">&quot;Compression OK\n\r&quot;</span>); <span class="comment">// set compression</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;   CAMWRITE(LK_PICTURE);CAMREAD(LK_PICTURE_RE);DISP1(<span class="stringliteral">&quot;Take Picture OK\n\r&quot;</span>); <span class="comment">// take picture</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;   CAMWRITE(LK_JPEGSIZE);CAMREAD(LK_JPEGSIZE_RE);<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> jpegsize=getcamword(); <span class="comment">// file size (lowest 32 bits)</span></div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;   DISP3(<span class="stringliteral">&quot;Picture size is &quot;</span>,jpegsize,<span class="stringliteral">&quot; bytes of image data\n\r&quot;</span>);</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="comment">   unsigned int pages_to_clear=(jpegsize+1023)&gt;&gt;10; // this processor&#39;s flash is in 1k blocks, these need to be erased before writing to</span></div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;<span class="comment">  </span></div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="comment">   DISP3(&quot;Ready to download to board :&quot;,pages_to_clear,&quot; pages\r\n&quot;);</span></div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="comment">   unsigned int copied=1024,i=0;</span></div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="comment">   while (copied==1024 &amp;&amp; i&lt;pages_to_clear)</span></div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="comment">      {copied=get_picture_part(i*1024,1024,picture_storage+i*1024);</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="comment">        i++;</span></div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="comment">      }</span></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="comment">  ;; unsigned int picturelength=(i-1)*1024+copied; //jpegsize; //i+j;</span></div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> picturelength=get_picture_part(0,jpegsize,picture_storage);</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;   DISP1(<span class="stringliteral">&quot;Copy complete \r\n&quot;</span>);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;   DISP3(<span class="stringliteral">&quot;Downloaded &quot;</span>,picturelength,<span class="stringliteral">&quot; bytes of image data\n\r&quot;</span>)</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;   return picturelength;  </div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160; }</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  <span class="keywordtype">void</span> send_packet(cmd,value)</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    {</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordtype">bool</span> packet_not_sent=<span class="keyword">true</span>;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160; <span class="comment">//   while (packet_not_sent)</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160; <span class="comment">//      {</span></div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="comment">//  UART_putc(DEBUG_SERIAL,&#39;X&#39;);DISP3(&quot;&#39;&quot;,cmd,&quot;&#39;&quot;);</span></div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(DEBUG_SERIAL,cmd);</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;        writeword4(DEBUG_SERIAL,value);</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;   <span class="comment">//     Delay_ms(100); // wait for response</span></div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;      <span class="comment">//  char c=UART_getc(DEBUG_SERIAL);UART_putc(DEBUG_SERIAL,&#39;*&#39;);UART_putc(DEBUG_SERIAL,c);</span></div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;     <span class="comment">//   while (c!=&#39;A&#39;) {c=UART_getc(DEBUG_SERIAL);UART_putc(DEBUG_SERIAL,&#39;!&#39;);UART_putc(DEBUG_SERIAL,c);}</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="comment">//    if (UART_getc(DEBUG_SERIAL)==&#39;C&#39; &amp;&amp; UART_getc(DEBUG_SERIAL)==&#39;K&#39; &amp;&amp; UART_getc(DEBUG_SERIAL)==cmd) packet_not_sent=false;</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <span class="comment">//  if (packet_not_sent) DISP1(&quot;Ack not received\r\n&quot;) else DISP1(&quot;Ack received&quot;)</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    <span class="comment">//   }</span></div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;     }</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160; <span class="keywordtype">void</span> ack(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> cmd)</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  {</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(DEBUG_SERIAL,<span class="charliteral">&#39;A&#39;</span>);</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(DEBUG_SERIAL,<span class="charliteral">&#39;C&#39;</span>);</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(DEBUG_SERIAL,<span class="charliteral">&#39;K&#39;</span>);</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <a class="code" href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a>(DEBUG_SERIAL,cmd);  </div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  }</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160; <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> receive_packet(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> cmd)</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    {</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordtype">char</span> c=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(DEBUG_SERIAL);</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordflow">while</span> (c!=cmd) {c=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(DEBUG_SERIAL);DISP(c);}</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> data=UART_getw4(DEBUG_SERIAL);</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    ack(cmd);</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="keywordflow">return</span> data;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    }</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;<span class="keywordtype">int</span> <a class="code" href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a>(<span class="keywordtype">void</span>)</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;{  </div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  <a class="code" href="group__board.html#ga6c191e6138454022bba4dbcb4278f141">Board_init</a>(); <span class="comment">// start the board</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  setupwatchdoginterrupt();</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160; </div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <a class="code" href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a>(DEBUG_SERIAL, 115200);   DISP1(<span class="stringliteral">&quot;\n\n\r    Satellite UART Camera test.\n\r&quot;</span>)</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  <a class="code" href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a>(CAM_SERIAL, 115200);   </div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160; <span class="comment">// start the console, print bootup message (below)</span></div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="keywordtype">char</span> *picture_storage;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;while (1)</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160; {</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;   DISP1(<span class="stringliteral">&quot;:&quot;</span>); <span class="comment">// &#39;:&#39; is command ready</span></div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;   <span class="keywordtype">char</span> cmd=<a class="code" href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a>(DEBUG_SERIAL);</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;   <span class="keywordtype">char</span> *ad;<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> len;</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;   <span class="keywordflow">switch</span> (cmd)</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;    {</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keywordflow">case</span> <span class="charliteral">&#39;#&#39;</span>:</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        <span class="comment">// take a picture and store at given address</span></div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;        <span class="comment">//UART_puts(DEBUG_SERIAL,&quot; Take Picture Cmd received.\r\n&quot;);</span></div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;      picture_storage=UART_getw4(DEBUG_SERIAL);  </div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;        ack(<span class="charliteral">&#39;#&#39;</span>);</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    <span class="comment">//    DISP1(&quot; Take Picture Cmd received.\r\n&quot;);</span></div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160; </div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;      <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> picturelength=take_picture(picture_storage);</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    </div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    <span class="comment">//  DISP3(&quot;Picture length = &quot;,picturelength,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    <span class="comment">//  DISP1(&quot;Sending length packet.\n\r&quot;);</span></div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;      send_packet(<span class="charliteral">&#39;$&#39;</span>,picturelength);</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    <span class="comment">//  UART_putc(DEBUG_SERIAL,&#39;#&#39;);writeword4(DEBUG_SERIAL,picturelength); // signal length saved</span></div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;       <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    <span class="keywordflow">case</span> <span class="charliteral">&#39;@&#39;</span>:  </div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;     <span class="comment">//     ack(&#39;~&#39;); // not @ or confuses python</span></div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    <span class="comment">//    DISP1(&quot; Download memory Cmd received.\r\n&quot;)</span></div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      ad=UART_getw4(DEBUG_SERIAL);</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;      len=UART_getw(DEBUG_SERIAL);</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  <span class="comment">//    DISP3(&quot;address = &quot;,(int)ad,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  <span class="comment">//    DISP3(&quot;len = &quot;,len,&quot;\r\n&quot;);</span></div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;      mem_packet_send(ad,len);</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  <span class="keywordflow">default</span>:{}</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  <span class="comment">//DISP1(&quot;Unknown command received\r\n&quot;);</span></div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;   }</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160; }</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;}</div>
+<div class="ttc" id="group__delay_html_ga14c78822167012f0af4f073eb33f00e7"><div class="ttname"><a href="group__delay.html#ga14c78822167012f0af4f073eb33f00e7">Delay_ms</a></div><div class="ttdeci">void Delay_ms(uint32_t milliseconds)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2delay_8c_source.html#l00019">delay.c:19</a></div></div>
 <div class="ttc" id="group__uart_html_ga5016951f4d87245612746fd3b11b4e55"><div class="ttname"><a href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a></div><div class="ttdeci">void UART_init(uint8_t uart_num, uint32_t baudrate)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00067">uart.c:67</a></div></div>
+<div class="ttc" id="group__uart_html_ga08fc6898c8677f8ef896a9f76801e9d2"><div class="ttname"><a href="group__uart.html#ga08fc6898c8677f8ef896a9f76801e9d2">UART_getc</a></div><div class="ttdeci">char UART_getc(uint8_t uart_num)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00102">uart.c:102</a></div></div>
 <div class="ttc" id="test_8c_html_a840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdoc">Runs all module tests. </div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00019">test.c:19</a></div></div>
+<div class="ttc" id="group__uart_html_gafe4ccbee9edc6e026aedd43bdc2cc87b"><div class="ttname"><a href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a></div><div class="ttdeci">void UART_puts(uint8_t uart_num, char *str)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00118">uart.c:118</a></div></div>
 <div class="ttc" id="group__board_html_ga6c191e6138454022bba4dbcb4278f141"><div class="ttname"><a href="group__board.html#ga6c191e6138454022bba4dbcb4278f141">Board_init</a></div><div class="ttdeci">void Board_init(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2board_8c_source.html#l00013">board.c:13</a></div></div>
-<div class="ttc" id="group__wdt_html_ga839f0e2119c8cc94b8d13881ab836b2a"><div class="ttname"><a href="group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a">WDT_kick</a></div><div class="ttdeci">void WDT_kick(void)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2wdt_8c_source.html#l00019">wdt.c:19</a></div></div>
+<div class="ttc" id="group__uart_html_ga617a14954d9f85329eba15b2598fd047"><div class="ttname"><a href="group__uart.html#ga617a14954d9f85329eba15b2598fd047">UART_putc</a></div><div class="ttdeci">void UART_putc(uint8_t uart_num, char c)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00110">uart.c:110</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

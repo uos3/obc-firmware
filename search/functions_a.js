@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['wdt_5fkick',['WDT_kick',['../group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a',1,'WDT_kick(void):&#160;wdt.c'],['../group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a',1,'WDT_kick(void):&#160;wdt.c'],['../group__wdt.html#ga839f0e2119c8cc94b8d13881ab836b2a',1,'WDT_kick(void):&#160;wdt.c']]]
+  ['packet_5fcrc16',['Packet_crc16',['../group__crc.html#gad514a3af471c92b05d6c46c986a79440',1,'Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output):&#160;crc16.c'],['../group__crc.html#gad514a3af471c92b05d6c46c986a79440',1,'Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output):&#160;crc16.c']]],
+  ['packet_5fsign_5fshake128',['Packet_sign_shake128',['../group__shake.html#ga24cdccdf7ce12eab9c4ec08adf0b43df',1,'Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output):&#160;shake.c'],['../group__shake.html#ga24cdccdf7ce12eab9c4ec08adf0b43df',1,'Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output):&#160;shake.c']]],
+  ['packet_5ftelemetry_5f1024_5fencode',['Packet_telemetry_1024_encode',['../group__packet.html#ga9352a9df79251b2024a0ee7104f584f4',1,'Packet_telemetry_1024_encode(packet_telemetry_1024 *packet, uint16_t origin, uint8_t *key, uint32_t key_length):&#160;packet.c'],['../group__packet.html#ga9352a9df79251b2024a0ee7104f584f4',1,'Packet_telemetry_1024_encode(packet_telemetry_1024 *packet, uint16_t origin, uint8_t *key, uint32_t key_length):&#160;packet.c']]]
 ];

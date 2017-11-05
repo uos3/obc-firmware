@@ -1,15 +1,11 @@
 var searchData=
 [
-  ['project_20modules',['Project Modules',['../group__group__main.html',1,'']]],
-  ['packet_20modules',['Packet Modules',['../group__packet.html',1,'']]],
-  ['packet_5fcrc16',['Packet_crc16',['../group__crc.html#gad514a3af471c92b05d6c46c986a79440',1,'Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output):&#160;crc16.c'],['../group__crc.html#gad514a3af471c92b05d6c46c986a79440',1,'Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output):&#160;crc16.c']]],
-  ['packet_5ftelecommand_5f512',['packet_telecommand_512',['../structpacket__telecommand__512.html',1,'']]],
-  ['packet_5ftelecommand_5f512_5fcrc',['packet_telecommand_512_crc',['../structpacket__telecommand__512__crc.html',1,'']]],
-  ['packet_5ftelecommand_5f512_5fhash',['packet_telecommand_512_hash',['../structpacket__telecommand__512__hash.html',1,'']]],
-  ['packet_5ftelemetry_5f1024',['packet_telemetry_1024',['../structpacket__telemetry__1024.html',1,'']]],
-  ['packet_5ftelemetry_5f1024_5fcrc',['packet_telemetry_1024_crc',['../structpacket__telemetry__1024__crc.html',1,'']]],
-  ['packet_5ftelemetry_5f1024_5fencode',['Packet_telemetry_1024_encode',['../group__packet.html#ga9352a9df79251b2024a0ee7104f584f4',1,'Packet_telemetry_1024_encode(packet_telemetry_1024 *packet, uint16_t origin, uint8_t *key, uint32_t key_length):&#160;packet.c'],['../group__packet.html#ga9352a9df79251b2024a0ee7104f584f4',1,'Packet_telemetry_1024_encode(packet_telemetry_1024 *packet, uint16_t origin, uint8_t *key, uint32_t key_length):&#160;packet.c']]],
-  ['packet_5ftelemetry_5f1024_5fhash',['packet_telemetry_1024_hash',['../structpacket__telemetry__1024__hash.html',1,'']]],
-  ['packet_5ftelemetry_5frealtime',['packet_telemetry_realtime',['../structpacket__telemetry__realtime.html',1,'']]],
-  ['pn9',['PN9',['../group__pn9.html',1,'']]]
+  ['i2c_5fport_5ft',['I2C_port_t',['../struct_i2_c__port__t.html',1,'']]],
+  ['imu',['Imu',['../group__imu.html',1,'']]],
+  ['imu_2ec',['imu.c',['../imu_8c.html',1,'']]],
+  ['imu_5finit',['IMU_Init',['../group__imu.html#gaef732d0cd334283d31029d6123d6e0eb',1,'IMU_Init(void):&#160;imu.c'],['../group__imu.html#gaef732d0cd334283d31029d6123d6e0eb',1,'IMU_Init(void):&#160;imu.c']]],
+  ['imu_5fread_5faccel',['IMU_read_accel',['../group__imu.html#gaf17bed86a4dd647b36140fa0f01e0431',1,'IMU_read_accel(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z):&#160;imu.c'],['../group__imu.html#gaf17bed86a4dd647b36140fa0f01e0431',1,'IMU_read_accel(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z):&#160;imu.c']]],
+  ['imu_5fread_5fgyro',['IMU_read_gyro',['../group__imu.html#gab8a0c4cb3f10766ed67cb0124a0d42f5',1,'IMU_read_gyro(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z):&#160;imu.c'],['../group__imu.html#gab8a0c4cb3f10766ed67cb0124a0d42f5',1,'IMU_read_gyro(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z):&#160;imu.c']]],
+  ['imu_5fread_5fmagno',['IMU_read_magno',['../group__imu.html#ga257d9a84392cf926b5e474a9ea09312d',1,'IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z):&#160;imu.c'],['../group__imu.html#ga257d9a84392cf926b5e474a9ea09312d',1,'IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z):&#160;imu.c']]],
+  ['imu_5fselftest',['IMU_selftest',['../group__imu.html#ga9614922f9dcae38f0c7c0d52f9a52ca6',1,'IMU_selftest(void):&#160;imu.c'],['../group__imu.html#ga9614922f9dcae38f0c7c0d52f9a52ca6',1,'IMU_selftest(void):&#160;imu.c']]]
 ];
