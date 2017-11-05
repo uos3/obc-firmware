@@ -43,7 +43,9 @@ typedef enum {
 /* Refer to https://docs.google.com/spreadsheets/d/1OFgH6SIJJw-ISLHxVPTY4VEa49qBMccs4Qu1e_zjqvg/ */
 /* Booleans will be bit-packed only if needed to fit */
 typedef struct configuration_data_t {
-	bool mission_started;
+	bool mission_inprogress;
+	bool antennas_deployed;
+	
 	bool tx_enable;
 	uint8_t tx_interval;
 
