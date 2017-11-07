@@ -68,6 +68,7 @@
 
 #define UART_PC104_HEADER	0x0
 #define UART_CAM_HEADER		0x1
+#define UART_EPS					0x2
 
 
 #define SPI_RADIO_RX	0x0
