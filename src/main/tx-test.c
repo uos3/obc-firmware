@@ -35,12 +35,12 @@ int main(void)
 	
 	//uint8_t rxBuffer[128] = {0};	
 
-	UART_init(UART_PC104_HEADER, 500000);
-  UART_putc(UART_PC104_HEADER, '\r');
-	UART_putc(UART_PC104_HEADER, '\n');
+	UART_init(UART_GNSS, 500000);
+  UART_putc(UART_GNSS, '\r');
+	UART_putc(UART_GNSS, '\n');
   for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
 
-  UART_putc(UART_PC104_HEADER, 'M');
+  UART_putc(UART_GNSS, 'M');
 	
 	SPI_init(SPI_RADIO_TX);
 	SPI_init(SPI_RADIO_RX);
@@ -62,7 +62,7 @@ int main(void)
 	*/
 	
 	
-	//UART_puts(UART_PC104_HEADER, "DONE");
+	//UART_puts(UART_GNSS, "DONE");
 	for(ui32Loop = 0; ui32Loop < 3000; ui32Loop++) {};
 	
 	//////// Calibrate radio according to errata
@@ -71,7 +71,7 @@ int main(void)
 
 	
 	for(ui32Loop = 0; ui32Loop < 3000; ui32Loop++) {};
-	//UART_puts(UART_PC104_HEADER, "CAL'd");
+	//UART_puts(UART_GNSS, "CAL'd");
 	for(ui32Loop = 0; ui32Loop < 30000; ui32Loop++) {};
 	
 	/////// the packet
@@ -106,11 +106,11 @@ int main(void)
 	/*	
 		// Wait for RX. If we dont get anything the WDT will kick 
 		// in and we can try again later
-		UART_puts(UART_PC104_HEADER, "waiting... ");
+		UART_puts(UART_GNSS, "waiting... ");
 		// Wait for falling edge of GPIO0
 		while(pollRadioGPIO0(RADIO_RX) == 0){};
 		while(pollRadioGPIO0(RADIO_RX) > 0){};
-		UART_puts(UART_PC104_HEADER, " flag high ");
+		UART_puts(UART_GNSS, " flag high ");
 		
 		// Read number of bytes in RX FIFO
 		uint8_t rxBytes, marcState;
@@ -118,13 +118,13 @@ int main(void)
 				
 		// Check that we have bytes in FIFO
 		if(rxBytes != 0) {
-			UART_puts(UART_PC104_HEADER, "Got some bytes: ");
+			UART_puts(UART_GNSS, "Got some bytes: ");
 			// Read MARCSTATE to check for RX FIFO error
 			cc112xSpiReadReg(RADIO_RX, CC112X_MARCSTATE, &marcState, 1);
 
 			// Mask out MARCSTATE bits and check if we have a RX FIFO error
 			if((marcState & 0x1F) == 0x11) { //RX_FIFO_ERROR) {
-				UART_puts(UART_PC104_HEADER, "RX FIFO error :(\n");
+				UART_puts(UART_GNSS, "RX FIFO error :(\n");
 				// Flush RX FIFO
 				trxSpiCmdStrobe(RADIO_RX, CC112X_SFRX);
 			} else {
@@ -134,7 +134,7 @@ int main(void)
 				
 
 				for (uint8_t i = 0; i < rxBytes; i++)
-					UART_puts(UART_PC104_HEADER, (char *)&rxBuffer[i]);
+					UART_puts(UART_GNSS, (char *)&rxBuffer[i]);
 				
 				// Check CRC ok (CRC_OK: bit7 in second status byte)
 				// This assumes status bytes are appended in RX_FIFO
@@ -148,7 +148,7 @@ int main(void)
 			}
 		}
 		else
-			UART_puts(UART_PC104_HEADER, "No bytes.:(");
+			UART_puts(UART_GNSS, "No bytes.:(");
 
 */
     }

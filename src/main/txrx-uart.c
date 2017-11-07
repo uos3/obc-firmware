@@ -12,8 +12,8 @@
 
 /* A very simple example that blinks the on-board LED. */
 
-//#define UART UART_PC104_HEADER
-#define UART UART_CAM_HEADER
+//#define UART UART_GNSS
+#define UART UART_CAMERA
 
 void cw_tone_option(void);
 void tx_packets_option(void);
