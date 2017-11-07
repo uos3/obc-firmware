@@ -10,6 +10,7 @@ int main(void)
 
   UART_init(UART_CAMERA, 9600);
   UART_init(UART_GNSS, 9600);
+  UART_init(UART_EPS, 9600);
 
   while(1)
   {
@@ -17,6 +18,7 @@ int main(void)
 
     UART_putc(UART_CAMERA, 'U');
     UART_putc(UART_GNSS, 'U');
+    UART_putc(UART_EPS, 'U');
 
     /* Off period */
     Delay_ms(750);
@@ -24,8 +26,9 @@ int main(void)
 
     LED_on(LED_B);
 
-    UART_puts(UART_CAMERA, "\r\nCamera Header\r\n");
-    UART_puts(UART_GNSS, "\r\nPC104 Header\r\n");
+    UART_puts(UART_CAMERA, "\r\nCamera\r\n");
+    UART_puts(UART_GNSS, "\r\nGNSS\r\n");
+    UART_puts(UART_EPS, "\r\nEPS\r\n");
 
     /* On period */
     Delay_ms(250);
