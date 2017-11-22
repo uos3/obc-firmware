@@ -134,11 +134,6 @@ static const uint16_t Packet_cw_lookup[59][2] =
 	{ 4, GCC_BINARY(0b11110101) } // − − · · 
 };
 
-static void Packet_cw_delay(void)
-{
-	Delay_ms(CW_PERIOD_MS);
-}
-
 void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, void *_cw_on(void), void *_cw_off(void))
 {
 	uint32_t i, j;
@@ -151,7 +146,7 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, void *_cw
 		/* Move lower case to upper case */
 		if((c >= 97) && (c <= 122))
 		{
-			c = (char)(c - 32);
+			c = (uint8_t)(c - 32);
 		}
 
 		/* Bounds check - move to next character if invalid */
@@ -161,7 +156,7 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, void *_cw
 		}
 
 		/* Prepare for table lookup */
-		c = (char)(c - 32);
+		c = (uint8_t)(c - 32);
 
 		for(
 			j = (uint32_t)(2 * (Packet_cw_lookup[c][0] - 1));
@@ -174,33 +169,33 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, void *_cw
 				case GCC_BINARY(0b00):
 					/* Pause (only used for space character) */
 					_cw_off();
-					Packet_cw_delay();
+					Delay_ms(CW_PERIOD_MS);
 					break;
 				case GCC_BINARY(0b01):
 					/* Dit */
 					_cw_on();
-					Packet_cw_delay();
+					Delay_ms(CW_PERIOD_MS);
 					break;
 				case GCC_BINARY(0b11):
 					/* Dah */
 					_cw_on();
-					Packet_cw_delay();
-					Packet_cw_delay();
-					Packet_cw_delay();
+					Delay_ms(CW_PERIOD_MS);
+					Delay_ms(CW_PERIOD_MS);
+					Delay_ms(CW_PERIOD_MS);
 					break;
 				default:
 					break;
 			}
 			_cw_off();
 			/* Inter pulse pause */
-			Packet_cw_delay();
+			Delay_ms(CW_PERIOD_MS);
 			if(j==0)
 			{
 				break;
 			}
 		}
 		/* Additional inter letter pause */
-		Packet_cw_delay();
-		Packet_cw_delay();
+		Delay_ms(CW_PERIOD_MS);
+		Delay_ms(CW_PERIOD_MS);
 	}
 }
