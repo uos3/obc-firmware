@@ -35,7 +35,7 @@
 void Buffer_init(void);
 void Buffer_reset(void);
 
-void Buffer_store_new_data(uint16_t index, uint8_t *data_payload);
+void Buffer_store_new_data(uint8_t *data_payload);
 bool Buffer_get_next_data(uint8_t *data_payload);
 void Buffer_remove_index(uint16_t index);
 uint16_t Buffer_count_occupied(void);

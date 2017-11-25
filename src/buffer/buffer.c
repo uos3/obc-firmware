@@ -21,11 +21,11 @@ typedef struct buffer_cache_t {
   bool initialised;
   uint16_t last_index_stored;
   uint16_t last_slot_transmitted;
-  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)];
-  uint16_t indexes[BUFFER_SLOTS];
+  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)]; // bitmap of occupancy
+  uint16_t indexes[BUFFER_SLOTS]; // indexes[slot] = index
 } buffer_cache_t;
 
-static buffer_cache_t buffer_cache;
+static buffer_cache_t buffer_cache = { false, 0, 0, {0}, {0} };
 
 void Buffer_init(void)
 {
@@ -59,16 +59,19 @@ void Buffer_reset(void)
   Buffer_FRAM_write_indexes(buffer_cache.indexes);
 }
 
-void Buffer_store_new_data(uint16_t index, uint8_t *data_payload)
+void Buffer_store_new_data(uint8_t *data_payload)
 {
   Buffer_init();
 
-  uint16_t slot;
+  uint16_t new_slot;
+  uint16_t new_index;
 
-  Buffer_find_new_slot(&slot);
-  Buffer_FRAM_write_data(slot, data_payload);
-  Buffer_set_index(slot, index);
-  Buffer_set_occupancy(slot, true);
+  new_index = (uint16_t)(buffer_cache.last_index_stored + 1);
+
+  Buffer_find_new_slot(&new_slot);
+  Buffer_FRAM_write_data(new_slot, data_payload);
+  Buffer_set_index(new_slot, new_index);
+  Buffer_set_occupancy(new_slot, true);
 }
 
 void Buffer_set_index(uint16_t slot, uint16_t index)

@@ -32,23 +32,29 @@ bool test_buffer_add_remove_element(void)
 	uint8_t test_buffer_packet[BUFFER_SLOT_SIZE] = { 0 };
 
   Buffer_init();
+  /* Reset so we can predict data index = 0x01 */
   Buffer_reset();
 
-	Buffer_store_new_data(0x75, test_buffer_packet);
+	if(Buffer_count_occupied() != 0)
+	{
+		return false;
+	}
+
+	Buffer_store_new_data(test_buffer_packet);
 	if(Buffer_count_occupied() != 1)
 	{
 		return false;
 	}
 
 	/* Remove incorrect index */
-	Buffer_remove_index(0x64);
+	Buffer_remove_index(0x34);
 	if(Buffer_count_occupied() != 1)
 	{
 		return false;
 	}
 
 	/* Remove correct index */
-	Buffer_remove_index(0x75);
+	Buffer_remove_index(0x01);
 	if(Buffer_count_occupied() != 0)
 	{
 		return false;
@@ -59,14 +65,27 @@ bool test_buffer_add_remove_element(void)
 
 bool test_buffer_retrieve_element(void)
 {
-	uint8_t test_buffer_packet[BUFFER_SLOT_SIZE] = { 0 };
+	uint32_t i;
+	uint8_t reference_buffer_packet[BUFFER_SLOT_SIZE];
+	uint8_t test_buffer_packet[BUFFER_SLOT_SIZE] = {0};
+
+	/* Populate packet */
+  for(i=0; i<BUFFER_SLOT_SIZE; i++)
+  {
+    reference_buffer_packet[i] = (uint8_t)(Random(255));
+  }
 
   Buffer_init();
   Buffer_reset();
 
-	Buffer_store_new_data(0x75, test_buffer_packet);
+	Buffer_store_new_data(reference_buffer_packet);
 
 	if(!Buffer_get_next_data(test_buffer_packet))
+	{
+		return false;
+	}
+
+	if(memcmp(test_buffer_packet, reference_buffer_packet, BUFFER_SLOT_SIZE) != 0)
 	{
 		return false;
 	}
@@ -84,7 +103,7 @@ bool test_buffer_fill_elements(void)
   /* Fill buffer */
 	for(uint16_t i=0; i<BUFFER_SLOTS; i++)
 	{
-		Buffer_store_new_data(i, test_buffer_packet);
+		Buffer_store_new_data(test_buffer_packet);
 
 		if(Buffer_count_occupied() != i+1)
 		{
@@ -99,7 +118,7 @@ bool test_buffer_fill_elements(void)
 	/* Check it holds capacity */
 	for(uint16_t i=0; i<BUFFER_SLOTS; i++)
 	{
-		Buffer_store_new_data(i, test_buffer_packet);
+		Buffer_store_new_data(test_buffer_packet);
 
 		if(Buffer_count_occupied() != BUFFER_SLOTS)
 		{
