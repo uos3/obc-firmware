@@ -53,7 +53,7 @@ static SPI_port SPI_ports[1] =
       GPIO_PIN_2,
       GPIO_PIN_0,
       GPIO_PIN_1,
-      1000000,
+      5000000,
       false
     }
   };
@@ -93,13 +93,8 @@ static SPI_t SPI_spis[3] =
 
 #define check_spi_num(x, y)  if(x >= NUMBER_OF_SPIS) { return y; }
 
-/** Public Functions */
-
-void SPI_init(uint8_t spi_num)
+static void SPI_init(SPI_t* spi)
 {
-  check_spi_num(spi_num,);
-  SPI_t *spi = &SPI_spis[spi_num];
-
   /* Check Virtual SPI is initialised */
   if(!spi->initialised)
   {
@@ -157,10 +152,14 @@ void SPI_init(uint8_t spi_num)
   }
 }
 
+/** Public Functions */
+
 uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -190,6 +189,8 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -224,6 +225,8 @@ uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t le
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -260,6 +263,8 @@ uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d, w;
 
@@ -298,6 +303,8 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t l
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
 
+  SPI_init(spi);
+
   uint32_t r, d, w;
 
   /* Pull CS_N low */
@@ -335,6 +342,8 @@ uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -376,6 +385,8 @@ uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t 
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -420,6 +431,8 @@ uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
 
+  SPI_init(spi);
+
   uint32_t r, d, w;
 
   uint8_t addr_msb  = (uint8_t)(addr >> 8);
@@ -459,6 +472,8 @@ uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d, w;
 
@@ -502,6 +517,8 @@ uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -549,6 +566,8 @@ uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t 
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -599,6 +618,8 @@ uint8_t SPI_write32(uint8_t spi_num, uint32_t addr, uint8_t *data)
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
 
+  SPI_init(spi);
+
   uint32_t r, d, w;
 
   uint8_t addr_mmsb  = (uint8_t)(addr >> 24);
@@ -640,6 +661,8 @@ uint8_t SPI_burstwrite32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d, w;
 

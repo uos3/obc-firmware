@@ -31,8 +31,6 @@ void Buffer_init(void)
 {
   if(!buffer_cache.initialised)
   {
-    FRAM_init();
-
     Buffer_FRAM_read_last_index_stored(&(buffer_cache.last_index_stored));
     Buffer_FRAM_read_last_slot_transmitted(&(buffer_cache.last_slot_transmitted));
     Buffer_FRAM_read_occupancy(buffer_cache.occupancy);

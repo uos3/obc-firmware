@@ -59,9 +59,6 @@ int main(void)
 
    UART_init(UART, 500000);
    
-   SPI_init(SPI_RADIO_TX);
-   SPI_init(SPI_RADIO_RX);
-   
    while(1){
    
       UART_puts(UART, "Welcome to the radio test program\n\n");

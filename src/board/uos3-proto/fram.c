@@ -29,16 +29,9 @@
 
 static uint8_t fram_deviceid[9] = { 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0xC2, 0x24, 0x00 };
 
-void FRAM_init(void)
-{
-  SPI_init(SPI_FRAM);
-}
-
 bool FRAM_selfTest(void)
 {
   uint8_t fram_deviceid_read[9];
-
-  FRAM_init();
 
   SPI_burstread8(SPI_FRAM, FRAM_OPCODE_RDID, fram_deviceid_read, 9);
 

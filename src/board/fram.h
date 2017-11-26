@@ -26,15 +26,6 @@
  * @function
  * @ingroup fram
  *
- * Initialise FRAM Device
- *
- */
-void FRAM_init(void);
-
-/**
- * @function
- * @ingroup fram
- *
  * Check FRAM Device returns correct Device ID, indicating likelihood of correct operation
  *
  * @returns bool True if Device ID is return correctly, False else.
