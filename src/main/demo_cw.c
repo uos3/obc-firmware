@@ -62,6 +62,9 @@ static const registerSetting_t preferredSettings_cw[]=
 static double freq = 145.5;
 static double pwr = 10.0;
 
+static uint8_t buffer[17] = "UOS3 UOS3 UOS3 k\0";
+static uint32_t buffer_length = 16;
+
 static void cw_tone_on(void)
 {
   uint8_t pwr_reg;
@@ -74,11 +77,15 @@ static void cw_tone_on(void)
   radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
 
   SPI_cmd(SPI_RADIO_TX, CC112X_STX);
+
+  LED_on(LED_B);
 }
 
 static void cw_tone_off(void)
 {
   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+
+  LED_off(LED_B);
 }
 
 int main(void)
@@ -87,16 +94,11 @@ int main(void)
 
   Board_init();
 
-  LED_on(LED_B);
-
   UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\nCW Radio Demo\r\n");
 
   sprintf(output,"Freq: %.3fMHz, Power: %+.1fdBmW\r\n", freq, pwr);
   UART_puts(UART_INTERFACE, output);
-
-  uint8_t buffer[17] = "UOS3 UOS3 UOS3 k\0";
-  uint32_t buffer_length = 16;
 
   while(1)
   {
