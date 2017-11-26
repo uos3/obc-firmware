@@ -42,9 +42,6 @@ int main(void)
 
   UART_putc(UART_GNSS, 'M');
 	
-	SPI_init(SPI_RADIO_TX);
-	SPI_init(SPI_RADIO_RX);
-	
 	//////// write config ///////
 
     // Reset radio
