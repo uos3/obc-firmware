@@ -8,7 +8,7 @@
 
 #include "../firmware.h"
 
-#define CW_PERIOD_MS	300
+#define CW_PERIOD_MS	100
 
 /* Each element: length, pattern (2-bit, pause: 00, dit: 01, dah: 11) */
 /* Length Guide: dit: 1, dah: 3, symbol space: 1, letter space: 3, word space: 7 */
@@ -134,7 +134,7 @@ static const uint16_t Packet_cw_lookup[59][2] =
 	{ 4, GCC_BINARY(0b11110101) } // − − · · 
 };
 
-void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, void *_cw_on(void), void *_cw_off(void))
+void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, void _cw_on(void), void _cw_off(void))
 {
 	uint32_t i, j;
 	uint8_t c;
