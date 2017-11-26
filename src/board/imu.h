@@ -39,7 +39,7 @@ typedef enum
 	IMU_GYRO_500DEG_S,
 	IMU_GYRO_1000DEG_S,
 	IMU_GYRO_2000DEG_S
-}imu_gyro_sensitivity_t;
+} imu_gyro_sensitivity_t;
 
 /**
  * @function
