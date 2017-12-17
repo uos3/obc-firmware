@@ -64,7 +64,7 @@ int main(void)
       ```
       sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
       sudo apt update
-      sudo apt install gcc-6
+      sudo apt install gcc-7
       ```
 
 ### For TI tm4c (eg. UoS3)

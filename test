@@ -151,13 +151,13 @@ filename="test-$(hyphenjoin $flags $githash)"
 
 flags="BOARD=${board} RUNTESTS=true MAIN=../test OUTDIR=${outdir} OUTFILE=\"${filename}\""
 
-cc="gcc-6"
-gcov="gcov-6"
+cc="gcc-7"
+gcov="gcov-7"
 which ${cc} 1>/dev/null 2>&1
 if [ $? != 0 ]; then
   cc="gcc"
   gcov="gcov"
-  print "$_INFO_$COLOUR_RED Warning: GCC 6.x not installed, using GCC $(${cc} -dumpversion).$COLOUR_OFF"
+  print "$_INFO_$COLOUR_RED Warning: GCC 7.x not installed, using GCC $(${cc} -dumpversion).$COLOUR_OFF"
 else
   print "$_INFO_ Using GCC $(${cc} -dumpversion) $COLOUR_OFF"
 fi
