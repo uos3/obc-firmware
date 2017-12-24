@@ -8,6 +8,16 @@
 
 #include "../firmware.h"
 
+void Buffer_FRAM_write_crc(uint16_t *crc)
+{
+  FRAM_write(BUFFER_FRAM_ADDRESS_CRC, (uint8_t*)crc, BUFFER_FRAM_SIZE_CRC);
+}
+
+void Buffer_FRAM_read_crc(uint16_t *crc)
+{
+  FRAM_read(BUFFER_FRAM_ADDRESS_CRC, (uint8_t*)crc, BUFFER_FRAM_SIZE_CRC);
+}
+
 void Buffer_FRAM_write_last_index_stored(uint16_t *index)
 {
   FRAM_read(BUFFER_FRAM_ADDRESS_LAST_INDEX, (uint8_t*)index, BUFFER_FRAM_SIZE_LAST_INDEX);

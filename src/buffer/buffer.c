@@ -8,7 +8,7 @@
 
 #include "../firmware.h"
 
-/* Illustrative struct of data layout:
+/* Illustrative struct of FRAM data layout:
 typedef struct buffer_data {
   uint16_t last_index;
   uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)];
@@ -23,21 +23,45 @@ typedef struct buffer_cache_t {
   uint16_t last_slot_transmitted;
   uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)]; // bitmap of occupancy
   uint16_t indexes[BUFFER_SLOTS]; // indexes[slot] = index
+  uint16_t crc;
 } buffer_cache_t;
 
-static buffer_cache_t buffer_cache = { false, 0, 0, {0}, {0} };
+static buffer_cache_t buffer_cache = { false, 0, 0, {0}, {0}, 0x0000 };
 
 void Buffer_init(void)
 {
-  if(!buffer_cache.initialised)
+  if(buffer_cache.initialised && !Buffer_verify_cache())
+  {
+    /* TODO: SEU Detected, REBOOT! */
+    Mission_SEU();
+  }
+  else if(!buffer_cache.initialised)
   {
     Buffer_FRAM_read_last_index_stored(&(buffer_cache.last_index_stored));
     Buffer_FRAM_read_last_slot_transmitted(&(buffer_cache.last_slot_transmitted));
     Buffer_FRAM_read_occupancy(buffer_cache.occupancy);
     Buffer_FRAM_read_indexes(buffer_cache.indexes);
+    Buffer_FRAM_read_crc(&(buffer_cache.crc));
+
+    if(!Buffer_verify_cache())
+    {
+      /* Stored FRAM header is broken, so reset the buffer */
+      /* TODO: Increment a Counter in health data */
+      memset(&buffer_cache, 0x00, sizeof(buffer_cache_t));
+      Packet_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t), &(buffer_cache.crc));
+    }
 
     buffer_cache.initialised = true;
   }
+}
+
+bool Buffer_verify_cache(void)
+{
+  uint16_t crc_result;
+
+  Packet_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t), &crc_result);
+
+  return !memcmp(&crc_result, &(buffer_cache.crc), sizeof(uint16_t));
 }
 
 void Buffer_reset(void)
