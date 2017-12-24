@@ -191,5 +191,5 @@ void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z)
 	*magno_x = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HXL);
 	*magno_y = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HYL);
 	*magno_z = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HZL);
-	int16_t s = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ST2);
+	(void)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ST2);
 }
