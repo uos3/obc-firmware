@@ -36,6 +36,7 @@
 #define MAG_HXL 3
 #define MAG_HYL 5
 #define MAG_HZL 7 // offsets in magnetometer, note little endian, so need to be read opposite way round
+#define MAG_ST2 0x09
 #define MAG_CNTL1 10 // Magnetometer control register
 #define MAG_STA1 2 // read only gives flags at 1 for DRDY and 2 for DOR (data ready and overload), used in read cycle
 
@@ -54,8 +55,8 @@ void IMU_Init(void)
 	i2cstring[2] = 0;
 	i2cstring[1] = 0; // set mode to zero before changing mode
 	I2CSendString(I2C_IMU, MAG_I2C_ADDR, i2cstring); // set Magnetometer to safe mode before mode change 
-	i2cstring[1]=1 | 0; // continuous (16hz) mode with 14bit range
-	I2CSendString(I2C_IMU, MAG_I2C_ADDR, i2cstring); // set Magnetometer to continuous shot mode with 16bit range, single shot needs updating and has delay 
+	i2cstring[1] = 0x12; // continuous (16hz) mode 1 with 16bit range
+	I2CSendString(I2C_IMU, MAG_I2C_ADDR, i2cstring);
 }
 
 void IMU_set_accel_sensitivity(imu_accel_sensitivity_t imu_accel_sensitivity)
@@ -190,4 +191,5 @@ void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z)
 	*magno_x = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HXL);
 	*magno_y = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HYL);
 	*magno_z = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HZL);
+	int16_t s = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ST2);
 }
