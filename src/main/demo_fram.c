@@ -7,14 +7,14 @@
 
 static uint32_t address;
 
-#define DATA_BUFFER_LENGTH  100
+#define DATA_BUFFER_LENGTH  50
 static uint8_t data_write[DATA_BUFFER_LENGTH];
 static uint8_t data_read[DATA_BUFFER_LENGTH];
 
 int main(void)
 {
   uint32_t i;
-  char output[100];
+  char output[200];
 
   Board_init();
 
@@ -76,6 +76,6 @@ int main(void)
     UART_puts(UART_INTERFACE, "---------------\r\n");
     LED_off(LED_B);
     
-    Delay_ms(3000);
+    Delay_ms(5000);
   }
 }
