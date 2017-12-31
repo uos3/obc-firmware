@@ -77,17 +77,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Fram</div>  </div>
+<div class="title">Fram<div class="ingroups"><a class="el" href="group__drivers.html">Board/Platform Hardware Drivers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>FRAM Functions &amp; Definitions.  
+<p>FRAM Peripheral Driver.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga405f526b1c522389b94947277fcfe3a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__fram.html#ga405f526b1c522389b94947277fcfe3a0">FRAM_init</a> (void)</td></tr>
-<tr class="separator:ga405f526b1c522389b94947277fcfe3a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2de06bf5da4ab12cb9adf0897af51698"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__fram.html#ga2de06bf5da4ab12cb9adf0897af51698">FRAM_selfTest</a> (void)</td></tr>
 <tr class="separator:ga2de06bf5da4ab12cb9adf0897af51698"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga356c8be1d76eb93e9c954ac912a16186"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a> (uint32_t address, uint8_t *data, uint32_t length)</td></tr>
@@ -96,27 +94,9 @@ Functions</h2></td></tr>
 <tr class="separator:ga1502dcc9599763b823938c6c4c396ce0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>FRAM Functions &amp; Definitions. </p>
+<p>FRAM Peripheral Driver. </p>
+<p>Hardware FRAM Peripheral Driver. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ga405f526b1c522389b94947277fcfe3a0"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FRAM_init </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Initialise FRAM Device </p>
-
-<p>Definition at line <a class="el" href="gnulinux_2fram_8c_source.html#l00017">17</a> of file <a class="el" href="gnulinux_2fram_8c_source.html">fram.c</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="ga2de06bf5da4ab12cb9adf0897af51698"></a>
 <div class="memitem">
 <div class="memproto">
@@ -133,7 +113,7 @@ Functions</h2></td></tr>
 <p>Check FRAM Device returns correct Device ID, indicating likelihood of correct operation</p>
 <dl class="section return"><dt>Returns</dt><dd>bool True if Device ID is return correctly, False else. </dd></dl>
 
-<p>Definition at line <a class="el" href="gnulinux_2fram_8c_source.html#l00019">19</a> of file <a class="el" href="gnulinux_2fram_8c_source.html">fram.c</a>.</p>
+<p>Definition at line <a class="el" href="gnulinux_2fram_8c_source.html#l00017">17</a> of file <a class="el" href="gnulinux_2fram_8c_source.html">fram.c</a>.</p>
 
 </div>
 </div>
@@ -169,7 +149,7 @@ Functions</h2></td></tr>
 <p>Writ data to FRAM, beginning at specified memory address.</p>
 <p>uint32_t Memory address to begin writing data.  uint8_t* Pointer to data buffer.  uint32_t Length to write in bytes. </p>
 
-<p>Definition at line <a class="el" href="gnulinux_2fram_8c_source.html#l00027">27</a> of file <a class="el" href="gnulinux_2fram_8c_source.html">fram.c</a>.</p>
+<p>Definition at line <a class="el" href="gnulinux_2fram_8c_source.html#l00025">25</a> of file <a class="el" href="gnulinux_2fram_8c_source.html">fram.c</a>.</p>
 
 </div>
 </div>
@@ -205,7 +185,7 @@ Functions</h2></td></tr>
 <p>Read data from FRAM, beginning at specified memory address.</p>
 <p>uint32_t Memory address to begin reading data.  uint8_t* Pointer to data buffer.  uint32_t Length to read in bytes. </p>
 
-<p>Definition at line <a class="el" href="gnulinux_2fram_8c_source.html#l00038">38</a> of file <a class="el" href="gnulinux_2fram_8c_source.html">fram.c</a>.</p>
+<p>Definition at line <a class="el" href="gnulinux_2fram_8c_source.html#l00036">36</a> of file <a class="el" href="gnulinux_2fram_8c_source.html">fram.c</a>.</p>
 
 </div>
 </div>

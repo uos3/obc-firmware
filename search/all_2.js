@@ -9,5 +9,7 @@ var searchData=
   ['configuration_2ec',['configuration.c',['../configuration_8c.html',1,'']]],
   ['configuration_5fdata_5ft',['configuration_data_t',['../structconfiguration__data__t.html',1,'']]],
   ['configuration_5ft',['configuration_t',['../structconfiguration__t.html',1,'']]],
-  ['crc',['Crc',['../group__crc.html',1,'']]]
+  ['crc',['Crc',['../group__crc.html',1,'']]],
+  ['cw',['CW',['../group__cw.html',1,'']]],
+  ['cw_2ec',['cw.c',['../cw_8c.html',1,'']]]
 ];

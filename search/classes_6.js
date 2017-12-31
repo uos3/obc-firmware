@@ -1,10 +1,5 @@
 var searchData=
 [
-  ['packet_5ftelecommand_5f512',['packet_telecommand_512',['../structpacket__telecommand__512.html',1,'']]],
-  ['packet_5ftelecommand_5f512_5fcrc',['packet_telecommand_512_crc',['../structpacket__telecommand__512__crc.html',1,'']]],
-  ['packet_5ftelecommand_5f512_5fhash',['packet_telecommand_512_hash',['../structpacket__telecommand__512__hash.html',1,'']]],
-  ['packet_5ftelemetry_5f1024',['packet_telemetry_1024',['../structpacket__telemetry__1024.html',1,'']]],
-  ['packet_5ftelemetry_5f1024_5fcrc',['packet_telemetry_1024_crc',['../structpacket__telemetry__1024__crc.html',1,'']]],
-  ['packet_5ftelemetry_5f1024_5fhash',['packet_telemetry_1024_hash',['../structpacket__telemetry__1024__hash.html',1,'']]],
-  ['packet_5ftelemetry_5frealtime',['packet_telemetry_realtime',['../structpacket__telemetry__realtime.html',1,'']]]
+  ['mission_5fstate_5fdata_5ft',['mission_state_data_t',['../structmission__state__data__t.html',1,'']]],
+  ['mission_5fstate_5ft',['mission_state_t',['../structmission__state__t.html',1,'']]]
 ];

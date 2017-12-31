@@ -95,22 +95,57 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;stdbool.h&gt;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__imu.html#gaef732d0cd334283d31029d6123d6e0eb">IMU_Init</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__imu.html#ga9614922f9dcae38f0c7c0d52f9a52ca6">IMU_selftest</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  IMU_BW_5HZ,</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  IMU_BW_10HZ,</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  IMU_BW_20HZ,</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  IMU_BW_41HZ,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  IMU_BW_92HZ,</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  IMU_BW_184HZ,</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  IMU_BW_460HZ</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;} imu_bandwidth_t;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  IMU_ACCEL_2G,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  IMU_ACCEL_4G,</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  IMU_ACCEL_8G,</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  IMU_ACCEL_16G</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;} imu_accel_sensitivity_t;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__imu.html#gaf17bed86a4dd647b36140fa0f01e0431">IMU_read_accel</a>(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__imu.html#gab8a0c4cb3f10766ed67cb0124a0d42f5">IMU_read_gyro</a>(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__imu.html#ga257d9a84392cf926b5e474a9ea09312d">IMU_read_magno</a>(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*  __IMU_H__ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  IMU_GYRO_250DEG_S,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  IMU_GYRO_500DEG_S,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  IMU_GYRO_1000DEG_S,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  IMU_GYRO_2000DEG_S</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;} imu_gyro_sensitivity_t;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__imu.html#gaef732d0cd334283d31029d6123d6e0eb">IMU_Init</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__imu.html#ga9614922f9dcae38f0c7c0d52f9a52ca6">IMU_selftest</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__imu.html#gaf17bed86a4dd647b36140fa0f01e0431">IMU_read_accel</a>(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__imu.html#gab8a0c4cb3f10766ed67cb0124a0d42f5">IMU_read_gyro</a>(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__imu.html#ga257d9a84392cf926b5e474a9ea09312d">IMU_read_magno</a>(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="keywordtype">void</span> IMU_set_accel_sensitivity(imu_accel_sensitivity_t imu_accel_sensitivity);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="keywordtype">void</span> IMU_set_accel_bandwidth(imu_bandwidth_t imu_accel_bandwidth);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keywordtype">void</span> IMU_set_gyro_sensitivity(imu_gyro_sensitivity_t imu_gyro_sensitivity);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keywordtype">void</span> IMU_set_gyro_bandwidth(imu_bandwidth_t imu_gyro_bandwidth);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*  __IMU_H__ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="group__imu_html_gaef732d0cd334283d31029d6123d6e0eb"><div class="ttname"><a href="group__imu.html#gaef732d0cd334283d31029d6123d6e0eb">IMU_Init</a></div><div class="ttdeci">void IMU_Init(void)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00043">imu.c:43</a></div></div>
-<div class="ttc" id="group__imu_html_ga9614922f9dcae38f0c7c0d52f9a52ca6"><div class="ttname"><a href="group__imu.html#ga9614922f9dcae38f0c7c0d52f9a52ca6">IMU_selftest</a></div><div class="ttdeci">bool IMU_selftest(void)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00062">imu.c:62</a></div></div>
-<div class="ttc" id="group__imu_html_ga257d9a84392cf926b5e474a9ea09312d"><div class="ttname"><a href="group__imu.html#ga257d9a84392cf926b5e474a9ea09312d">IMU_read_magno</a></div><div class="ttdeci">void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00083">imu.c:83</a></div></div>
-<div class="ttc" id="group__imu_html_gab8a0c4cb3f10766ed67cb0124a0d42f5"><div class="ttname"><a href="group__imu.html#gab8a0c4cb3f10766ed67cb0124a0d42f5">IMU_read_gyro</a></div><div class="ttdeci">void IMU_read_gyro(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00076">imu.c:76</a></div></div>
-<div class="ttc" id="group__imu_html_gaf17bed86a4dd647b36140fa0f01e0431"><div class="ttname"><a href="group__imu.html#gaf17bed86a4dd647b36140fa0f01e0431">IMU_read_accel</a></div><div class="ttdeci">void IMU_read_accel(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00069">imu.c:69</a></div></div>
+<div class="ttc" id="group__imu_html_ga9614922f9dcae38f0c7c0d52f9a52ca6"><div class="ttname"><a href="group__imu.html#ga9614922f9dcae38f0c7c0d52f9a52ca6">IMU_selftest</a></div><div class="ttdeci">bool IMU_selftest(void)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00164">imu.c:164</a></div></div>
+<div class="ttc" id="group__imu_html_ga257d9a84392cf926b5e474a9ea09312d"><div class="ttname"><a href="group__imu.html#ga257d9a84392cf926b5e474a9ea09312d">IMU_read_magno</a></div><div class="ttdeci">void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00187">imu.c:187</a></div></div>
+<div class="ttc" id="group__imu_html_gab8a0c4cb3f10766ed67cb0124a0d42f5"><div class="ttname"><a href="group__imu.html#gab8a0c4cb3f10766ed67cb0124a0d42f5">IMU_read_gyro</a></div><div class="ttdeci">void IMU_read_gyro(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00178">imu.c:178</a></div></div>
+<div class="ttc" id="group__imu_html_gaf17bed86a4dd647b36140fa0f01e0431"><div class="ttname"><a href="group__imu.html#gaf17bed86a4dd647b36140fa0f01e0431">IMU_read_accel</a></div><div class="ttdeci">void IMU_read_accel(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00171">imu.c:171</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

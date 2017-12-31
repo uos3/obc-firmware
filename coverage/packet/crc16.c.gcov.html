@@ -4,7 +4,7 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>LCOV - test-6b10f41-dirty-coverage.info - packet/crc16.c</title>
+  <title>LCOV - test-28a42ec-dirty-coverage.info - packet/crc16.c</title>
   <link rel="stylesheet" type="text/css" href="../gcov.css">
 </head>
 
@@ -28,7 +28,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test:</td>
-            <td class="headerValue">test-6b10f41-dirty-coverage.info</td>
+            <td class="headerValue">test-28a42ec-dirty-coverage.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">9</td>
@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2017-12-24</td>
+            <td class="headerValue">2017-12-31</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">1</td>
@@ -70,25 +70,25 @@
 <span class="lineNum">       8 </span>            : 
 <a name="9"><span class="lineNum">       9 </span>            : #include &quot;../firmware.h&quot;</a>
 <span class="lineNum">      10 </span>            : 
-<span class="lineNum">      11 </span><span class="lineCov">          3 : void Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output)</span>
+<span class="lineNum">      11 </span><span class="lineCov">       4857 : void Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output)</span>
 <span class="lineNum">      12 </span>            : {
 <span class="lineNum">      13 </span>            :   uint32_t i;
 <span class="lineNum">      14 </span>            :   uint16_t j;
 <span class="lineNum">      15 </span>            :  
-<span class="lineNum">      16 </span><span class="lineCov">          3 :   *output = 0xFFFF;</span>
+<span class="lineNum">      16 </span><span class="lineCov">       4857 :   *output = 0xFFFF;</span>
 <span class="lineNum">      17 </span>            :   
-<span class="lineNum">      18 </span><span class="lineCov">        102 :   for (i=0; i&lt;length; i++)</span>
+<span class="lineNum">      18 </span><span class="lineCov">   12518568 :   for (i=0; i&lt;length; i++)</span>
 <span class="lineNum">      19 </span>            :   {
-<span class="lineNum">      20 </span><span class="lineCov">         99 :     *output = (uint16_t)(*output ^ ((uint16_t)input[i] &lt;&lt; 8));</span>
-<span class="lineNum">      21 </span><span class="lineCov">        891 :     for (j=0; j&lt;8; j++)</span>
+<span class="lineNum">      20 </span><span class="lineCov">   12513711 :     *output = (uint16_t)(*output ^ ((uint16_t)input[i] &lt;&lt; 8));</span>
+<span class="lineNum">      21 </span><span class="lineCov">  112623399 :     for (j=0; j&lt;8; j++)</span>
 <span class="lineNum">      22 </span>            :     {
-<span class="lineNum">      23 </span><span class="lineCov">        792 :       if (*output &amp; 0x8000)</span>
-<span class="lineNum">      24 </span><span class="lineCov">        400 :         *output = (uint16_t)(*output &lt;&lt; 1) ^ 0x1021;</span>
+<span class="lineNum">      23 </span><span class="lineCov">  100109688 :       if (*output &amp; 0x8000)</span>
+<span class="lineNum">      24 </span><span class="lineCov">   49802782 :         *output = (uint16_t)(*output &lt;&lt; 1) ^ 0x1021;</span>
 <span class="lineNum">      25 </span>            :       else
-<span class="lineNum">      26 </span><span class="lineCov">        392 :         *output = (uint16_t)(*output &lt;&lt; 1);</span>
+<span class="lineNum">      26 </span><span class="lineCov">   50306906 :         *output = (uint16_t)(*output &lt;&lt; 1);</span>
 <span class="lineNum">      27 </span>            :     }
 <span class="lineNum">      28 </span>            :   }
-<span class="lineNum">      29 </span><span class="lineCov">          3 : }</span>
+<span class="lineNum">      29 </span><span class="lineCov">       4857 : }</span>
 <span class="lineNum">      30 </span>            : 
 <span class="lineNum">      31 </span>            : /**
 <span class="lineNum">      32 </span>            :  * @}

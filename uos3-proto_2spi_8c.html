@@ -112,8 +112,9 @@ typedef struct <a class="el" href="struct_s_p_i__t.html">SPI_t</a>&#160;</td><td
 <tr class="separator:a0cf9cd9c01f9b39f78fa3260bb630ca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d3310c813da9d16f4b027dd3923b1cb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="struct_s_p_i__t.html">SPI_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>SPI_spis</b> [3]</td></tr>
 <tr class="separator:a4d3310c813da9d16f4b027dd3923b1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga138ad778c02212e029a14d8be2a335dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#ga138ad778c02212e029a14d8be2a335dc">SPI_init</a> (uint8_t spi_num)</td></tr>
-<tr class="separator:ga138ad778c02212e029a14d8be2a335dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea432696f801e90be98ae2d0c49466fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aea432696f801e90be98ae2d0c49466fd"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>SPI_init</b> (<a class="el" href="struct_s_p_i__t.html">SPI_t</a> *spi)</td></tr>
+<tr class="separator:aea432696f801e90be98ae2d0c49466fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga67bf1565d4b1b483d0144a8377bddcd1"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#ga67bf1565d4b1b483d0144a8377bddcd1">SPI_cmd</a> (uint8_t spi_num, uint8_t cmd)</td></tr>
 <tr class="separator:ga67bf1565d4b1b483d0144a8377bddcd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8fe538eee897354b740b621714219221"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__spi.html#ga8fe538eee897354b740b621714219221">SPI_read8</a> (uint8_t spi_num, uint8_t addr, uint8_t *data)</td></tr>
@@ -176,7 +177,7 @@ typedef struct <a class="el" href="struct_s_p_i__t.html">SPI_t</a>&#160;</td><td
 <div class="line">      GPIO_PIN_2,</div>
 <div class="line">      GPIO_PIN_0,</div>
 <div class="line">      GPIO_PIN_1,</div>
-<div class="line">      1000000,</div>
+<div class="line">      5000000,</div>
 <div class="line">      <span class="keyword">false</span></div>
 <div class="line">    }</div>
 <div class="line">  }</div>
@@ -207,24 +208,21 @@ typedef struct <a class="el" href="struct_s_p_i__t.html">SPI_t</a>&#160;</td><td
 <div class="line">    { </div>
 <div class="line">      &amp;SPI_ports[0],</div>
 <div class="line">      GPIO_PA3,</div>
-<div class="line">      <span class="keyword">true</span>,</div>
-<div class="line">      <span class="keyword">false</span></div>
+<div class="line">      <span class="keyword">true</span></div>
 <div class="line">    },</div>
 <div class="line">    { </div>
 <div class="line">      &amp;SPI_ports[0],</div>
 <div class="line">      GPIO_PF3,</div>
-<div class="line">      <span class="keyword">true</span>,</div>
-<div class="line">      <span class="keyword">false</span></div>
+<div class="line">      <span class="keyword">true</span></div>
 <div class="line">    },</div>
 <div class="line">    { </div>
 <div class="line">      &amp;SPI_ports[0],</div>
 <div class="line">      GPIO_PC5,</div>
-<div class="line">      <span class="keyword">false</span>,</div>
 <div class="line">      <span class="keyword">false</span></div>
 <div class="line">    }</div>
 <div class="line">  }</div>
 </div><!-- fragment -->
-<p>Definition at line <a class="el" href="uos3-proto_2spi_8c_source.html#l00070">70</a> of file <a class="el" href="uos3-proto_2spi_8c_source.html">spi.c</a>.</p>
+<p>Definition at line <a class="el" href="uos3-proto_2spi_8c_source.html#l00069">69</a> of file <a class="el" href="uos3-proto_2spi_8c_source.html">spi.c</a>.</p>
 
 </div>
 </div>
