@@ -177,7 +177,7 @@ uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd)
 
   /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
-  
+
   /* return the status byte value */
   return (uint8_t)r;
 }
@@ -577,7 +577,10 @@ uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data)
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
 
-  /* Flush Input FIFO */
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* Flush RX FIFO */
   while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
 
   /* Read Data */
@@ -630,7 +633,10 @@ uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t 
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
 
-  /* Flush Input FIFO */
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* Flush RX FIFO */
   while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
 
   while(len--)
