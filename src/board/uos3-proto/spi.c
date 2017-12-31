@@ -172,8 +172,12 @@ uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd)
   SSIDataPut(spi->port->base_spi, (uint32_t)cmd);
   SSIDataGet(spi->port->base_spi, &r);
 
-  /* Write CS high to finish transaction */
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
+  
   /* return the status byte value */
   return (uint8_t)r;
 }
@@ -208,6 +212,10 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)
   SSIDataGet(spi->port->base_spi, &d);
   *data = (uint8_t)d;
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -246,6 +254,10 @@ uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t le
     *data++ = (uint8_t)d;
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -285,6 +297,10 @@ uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)
     SSIDataGet(spi->port->base_spi, &d);
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -325,6 +341,10 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t l
     data++;
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -368,6 +388,10 @@ uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   SSIDataGet(spi->port->base_spi, &d);
   *data = (uint8_t)d;
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -413,6 +437,10 @@ uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t 
     *data++ = (uint8_t)d;
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -455,6 +483,10 @@ uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   SSIDataPut(spi->port->base_spi, w);
   SSIDataGet(spi->port->base_spi, &d);
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -500,6 +532,10 @@ uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t
     SSIDataGet(spi->port->base_spi, &d);
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -549,6 +585,10 @@ uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data)
   SSIDataGet(spi->port->base_spi, &d);
   *data = (uint8_t)d;
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -600,6 +640,10 @@ uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t 
     *data++ = (uint8_t)d;
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -644,6 +688,10 @@ uint8_t SPI_write32(uint8_t spi_num, uint32_t addr, uint8_t *data)
   w = *data;
   SSIDataPut(spi->port->base_spi, w);
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -685,12 +733,17 @@ uint8_t SPI_burstwrite32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
 
+  /* Put bytes into TX FIFO */
   while(len--)
   {
     w = *(data++);
     SSIDataPut(spi->port->base_spi, w);
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
