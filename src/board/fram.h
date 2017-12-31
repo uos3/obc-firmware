@@ -1,11 +1,11 @@
 /**
  * @defgroup fram
  *
- * @brief FRAM Functions & Definitions
+ * @brief FRAM Peripheral Driver
  *
- * @details 
+ * @details Hardware FRAM Peripheral Driver.
  *
- * @ingroup fram
+ * @ingroup drivers
  */
 
 #ifndef __FRAM_H__
