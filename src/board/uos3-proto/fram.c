@@ -43,12 +43,12 @@ void FRAM_write(uint32_t address, uint8_t *data, uint32_t length)
   /* Set Write-Enable Latch (Single byte command) */
   SPI_cmd(SPI_FRAM, FRAM_OPCODE_WREN);
 
-  SPI_burstwrite32(SPI_FRAM, ((FRAM_OPCODE_WRITE << 24) | address), data, length);
+  SPI_burstwrite32(SPI_FRAM, ((FRAM_OPCODE_WRITE << 24) | (address & 0xFFFFFF)), data, length);
 }
 
 void FRAM_read(uint32_t address, uint8_t *data, uint32_t length)
 {
-  SPI_burstread32(SPI_FRAM, ((FRAM_OPCODE_READ << 24) | address), data, length);
+  SPI_burstread32(SPI_FRAM, ((FRAM_OPCODE_READ << 24) | (address & 0xFFFFFF)), data, length);
 }
 
 /**
