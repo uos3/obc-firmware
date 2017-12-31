@@ -21,8 +21,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#define GPS_SERIAL UART_PC104_HEADER
-#define CAM_SERIAL UART_CAM_HEADER
+#define GPS_SERIAL UART_GNSS
+#define CAM_SERIAL UART_CAMERA
 
 #define DEBUG_PORT GPS_SERIAL
 #define NORMAL_PORT CAM_SERIAL

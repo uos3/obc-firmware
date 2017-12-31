@@ -7,8 +7,8 @@
 #define LED_B	0x1
 
 
-#define UART_PC104_HEADER	0x0
-#define UART_CAM_HEADER		0x1
+#define UART_GNSS	0x0
+#define UART_CAMERA		0x1
 
 
 #define SPI_RADIO_RX	0x0

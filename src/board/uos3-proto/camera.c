@@ -49,7 +49,7 @@ char LK_READPICTURE_RE[]  = {0x76, 0x00, 0x32, 0x00, 0x00};
 char JPEG_START[]     = {0xFF, 0xD8};
 char JPEG_END[]   = {0xFF, 0xD9};
 
-#define CAMWRITE(a) UART_putb(UART_CAM_HEADER,a,sizeof(a)); // send this message
+#define CAMWRITE(a) UART_putb(UART_CAMERA,a,sizeof(a)); // send this message
 
 #define CAMREAD(a) while (!match_string(a,sizeof(a))) {} // wait for this sequence (forever if necessary)
 
@@ -73,7 +73,7 @@ static bool match_string(char *data, uint32_t len)
   uint32_t i;
   for(i=0;i<len;i++)
   {
-    c=UART_getc(UART_CAM_HEADER);
+    c=UART_getc(UART_CAMERA);
     if (c!=data[i]) return false;
   }
   return true;
@@ -96,7 +96,7 @@ bool Camera_capture(uint32_t page_size, void (*page_store)(uint8_t*,uint32_t))
 
   // set compression
   CAMWRITE(LK_COMPRESSION);
-  UART_putc(UART_CAM_HEADER,0x10);
+  UART_putc(UART_CAMERA,0x10);
   CAMREAD(LK_COMPRESSION_RE);
 
   // take picture
@@ -106,17 +106,17 @@ bool Camera_capture(uint32_t page_size, void (*page_store)(uint8_t*,uint32_t))
   // read size
   CAMWRITE(LK_JPEGSIZE);
   CAMREAD(LK_JPEGSIZE_RE);
-  jpegsize = UART_getw4(UART_CAM_HEADER); // file size (lowest 32 bits)
+  jpegsize = UART_getw4(UART_CAMERA); // file size (lowest 32 bits)
 
   CAMWRITE(LK_READPICTURE);
-  UART_putw4(UART_CAM_HEADER, 0); // offset in file start (0 here)
-  UART_putw4(UART_CAM_HEADER, jpegsize-1); // write length to obtain +8 bytes?
+  UART_putw4(UART_CAMERA, 0); // offset in file start (0 here)
+  UART_putw4(UART_CAMERA, jpegsize-1); // write length to obtain +8 bytes?
   CAMWRITE(LK_PICTURE_TIME);
   CAMREAD(LK_READPICTURE_RE);
 
   for(i=0; i<jpegsize && endfoundcount<2;i++)
   {
-    page_buffer[j] = UART_getc(UART_CAM_HEADER);
+    page_buffer[j] = UART_getc(UART_CAMERA);
 
     if(page_buffer[j] == JPEG_END[endfoundcount])
     {

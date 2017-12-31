@@ -12,11 +12,6 @@
 
 /** Public Functions */
 
-void SPI_init(uint8_t spi_num)
-{
-  (void) spi_num;
-}
-
 uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd)
 {
   (void) spi_num;

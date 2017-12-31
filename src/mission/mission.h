@@ -51,4 +51,6 @@ void Mission_Init(void);
 
 void Mission_loop(void);
 
+void Mission_SEU(void);
+
 #endif /*  __MISSION_H__ */

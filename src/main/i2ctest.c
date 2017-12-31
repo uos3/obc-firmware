@@ -22,9 +22,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#define DEBUG_SERIAL UART_CAM_HEADER // this is the serial port debug messages will come through (UART_CAM_HEADER or UART_PC104_HEADER)
-#define GPS_SERIAL UART_PC104_HEADER
-#define CAM_SERIAL UART_CAM_HEADER
+#define DEBUG_SERIAL UART_CAMERA // this is the serial port debug messages will come through (UART_CAMERA or UART_GNSS)
+#define GPS_SERIAL UART_GNSS
+#define CAM_SERIAL UART_CAMERA
 
 #define DEBUG_SERIAL GPS_SERIAL
 

@@ -53,7 +53,7 @@ static SPI_port SPI_ports[1] =
       GPIO_PIN_2,
       GPIO_PIN_0,
       GPIO_PIN_1,
-      1000000,
+      5000000,
       false
     }
   };
@@ -63,7 +63,6 @@ typedef struct SPI_t {
   SPI_port *port;
   uint8_t  gpio_cs;           // CS GPIO Reference
   bool     wait_miso;         // Whether the SPI peripheral waits for SO low (required for cc1120)
-  bool     initialised;
 } SPI_t;
 
 /* Array of enabled SPIs */
@@ -72,19 +71,16 @@ static SPI_t SPI_spis[3] =
     { 
       &SPI_ports[0],
       GPIO_PA3,
-      true,
-      false
+      true
     },
     { 
       &SPI_ports[0],
       GPIO_PF3,
-      true,
-      false
+      true
     },
     { 
       &SPI_ports[0],
       GPIO_PC5,
-      false,
       false
     }
   };
@@ -93,74 +89,70 @@ static SPI_t SPI_spis[3] =
 
 #define check_spi_num(x, y)  if(x >= NUMBER_OF_SPIS) { return y; }
 
-/** Public Functions */
-
-void SPI_init(uint8_t spi_num)
+static void SPI_init(SPI_t* spi)
 {
-  check_spi_num(spi_num,);
-  SPI_t *spi = &SPI_spis[spi_num];
-
-  /* Check Virtual SPI is initialised */
-  if(!spi->initialised)
+  /* Check Physical SPI is initialised */
+  if(!spi->port->initialised)
   {
-    /* Set CS[bar] pin high to disable virtual port for now */
-    GPIO_write(spi->gpio_cs, true);
-
-    /* Check Physical SPI is initialised */
-    if(!spi->port->initialised)
+    /* Set CS[bar] high for all virtual ports */
+    for(uint8_t i=0; i<NUMBER_OF_SPIS; i++)
     {
-      /* Initialise SPI Peripheral if not already initialised */
-      if(!SysCtlPeripheralReady(spi->port->peripheral_spi))
-      {
-        SysCtlPeripheralEnable(spi->port->peripheral_spi);
-        while(!SysCtlPeripheralReady(spi->port->peripheral_spi)) { };
-      }
-
-      /* Initialise GPIO Peripheral if not already initialised */
-      if(!SysCtlPeripheralReady(spi->port->peripheral_gpio))
-      {
-        SysCtlPeripheralEnable(spi->port->peripheral_gpio);
-        while(!SysCtlPeripheralReady(spi->port->peripheral_gpio)) { };
-      }
-
-      if(spi->port->base_gpio == GPIO_PORTF_BASE)
-      {
-        // sort out PF0...
-        HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = GPIO_LOCK_KEY; //Unlock 
-        HWREG(GPIO_PORTF_BASE+GPIO_O_CR) |= 0x01; // Enable PF0 AFS 
-        HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = 0; // Relock
-      }
-
-      /* Configure Pins for SPI function */
-      GPIOPinConfigure(spi->port->pin_clk_function);
-      GPIOPinConfigure(spi->port->pin_miso_function);
-      GPIOPinConfigure(spi->port->pin_mosi_function);
-
-      /* Assign pins to SPI peripheral */
-      GPIOPinTypeSSI(spi->port->base_gpio, spi->port->pin_clk | spi->port->pin_miso | spi->port->pin_mosi);
-      SSIClockSourceSet(spi->port->base_spi, SSI_CLOCK_SYSTEM);
-
-      /* Set peripheral clockrate */
-      SSIConfigSetExpClk(spi->port->base_spi, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
-                         SSI_MODE_MASTER, spi->port->clockrate, 8);
-  
-      SSIEnable(spi->port->base_spi);
-
-      /* Clear current pending data */
-      uint32_t d;
-      while(SSIDataGetNonBlocking(spi->port->base_spi, &d));
-
-      spi->port->initialised = true;
+      GPIO_write(SPI_spis[i].gpio_cs, true);
     }
 
-    spi->initialised = true;
+    /* Initialise SPI Peripheral if not already initialised */
+    if(!SysCtlPeripheralReady(spi->port->peripheral_spi))
+    {
+      SysCtlPeripheralEnable(spi->port->peripheral_spi);
+      while(!SysCtlPeripheralReady(spi->port->peripheral_spi)) { };
+    }
+
+    /* Initialise GPIO Peripheral if not already initialised */
+    if(!SysCtlPeripheralReady(spi->port->peripheral_gpio))
+    {
+      SysCtlPeripheralEnable(spi->port->peripheral_gpio);
+      while(!SysCtlPeripheralReady(spi->port->peripheral_gpio)) { };
+    }
+
+    if(spi->port->base_gpio == GPIO_PORTF_BASE)
+    {
+      // sort out PF0...
+      HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = GPIO_LOCK_KEY; //Unlock 
+      HWREG(GPIO_PORTF_BASE+GPIO_O_CR) |= 0x01; // Enable PF0 AFS 
+      HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = 0; // Relock
+    }
+
+    /* Configure Pins for SPI function */
+    GPIOPinConfigure(spi->port->pin_clk_function);
+    GPIOPinConfigure(spi->port->pin_miso_function);
+    GPIOPinConfigure(spi->port->pin_mosi_function);
+
+    /* Assign pins to SPI peripheral */
+    GPIOPinTypeSSI(spi->port->base_gpio, spi->port->pin_clk | spi->port->pin_miso | spi->port->pin_mosi);
+    SSIClockSourceSet(spi->port->base_spi, SSI_CLOCK_SYSTEM);
+
+    /* Set peripheral clockrate */
+    SSIConfigSetExpClk(spi->port->base_spi, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
+                       SSI_MODE_MASTER, spi->port->clockrate, 8);
+
+    SSIEnable(spi->port->base_spi);
+
+    /* Clear current pending data */
+    uint32_t d;
+    while(SSIDataGetNonBlocking(spi->port->base_spi, &d));
+
+    spi->port->initialised = true;
   }
 }
+
+/** Public Functions */
 
 uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -180,8 +172,12 @@ uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd)
   SSIDataPut(spi->port->base_spi, (uint32_t)cmd);
   SSIDataGet(spi->port->base_spi, &r);
 
-  /* Write CS high to finish transaction */
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
+
   /* return the status byte value */
   return (uint8_t)r;
 }
@@ -190,6 +186,8 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -214,6 +212,10 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data)
   SSIDataGet(spi->port->base_spi, &d);
   *data = (uint8_t)d;
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -224,6 +226,8 @@ uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t le
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -250,6 +254,10 @@ uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t le
     *data++ = (uint8_t)d;
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -260,6 +268,8 @@ uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d, w;
 
@@ -287,6 +297,10 @@ uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data)
     SSIDataGet(spi->port->base_spi, &d);
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -297,6 +311,8 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t l
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d, w;
 
@@ -325,6 +341,10 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t l
     data++;
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -335,6 +355,8 @@ uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -366,6 +388,10 @@ uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   SSIDataGet(spi->port->base_spi, &d);
   *data = (uint8_t)d;
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -376,6 +402,8 @@ uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t 
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -409,6 +437,10 @@ uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t 
     *data++ = (uint8_t)d;
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -419,6 +451,8 @@ uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d, w;
 
@@ -449,6 +483,10 @@ uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data)
   SSIDataPut(spi->port->base_spi, w);
   SSIDataGet(spi->port->base_spi, &d);
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -459,6 +497,8 @@ uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d, w;
 
@@ -492,6 +532,10 @@ uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t
     SSIDataGet(spi->port->base_spi, &d);
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -502,6 +546,8 @@ uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -531,7 +577,10 @@ uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data)
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
 
-  /* Flush Input FIFO */
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* Flush RX FIFO */
   while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
 
   /* Read Data */
@@ -539,6 +588,10 @@ uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data)
   SSIDataGet(spi->port->base_spi, &d);
   *data = (uint8_t)d;
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -549,6 +602,8 @@ uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t 
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d;
 
@@ -578,7 +633,10 @@ uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t 
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
 
-  /* Flush Input FIFO */
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* Flush RX FIFO */
   while(SSIDataGetNonBlocking(spi->port->base_spi, &d)) {};
 
   while(len--)
@@ -588,6 +646,10 @@ uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t 
     *data++ = (uint8_t)d;
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -598,6 +660,8 @@ uint8_t SPI_write32(uint8_t spi_num, uint32_t addr, uint8_t *data)
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d, w;
 
@@ -630,6 +694,10 @@ uint8_t SPI_write32(uint8_t spi_num, uint32_t addr, uint8_t *data)
   w = *data;
   SSIDataPut(spi->port->base_spi, w);
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */
@@ -640,6 +708,8 @@ uint8_t SPI_burstwrite32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t
 {
   check_spi_num(spi_num, 0);
   SPI_t *spi = &SPI_spis[spi_num];
+
+  SPI_init(spi);
 
   uint32_t r, d, w;
 
@@ -669,12 +739,17 @@ uint8_t SPI_burstwrite32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_lsb);
   SSIDataPut(spi->port->base_spi, (uint32_t)addr_llsb);
 
+  /* Put bytes into TX FIFO */
   while(len--)
   {
     w = *(data++);
     SSIDataPut(spi->port->base_spi, w);
   }
 
+  /* Wait for TX FIFO to be exhausted */
+  while(SSIBusy(spi->port->base_spi)) {};
+
+  /* De-assert CS (high) */
   GPIO_write(spi->gpio_cs, true);
 
   /* return the status byte value */

@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#define UART_INTERFACE UART_CAM_HEADER
+#define UART_INTERFACE UART_CAMERA
 
 int main(void)
 {

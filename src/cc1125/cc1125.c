@@ -87,7 +87,7 @@ uint8_t radio_set_rxbw_param(uint8_t radio_id, uint32_t *rxbw){ //, uint32_t *sy
 /*
    char buff[30];
    snprintf(buff, 30, "\n\n%02x\n\n",(reg & 0xFF) );
-   UART_puts(UART_CAM_HEADER, buff);
+   UART_puts(UART_CAMERA, buff);
 
    */
    

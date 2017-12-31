@@ -7,6 +7,8 @@
  *
  * SPI ports for each board are defined in ${board}/board.h
  *
+ * The relevant SPI Port/Peripheral is initialised if required on any function call.
+ *
  * @ingroup drivers
  */
 
@@ -16,16 +18,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
-
-/**
- * @function
- * @ingroup spi
- *
- * Initialises the specified SPI peripheral.
- *
- * @param spi_num ID of the SPI peripheral
- */
-void SPI_init(uint8_t spi_num);
 
 /**
  * @function

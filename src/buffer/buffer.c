@@ -8,7 +8,7 @@
 
 #include "../firmware.h"
 
-/* Illustrative struct of data layout:
+/* Illustrative struct of FRAM data layout:
 typedef struct buffer_data {
   uint16_t last_index;
   uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)];
@@ -21,25 +21,47 @@ typedef struct buffer_cache_t {
   bool initialised;
   uint16_t last_index_stored;
   uint16_t last_slot_transmitted;
-  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)];
-  uint16_t indexes[BUFFER_SLOTS];
+  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)]; // bitmap of occupancy
+  uint16_t indexes[BUFFER_SLOTS]; // indexes[slot] = index
+  uint16_t crc;
 } buffer_cache_t;
 
-static buffer_cache_t buffer_cache;
+static buffer_cache_t buffer_cache = { false, 0, 0, {0}, {0}, 0x0000 };
 
 void Buffer_init(void)
 {
-  if(!buffer_cache.initialised)
+  if(buffer_cache.initialised && !Buffer_verify_cache())
   {
-    FRAM_init();
-
+    /* TODO: SEU Detected, REBOOT! */
+    Mission_SEU();
+  }
+  else if(!buffer_cache.initialised)
+  {
     Buffer_FRAM_read_last_index_stored(&(buffer_cache.last_index_stored));
     Buffer_FRAM_read_last_slot_transmitted(&(buffer_cache.last_slot_transmitted));
     Buffer_FRAM_read_occupancy(buffer_cache.occupancy);
     Buffer_FRAM_read_indexes(buffer_cache.indexes);
+    Buffer_FRAM_read_crc(&(buffer_cache.crc));
+
+    if(!Buffer_verify_cache())
+    {
+      /* Stored FRAM header is broken, so reset the buffer */
+      /* TODO: Increment a Counter in health data */
+      memset(&buffer_cache, 0x00, sizeof(buffer_cache_t));
+      Packet_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t), &(buffer_cache.crc));
+    }
 
     buffer_cache.initialised = true;
   }
+}
+
+bool Buffer_verify_cache(void)
+{
+  uint16_t crc_result;
+
+  Packet_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t), &crc_result);
+
+  return !memcmp(&crc_result, &(buffer_cache.crc), sizeof(uint16_t));
 }
 
 void Buffer_reset(void)
@@ -59,16 +81,19 @@ void Buffer_reset(void)
   Buffer_FRAM_write_indexes(buffer_cache.indexes);
 }
 
-void Buffer_store_new_data(uint16_t index, uint8_t *data_payload)
+void Buffer_store_new_data(uint8_t *data_payload)
 {
   Buffer_init();
 
-  uint16_t slot;
+  uint16_t new_slot;
+  uint16_t new_index;
 
-  Buffer_find_new_slot(&slot);
-  Buffer_FRAM_write_data(slot, data_payload);
-  Buffer_set_index(slot, index);
-  Buffer_set_occupancy(slot, true);
+  new_index = (uint16_t)(buffer_cache.last_index_stored + 1);
+
+  Buffer_find_new_slot(&new_slot);
+  Buffer_FRAM_write_data(new_slot, data_payload);
+  Buffer_set_index(new_slot, new_index);
+  Buffer_set_occupancy(new_slot, true);
 }
 
 void Buffer_set_index(uint16_t slot, uint16_t index)

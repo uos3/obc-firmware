@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+/* TODO: Move these below into the relevant modules */
+
 typedef enum {
 	tx_datarate_6kbps,
 	tx_datarate_3kbps,
@@ -34,11 +36,6 @@ typedef enum {
 	image_acquisition_profile_1600x1200_10,
 	image_acquisition_profile_640x480_10
 } image_acquisition_profile_t;
-
-typedef enum {
-	imu_bandwidth_5hz_filter,
-	imu_bandwidth_10hz_filter
-} imu_bandwidth_t;
 
 /* Refer to https://docs.google.com/spreadsheets/d/1OFgH6SIJJw-ISLHxVPTY4VEa49qBMccs4Qu1e_zjqvg/ */
 /* Packing work in progress */

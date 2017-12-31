@@ -14,8 +14,6 @@
 
 static uint8_t fram_data[FRAM_SIZE] = { 0 };
 
-void FRAM_init(void) {}
-
 bool FRAM_selfTest(void)
 {
   /* For behaviour-parity with embedded implementations */

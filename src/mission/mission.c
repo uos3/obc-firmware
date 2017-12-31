@@ -17,7 +17,12 @@ void Mission_Init(void)
 void Mission_loop(void)
 {
 
+}
 
+void Mission_SEU(void)
+{
+	/* TODO: Power Reset / Reboot */
+	
 }
 
 /**

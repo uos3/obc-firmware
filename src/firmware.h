@@ -9,7 +9,11 @@
 #include <stddef.h>
 #include <limits.h>
 
+/* Round up N to the next multiple of S */
 #define ROUND_UP(N, S) ((((N) + (S) - 1) / (S)) * (S))
+
+/* Mark binary constants as known GCC extension to suppress warning */
+#define GCC_BINARY(x)	(__extension__ x)
 
 /* Board-specific header file, completed by macro: 'board/<board>/board.h' */
 #include BOARD_INCLUDE
@@ -33,6 +37,7 @@
 #include "board/watchdog_int.h"
 #include "board/imu.h"
 #include "board/camera.h"
+#include "board/eps.h"
 
 /* radio stuff */
 #include "cc1125/cc112x_spi.h"
@@ -45,6 +50,7 @@
 #include "packet/pn9.h"
 #include "packet/interleave.h"
 #include "packet/telemetry.h"
+#include "packet/cw.h"
 
 /* Buffer */
 #include "buffer/buffer.h"

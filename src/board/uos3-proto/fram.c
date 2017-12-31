@@ -29,16 +29,9 @@
 
 static uint8_t fram_deviceid[9] = { 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0xC2, 0x24, 0x00 };
 
-void FRAM_init(void)
-{
-  SPI_init(SPI_FRAM);
-}
-
 bool FRAM_selfTest(void)
 {
   uint8_t fram_deviceid_read[9];
-
-  FRAM_init();
 
   SPI_burstread8(SPI_FRAM, FRAM_OPCODE_RDID, fram_deviceid_read, 9);
 
@@ -50,12 +43,12 @@ void FRAM_write(uint32_t address, uint8_t *data, uint32_t length)
   /* Set Write-Enable Latch (Single byte command) */
   SPI_cmd(SPI_FRAM, FRAM_OPCODE_WREN);
 
-  SPI_burstwrite32(SPI_FRAM, ((FRAM_OPCODE_WRITE << 24) | address), data, length);
+  SPI_burstwrite32(SPI_FRAM, ((FRAM_OPCODE_WRITE << 24) | (address & 0xFFFFFF)), data, length);
 }
 
 void FRAM_read(uint32_t address, uint8_t *data, uint32_t length)
 {
-  SPI_burstread32(SPI_FRAM, ((FRAM_OPCODE_READ << 24) | address), data, length);
+  SPI_burstread32(SPI_FRAM, ((FRAM_OPCODE_READ << 24) | (address & 0xFFFFFF)), data, length);
 }
 
 /**

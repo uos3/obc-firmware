@@ -1,11 +1,11 @@
 /**
  * @defgroup fram
  *
- * @brief FRAM Functions & Definitions
+ * @brief FRAM Peripheral Driver
  *
- * @details 
+ * @details Hardware FRAM Peripheral Driver.
  *
- * @ingroup fram
+ * @ingroup drivers
  */
 
 #ifndef __FRAM_H__
@@ -21,15 +21,6 @@
 //#define FRAM_SIZE	0x80000
 
 #define FRAM_MAX_ADDRESS (FRAM_SIZE - 1)
-
-/**
- * @function
- * @ingroup fram
- *
- * Initialise FRAM Device
- *
- */
-void FRAM_init(void);
 
 /**
  * @function
