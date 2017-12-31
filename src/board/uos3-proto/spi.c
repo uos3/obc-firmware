@@ -63,7 +63,6 @@ typedef struct SPI_t {
   SPI_port *port;
   uint8_t  gpio_cs;           // CS GPIO Reference
   bool     wait_miso;         // Whether the SPI peripheral waits for SO low (required for cc1120)
-  bool     initialised;
 } SPI_t;
 
 /* Array of enabled SPIs */
@@ -72,19 +71,16 @@ static SPI_t SPI_spis[3] =
     { 
       &SPI_ports[0],
       GPIO_PA3,
-      true,
-      false
+      true
     },
     { 
       &SPI_ports[0],
       GPIO_PF3,
-      true,
-      false
+      true
     },
     { 
       &SPI_ports[0],
       GPIO_PC5,
-      false,
       false
     }
   };
@@ -95,60 +91,57 @@ static SPI_t SPI_spis[3] =
 
 static void SPI_init(SPI_t* spi)
 {
-  /* Check Virtual SPI is initialised */
-  if(!spi->initialised)
+  /* Check Physical SPI is initialised */
+  if(!spi->port->initialised)
   {
-    /* Set CS[bar] pin high to disable virtual port for now */
-    GPIO_write(spi->gpio_cs, true);
-
-    /* Check Physical SPI is initialised */
-    if(!spi->port->initialised)
+    /* Set CS[bar] high for all virtual ports */
+    for(uint8_t i=0; i<NUMBER_OF_SPIS; i++)
     {
-      /* Initialise SPI Peripheral if not already initialised */
-      if(!SysCtlPeripheralReady(spi->port->peripheral_spi))
-      {
-        SysCtlPeripheralEnable(spi->port->peripheral_spi);
-        while(!SysCtlPeripheralReady(spi->port->peripheral_spi)) { };
-      }
-
-      /* Initialise GPIO Peripheral if not already initialised */
-      if(!SysCtlPeripheralReady(spi->port->peripheral_gpio))
-      {
-        SysCtlPeripheralEnable(spi->port->peripheral_gpio);
-        while(!SysCtlPeripheralReady(spi->port->peripheral_gpio)) { };
-      }
-
-      if(spi->port->base_gpio == GPIO_PORTF_BASE)
-      {
-        // sort out PF0...
-        HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = GPIO_LOCK_KEY; //Unlock 
-        HWREG(GPIO_PORTF_BASE+GPIO_O_CR) |= 0x01; // Enable PF0 AFS 
-        HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = 0; // Relock
-      }
-
-      /* Configure Pins for SPI function */
-      GPIOPinConfigure(spi->port->pin_clk_function);
-      GPIOPinConfigure(spi->port->pin_miso_function);
-      GPIOPinConfigure(spi->port->pin_mosi_function);
-
-      /* Assign pins to SPI peripheral */
-      GPIOPinTypeSSI(spi->port->base_gpio, spi->port->pin_clk | spi->port->pin_miso | spi->port->pin_mosi);
-      SSIClockSourceSet(spi->port->base_spi, SSI_CLOCK_SYSTEM);
-
-      /* Set peripheral clockrate */
-      SSIConfigSetExpClk(spi->port->base_spi, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
-                         SSI_MODE_MASTER, spi->port->clockrate, 8);
-  
-      SSIEnable(spi->port->base_spi);
-
-      /* Clear current pending data */
-      uint32_t d;
-      while(SSIDataGetNonBlocking(spi->port->base_spi, &d));
-
-      spi->port->initialised = true;
+      GPIO_write(SPI_spis[i].gpio_cs, true);
     }
 
-    spi->initialised = true;
+    /* Initialise SPI Peripheral if not already initialised */
+    if(!SysCtlPeripheralReady(spi->port->peripheral_spi))
+    {
+      SysCtlPeripheralEnable(spi->port->peripheral_spi);
+      while(!SysCtlPeripheralReady(spi->port->peripheral_spi)) { };
+    }
+
+    /* Initialise GPIO Peripheral if not already initialised */
+    if(!SysCtlPeripheralReady(spi->port->peripheral_gpio))
+    {
+      SysCtlPeripheralEnable(spi->port->peripheral_gpio);
+      while(!SysCtlPeripheralReady(spi->port->peripheral_gpio)) { };
+    }
+
+    if(spi->port->base_gpio == GPIO_PORTF_BASE)
+    {
+      // sort out PF0...
+      HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = GPIO_LOCK_KEY; //Unlock 
+      HWREG(GPIO_PORTF_BASE+GPIO_O_CR) |= 0x01; // Enable PF0 AFS 
+      HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = 0; // Relock
+    }
+
+    /* Configure Pins for SPI function */
+    GPIOPinConfigure(spi->port->pin_clk_function);
+    GPIOPinConfigure(spi->port->pin_miso_function);
+    GPIOPinConfigure(spi->port->pin_mosi_function);
+
+    /* Assign pins to SPI peripheral */
+    GPIOPinTypeSSI(spi->port->base_gpio, spi->port->pin_clk | spi->port->pin_miso | spi->port->pin_mosi);
+    SSIClockSourceSet(spi->port->base_spi, SSI_CLOCK_SYSTEM);
+
+    /* Set peripheral clockrate */
+    SSIConfigSetExpClk(spi->port->base_spi, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
+                       SSI_MODE_MASTER, spi->port->clockrate, 8);
+
+    SSIEnable(spi->port->base_spi);
+
+    /* Clear current pending data */
+    uint32_t d;
+    while(SSIDataGetNonBlocking(spi->port->base_spi, &d));
+
+    spi->port->initialised = true;
   }
 }
 
