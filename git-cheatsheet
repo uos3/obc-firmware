@@ -1,17 +1,21 @@
-
+All you need:
 1) git pull -> gets latest
 
-2) git status -> any conflicts?
+2) git add <file> -> stage the file - you must do this for all files you want to be updated when you upload your changes
 
-3) git diff -> what is difference between them
+2) to commit (store to local version control) -> git commit -am "blurb around changes" (add files and message blurb) 
 
-4) overwrite current changes with network version -> git reset HEAD --hard
+3) git push -> send local stored changes to server/remote repository
 
-5) to commit (store to local version control) -> git commit -am "blurb around changes" (add files and message blurb) 
+Helpful:
+4) git status -> any conflicts?
 
-6) git push -> send local stored changes to server/remote repository
+5) git diff -> what is difference between them
+
+6) overwrite current changes with network version -> git reset HEAD --hard
 
 7) to build the executable binary see readme.md file
 
-
-
+8) git branch -> see what branch you are on
+   git branch -a -> see all branches
+   git checkout <feature_branch> -> to switch branches (eg.: if you want to see progress of someone else)
