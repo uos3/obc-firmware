@@ -6,11 +6,14 @@ All you need:
 2) to commit (store to local version control) -> git commit -am "blurb around changes" (add files and message blurb) 
 
 3) git push -> send local stored changes to server/remote repository
+               if you want to make a change under your branch:
+		git push origin <full_branch_name> (where full_branch_name is something like remotes/origin/my-awesome-branch)
 
 Helpful:
 4) git status -> any conflicts?
 
 5) git diff -> what is difference between them
+   git diff --name-only -> check which files you've changed before you stage them any of them
 
 6) overwrite current changes with network version -> git reset HEAD --hard
 
