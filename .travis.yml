@@ -15,9 +15,9 @@ cache:
 # Download and unpack the latest GNU ARM Embedded Toolchain if it's not already there
 #  Also add the gcc/bin folder to $PATH
 install:
-  - export GCC_DIR=$HOME/compilers/gcc-arm-none-eabi-7-2017-q4-major
-  - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
-  - export GCC_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
+  - export GCC_DIR=$HOME/compilers/gcc-arm-none-eabi-7-2018-q2-update
+  - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2
+  - export GCC_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2018q2/gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2
   - if [ ! -e $GCC_DIR/bin/arm-none-eabi-gcc ]; then wget -nv $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME/compilers; fi
   - export PATH=$PATH:$GCC_DIR/bin
 
