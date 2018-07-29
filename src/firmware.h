@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <inttypes.h>
 #include <limits.h>
 
 /* Round up N to the next multiple of S */
