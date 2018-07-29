@@ -8,6 +8,7 @@
 int main(void)
 {
   uint32_t clock;
+  uint64_t clock_ms;
   uint32_t setclock = 1000000;
   char output[100];
 
@@ -40,8 +41,11 @@ int main(void)
     }
 
     RTC_getTime(&clock);
+    RTC_getTime_ms(&clock_ms);
 
-    sprintf(output,"Time: %+011ld\r\n", clock);
+    sprintf(output,"Time     : %011"PRIu32"\r\n", clock);
+    UART_puts(UART_INTERFACE, output);
+    sprintf(output,"Time (ms): %011"PRIu64"\r\n", clock_ms);
     UART_puts(UART_INTERFACE, output);
 
     LED_off(LED_B);
