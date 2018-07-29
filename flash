@@ -97,7 +97,6 @@ flash_device() {
   flash_cmd="$flashtool -q --batch \
     -ex 'file '$binary                          \
     -ex 'target extended-remote '$programmer    \
-    -ex 'set remotetimeout 10000'               \
     -ex 'monitor tpwr $programmer_power'        \
     -ex 'monitor swdp_scan'                     \
     -ex 'attach 1'                              \
