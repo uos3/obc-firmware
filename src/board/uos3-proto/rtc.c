@@ -40,6 +40,11 @@ void RTC_getTime(uint32_t *time)
 	*time = HibernateRTCGet();
 }
 
+void RTC_getTime_ms(uint64_t *time_ms)
+{
+	*time_ms = ((uint64_t)HibernateRTCGet() * 1000) + (((uint64_t)HibernateRTCSSGet() * 1000) / 32768);
+}
+
 void RTC_setTime(uint32_t *time)
 {
 	HibernateRTCSet(*time);

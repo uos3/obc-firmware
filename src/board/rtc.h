@@ -38,6 +38,16 @@ void RTC_getTime(uint32_t *time);
  * @function
  * @ingroup rtc
  *
+ * Get time in milliseconds from Real-Time Clock.
+ *
+ * @parameter uint64_t* Pointer to variable to store time in milliseconds value.
+ */
+void RTC_getTime_ms(uint64_t *time_ms);
+
+/**
+ * @function
+ * @ingroup rtc
+ *
  * Set time on Real-Time Clock.
  *
  * @parameter uint32_t* Pointer to variable containing time value to be set.
