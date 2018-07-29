@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+
+## Cross-Platform Embedded Toolchain
+## Copyright (c) 2016 Phil Crump <phil@philcrump.co.uk>
+## Freely distributable under the MIT license.
+
+source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
+cd $source_dir
+
+host_platform='unknown'
+unamestr=`uname`
+if [[ "$unamestr" == 'Linux' ]]; then
+  host_platform='linux'
+elif [[ "$unamestr" == 'Darwin' ]]; then
+  host_platform='mac'
+else
+  host_platform='windows'
+fi
+
+COLOUR_GREEN='\033[0;32m'
+COLOUR_YELLOW='\033[1;33m'
+COLOUR_PURPLE='\033[0;35m'
+COLOUR_RED='\033[0;31m'
+COLOUR_OFF='\033[0;00m'
+CLEAR_LINE='\033[2K'
+
+_ERROR_="$COLOUR_RED[ERROR]$COLOUR_OFF"
+_INFO_="$COLOUR_PURPLE[INFO]$COLOUR_OFF"
+_DEBUG_="$COLOUR_YELLOW[DEBUG]$COLOUR_OFF"
+
+opt_verbose=false
+opt_quiet=false
+opt_power=true
+
+stdin="/proc/$$/fd/0"
+stdout="/proc/$$/fd/1"
+stderr="/proc/$$/fd/2"
+stdnull="/dev/null"
+
+spinner() {
+  case $spinner_char in
+    '/') echo '-';;
+    '|') echo '/';;
+    '\\') echo '|';;
+    '-') echo '\\';;
+    *) echo '-';;
+  esac
+  return 0
+}
+
+locate_black_magic() {
+  probe="`ls 2>/dev/null -Ub1 -- /dev/serial/by-id/usb-Black_Sphere_Technologies_Black_Magic_Probe_*-if00 | head -n 1`"
+  if ! [ -z "$probe" ]
+  then
+    echo "$probe"
+    return 0
+  fi
+  return 1
+}
+
+# 
+wait_for_black_magic() {
+  until programmer="`locate_black_magic`"; do
+    spinner_char=`spinner`
+    echo -ne "$_INFO_$COLOUR_YELLOW Looking for programmer... $spinner_char$COLOUR_OFF\r" >&$stdout
+    sleep 0.2
+  done
+  echo "$programmer"
+}
+
+debug_device() {
+  local flashtool="$1"
+  local programmer="$2"
+  local binary="$3"
+
+  programmer_power="disable"
+  if $opt_power; then
+    programmer_power="enable";
+  fi
+
+  $flashtool -q \
+    -ex 'file '$binary                          \
+    -ex 'target extended-remote '$programmer    \
+    -ex 'monitor tpwr $programmer_power'        \
+    -ex 'monitor swdp_scan'                     \
+    -ex 'attach 1'                              \
+    -ex 'set mem inaccessible-by-default off'   \
+    -ex 'load '$binary                          \
+    -ex 'compare-sections'
+}
+
+# For Linux - check user has permissions to the serial port (required for Black Magic Probe)
+if [ ${host_platform} == "linux" ]; then
+  groups $USER | grep -q 'dialout'
+  if [[ ! $? -eq 0 ]]; then
+      echo -e "$_ERROR_ Current user is not in dialout group, you'll need this to use the programmer!" >&$stderr
+      echo -e " * eg. for Ubuntu/Debian: 'sudo gpasswd --add "$USER" dialout'" >&$stderr
+      exit 1
+  fi
+fi
+
+## Read Flags
+OPTIND=1
+while getopts ":qvS" opt; do
+  case "$opt" in
+    q) # Quiet
+      opt_quiet=true
+      ;;
+    v) # Verbose
+      opt_verbose=true
+      ;;
+    ?) # Illegal Option
+      echo -e "$_ERROR_ Illegal option '$OPTARG'"
+      exit 3
+      ;;
+  esac
+done
+for i in `seq 2 $OPTIND`; do shift; done
+
+binary="$1"
+flashtool="arm-none-eabi-gdb"
+
+if [ -z "$binary" ]; then
+  binary="builds/$(ls -t -I "*.*" builds/ | head -1)"
+  echo -e "$_INFO_ Most recent build selected: ${binary}" >&$stdout
+fi
+
+if [[ ! -f $binary ]]; then
+  echo -e "$_ERROR_ Binary $binary not found!" >&$stderr
+  exit 1
+fi
+
+if ! $opt_quiet; then
+  echo -e "$_INFO_ Binary: ${binary}" >&$stdout
+fi
+
+if ! hash "$flashtool" 2>/dev/null; then
+  echo -e "$_ERROR_ $flashtool not found!" >&$stderr
+  exit 1
+fi
+
+if ! $opt_quiet; then
+  echo -e "$_INFO_ Debug Tool: arm-none-eabi-gdb" >&$stdout
+fi
+
+if [ ${host_platform} == "linux" ]; then
+  if ! programmer="`wait_for_black_magic`"; then
+    exit 1
+  fi
+elif [ ${host_platform} == "windows" ]; then
+  if ! [ -f "COM_PORT" ]; then
+    echo -e "$_ERROR_ Windows users need to set the BMP COM port in a file called 'COM_PORT'."
+    echo -e "  eg. 'COM8'"
+    return 1
+  fi
+  programmer=$(<COM_PORT)
+  if [ -z "$programmer" ]; then
+    echo -e "$_ERROR_ BMP COM port not found in 'COM_PORT' file."
+    echo -e "  eg. 'COM8'"
+    return 1
+  fi
+elif [ ${host_platform} == "mac" ]; then
+  echo -e "$_ERROR_ Not implemented for mac yet.."
+  return 1
+fi
+
+echo -e "$_INFO_$COLOUR_GREEN Found Blackmagic$COLOUR_OFF" >&$stdout
+if ! $opt_quiet; then
+  echo -e "$_INFO_ Programmer: $programmer" >&$stdout
+fi
+
+debug_device "$flashtool" "$programmer" "$binary"

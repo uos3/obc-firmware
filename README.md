@@ -41,7 +41,23 @@ int main(void)
 
 3. Compile the application with: `./build uos3-proto test`
 
-4. Flash the test program to the circuit board with: `./flash`
+4. Flash the latest compiled program (here, 'test') to the circuit board with: `./flash`
+
+5. (If needed) Debug the latest compiled program with `./debug`
+
+  * This will flash the latest compiled program to the board and then leave you at an attached GDB shell
+  * Useful GDB Commands
+    * 'r' - Run program from beginning
+    * 'Ctrl+c' - Interrupt running of program
+    * 'bt' - show stacktrace
+    * 'info locals' - Show values of local variables
+    * 'p a' - Show value of variable 'a'
+    * 'c' - Continue program from current position
+    * 'b demo_rtc.c:42' - Set a breakpoint at line 42 of demo_rtc.c
+    * 'info breakpoints' - List current breakpoints
+    * 'del br 1' - Delete breakpoint 1
+    * 'quit' - Exit GDB
+    * Resoures: [GDB Walkthrough](https://www.cs.umd.edu/~srhuang/teaching/cmsc212/gdb-tutorial-handout.pdf), [GDB Commands](http://www.yolinux.com/TUTORIALS/GDB-Commands.html)
 
 ## Dependencies 
 
