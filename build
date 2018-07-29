@@ -11,6 +11,7 @@ source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 cd $source_dir
 
 opt_flash=false
+opt_debug=false
 opt_quiet=false
 opt_sound=false
 opt_asm=false
@@ -74,6 +75,14 @@ flash() {
   fi
 }
 
+debug() {
+  if $opt_debug; then
+    debug_args="";
+    if $opt_verbose; then debug_args="$debug_args -v"; fi
+    ${source_dir}/debug ${debug_args} ${outdir}/${filename};
+  fi
+}
+
 asmdump() {
   if $opt_asm; then
      arm-none-eabi-objdump -DSlx ${source_dir}/${outdir}/${filename} > ${source_dir}/${outdir}/${filename}.asm
@@ -100,7 +109,7 @@ print_help() {
 
 ## Read Flags
 OPTIND=1
-while getopts ":hmdsqvFSw" opt; do
+while getopts ":hmdsqvFDSw" opt; do
   case "$opt" in
     h) # Help
       print_help
@@ -120,6 +129,9 @@ while getopts ":hmdsqvFSw" opt; do
       ;;
     F) # Flash
       opt_flash=true
+      ;;
+    D) # Debug
+      opt_debug=true
       ;;
     S) # Sound
       opt_sound=true
@@ -206,6 +218,7 @@ make ${flags} clean \
 	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" \
 	&& asmdump \
 	&& flash \
+  && debug \
 	&& exit 0
 } || {
 	print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF" \

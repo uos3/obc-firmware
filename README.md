@@ -41,11 +41,17 @@ int main(void)
 
 3. Compile the application with: `./build uos3-proto test`
 
+  * `./build test` will compile by default for uos3-proto (The March '17 UoS3 OBC Development board)
+
 4. Flash the latest compiled program (here, 'test') to the circuit board with: `./flash`
+
+  * `./build -F test` will automatically flash after a successful build
 
 5. (If needed) Debug the latest compiled program with `./debug`
 
   * This will flash the latest compiled program to the board and then leave you at an attached GDB shell
+  * `./build -D test` will automatically debug after a successful build
+  
   * Useful GDB Commands
     * 'r' - Run program from beginning
     * 'Ctrl+c' - Interrupt running of program
