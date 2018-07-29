@@ -100,7 +100,8 @@ flash_device() {
     -ex 'monitor tpwr $programmer_power'        \
     -ex 'monitor swdp_scan'                     \
     -ex 'attach 1'                              \
-    -ex 'load '$binary"
+    -ex 'load '$binary                          \
+    -ex 'compare-sections'"
 
   flash_success=false
   while ! ${flash_success}
