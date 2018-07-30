@@ -61,6 +61,9 @@
 /* Mission */
 #include "mission/mission.h"
 
+/* Utilities */
+#include "utility/circ_queue.h"
+
 /* ... */
 
 #endif /*  __FIRMWARE_H__ */
