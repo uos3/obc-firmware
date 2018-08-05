@@ -31,7 +31,7 @@ _DEBUG_="$COLOUR_YELLOW[DEBUG]$COLOUR_OFF"
 opt_verbose=false
 opt_quiet=false
 opt_sound=false
-opt_power=true
+opt_power=false
 
 stdin="/proc/$$/fd/0"
 stdout="/proc/$$/fd/1"
