@@ -94,6 +94,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga8694ef69651f95118d731cfee22c6036"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga70993ebbbb06a80b16b64f90c72cdf60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rtc.html#ga70993ebbbb06a80b16b64f90c72cdf60">RTC_setTime</a> (uint32_t *time)</td></tr>
 <tr class="separator:ga70993ebbbb06a80b16b64f90c72cdf60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae59f8c6671fa4f0ef258cc8549de5c2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rtc.html#gae59f8c6671fa4f0ef258cc8549de5c2a">RTC_timerElapsed_ms</a> (uint64_t start_time_ms, uint64_t period_ms)</td></tr>
+<tr class="separator:gae59f8c6671fa4f0ef258cc8549de5c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Real-Time Clock Driver. </p>
@@ -175,6 +177,36 @@ Functions</h2></td></tr>
 <p>uint32_t* Pointer to variable containing time value to be set. </p>
 
 <p>Definition at line <a class="el" href="gnulinux_2rtc_8c_source.html#l00046">46</a> of file <a class="el" href="gnulinux_2rtc_8c_source.html">rtc.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gae59f8c6671fa4f0ef258cc8549de5c2a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RTC_timerElapsed_ms </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>start_time_ms</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>period_ms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Timer function, returns true if current_time &lt; start_time_ms or current_time &gt; start_time_ms + period.</p>
+<p>uint64_t Start time of timer  uint64_t Period of timer </p>
+
+<p>Definition at line <a class="el" href="gnulinux_2rtc_8c_source.html#l00053">53</a> of file <a class="el" href="gnulinux_2rtc_8c_source.html">rtc.c</a>.</p>
 
 </div>
 </div>
