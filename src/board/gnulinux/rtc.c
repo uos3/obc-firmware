@@ -50,6 +50,21 @@ void RTC_setTime(uint32_t *time)
 	return;
 }
 
+bool RTC_timerElapsed_ms(uint64_t start_time_ms, uint64_t period_ms)
+{
+	uint64_t current_time_ms;
+	RTC_getTime_ms(&current_time_ms);
+
+	if(current_time_ms < start_time_ms || current_time_ms > (start_time_ms + period_ms))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 /**
  * @}
  */

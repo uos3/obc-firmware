@@ -54,4 +54,15 @@ void RTC_getTime_ms(uint64_t *time_ms);
  */
 void RTC_setTime(uint32_t *time);
 
+/**
+ * @function
+ * @ingroup rtc
+ *
+ * Timer function, returns true if current_time < start_time_ms or current_time > start_time_ms + period. 
+ *
+ * @parameter uint64_t Start time of timer
+ * @parameter uint64_t Period of timer
+ */
+bool RTC_timerElapsed_ms(uint64_t start_time_ms, uint64_t period_ms);
+
 #endif /*  __RTC_H__ */
