@@ -3,26 +3,46 @@
 
 #include <stdio.h>
 
-#define UART_INTERFACE UART_CAMERA
+#define UART_INTERFACE UART_GNSS
 
 int main(void){
   Board_init();
+
+
+
   EPS_init();
 
-  LED_on(LED_B);
 
   UART_init(UART_INTERFACE, 9600);
-  UART_puts(UART_INTERFACE, "\r\nEPS Demo\r\n");
+  Delay_ms(1); // delay for initialisation to finish for UART
+
+  UART_puts(UART_INTERFACE, "\r\n** INIT COMPLETE **\r\n");
 
   char output[100];
-  uint16_t v;
+  uint16_t batt_v, batt_i;//, batt_t;
 
-  EPS_getBatteryVoltage(&v);
-  sprintf(output,"Voltage: %+06d\r\n", v);
-  UART_puts(UART_INTERFACE, output);
+  //
+  // EPS_getBatteryInfo(&batt_i, EPS_REG_BAT_I);
+  // sprintf(output,"Current: %+06d\r\n", batt_i);
+  // UART_puts(UART_INTERFACE, output);
+  //
+  // EPS_getBatteryInfo(&batt_t, EPS_REG_BAT_T);
+  // sprintf(output,"Current: %+06d\r\n", batt_t);
+  // UART_puts(UART_INTERFACE, output);
 
   while(1){
-    UART_puts(UART_INTERFACE, "\r\nHello World!\r\n");
-    Delay_ms(500);
+    LED_toggle(LED_B);
+
+    EPS_getBatteryInfo(&batt_v, EPS_REG_SW_ON);
+    UART_puts(UART_INTERFACE, "\r\nSuccessfuly read voltage\r\n");
+    sprintf(output,"Voltage: %+06d\r\n", batt_v);
+    UART_puts(UART_INTERFACE, output);
+    //
+    // // EPS_getBatteryInfo(&batt_i, EPS_REG_BAT_I);
+    // // UART_puts(UART_INTERFACE, "\r\nSuccessfuly read voltage\r\n");
+    // // sprintf(output,"Current: %+06d\r\n", batt_i);
+    // // UART_puts(UART_INTERFACE, output);
+    //
+    // Delay_ms(1000);
   }
 }

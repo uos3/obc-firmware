@@ -1,4 +1,5 @@
 #include "../firmware.h"
+#include "../mission/mission.h"
 
 int main(void){
   Mission_init();

@@ -13,6 +13,14 @@
 #ifndef __DEBUG_H__
 #define __DEBUG_H__
 
+#include "board.h"
+
+#define DEBUG_A GPIO_PC4
+#define DEBUG_B GPIO_PD4
+#define DEBUG_C GPIO_PD5
+#define DEBUG_D GPIO_PB0
+#define DEBUG_E GPIO_PC5
+
 /**
  * @function
  * @ingroup debug

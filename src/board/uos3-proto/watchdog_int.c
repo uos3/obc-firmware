@@ -33,7 +33,7 @@
 #include "driverlib/timer.h"
 #include "../led.h"
 
-void Timer0IntHandler(void) 
+void Timer0IntHandler(void)
 {
 // Clear the timer interrupt
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);

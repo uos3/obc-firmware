@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /* Stored in EEPROM */
 typedef struct mission_state_data_t {
@@ -76,9 +77,9 @@ typedef enum mode_n {
 
 typedef enum NF_task {
 	SAVE_EPS_HEALTH,
+	TRANSMIT,
 	SAVE_GPS_POS,
 	SAVE_ATTITUDE,
-	TRANSMIT,
 	PROCESS_GS_COMMAND,
 	CHECK_HEALTH
 } 	NF_task;
@@ -99,7 +100,7 @@ void Mission_SEU(void);
 void Mode_init(int8_t type);
 
 // Tasks
-void save_eps_health_data(void);
-void transmit_next_telemetry(void);
+int8_t save_eps_health_data(int8_t r);
+int8_t transmit_next_telemetry(int8_t t);
 
 #endif /*  __MISSION_H__ */

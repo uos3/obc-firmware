@@ -18,14 +18,14 @@ typedef struct node {
 Node* newNode(int d, int p);
 
 // Return the value at head
-int peek(Node** head);
+int circ_peek(Node** head);
 
 // Removes the element with the
 // highest priority form the list
-void pop(Node** head);
+void circ_pop(Node** head);
 
 // Function to push according to priority
-void push(Node** head, int d, int p);
+void circ_push(Node** head, int d, int p);
 
 // Function to check is list is empty
-int isEmpty(Node** head);
+int circ_isEmpty(Node** head);
