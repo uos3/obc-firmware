@@ -43,6 +43,10 @@ int main(void)
     sprintf(output,"Magno: X %+06d, Y %+06d, Z %+06d\r\n", x, y, z);
     UART_puts(UART_INTERFACE, output);
 
+    IMU_read_temp(&x);
+    sprintf(output,"Temp: %+06d\r\n", x);
+    UART_puts(UART_INTERFACE, output);
+
     UART_puts(UART_INTERFACE, "--------------------------------\r\n");
 
     LED_off(LED_B);
