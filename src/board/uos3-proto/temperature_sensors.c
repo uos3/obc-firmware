@@ -38,3 +38,24 @@ int16_t Temperature_read_tmp100(void)
   int16_t data = (int16_t)(I2CReceive16(I2C_TEMP, tmp100_address, 0)>>5); // for temp in C divide by 8 - bottom 5 bits worthless
   return data;
 }
+
+int16_t Temperature_read_obc(void){
+  return 0;
+}
+
+int16_t get_temp(uint16_t type){
+  switch (type){
+    case TEMP_OBC:
+      return Temperature_read_tmp100();
+      break;
+    case TEMP_RX:
+      return 0; // need to talk to CC1125 RX
+      break;
+    case TEMP_TX:
+      return 0; // need to talk to CC1125 TX
+      break;
+    case TEMP_PA:
+      return Temperature_read_pct2075(); // talking to
+      break;
+  }
+}
