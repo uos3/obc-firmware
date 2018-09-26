@@ -15,7 +15,7 @@
 #include "driverlib/timer.h"
 #include "inc/hw_memmap.h"
 
-#include "../board/eeprom_map.h"
+#include "../board/memory_map.h"
 
 #define UART_INTERFACE UART_GNSS
 
@@ -95,10 +95,19 @@ int8_t get_available_timer(){
 
 void Mission_init(void)
 {
-  /* Leeeeeeeeeeerooooy Jenkinnnnns! */
+	LED_on(LED_B);
+
+	/* Leeeeeeeeeeerooooy Jenkinnnnns! */
   Board_init();
   WDT_kick();
 	EEPROM_init();
+	I2C_init(0);
+  UART_init(UART_INTERFACE, 9600);
+
+	int16_t temp = Temperature_read_tmp100();
+	char output[100];
+	sprintf(output,"%d\r\n", temp);
+	UART_puts(UART_INTERFACE, output);
 
   UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVER INITIALISED**\r\n");
@@ -220,11 +229,31 @@ void add_telemetry(uint8_t* value, uint8_t bytes){
   }
 }
 
-void end_telemetry(){
-  // Save telemetry to FRAM
+uint16_t consume_available_location(){
+	uint8_t fram_availability[609];
+	FRAM_read(FRAM_TABLE_OFFSET, fram_availability, 609);
+	uint16_t available_slot = 0;
 
-  // Insert new entry into FRAM lookup table (packet_id -> FRAM pos)
-  // ..do this by finding next available pos
+	// Cycle through all bits/slots to find an available one
+	for (uint8_t i=0; i<609; i++)
+		for (uint8_t bit=0; i<8; i++)
+			// If the current bit shows availability
+			if (0b11111110 & (fram_availability[i] >> bit) == FRAM_AVAILABLE) {
+				// Mark as consumed
+				fram_availability[i] |= 1 << bit;
+				FRAM_write(FRAM_TABLE_OFFSET + i, fram_availability[i], 1);
+
+				return FRAM_PAYLOAD_OFFSET + (available_slot * FRAM_PAYLOAD_SIZE);
+			} else
+				available_slot++;
+}
+
+void end_telemetry(){
+	// Find available location
+	uint16_t location = consume_available_location();
+
+  // Save telemetry to FRAM
+	FRAM_write(location, telemetry, FRAM_PAYLOAD_SIZE);
 }
 
 uint16_t perform_subsystem_check(){
