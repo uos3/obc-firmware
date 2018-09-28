@@ -291,10 +291,10 @@ int8_t save_eps_health_data(int8_t t){
 	uint32_t eeprom_read;
   start_telemetry();
 
-  // Generate dataset id
+  // TODO: Generate dataset id
   add_telemetry((uint16_t)0, 2);
 
-  // Get timestamp
+  // TODO: Get timestamp
   add_telemetry((uint32_t)0, 4);
 
   // Get TOBC values
@@ -333,6 +333,32 @@ int8_t save_eps_health_data(int8_t t){
   end_telemetry();
 
   UART_puts(UART_INTERFACE, "[TASK #001] Finished saving EPS health data.\r\n");
+}
+
+int8_t save_imu_data(int8_t t){
+	// TODO: Generate dataset id
+	add_telemetry((uint16_t)0, 2);
+
+	// TODO: Get timestamp
+	add_telemetry((uint32_t)0, 4);
+
+	// TODO: Get IMU temperature based on Ed's new driver
+
+	// Take multiple samples
+	for (uint8_t i=0; i<6; i++){
+		int16_t accel_data[3], gyro_data[3];
+		IMU_read_accel(accel_data[0], accel_data[1], accel_data[2]);
+		IMU_read_gyro(gyro_data[0], gyro_data[1], gyro_data[2]);
+
+		add_telemetry((int16_t)&accel_data, 6); // 2bytes * 3
+		add_telemetry((int16_t)&gyro_data, 6); // 2bytes * 3
+
+		Delay_ms(500); // TODO: update time once it has been determined
+	}
+
+	end_telemetry();
+
+  UART_puts(UART_INTERFACE, "[TASK #003] Finished saving IMU payload data.\r\n");
 }
 
 void update_radio_parameters(){
