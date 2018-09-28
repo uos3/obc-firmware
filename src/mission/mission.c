@@ -229,12 +229,30 @@ void add_telemetry(uint8_t* value, uint8_t bytes){
   }
 }
 
+int16_t find_next_telemetry(){
+	uint8_t fram_availability[609];
+	FRAM_read(FRAM_TABLE_OFFSET, fram_availability, 609);
+	uint16_t available_slot = 0;
+
+	// Cycle through all bits/slots to find one with unsent telemetry
+	for (uint8_t i=0; i<609; i++)
+		for (uint8_t bit=0; i<8; i++)
+			// If the current bit shows unavailability
+			if (0b11111110 & (fram_availability[i] >> bit) == FRAM_USED)
+				return FRAM_PAYLOAD_OFFSET + (available_slot * FRAM_PAYLOAD_SIZE);
+			else
+				available_slot++;
+	return -1;
+}
+
 uint16_t consume_available_location(){
 	uint8_t fram_availability[609];
 	FRAM_read(FRAM_TABLE_OFFSET, fram_availability, 609);
 	uint16_t available_slot = 0;
 
 	// Cycle through all bits/slots to find an available one
+	// TODO: make this cyclic to avoid wear concentrated near the start of the FRAM
+	// TODO: if none are found, use the oldest
 	for (uint8_t i=0; i<609; i++)
 		for (uint8_t bit=0; i<8; i++)
 			// If the current bit shows availability
@@ -251,6 +269,9 @@ uint16_t consume_available_location(){
 void end_telemetry(){
 	// Find available location
 	uint16_t location = consume_available_location();
+
+	// TODO: add 128-bit authentication hash
+	// TODO: add 16-bit crc
 
   // Save telemetry to FRAM
 	FRAM_write(location, telemetry, FRAM_PAYLOAD_SIZE);
@@ -314,28 +335,55 @@ int8_t save_eps_health_data(int8_t t){
   UART_puts(UART_INTERFACE, "[TASK #001] Finished saving EPS health data.\r\n");
 }
 
+void update_radio_parameters(){
+	// TODO: read these from the config
+	// radio_set_freq_f
+	// radio_set_pwr_f
+
+	// TODO: investigate whether any of the following are neccessary
+	// -set sym_dev
+	// -set packets length
+	// -get packet wait
+	// -manual calibration
+}
+
 int8_t transmit_next_telemetry(int8_t t){
   uint8_t data_read[TELEMETRY_SIZE];
 
   // Read lookup table to find where to look in FRAM
+	int16_t telemetry_available = find_next_telemetry();
 
+	if (telemetry_available != -1){
 
-  // Load packet from FRAM
-  // get next packet to read
-  //FRAM_read(0x00000, data_read, TELEMETRY_SIZE);
+		// Load packet from FRAM
+		uint16_t telemetry_payload_location = (uint16_t)telemetry_available;
+		uint8_t telemetry[FRAM_PAYLOAD_SIZE];
+		FRAM_read(telemetry_payload_location, telemetry, FRAM_PAYLOAD_SIZE);
 
-  // add authentication hash
+		// TODO: add Matt's weird error detection & check code
 
-  // add crc
+		// Set-up radio
+		EPS_setPowerRail(EPS_PWR_TX, 1);
+		radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+		update_radio_parameters();
 
+		// Transfer buffer to TX transceiver buffer
+		cc112xSpiWriteTxFifo(SPI_RADIO_TX, telemetry, FRAM_PAYLOAD_SIZE);
 
-  // Transfer to TX transceiver
+		// Transmit
+		SPI_cmd(SPI_RADIO_TX, CC112X_STX);
 
+		// wait for the packet to send
+		while( cc1125_pollGPIO(GPIO0_RADIO_TX)) {} ;
 
-  // Transmit
+		EPS_setPowerRail(EPS_PWR_TX, 0);
 
+	  UART_puts(UART_INTERFACE, "[TASK #002] Finished transmit next telemetry\r\n");
+		return 0;
+	}
 
   UART_puts(UART_INTERFACE, "[TASK #002] Finished transmit next telemetry\r\n");
+	return 1;
 }
 
 // Utility
