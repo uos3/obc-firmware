@@ -46,6 +46,7 @@ uint8_t rx_noisefloor;
 void timer0_isr(){
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer0_interrupt!**\r\n");
+
 }
 
 void timer1_isr(){
@@ -155,6 +156,15 @@ void Mode_init(int8_t type){
 
       tasks[TRANSMIT].period = 60;
       tasks[TRANSMIT].TickFct = &transmit_next_telemetry;
+
+			tasks[SAVE_ATTITUDE].period = 600;
+			tasks[SAVE_ATTITUDE].TickFct = &save_imu_data;
+
+			tasks[SAVE_GPS_POS].period = 600;
+			tasks[SAVE_GPS_POS].TickFct = &save_gps_data;
+
+			tasks[CHECK_HEALTH].period = 30;
+			tasks[CHECK_HEALTH].TickFct = &check_health_status;
 
       current_mode = NF;
       current_tasks = tasks;
@@ -335,6 +345,10 @@ int8_t save_eps_health_data(int8_t t){
   UART_puts(UART_INTERFACE, "[TASK #001] Finished saving EPS health data.\r\n");
 }
 
+int8_t save_gps_data(int8_t t){
+
+}
+
 int8_t save_imu_data(int8_t t){
 	// TODO: Generate dataset id
 	add_telemetry((uint16_t)0, 2);
@@ -411,6 +425,40 @@ int8_t transmit_next_telemetry(int8_t t){
   UART_puts(UART_INTERFACE, "[TASK #002] Finished transmit next telemetry\r\n");
 	return 1;
 }
+
+int8_t check_health_status(int8_t t){
+	// load allowed voltage of battery
+
+	// Get current voltage of battery from EPS board
+
+	// Calculate checksums for all payload
+
+}
+
+int8_t process_gs_command(int8_t t){
+	switch(t){
+		case IMAGE_REQUEST:
+		// schedule a time for the PT context
+		break;
+		case ACK_REC_PACKETS:
+		// update entries for packets in meta-table stored in FRAM
+		break;
+		case DL_REQUEST:
+		// schedule a time for the DL context
+		break;
+		case UPDATE_CONFIG:
+		//generate config bytes and save to EEPROM
+		// in two separate locations
+		break;
+		case ENTER_SAFE_MODE:
+		// switch context
+		break;
+		case MANUAL_OVERRIDE:
+		//reboot or switch-off subsystem
+		break;
+	}
+}
+
 
 // Utility
 

@@ -78,8 +78,8 @@ typedef enum mode_n {
 typedef enum NF_task {
 	SAVE_EPS_HEALTH,
 	TRANSMIT,
-	SAVE_GPS_POS,
 	SAVE_ATTITUDE,
+	SAVE_GPS_POS,
 	PROCESS_GS_COMMAND,
 	CHECK_HEALTH
 } 	NF_task;
@@ -90,6 +90,15 @@ typedef struct opmode_t {
    uint8_t num_tasks;
 } opmode_t;
 
+
+typedef enum GS_command {
+	IMAGE_REQUEST,
+	ACK_REC_PACKETS,
+	DL_REQUEST,
+	UPDATE_CONFIG,
+	ENTER_SAFE_MODE,
+	MANUAL_OVERRIDE
+} 	NF_task;
 
 // Main functions
 void Mission_init(void);
