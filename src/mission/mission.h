@@ -82,7 +82,7 @@ typedef enum NF_task {
 	SAVE_GPS_POS,
 	PROCESS_GS_COMMAND,
 	CHECK_HEALTH
-} 	NF_task;
+} NF_task;
 
 typedef struct opmode_t {
    void (*Mode_startup)(void); // Points to start-up code for this mode
@@ -98,7 +98,7 @@ typedef enum GS_command {
 	UPDATE_CONFIG,
 	ENTER_SAFE_MODE,
 	MANUAL_OVERRIDE
-} 	NF_task;
+} GS_command;
 
 // Main functions
 void Mission_init(void);

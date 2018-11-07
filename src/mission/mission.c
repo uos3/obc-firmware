@@ -16,10 +16,19 @@
 #include "inc/hw_memmap.h"
 
 #include "../board/memory_map.h"
+#include "../board/radio.h"
 
 #define UART_INTERFACE UART_GNSS
 
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
+
+// Private prototypes
+int8_t save_eps_health_data(int8_t t);
+int8_t transmit_next_telemetry(int8_t t);
+int8_t save_imu_data(int8_t t);
+int8_t save_gps_data(int8_t t);
+int8_t check_health_status(int8_t t);
+
 
 opmode_t modes[8];
 
