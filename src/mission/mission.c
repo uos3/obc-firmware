@@ -18,7 +18,7 @@
 #include "../board/memory_map.h"
 #include "../board/radio.h"
 
-#define UART_INTERFACE UART_GNSS
+#define UART_INTERFACE UART_CAMERA
 
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
 
@@ -105,21 +105,20 @@ int8_t get_available_timer(){
 
 void Mission_init(void)
 {
-	LED_on(LED_B);
+  LED_on(LED_B);
 
 	/* Leeeeeeeeeeerooooy Jenkinnnnns! */
   Board_init();
   WDT_kick();
-	EEPROM_init();
-	I2C_init(0);
+  EEPROM_init();
+  I2C_init(0);
   UART_init(UART_INTERFACE, 9600);
 
-	int16_t temp = Temperature_read_tmp100();
-	char output[100];
-	sprintf(output,"%d\r\n", temp);
+  int16_t temp = Temperature_read_tmp100();
+  char output[100];
+  sprintf(output,"%d\r\n", temp);
 	UART_puts(UART_INTERFACE, output);
 
-  UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVER INITIALISED**\r\n");
 
   // Initialise the task queue as empty
@@ -127,8 +126,6 @@ void Mission_init(void)
     task_q[i] = -1;
   }
   no_of_tasks_queued = 0;
-
-
 
   for (uint8_t i=0; i<6; i++) SysCtlPeripheralEnable(ALL_TIMER_PERIPHERALS[i]);
   for (uint8_t i=0; i<6; i++) while(!SysCtlPeripheralReady(ALL_TIMER_PERIPHERALS[i]));
@@ -163,14 +160,14 @@ void Mode_init(int8_t type){
       tasks[SAVE_EPS_HEALTH].period = 300;
       tasks[SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks[TRANSMIT].period = 60;
-      tasks[TRANSMIT].TickFct = &transmit_next_telemetry;
+      //tasks[TRANSMIT].period = 60;
+      //tasks[TRANSMIT].TickFct = &transmit_next_telemetry;
 
-			tasks[SAVE_ATTITUDE].period = 600;
-			tasks[SAVE_ATTITUDE].TickFct = &save_imu_data;
+			//tasks[SAVE_ATTITUDE].period = 600;
+			//tasks[SAVE_ATTITUDE].TickFct = &save_imu_data;
 
-			tasks[SAVE_GPS_POS].period = 600;
-			tasks[SAVE_GPS_POS].TickFct = &save_gps_data;
+			//tasks[SAVE_GPS_POS].period = 600;
+			//tasks[SAVE_GPS_POS].TickFct = &save_gps_data;
 
 			tasks[CHECK_HEALTH].period = 30;
 			tasks[CHECK_HEALTH].TickFct = &check_health_status;
@@ -179,8 +176,8 @@ void Mode_init(int8_t type){
       current_tasks = tasks;
 
       // for (uint8_t i=0; i<tasks; i++)
-        // queue_task(tasks[i]);
-      queue_task(SAVE_EPS_HEALTH);
+      // queue_task(tasks[i]);
+      queue_task(CHECK_HEALTH);
 
       // task_q[no_of_tasks_queued] = TRANSMIT;
       // no_of_tasks_queued++;
