@@ -58,14 +58,16 @@ void timer0_isr(){
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer0_interrupt!**\r\n");
 
+  // Schedule task
+  task_q[0] = 1;
 }
 
 void timer1_isr(){
 	TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer1_interrupt!**\r\n");
 
-  // get task id and etc..
-
+  // Schedule task
+  task_q[1] = 1;
 }
 
 uint32_t ALL_TIMER_PERIPHERALS[6] =
@@ -194,7 +196,7 @@ void Mission_loop(void)
   // Sort list of pending tasks by their priorities
   for (uint8_t i=0; i<MAX_TASKS; i++){
     if (task_q[i] != -1)
-      circ_push(&task_pq, task_q[i], current_tasks[task_q[i]].period);
+      circ_push(&task_pq, i, current_tasks[task_q[i]].period);
 
       // Remove task from standard queue
       task_q[i] = -1;
