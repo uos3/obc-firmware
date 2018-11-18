@@ -269,28 +269,31 @@ uint16_t consume_available_location(){
 	// Cycle through all bits/slots to find an available one
 	// TODO: make this cyclic to avoid wear concentrated near the start of the FRAM
 	// TODO: if none are found, use the oldest
-	for (uint8_t i=0; i<609; i++)
+	for (uint16_t i=0; i<609; i++)
 		for (uint8_t bit=0; i<8; i++)
 			// If the current bit shows availability
 			if (0b11111110 & (fram_availability[i] >> bit) == FRAM_AVAILABLE) {
-				// Mark as consumed
+        UART_puts(UART_INTERFACE, "[TASK #001] AVAILABLE.\r\n");
+        // Mark as consumed
 				fram_availability[i] |= 1 << bit;
 				FRAM_write(FRAM_TABLE_OFFSET + i, fram_availability[i], 1);
 
 				return FRAM_PAYLOAD_OFFSET + (available_slot * FRAM_PAYLOAD_SIZE);
-			} else
+			} else {
 				available_slot++;
+      }
 }
 
 void end_telemetry(){
 	// Find available location
-	uint16_t location = consume_available_location();
+  uint16_t location = consume_available_location();
 
 	// TODO: add 128-bit authentication hash
 	// TODO: add 16-bit crc
 
   // Save telemetry to FRAM
 	FRAM_write(location, telemetry, FRAM_PAYLOAD_SIZE);
+  UART_puts(UART_INTERFACE, "[TASK #001] FRAM write complete.\r\n");
 }
 
 uint16_t perform_subsystem_check(){
