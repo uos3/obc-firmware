@@ -32,8 +32,10 @@ int8_t check_health_status(int8_t t);
 
 opmode_t modes[8];
 
-// Run-time
-#define MAX_TASKS 10
+// [ RUN-TIME ]
+// Total number of tasks that can be run concurrently (limited by number of avail. timers)
+#define MAX_TASKS 6
+
 volatile int8_t task_q[MAX_TASKS];  // Task queue directly accessed by interrupts
 Node*           task_pq;            // Task priority queue constructed from previous q indirectly
 volatile uint8_t no_of_tasks_queued;
@@ -124,6 +126,7 @@ void Mission_init(void)
   // Initialise the task queue as empty
   for (uint8_t i=0; i<MAX_TASKS; i++){
     task_q[i] = -1;
+    timer_to_task[i] = -1;
   }
   no_of_tasks_queued = 0;
 
