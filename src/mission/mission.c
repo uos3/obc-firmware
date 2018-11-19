@@ -44,7 +44,7 @@ volatile uint8_t no_of_tasks_queued;
 task_t* current_tasks;
 uint8_t current_mode; // for deciding which enums to use
 
-int8_t timer_to_task[6]; // timer_id -> task_id (reset look-up table)
+int8_t timer_to_task[MAX_TASKS]; // timer_id -> task_id (reset look-up table)
 
 // Error detection
 uint8_t flash_errors;
@@ -53,6 +53,8 @@ uint8_t ram_errors;
 // State variables
 uint16_t data_packets_pending;
 uint8_t rx_noisefloor;
+
+void (*timer_isr_map[MAX_TASKS]) (); // map of timer-id to isr functions
 
 void timer0_isr(){
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
@@ -132,12 +134,15 @@ void Mission_init(void)
   }
   no_of_tasks_queued = 0;
 
+  // Initialise timers
   for (uint8_t i=0; i<6; i++) SysCtlPeripheralEnable(ALL_TIMER_PERIPHERALS[i]);
   for (uint8_t i=0; i<6; i++) while(!SysCtlPeripheralReady(ALL_TIMER_PERIPHERALS[i]));
   for (uint8_t i=0; i<6; i++){
     TimerConfigure(ALL_TIMER_BASES[i], TIMER_CFG_PERIODIC); // set it to periodically trigger interrupt
     TimerIntEnable(ALL_TIMER_BASES[i], TIMER_TIMA_TIMEOUT); // enable interrupt
   }
+  timer_isr_map[0] = &timer0_isr;
+  timer_isr_map[1] = &timer1_isr;
 
   ulPeriod = (SysCtlClockGet()) ; // 1Hz update rate
    // third will miss sometimes if processor busy
@@ -150,7 +155,11 @@ void queue_task(int8_t task_id){
   no_of_tasks_queued++;
 
   int8_t timer_id = get_available_timer();
-  set_timer_for_task(timer_id, task_id, ulPeriod, &timer0_isr);
+  char output[100];
+
+  sprintf(output,"set timer: : %+06d\r\n", timer_id);
+  UART_puts(UART_INTERFACE, output);
+  set_timer_for_task(timer_id, task_id, ulPeriod, timer_isr_map[task_id]);
 }
 
 void Mode_init(int8_t type){
@@ -162,31 +171,29 @@ void Mode_init(int8_t type){
 
       task_t* tasks = (task_t *) malloc (sizeof(task_t)*2);
 
-      tasks[SAVE_EPS_HEALTH].period = 300;
+      tasks[SAVE_EPS_HEALTH].period = 5; //300
       tasks[SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      //tasks[TRANSMIT].period = 60;
-      //tasks[TRANSMIT].TickFct = &transmit_next_telemetry;
+      tasks[TRANSMIT].period = 10;
+      tasks[TRANSMIT].TickFct = &save_imu_data;
 
 			//tasks[SAVE_ATTITUDE].period = 600;
 			//tasks[SAVE_ATTITUDE].TickFct = &save_imu_data;
 
-			//tasks[SAVE_GPS_POS].period = 600;
-			//tasks[SAVE_GPS_POS].TickFct = &save_gps_data;
+			//tasks[1].period = 10; // 600
+			//tasks[1].TickFct = &save_gps_data; //SAVE_GPS_POS
 
-			tasks[CHECK_HEALTH].period = 30;
-			tasks[CHECK_HEALTH].TickFct = &check_health_status;
+			//tasks[CHECK_HEALTH].period = 30;
+			//tasks[CHECK_HEALTH].TickFct = &check_health_status;
 
       current_mode = NF;
       current_tasks = tasks;
 
       // for (uint8_t i=0; i<tasks; i++)
       // queue_task(tasks[i]);
-      queue_task(CHECK_HEALTH);
-
-      // task_q[no_of_tasks_queued] = TRANSMIT;
-      // no_of_tasks_queued++;
-
+      //ccmer_priorities[i] = -1;
+      queue_task(SAVE_EPS_HEALTH);
+      queue_task(TRANSMIT);
     } break;
   }
 }
@@ -207,15 +214,16 @@ void Mission_loop(void)
   if (!circ_isEmpty(&task_pq)){
     // peek
     uint8_t todo_task_index = circ_peek(&task_pq);
-    // char output[100];
-    // sprintf(output,"%+06d\r\n", todo_task_index);
-    // UART_puts(UART_INTERFACE, output);
+    char output[100];
+    sprintf(output,"%+06d\r\n", todo_task_index);
+    UART_puts(UART_INTERFACE, output);
 
     // execute
     UART_puts(UART_INTERFACE, "**executing**\r\n");
 
     current_tasks[todo_task_index].TickFct(NULL);
 
+    UART_puts(UART_INTERFACE, "**executed!**\r\n");
     // reset timer for that tasks
 
 
@@ -346,8 +354,6 @@ int8_t save_eps_health_data(int8_t t){
     EPS_getBatteryInfo(&eps_field, i);
     add_telemetry(eps_field, 2);
   }
-
-  // Check subsystems and record status of 14
 	uint16_t subsystem_status = perform_subsystem_check();
 	// read antenna switch state (and ask where this can be attached)
 	subsystem_status |= (uint8_t)Antenna_read_deployment_switch() << 14;
@@ -357,6 +363,8 @@ int8_t save_eps_health_data(int8_t t){
   end_telemetry();
 
   UART_puts(UART_INTERFACE, "[TASK #001] Finished saving EPS health data.\r\n");
+
+  return 0;
 }
 
 int8_t save_gps_data(int8_t t){
@@ -364,7 +372,9 @@ int8_t save_gps_data(int8_t t){
 }
 
 int8_t save_imu_data(int8_t t){
-	// TODO: Generate dataset id
+  UART_puts(UART_INTERFACE, "[TASK #003] Saving IMU payload data...\r\n");
+  
+  // TODO: Generate dataset id
 	add_telemetry((uint16_t)0, 2);
 
 	// TODO: Get timestamp
@@ -479,3 +489,4 @@ int8_t process_gs_command(int8_t t){
 /**
  * @}
  */
+
