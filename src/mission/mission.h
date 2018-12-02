@@ -98,7 +98,7 @@ typedef enum GS_command {
 	UPDATE_CONFIG,
 	ENTER_SAFE_MODE,
 	MANUAL_OVERRIDE
-} 	NF_task;
+} 	GS_command;
 
 // Main functions
 void Mission_init(void);

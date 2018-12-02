@@ -142,6 +142,12 @@ void queue_task(int8_t task_id){
   set_timer_for_task(timer_id, task_id, ulPeriod, &timer0_isr);
 }
 
+int8_t save_eps_health_data(int8_t t);
+int8_t transmit_next_telemetry(int8_t t);
+int8_t save_imu_data(int8_t t);
+int8_t save_gps_data(int8_t t);
+int8_t check_health_status(int8_t t);
+
 void Mode_init(int8_t type){
   switch(type){
     case NF:{
