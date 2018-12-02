@@ -16,15 +16,26 @@
 #include "inc/hw_memmap.h"
 
 #include "../board/memory_map.h"
+#include "../board/radio.h"
 
-#define UART_INTERFACE UART_GNSS
+#define UART_INTERFACE UART_CAMERA
 
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
 
+// Private prototypes
+int8_t save_eps_health_data(int8_t t);
+int8_t transmit_next_telemetry(int8_t t);
+int8_t save_imu_data(int8_t t);
+int8_t save_gps_data(int8_t t);
+int8_t check_health_status(int8_t t);
+
+
 opmode_t modes[8];
 
-// Run-time
-#define MAX_TASKS 10
+// [ RUN-TIME ]
+// Total number of tasks that can be run concurrently (limited by number of avail. timers)
+#define MAX_TASKS 6
+
 volatile int8_t task_q[MAX_TASKS];  // Task queue directly accessed by interrupts
 Node*           task_pq;            // Task priority queue constructed from previous q indirectly
 volatile uint8_t no_of_tasks_queued;
@@ -33,7 +44,7 @@ volatile uint8_t no_of_tasks_queued;
 task_t* current_tasks;
 uint8_t current_mode; // for deciding which enums to use
 
-int8_t timer_to_task[6]; // timer_id -> task_id (reset look-up table)
+int8_t timer_to_task[MAX_TASKS]; // timer_id -> task_id (reset look-up table)
 
 // Error detection
 uint8_t flash_errors;
@@ -43,18 +54,22 @@ uint8_t ram_errors;
 uint16_t data_packets_pending;
 uint8_t rx_noisefloor;
 
+void (*timer_isr_map[MAX_TASKS]) (); // map of timer-id to isr functions
+
 void timer0_isr(){
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer0_interrupt!**\r\n");
 
+  // Schedule task
+  task_q[0] = 1;
 }
 
 void timer1_isr(){
 	TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer1_interrupt!**\r\n");
 
-  // get task id and etc..
-
+  // Schedule task
+  task_q[1] = 1;
 }
 
 uint32_t ALL_TIMER_PERIPHERALS[6] =
@@ -96,37 +111,38 @@ int8_t get_available_timer(){
 
 void Mission_init(void)
 {
-	LED_on(LED_B);
+  LED_on(LED_B);
 
 	/* Leeeeeeeeeeerooooy Jenkinnnnns! */
   Board_init();
   WDT_kick();
-	EEPROM_init();
-	I2C_init(0);
+  EEPROM_init();
+  I2C_init(0);
   UART_init(UART_INTERFACE, 9600);
 
-	int16_t temp = Temperature_read_tmp100();
-	char output[100];
-	sprintf(output,"%d\r\n", temp);
+  int16_t temp = Temperature_read_tmp100();
+  char output[100];
+  sprintf(output,"%d\r\n", temp);
 	UART_puts(UART_INTERFACE, output);
 
-  UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVER INITIALISED**\r\n");
 
   // Initialise the task queue as empty
   for (uint8_t i=0; i<MAX_TASKS; i++){
     task_q[i] = -1;
+    timer_to_task[i] = -1;
   }
   no_of_tasks_queued = 0;
 
-
-
+  // Initialise timers
   for (uint8_t i=0; i<6; i++) SysCtlPeripheralEnable(ALL_TIMER_PERIPHERALS[i]);
   for (uint8_t i=0; i<6; i++) while(!SysCtlPeripheralReady(ALL_TIMER_PERIPHERALS[i]));
   for (uint8_t i=0; i<6; i++){
     TimerConfigure(ALL_TIMER_BASES[i], TIMER_CFG_PERIODIC); // set it to periodically trigger interrupt
     TimerIntEnable(ALL_TIMER_BASES[i], TIMER_TIMA_TIMEOUT); // enable interrupt
   }
+  timer_isr_map[0] = &timer0_isr;
+  timer_isr_map[1] = &timer1_isr;
 
   ulPeriod = (SysCtlClockGet()) ; // 1Hz update rate
    // third will miss sometimes if processor busy
@@ -139,7 +155,11 @@ void queue_task(int8_t task_id){
   no_of_tasks_queued++;
 
   int8_t timer_id = get_available_timer();
-  set_timer_for_task(timer_id, task_id, ulPeriod, &timer0_isr);
+  char output[100];
+
+  sprintf(output,"set timer: : %+06d\r\n", timer_id);
+  UART_puts(UART_INTERFACE, output);
+  set_timer_for_task(timer_id, task_id, ulPeriod, timer_isr_map[task_id]);
 }
 
 int8_t save_eps_health_data(int8_t t);
@@ -157,31 +177,29 @@ void Mode_init(int8_t type){
 
       task_t* tasks = (task_t *) malloc (sizeof(task_t)*2);
 
-      tasks[SAVE_EPS_HEALTH].period = 300;
+      tasks[SAVE_EPS_HEALTH].period = 5; //300
       tasks[SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks[TRANSMIT].period = 60;
-      tasks[TRANSMIT].TickFct = &transmit_next_telemetry;
+      tasks[TRANSMIT].period = 10;
+      tasks[TRANSMIT].TickFct = &save_imu_data;
 
-			tasks[SAVE_ATTITUDE].period = 600;
-			tasks[SAVE_ATTITUDE].TickFct = &save_imu_data;
+			//tasks[SAVE_ATTITUDE].period = 600;
+			//tasks[SAVE_ATTITUDE].TickFct = &save_imu_data;
 
-			tasks[SAVE_GPS_POS].period = 600;
-			tasks[SAVE_GPS_POS].TickFct = &save_gps_data;
+			//tasks[1].period = 10; // 600
+			//tasks[1].TickFct = &save_gps_data; //SAVE_GPS_POS
 
-			tasks[CHECK_HEALTH].period = 30;
-			tasks[CHECK_HEALTH].TickFct = &check_health_status;
+			//tasks[CHECK_HEALTH].period = 30;
+			//tasks[CHECK_HEALTH].TickFct = &check_health_status;
 
       current_mode = NF;
       current_tasks = tasks;
 
       // for (uint8_t i=0; i<tasks; i++)
-        // queue_task(tasks[i]);
+      // queue_task(tasks[i]);
+      //ccmer_priorities[i] = -1;
       queue_task(SAVE_EPS_HEALTH);
-
-      // task_q[no_of_tasks_queued] = TRANSMIT;
-      // no_of_tasks_queued++;
-
+      queue_task(TRANSMIT);
     } break;
   }
 }
@@ -191,7 +209,7 @@ void Mission_loop(void)
   // Sort list of pending tasks by their priorities
   for (uint8_t i=0; i<MAX_TASKS; i++){
     if (task_q[i] != -1)
-      circ_push(&task_pq, task_q[i], current_tasks[task_q[i]].period);
+      circ_push(&task_pq, i, current_tasks[task_q[i]].period);
 
       // Remove task from standard queue
       task_q[i] = -1;
@@ -202,15 +220,16 @@ void Mission_loop(void)
   if (!circ_isEmpty(&task_pq)){
     // peek
     uint8_t todo_task_index = circ_peek(&task_pq);
-    // char output[100];
-    // sprintf(output,"%+06d\r\n", todo_task_index);
-    // UART_puts(UART_INTERFACE, output);
+    char output[100];
+    sprintf(output,"%+06d\r\n", todo_task_index);
+    UART_puts(UART_INTERFACE, output);
 
     // execute
     UART_puts(UART_INTERFACE, "**executing**\r\n");
 
     current_tasks[todo_task_index].TickFct(NULL);
 
+    UART_puts(UART_INTERFACE, "**executed!**\r\n");
     // reset timer for that tasks
 
 
@@ -269,28 +288,31 @@ uint16_t consume_available_location(){
 	// Cycle through all bits/slots to find an available one
 	// TODO: make this cyclic to avoid wear concentrated near the start of the FRAM
 	// TODO: if none are found, use the oldest
-	for (uint8_t i=0; i<609; i++)
+	for (uint16_t i=0; i<609; i++)
 		for (uint8_t bit=0; i<8; i++)
 			// If the current bit shows availability
 			if (0b11111110 & (fram_availability[i] >> bit) == FRAM_AVAILABLE) {
-				// Mark as consumed
+        UART_puts(UART_INTERFACE, "[TASK #001] AVAILABLE.\r\n");
+        // Mark as consumed
 				fram_availability[i] |= 1 << bit;
 				FRAM_write(FRAM_TABLE_OFFSET + i, fram_availability[i], 1);
 
 				return FRAM_PAYLOAD_OFFSET + (available_slot * FRAM_PAYLOAD_SIZE);
-			} else
+			} else {
 				available_slot++;
+      }
 }
 
 void end_telemetry(){
 	// Find available location
-	uint16_t location = consume_available_location();
+  uint16_t location = consume_available_location();
 
 	// TODO: add 128-bit authentication hash
 	// TODO: add 16-bit crc
 
   // Save telemetry to FRAM
 	FRAM_write(location, telemetry, FRAM_PAYLOAD_SIZE);
+  UART_puts(UART_INTERFACE, "[TASK #001] FRAM write complete.\r\n");
 }
 
 uint16_t perform_subsystem_check(){
@@ -338,8 +360,6 @@ int8_t save_eps_health_data(int8_t t){
     EPS_getBatteryInfo(&eps_field, i);
     add_telemetry(eps_field, 2);
   }
-
-  // Check subsystems and record status of 14
 	uint16_t subsystem_status = perform_subsystem_check();
 	// read antenna switch state (and ask where this can be attached)
 	subsystem_status |= (uint8_t)Antenna_read_deployment_switch() << 14;
@@ -349,6 +369,8 @@ int8_t save_eps_health_data(int8_t t){
   end_telemetry();
 
   UART_puts(UART_INTERFACE, "[TASK #001] Finished saving EPS health data.\r\n");
+
+  return 0;
 }
 
 int8_t save_gps_data(int8_t t){
@@ -356,7 +378,9 @@ int8_t save_gps_data(int8_t t){
 }
 
 int8_t save_imu_data(int8_t t){
-	// TODO: Generate dataset id
+  UART_puts(UART_INTERFACE, "[TASK #003] Saving IMU payload data...\r\n");
+  
+  // TODO: Generate dataset id
 	add_telemetry((uint16_t)0, 2);
 
 	// TODO: Get timestamp
@@ -471,3 +495,4 @@ int8_t process_gs_command(int8_t t){
 /**
  * @}
  */
+
