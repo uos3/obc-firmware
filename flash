@@ -109,7 +109,6 @@ flash_device() {
     spinner_char=`spinner`
     echo -ne "$_INFO_$COLOUR_YELLOW Scanning for board.. $spinner_char$COLOUR_OFF\r";
     flash_out=`eval $flash_cmd 2>&1`;
-    echo $flash_out
     echo ${flash_out} | grep -vqE 'warning|fail|Error|MIS-MATCHED'
     if [[ $? -eq 0 ]]; then
       flash_success=true
