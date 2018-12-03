@@ -37,8 +37,10 @@ int main(void)
     sprintf(output,"%s,%+06d,%+06d,%+06d", output, x, y, z);
 
     IMU_read_magno(&x, &y, &z);
-    sprintf(output,"%s,%+06d,%+06d,%+06d\r\n", output, x, y, z);
+    sprintf(output,"%s,%+06d,%+06d,%+06d", output, x, y, z);
 
+    IMU_read_temp(&x);
+    sprintf(output,"%s,%+06d\r\n", output, x);
     LED_off(LED_B);
 
     UART_puts(UART_INTERFACE, output);
