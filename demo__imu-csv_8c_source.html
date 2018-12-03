@@ -127,17 +127,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    sprintf(output,<span class="stringliteral">&quot;%s,%+06d,%+06d,%+06d&quot;</span>, output, x, y, z);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="group__imu.html#ga257d9a84392cf926b5e474a9ea09312d">IMU_read_magno</a>(&amp;x, &amp;y, &amp;z);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    sprintf(output,<span class="stringliteral">&quot;%s,%+06d,%+06d,%+06d\r\n&quot;</span>, output, x, y, z);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    sprintf(output,<span class="stringliteral">&quot;%s,%+06d,%+06d,%+06d&quot;</span>, output, x, y, z);</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <a class="code" href="group__led.html#ga8bfaf273399874243979d43beaa7fd77">LED_off</a>(LED_B);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(UART_INTERFACE, output);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <a class="code" href="group__imu.html#ga24d9968efb0dc5741902e5c04894e535">IMU_read_temp</a>(&amp;x);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    sprintf(output,<span class="stringliteral">&quot;%s,%+06d\r\n&quot;</span>, output, x);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="group__led.html#ga8bfaf273399874243979d43beaa7fd77">LED_off</a>(LED_B);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="group__delay.html#ga14c78822167012f0af4f073eb33f00e7">Delay_ms</a>(100);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  }</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="group__uart.html#gafe4ccbee9edc6e026aedd43bdc2cc87b">UART_puts</a>(UART_INTERFACE, output);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="group__delay.html#ga14c78822167012f0af4f073eb33f00e7">Delay_ms</a>(100);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
 <div class="ttc" id="group__delay_html_ga14c78822167012f0af4f073eb33f00e7"><div class="ttname"><a href="group__delay.html#ga14c78822167012f0af4f073eb33f00e7">Delay_ms</a></div><div class="ttdeci">void Delay_ms(uint32_t milliseconds)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2delay_8c_source.html#l00019">delay.c:19</a></div></div>
 <div class="ttc" id="group__uart_html_ga5016951f4d87245612746fd3b11b4e55"><div class="ttname"><a href="group__uart.html#ga5016951f4d87245612746fd3b11b4e55">UART_init</a></div><div class="ttdeci">void UART_init(uint8_t uart_num, uint32_t baudrate)</div><div class="ttdef"><b>Definition:</b> <a href="uart_8c_source.html#l00078">uart.c:78</a></div></div>
+<div class="ttc" id="group__imu_html_ga24d9968efb0dc5741902e5c04894e535"><div class="ttname"><a href="group__imu.html#ga24d9968efb0dc5741902e5c04894e535">IMU_read_temp</a></div><div class="ttdeci">void IMU_read_temp(int16_t *temp_imu)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00197">imu.c:197</a></div></div>
 <div class="ttc" id="group__imu_html_gaef732d0cd334283d31029d6123d6e0eb"><div class="ttname"><a href="group__imu.html#gaef732d0cd334283d31029d6123d6e0eb">IMU_Init</a></div><div class="ttdeci">void IMU_Init(void)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00043">imu.c:43</a></div></div>
 <div class="ttc" id="group__led_html_ga8bfaf273399874243979d43beaa7fd77"><div class="ttname"><a href="group__led.html#ga8bfaf273399874243979d43beaa7fd77">LED_off</a></div><div class="ttdeci">void LED_off(uint8_t led_num)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2led_8c_source.html#l00020">led.c:20</a></div></div>
 <div class="ttc" id="test_8c_html_a840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="test_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdoc">Runs all module tests. </div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00019">test.c:19</a></div></div>

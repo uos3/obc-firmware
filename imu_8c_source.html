@@ -274,6 +274,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  *magno_z = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HZL);</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  (void)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ST2);</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
+<div class="line"><a name="l00197"></a><span class="lineno"><a class="line" href="group__imu.html#ga24d9968efb0dc5741902e5c04894e535">  197</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__imu.html#ga24d9968efb0dc5741902e5c04894e535">IMU_read_temp</a>(int16_t *temp_imu)</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;{</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="comment">// TODO: Add adjustments based on calibration data in register reference.</span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  <span class="comment">// It is currently unclear where to get these values, awaiting reply from the manufacturer before implementing.</span></div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  *temp_imu = (int16_t)I2CReceive16(I2C_IMU, MPU_I2C_ADDR, MPU_TEMP_OUT);</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="comment">//*temp_imu = (int16_t)((*temp_imu - RoomTemp_Offset)/Temp_Sensitivity + 21);</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;}</div>
+<div class="ttc" id="group__imu_html_ga24d9968efb0dc5741902e5c04894e535"><div class="ttname"><a href="group__imu.html#ga24d9968efb0dc5741902e5c04894e535">IMU_read_temp</a></div><div class="ttdeci">void IMU_read_temp(int16_t *temp_imu)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00197">imu.c:197</a></div></div>
 <div class="ttc" id="group__imu_html_gaef732d0cd334283d31029d6123d6e0eb"><div class="ttname"><a href="group__imu.html#gaef732d0cd334283d31029d6123d6e0eb">IMU_Init</a></div><div class="ttdeci">void IMU_Init(void)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00043">imu.c:43</a></div></div>
 <div class="ttc" id="group__imu_html_ga9614922f9dcae38f0c7c0d52f9a52ca6"><div class="ttname"><a href="group__imu.html#ga9614922f9dcae38f0c7c0d52f9a52ca6">IMU_selftest</a></div><div class="ttdeci">bool IMU_selftest(void)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00164">imu.c:164</a></div></div>
 <div class="ttc" id="group__imu_html_ga257d9a84392cf926b5e474a9ea09312d"><div class="ttname"><a href="group__imu.html#ga257d9a84392cf926b5e474a9ea09312d">IMU_read_magno</a></div><div class="ttdeci">void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z)</div><div class="ttdef"><b>Definition:</b> <a href="imu_8c_source.html#l00187">imu.c:187</a></div></div>
