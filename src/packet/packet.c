@@ -16,7 +16,7 @@ uint8_t *Packet_telecommand_512_encode(packet_telecommand_512 *packet, uint16_t 
 
   packet->crc = Util_crc16(((packet_telecommand_512_crc *)packet)->data, 62);
 
-  Packet_pn9_xor((uint8_t *)packet, 64);
+  Util_pn9((uint8_t *)packet, 64);
 
   /* TODO: Add encoder for 2x k=256 r=1/2 blocks (TC512) LDPC */
 
@@ -31,7 +31,7 @@ bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512
 
   /* TODO: Add hard decoder for 2x k=256 r=1/2 blocks (TC512) LDPC */
 
-  Packet_pn9_xor(input_buffer, 64);
+  Util_pn9(input_buffer, 64);
 
   memcpy(input_buffer, output, 64);
 
@@ -61,7 +61,7 @@ uint8_t *Packet_telemetry_1024_encode(packet_telemetry_1024 *packet, uint16_t or
 
   packet->crc = Util_crc16(((packet_telemetry_1024_crc *)packet)->data, 126);
 
-  Packet_pn9_xor((uint8_t *)packet, 128);
+  Util_pn9((uint8_t *)packet, 128);
 
   /* TODO: Add encoder for Matt's r=1/3 Turbo FEC */
 
@@ -81,7 +81,7 @@ bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *
 
   /* TODO: Add hard-decoder for Matt's r=1/3 Turbo FEC (not used on the spacecraft) */
 
-  Packet_pn9_xor(input_buffer, 128);
+  Util_pn9(input_buffer, 128);
 
   memcpy(input_buffer, output, 128);
 
