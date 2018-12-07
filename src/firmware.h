@@ -47,7 +47,6 @@
 /* Packet */
 #include "packet/packet.h"
 #include "packet/shake.h"
-#include "packet/crc16.h"
 #include "packet/pn9.h"
 #include "packet/interleave.h"
 #include "packet/telemetry.h"
@@ -61,6 +60,10 @@
 
 /* Mission */
 #include "mission/mission.h"
+
+/* Util */
+#include "util/crc.h"
+#include "util/pn9.h"
 
 /* ... */
 

@@ -48,7 +48,7 @@ void Buffer_init(void)
       /* Stored FRAM header is broken, so reset the buffer */
       /* TODO: Increment a Counter in health data */
       memset(&buffer_cache, 0x00, sizeof(buffer_cache_t));
-      Packet_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t), &(buffer_cache.crc));
+      buffer_cache.crc = Util_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t));
     }
 
     buffer_cache.initialised = true;
@@ -59,7 +59,7 @@ bool Buffer_verify_cache(void)
 {
   uint16_t crc_result;
 
-  Packet_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t), &crc_result);
+  crc_result = Util_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t));
 
   return !memcmp(&crc_result, &(buffer_cache.crc), sizeof(uint16_t));
 }

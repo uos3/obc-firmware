@@ -67,6 +67,10 @@ typedef enum {
 	PACKET_TYPE_NULL = 0
 } packet_type;
 
+uint8_t *Packet_telecommand_512_encode(packet_telecommand_512 *packet, uint16_t origin, uint8_t *key, uint32_t key_length);
+
+bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512 *output, uint8_t *key, uint32_t key_length);
+
 /**
  * @function
  * @ingroup packet
@@ -84,8 +88,6 @@ typedef enum {
  * @returns Pointer to the packet buffer ready for transmission
  */
 uint8_t *Packet_telemetry_1024_encode(packet_telemetry_1024 *packet, uint16_t origin, uint8_t *key, uint32_t key_length);
-
-uint8_t *Packet_telecommand_512_encode(packet_telecommand_512 *packet, uint16_t origin, uint8_t *key, uint32_t key_length);
 
 bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *output, uint8_t *key, uint32_t key_length);
 

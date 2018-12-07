@@ -1,11 +1,11 @@
 #include "../../firmware.h"
 #include "../../test.h"
 
-#define PACKET_LENGTH  1024
+#define TEST_LENGTH  1024
 
-static uint8_t packet_test[PACKET_LENGTH] = { 0 };
-static uint8_t packet_null_reference[PACKET_LENGTH] = { 0 };
-static uint8_t packet_pn9_reference[PACKET_LENGTH] = {
+static uint8_t pn9_test[TEST_LENGTH] = { 0 };
+static const uint8_t pn9_null_reference[TEST_LENGTH] = { 0 };
+static const uint8_t pn9_code_reference[] = {
   0xff,  0xe1,  0x1d,  0x9a,  0xed,  0x85,  0x33,  0x24,  0xea,  0x7a,  0xd2,  0x39,  0x70,  0x97,  0x57,  0x0a,  0x54,  0x7d,  0x2d,  0xd8,
   0x6d,  0x0d,  0xba,  0x8f,  0x67,  0x59,  0xc7,  0xa2,  0xbf,  0x34,  0xca,  0x18,  0x30,  0x53,  0x93,  0xdf,  0x92,  0xec,  0xa7,  0x15,
   0x8a,  0xdc,  0xf4,  0x86,  0x55,  0x4e,  0x18,  0x21,  0x40,  0xc4,  0xc4,  0xd5,  0xc6,  0x91,  0x8a,  0xcd,  0xe7,  0xd1,  0x4e,  0x09,
@@ -65,7 +65,7 @@ bool test_pn9(void)
   if(TEST_VERBOSE)
   {
     Debug_print("Original null test packet\r\n");
-    buffer_print_hex(packet_test, PACKET_LENGTH);
+    buffer_print_hex(pn9_test, TEST_LENGTH);
   }
 
   /* XOR packet */
@@ -73,16 +73,16 @@ bool test_pn9(void)
   {
     Debug_print("PN9 XORing null packet..\r\n");
   }
-  Packet_pn9_xor(packet_test, PACKET_LENGTH);
+  Packet_pn9_xor(pn9_test, TEST_LENGTH);
 
   if(TEST_VERBOSE)
   {
     Debug_print("PN9 XORed packet\r\n");
-    buffer_print_hex(packet_test, PACKET_LENGTH);
+    buffer_print_hex(pn9_test, TEST_LENGTH);
   }
 
   /* Compare against stored pn9 sequence */
-  if(memcmp(packet_test, packet_pn9_reference, PACKET_LENGTH) != 0)
+  if(memcmp(pn9_test, pn9_code_reference, TEST_LENGTH) != 0)
   {
     return false;
   }
@@ -92,16 +92,16 @@ bool test_pn9(void)
   {
     Debug_print("PN9 XORing test packet..\r\n");
   }
-  Packet_pn9_xor(packet_test, PACKET_LENGTH);
+  Packet_pn9_xor(pn9_test, TEST_LENGTH);
 
   if(TEST_VERBOSE)
   {
     Debug_print("PN9 double-XORed packet (should be null)\r\n");
-    buffer_print_hex(packet_test, PACKET_LENGTH);
+    buffer_print_hex(pn9_test, TEST_LENGTH);
   }
 
   /* Compare against stored null sequence */
-  if(memcmp(packet_test, packet_null_reference, PACKET_LENGTH) == 0)
+  if(memcmp(pn9_test, pn9_null_reference, TEST_LENGTH) == 0)
   {
     return true;
   }

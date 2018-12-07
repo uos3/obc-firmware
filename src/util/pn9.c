@@ -8,13 +8,13 @@
 
 #include "../firmware.h"
 
-void Packet_pn9_xor(uint8_t *buffer, uint32_t length)
+void Util_pn9(uint8_t *buffer, uint32_t length)
 {
   /* Uses CC1120 PN9 Sequence */
   uint16_t state;
   uint32_t j;
 
-  if(length < 1)
+  if(length == 0)
     return;
 
   state = 0x01FF;
