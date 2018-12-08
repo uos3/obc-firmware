@@ -46,7 +46,6 @@
 
 /* Packet */
 #include "packet/packet.h"
-#include "packet/shake.h"
 #include "packet/interleave.h"
 #include "packet/telemetry.h"
 #include "packet/cw.h"
@@ -63,6 +62,7 @@
 /* Util */
 #include "util/crc.h"
 #include "util/pn9.h"
+#include "util/shake.h"
 
 /* ... */
 

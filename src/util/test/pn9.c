@@ -68,6 +68,25 @@ bool test_pn9(void)
     buffer_print_hex(pn9_test, TEST_LENGTH);
   }
 
+  /* 0-length input */
+  if(TEST_VERBOSE)
+  {
+    Debug_print("PN9 testing zero length..\r\n");
+  }
+  Util_pn9(pn9_test, 0);
+
+  if(TEST_VERBOSE)
+  {
+    Debug_print("PN9 XORed zero length packet\r\n");
+    buffer_print_hex(pn9_test, TEST_LENGTH);
+  }
+
+  /* Compare against stored null sequence */
+  if(memcmp(pn9_test, pn9_null_reference, TEST_LENGTH) != 0)
+  {
+    return false;
+  }
+
   /* XOR packet */
   if(TEST_VERBOSE)
   {
@@ -101,12 +120,10 @@ bool test_pn9(void)
   }
 
   /* Compare against stored null sequence */
-  if(memcmp(pn9_test, pn9_null_reference, TEST_LENGTH) == 0)
-  {
-    return true;
-  }
-  else
+  if(memcmp(pn9_test, pn9_null_reference, TEST_LENGTH) != 0)
   {
     return false;
   }
+  
+  return true;
 }

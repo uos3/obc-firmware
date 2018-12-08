@@ -8,6 +8,17 @@
 
 #include "../firmware.h"
 
+void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)
+{
+  util_shake_ctx_t shake_ctx;
+  Util_shake_init(&shake_ctx, 16);
+
+  Util_shake_update(&shake_ctx, input, input_length);
+  Util_shake_update(&shake_ctx, key, key_length);
+
+  Util_shake_out(&shake_ctx, output);
+}
+
 uint8_t *Packet_telecommand_512_encode(packet_telecommand_512 *packet, uint16_t origin, uint8_t *key, uint32_t key_length)
 {
   packet->spacecraft = origin;

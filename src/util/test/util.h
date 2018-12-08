@@ -12,6 +12,7 @@
 
 bool test_crc(void);
 bool test_pn9(void);
+bool test_shake(void);
 
 bool util_tests(void);
 

@@ -91,4 +91,7 @@ uint8_t *Packet_telemetry_1024_encode(packet_telemetry_1024 *packet, uint16_t or
 
 bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *output, uint8_t *key, uint32_t key_length);
 
+
+void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output);
+
 #endif /* __PACKET_FORMAT_H__ */
