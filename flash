@@ -134,7 +134,7 @@ fi
 
 ## Read Flags
 OPTIND=1
-while getopts ":qvS" opt; do
+while getopts ":qvSP" opt; do
   case "$opt" in
     q) # Quiet
       opt_quiet=true
@@ -144,6 +144,9 @@ while getopts ":qvS" opt; do
       ;;
     S) # Sound
       opt_sound=true
+      ;;
+    P) # Sound
+      opt_power=true
       ;;
     ?) # Illegal Option
       echo -e "$_ERROR_ Illegal option '$OPTARG'"
@@ -203,6 +206,10 @@ fi
 echo -e "$_INFO_$COLOUR_GREEN Found Blackmagic$COLOUR_OFF" >&$stdout
 if ! $opt_quiet; then
   echo -e "$_INFO_ Programmer: $programmer" >&$stdout
+fi
+
+if $opt_power; then
+  echo -e "$_INFO_ Programmer Power:$COLOUR_RED ON $COLOUR_OFF"
 fi
 
 flash_device "$flashtool" "$programmer" "$binary"
