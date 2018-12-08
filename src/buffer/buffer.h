@@ -34,6 +34,24 @@
 #define BUFFER_FRAM_ADDRESS_CRC	 	      (BUFFER_FRAM_ADDRESS_INDEXES + BUFFER_FRAM_SIZE_INDEXES)
 #define BUFFER_FRAM_ADDRESS_SLOTS       (BUFFER_FRAM_ADDRESS_CRC + BUFFER_FRAM_SIZE_CRC)
 
+/* Illustrative struct of FRAM data layout:
+typedef struct buffer_data {
+  uint16_t last_index;
+  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)];
+  uint16_t indexes[BUFFER_SLOTS];
+  buffer_data_slot slots[BUFFER_SLOTS];
+} buffer_data;
+*/
+
+typedef struct buffer_cache_t {
+  bool initialised;
+  uint16_t last_index_stored;
+  uint16_t last_slot_transmitted;
+  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)]; // bitmap of occupancy
+  uint16_t indexes[BUFFER_SLOTS]; // indexes[slot] = index
+  uint16_t crc;
+} buffer_cache_t;
+
 void Buffer_init(void);
 void Buffer_reset(void);
 bool Buffer_verify_cache(void);
@@ -52,22 +70,13 @@ bool Buffer_get_occupancy(uint16_t slot);
 void Buffer_set_occupancy(uint16_t slot, bool value);
 void Buffer_set_index(uint16_t slot, uint16_t index);
 
-void Buffer_FRAM_write_crc(uint16_t *crc);
-void Buffer_FRAM_read_crc(uint16_t *crc);
-
-void Buffer_FRAM_write_last_index_stored(uint16_t *index);
-void Buffer_FRAM_read_last_index_stored(uint16_t *index);
-
-void Buffer_FRAM_write_last_slot_transmitted(uint16_t *slot);
-void Buffer_FRAM_read_last_slot_transmitted(uint16_t *slot);
-
-void Buffer_FRAM_write_occupancy(uint8_t *occupancy);
-void Buffer_FRAM_read_occupancy(uint8_t *occupancy);
-
-void Buffer_FRAM_write_indexes(uint16_t *indexes);
-void Buffer_FRAM_read_indexes(uint16_t *indexes);
-
-void Buffer_FRAM_write_data(uint16_t slot, uint8_t *data);
+bool Buffer_FRAM_cache_read(buffer_cache_t *buffer);
 void Buffer_FRAM_read_data(uint16_t slot, uint8_t *data);
+
+void Buffer_FRAM_write_last_index_stored(buffer_cache_t *buffer);
+void Buffer_FRAM_write_last_slot_transmitted(buffer_cache_t *buffer);
+void Buffer_FRAM_write_occupancy(buffer_cache_t *buffer);
+void Buffer_FRAM_write_indexes(buffer_cache_t *buffer);
+void Buffer_FRAM_write_data(uint16_t slot, uint8_t *data);
 
 #endif /* __BUFFER_H__ */

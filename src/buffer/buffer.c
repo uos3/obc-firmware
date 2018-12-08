@@ -8,24 +8,6 @@
 
 #include "../firmware.h"
 
-/* Illustrative struct of FRAM data layout:
-typedef struct buffer_data {
-  uint16_t last_index;
-  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)];
-  uint16_t indexes[BUFFER_SLOTS];
-  buffer_data_slot slots[BUFFER_SLOTS];
-} buffer_data;
-*/
-
-typedef struct buffer_cache_t {
-  bool initialised;
-  uint16_t last_index_stored;
-  uint16_t last_slot_transmitted;
-  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)]; // bitmap of occupancy
-  uint16_t indexes[BUFFER_SLOTS]; // indexes[slot] = index
-  uint16_t crc;
-} buffer_cache_t;
-
 static buffer_cache_t buffer_cache = { false, 0, 0, {0}, {0}, 0x0000 };
 
 void Buffer_init(void)
@@ -37,18 +19,11 @@ void Buffer_init(void)
   }
   else if(!buffer_cache.initialised)
   {
-    Buffer_FRAM_read_last_index_stored(&(buffer_cache.last_index_stored));
-    Buffer_FRAM_read_last_slot_transmitted(&(buffer_cache.last_slot_transmitted));
-    Buffer_FRAM_read_occupancy(buffer_cache.occupancy);
-    Buffer_FRAM_read_indexes(buffer_cache.indexes);
-    Buffer_FRAM_read_crc(&(buffer_cache.crc));
-
-    if(!Buffer_verify_cache())
+    if(!Buffer_FRAM_cache_read(&buffer_cache))
     {
-      /* Stored FRAM header is broken, so reset the buffer */
+      /* Stored FRAM header fails CRC, so reset the buffer */
       /* TODO: Increment a Counter in health data */
-      memset(&buffer_cache, 0x00, sizeof(buffer_cache_t));
-      buffer_cache.crc = Util_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t));
+      Buffer_reset();
     }
 
     buffer_cache.initialised = true;
@@ -57,28 +32,24 @@ void Buffer_init(void)
 
 bool Buffer_verify_cache(void)
 {
-  uint16_t crc_result;
-
-  crc_result = Util_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t));
-
-  return !memcmp(&crc_result, &(buffer_cache.crc), sizeof(uint16_t));
+  return (buffer_cache.crc == Util_crc16((uint8_t *)&buffer_cache, sizeof(buffer_cache_t) - sizeof(uint16_t)));
 }
 
 void Buffer_reset(void)
 {
-  Buffer_init();
-
   buffer_cache.last_index_stored = 0;
-  Buffer_FRAM_write_last_index_stored(&(buffer_cache.last_index_stored));
+  Buffer_FRAM_write_last_index_stored(&buffer_cache);
 
-  buffer_cache.last_slot_transmitted = 0;
-  Buffer_FRAM_write_last_slot_transmitted(&(buffer_cache.last_slot_transmitted));
+  buffer_cache.last_slot_transmitted = (BUFFER_SLOTS-1);
+  Buffer_FRAM_write_last_slot_transmitted(&buffer_cache);
 
   memset(buffer_cache.occupancy, 0x00, BUFFER_FRAM_SIZE_OCCUPANCY);
-  Buffer_FRAM_write_occupancy(buffer_cache.occupancy);
+  Buffer_FRAM_write_occupancy(&buffer_cache);
 
   memset(buffer_cache.indexes, 0x00, BUFFER_FRAM_SIZE_INDEXES);
-  Buffer_FRAM_write_indexes(buffer_cache.indexes);
+  Buffer_FRAM_write_indexes(&buffer_cache);
+
+  /* CRC is automatically updated on each FRAM write */
 }
 
 void Buffer_store_new_data(uint8_t *data_payload)
@@ -99,7 +70,7 @@ void Buffer_store_new_data(uint8_t *data_payload)
 void Buffer_set_index(uint16_t slot, uint16_t index)
 {
   buffer_cache.indexes[slot] = index;
-  Buffer_FRAM_write_indexes(buffer_cache.indexes);
+  Buffer_FRAM_write_indexes(&buffer_cache);
 }
 
 bool Buffer_get_next_data(uint8_t *data_payload)
@@ -117,22 +88,31 @@ bool Buffer_get_next_data(uint8_t *data_payload)
 bool Buffer_get_next_slot(uint16_t *slot)
 {
   uint16_t new_slot = *slot;
-  /* Return next occupied slot */
-  while(0x00 == (buffer_cache.occupancy[new_slot>>3] & (0x80 >> (new_slot & 0x07))))
+
+  if(++new_slot >= BUFFER_SLOTS)
   {
+    /* Wrap search */
+    new_slot = 0;
+  }
+
+  while(new_slot != *slot)
+  {
+    /* Check if slot is occupied */
+    if(0x00 != (buffer_cache.occupancy[new_slot>>3] & (0x80 >> (new_slot & 0x07))))
+    {
+      *slot = new_slot;
+      return true;
+    }
+    //printf("%d\n", new_slot);
+
     if(++new_slot >= BUFFER_SLOTS)
     {
       /* Wrap search */
       new_slot = 0;
     }
-    else if(new_slot == *slot)
-    {
-      /* Reached beginning, no occupied slots */
-      return false;
-    }
   }
-  *slot = new_slot;
-  return true;
+
+  return false;
 }
 
 void Buffer_remove_index(uint16_t index)
@@ -222,7 +202,7 @@ void Buffer_set_occupancy(uint16_t slot, bool value)
     /* Reset the corresponding bit */
     buffer_cache.occupancy[slot>>3] = (uint8_t)(buffer_cache.occupancy[slot>>3] &  ~(0x80 >> (slot & 0x07)));
   }
-  Buffer_FRAM_write_occupancy(buffer_cache.occupancy);
+  Buffer_FRAM_write_occupancy(&buffer_cache);
 }
 
 uint16_t Buffer_count_occupied(void)
