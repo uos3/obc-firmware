@@ -21,8 +21,9 @@
  * PN9 sequence used in the CC1120.
  *
  * @param buffer Pointer to the buffer to process
+ * @param preroll Iterations of the sequence to run before processing the buffer
  * @param size Size of the buffer
  */
-void Util_pn9(uint8_t *buffer, uint32_t length);
+void Util_pn9(uint8_t *buffer, uint32_t preroll, uint32_t length);
 
 #endif /* __UTIL_PN9_H__ */

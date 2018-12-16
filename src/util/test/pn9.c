@@ -73,7 +73,7 @@ bool test_pn9(void)
   {
     Debug_print("PN9 testing zero length..\r\n");
   }
-  Util_pn9(pn9_test, 0);
+  Util_pn9(pn9_test, 0, 0);
 
   if(TEST_VERBOSE)
   {
@@ -92,7 +92,7 @@ bool test_pn9(void)
   {
     Debug_print("PN9 XORing null packet..\r\n");
   }
-  Util_pn9(pn9_test, TEST_LENGTH);
+  Util_pn9(pn9_test, 0, TEST_LENGTH);
 
   if(TEST_VERBOSE)
   {
@@ -106,12 +106,13 @@ bool test_pn9(void)
     return false;
   }
 
-  /* XOR packet */
+  /* XOR packet with preroll test */
   if(TEST_VERBOSE)
   {
     Debug_print("PN9 XORing test packet..\r\n");
   }
-  Util_pn9(pn9_test, TEST_LENGTH);
+  Util_pn9(pn9_test, 0, TEST_LENGTH/2);
+  Util_pn9(&pn9_test[TEST_LENGTH/2], TEST_LENGTH/2, TEST_LENGTH/2);
 
   if(TEST_VERBOSE)
   {
