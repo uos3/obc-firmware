@@ -11,6 +11,7 @@
 
 bool test_buffer_add_remove_element(void);
 bool test_buffer_retrieve_element(void);
+bool test_buffer_roll(void);
 bool test_buffer_fill_elements(void);
 
 bool buffer_tests(void)
@@ -20,6 +21,8 @@ bool buffer_tests(void)
   assert_run_print(test_buffer_add_remove_element(), "Buffer Add & Remove Element",   test_state);
 
   assert_run_print(test_buffer_retrieve_element(), "Buffer Retrieve Element",   test_state);
+
+  assert_run_print(test_buffer_roll(), "Buffer Roll",   test_state);
 
   assert_run_print(test_buffer_fill_elements(), "Buffer Fill & Overflow",   test_state);
 
@@ -107,6 +110,189 @@ bool test_buffer_retrieve_element(void)
 
   if(memcmp(test_buffer_packet, reference_buffer_packet, BUFFER_SLOT_SIZE) != 0)
   {
+    return false;
+  }
+
+  return true;
+}
+
+bool test_buffer_roll(void)
+{
+  uint32_t i;
+  uint8_t reference1_buffer_packet[BUFFER_SLOT_SIZE];
+  uint8_t reference2_buffer_packet[BUFFER_SLOT_SIZE];
+  uint8_t test_buffer_packet[BUFFER_SLOT_SIZE] = {0};
+
+  /* Populate packet */
+  for(i=0; i<BUFFER_SLOT_SIZE; i++)
+  {
+    reference1_buffer_packet[i] = (uint8_t)(Random(255));
+    reference2_buffer_packet[i] = (uint8_t)(Random(255));
+  }
+
+  Buffer_init();
+  Buffer_reset();
+
+  /* Check buffer is empty */
+  if(Buffer_count_occupied() != 0)
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Buffer count should be empty, is: %d\r\n", Buffer_count_occupied());
+    }
+    return false;
+  }
+
+  /* Attempt to retrieve a non-existent packet */
+  if(Buffer_get_next_data(test_buffer_packet))
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Succeeded in retrieving non-existent packet.\r\n");
+    }
+    return false;
+  }
+
+  /* Store a single packet */
+  Buffer_store_new_data(reference1_buffer_packet);
+
+  /* Check buffer is empty */
+  if(Buffer_count_occupied() != 1)
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Buffer count should be 1, is: %d\r\n", Buffer_count_occupied());
+    }
+    return false;
+  }
+
+  /* Retrieve the packet and verify it */
+  if(!Buffer_get_next_data(test_buffer_packet))
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to retrieve packet (attempt 1).\r\n");
+    }
+    return false;
+  }
+  if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to match retrieved packet (attempt 1).\r\n");
+    }
+    return false;
+  }
+
+  /* Retrieve the packet and verify it */
+  if(!Buffer_get_next_data(test_buffer_packet))
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to retrieve packet (attempt 2).\r\n");
+    }
+    return false;
+  }
+  if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to match retrieved packet (attempt 2).\r\n");
+    }
+    return false;
+  }
+
+  /* Check packet is still in the buffer */
+  if(Buffer_count_occupied() != 1)
+  {
+    return false;
+  }
+
+  /* Store next packet */
+  Buffer_store_new_data(reference2_buffer_packet);
+
+  /* Check new packet is in the buffer */
+  if(Buffer_count_occupied() != 2)
+  {
+    return false;
+  }
+
+  /* Retrieve the packet and verify it */
+  if(!Buffer_get_next_data(test_buffer_packet))
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to retrieve packet2 (attempt 1).\r\n");
+    }
+    return false;
+  }
+  if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to match retrieved packet2 (attempt 1).\r\n");
+    }
+    return false;
+  }
+
+  /* Retrieve the packet and verify it */
+  if(!Buffer_get_next_data(test_buffer_packet))
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to retrieve packet1 (attempt 3).\r\n");
+    }
+    return false;
+  }
+  if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to match retrieved packet1 (attempt 3).\r\n");
+    }
+    return false;
+  }
+
+  /* Retrieve the packet and verify it */
+  if(!Buffer_get_next_data(test_buffer_packet))
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to retrieve packet2 (attempt 2).\r\n");
+    }
+    return false;
+  }
+  if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to match retrieved packet2 (attempt 2).\r\n");
+    }
+    return false;
+  }
+
+  /* Remove first packet */
+  Buffer_remove_index(0x01);
+  if(Buffer_count_occupied() != 1)
+  {
+    return false;
+  }
+
+  /* Retrieve the packet and verify it */
+  if(!Buffer_get_next_data(test_buffer_packet))
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to retrieve packet2 (attempt 3).\r\n");
+    }
+    return false;
+  }
+  if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  {
+    if(TEST_VERBOSE)
+    {
+      Debug_print("Failed to match retrieved packet2 (attempt 3).\r\n");
+    }
     return false;
   }
 
