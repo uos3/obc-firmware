@@ -8,25 +8,10 @@
 
 #include "../firmware.h"
 
-void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)
-{
-  sha3_ctx_t sha3;
-  shake128_init(&sha3);
-
-  shake_update(&sha3, input, input_length);
-  shake_update(&sha3, key, key_length);
-
-  shake_xof(&sha3);
-  shake_out(&sha3, output, 16);
-}
-
 /*
  * Copyright (c) 2015 Markku-Juhani O. Saarinen
  * The MIT License (MIT)
  */
-
-// Compression function.
-void sha3_keccakf(uint64_t st[25]);
 
 #ifndef KECCAKF_ROUNDS
 #define KECCAKF_ROUNDS 24
@@ -38,7 +23,7 @@ void sha3_keccakf(uint64_t st[25]);
 
 // update the state with given number of rounds
 
-void sha3_keccakf(uint64_t st[25])
+static void sha3_keccakf(uint64_t st[25])
 {
     // constants
     const uint64_t keccakf_rndc[24] = {
@@ -128,62 +113,58 @@ void sha3_keccakf(uint64_t st[25])
 #endif
 }
 
-int shake128_init(sha3_ctx_t *c)
+void Util_shake_init(util_shake_ctx_t *c, uint8_t output_length)
 {
-    int i;
-    int mdlen = 16; // Hardcode SHAKE-128 (16 bytes)
+    uint8_t i;
 
     for (i = 0; i < 25; i++)
+    {
         c->st.q[i] = 0;
-    c->mdlen = mdlen;
-    c->rsiz = 200 - 2 * mdlen;
+    }
+    c->mdlen = output_length;
+    c->rsiz = 200 - 2 * output_length;
     c->pt = 0;
-
-    return 1;
 }
 
-// update state with more data
-
-int shake_update(sha3_ctx_t *c, const void *data, size_t len)
+void Util_shake_update(util_shake_ctx_t *c, const uint8_t *data, uint32_t data_length)
 {
-    size_t i;
-    int j;
+    uint32_t i;
+    int32_t j;
 
     j = c->pt;
-    for (i = 0; i < len; i++) {
-        c->st.b[j++] ^= ((const uint8_t *) data)[i];
-        if (j >= c->rsiz) {
+    for (i = 0; i < data_length; i++)
+    {
+        c->st.b[j++] ^= data[i];
+        if (j >= c->rsiz)
+        {
             sha3_keccakf(c->st.q);
             j = 0;
         }
     }
     c->pt = j;
-
-    return 1;
 }
 
-// SHAKE128 and SHAKE256 extensible-output functionality
-
-void shake_xof(sha3_ctx_t *c)
+void Util_shake_out(util_shake_ctx_t *c, uint8_t *output)
 {
+    uint32_t i;
+    int32_t j;
+
+    /* XOF function */
     c->st.b[c->pt] ^= 0x1F;
     c->st.b[c->rsiz - 1] ^= 0x80;
     sha3_keccakf(c->st.q);
     c->pt = 0;
-}
 
-void shake_out(sha3_ctx_t *c, void *out, size_t len)
-{
-    size_t i;
-    int j;
-
+    /* Export output */
     j = c->pt;
-    for (i = 0; i < len; i++) {
-        if (j >= c->rsiz) {
+    for (i = 0; i < c->mdlen; i++)
+    {
+        if (j >= c->rsiz)
+        {
             sha3_keccakf(c->st.q);
             j = 0;
         }
-        ((uint8_t *) out)[i] = c->st.b[j++];
+        output[i] = c->st.b[j++];
     }
     c->pt = j;
 }

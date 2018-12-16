@@ -4,4 +4,5 @@ builds/
 *.d
 *.o
 *.a
+*.gcno
 COM_PORT

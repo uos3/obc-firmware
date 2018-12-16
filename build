@@ -11,6 +11,7 @@ source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 cd $source_dir
 
 opt_flash=false
+opt_power=false
 opt_debug=false
 opt_quiet=false
 opt_sound=false
@@ -69,7 +70,8 @@ hyphenjoin() {
 flash() {
   if $opt_flash; then
     flash_args="";
-    if $opt_sound; then flash_args="$flash_args -s"; fi
+    if $opt_sound; then flash_args="$flash_args -S"; fi
+    if $opt_power; then flash_args="$flash_args -P"; fi
     if $opt_verbose; then flash_args="$flash_args -v"; fi
     ${source_dir}/flash ${flash_args} ${outdir}/${filename};
   fi
@@ -104,12 +106,13 @@ print_help() {
   echo " -s        Tell compiler to optimise for code size."
   echo " -F        Attempt to flash board if compile is successful."
   echo " -S        Play sound if flash is successful. [requires -F]"
+  echo " -P        Enable power from programmer in Flash. [requires -F]"
   echo ""
 }
 
 ## Read Flags
 OPTIND=1
-while getopts ":hmdsqvFDSw" opt; do
+while getopts ":hmdsqvFDSPw" opt; do
   case "$opt" in
     h) # Help
       print_help
@@ -135,6 +138,9 @@ while getopts ":hmdsqvFDSw" opt; do
       ;;
     S) # Sound
       opt_sound=true
+      ;;
+    P) # Power
+      opt_power=true
       ;;
     w) # Warnings as Errors
       opt_werror=true

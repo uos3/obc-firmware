@@ -218,6 +218,7 @@ make ${flags} clean \
 	 --directory ${source_dir}/src/packet/ \
 	 --directory ${source_dir}/src/configuration/ \
 	 --directory ${source_dir}/src/mission/ \
+	 --directory ${source_dir}/src/util/ \
 	 --no-recursion
 	find ${source_dir}/src/ -name '*.gcno' -delete
 	find ${source_dir}/src/ -name '*.gcda' -delete

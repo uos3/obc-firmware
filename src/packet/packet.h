@@ -67,6 +67,10 @@ typedef enum {
 	PACKET_TYPE_NULL = 0
 } packet_type;
 
+void Packet_telecommand_512_encode(packet_telecommand_512 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length);
+
+bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512 *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length);
+
 /**
  * @function
  * @ingroup packet
@@ -83,10 +87,10 @@ typedef enum {
  * @param key_length Length of the key in bytes
  * @returns Pointer to the packet buffer ready for transmission
  */
-uint8_t *Packet_telemetry_1024_encode(packet_telemetry_1024 *packet, uint16_t origin, uint8_t *key, uint32_t key_length);
+void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length);
 
-uint8_t *Packet_telecommand_512_encode(packet_telecommand_512 *packet, uint16_t origin, uint8_t *key, uint32_t key_length);
+bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length);
 
-bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *output, uint8_t *key, uint32_t key_length);
+void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output);
 
 #endif /* __PACKET_FORMAT_H__ */
