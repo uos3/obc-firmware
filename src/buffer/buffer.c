@@ -103,13 +103,18 @@ bool Buffer_get_next_slot(uint16_t *slot)
       *slot = new_slot;
       return true;
     }
-    //printf("%d\n", new_slot);
 
     if(++new_slot >= BUFFER_SLOTS)
     {
       /* Wrap search */
       new_slot = 0;
     }
+  }
+
+  if(0x00 != (buffer_cache.occupancy[new_slot>>3] & (0x80 >> (new_slot & 0x07))))
+  {
+    *slot = new_slot;
+    return true;
   }
 
   return false;
@@ -209,7 +214,9 @@ uint16_t Buffer_count_occupied(void)
 {
   Buffer_init();
   
-  uint16_t i, result = 0;
+  uint16_t i;
+  uint16_t result = 0;
+
   for(i=0; i<BUFFER_SLOTS; i++)
   {
     if(buffer_cache.occupancy[i>>3] & (0x80 >> (i & 0x07)))
