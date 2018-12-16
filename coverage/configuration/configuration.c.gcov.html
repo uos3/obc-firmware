@@ -4,7 +4,7 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>LCOV - test-0f8554e-dirty-coverage.info - configuration/configuration.c</title>
+  <title>LCOV - test-b9df06c-dirty-coverage.info - configuration/configuration.c</title>
   <link rel="stylesheet" type="text/css" href="../gcov.css">
 </head>
 
@@ -28,7 +28,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test:</td>
-            <td class="headerValue">test-0f8554e-dirty-coverage.info</td>
+            <td class="headerValue">test-b9df06c-dirty-coverage.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-12-03</td>
+            <td class="headerValue">2018-12-16</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -107,7 +107,7 @@
 <span class="lineNum">      45 </span>            : {
 <span class="lineNum">      46 </span>            :   uint16_t checksum;
 <span class="lineNum">      47 </span>            : 
-<span class="lineNum">      48 </span><span class="lineNoCov">          0 :   Packet_crc16((uint8_t *)(&amp;(spacecraft_configuration.data)), sizeof(configuration_data_t), &amp;checksum);</span>
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :   checksum = Util_crc16((uint8_t *)(&amp;(spacecraft_configuration.data)), sizeof(configuration_data_t));</span>
 <span class="lineNum">      49 </span>            : 
 <span class="lineNum">      50 </span><span class="lineNoCov">          0 :   return (checksum == spacecraft_configuration.checksum);</span>
 <a name="51"><span class="lineNum">      51 </span>            : }</a>
@@ -122,7 +122,7 @@
 <span class="lineNum">      60 </span>            : 
 <span class="lineNum">      61 </span><span class="lineNoCov">          0 : static void Configuration_update_checksum(void)</span>
 <span class="lineNum">      62 </span>            : {
-<span class="lineNum">      63 </span><span class="lineNoCov">          0 :   Packet_crc16((uint8_t *)(&amp;(spacecraft_configuration.data)), sizeof(configuration_data_t), &amp;(spacecraft_configuration.checksum));</span>
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :   spacecraft_configuration.checksum = Util_crc16((uint8_t *)(&amp;(spacecraft_configuration.data)), sizeof(configuration_data_t));</span>
 <span class="lineNum">      64 </span><span class="lineNoCov">          0 : }</span>
 <span class="lineNum">      65 </span>            : 
 <span class="lineNum">      66 </span>            : /**

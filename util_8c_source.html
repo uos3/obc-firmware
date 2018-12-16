@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/obc-firmware/src/packet/crc16.c Source File</title>
+<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/obc-firmware/src/util/test/util.c Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,38 +80,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_4c1d7596aae66359654516e3185e0009.html">packet</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b7878ad5ecbf2506f4125b9d34c97e45.html">util</a></li><li class="navelem"><a class="el" href="dir_3738d2d7977d5154e41a0efcde8066fb.html">test</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">crc16.c</div>  </div>
+<div class="title">util.c</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">   11</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">Packet_crc16</a>(uint8_t *input, uint32_t length, uint16_t *output)</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  uint32_t i;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  uint16_t j;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  *output = 0xFFFF;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keywordflow">for</span> (i=0; i&lt;length; i++)</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    *output = (uint16_t)(*output ^ ((uint16_t)input[i] &lt;&lt; 8));</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordflow">for</span> (j=0; j&lt;8; j++)</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      <span class="keywordflow">if</span> (*output &amp; 0x8000)</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        *output = (uint16_t)(*output &lt;&lt; 1) ^ 0x1021;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        *output = (uint16_t)(*output &lt;&lt; 1);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    }</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  }</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="ttc" id="group__crc_html_gad514a3af471c92b05d6c46c986a79440"><div class="ttname"><a href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">Packet_crc16</a></div><div class="ttdeci">void Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output)</div><div class="ttdef"><b>Definition:</b> <a href="crc16_8c_source.html#l00011">crc16.c:11</a></div></div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/* @file util.c</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * @author Phil Crump</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * @ingroup tests</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * @{</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;../../firmware.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;../../test.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">bool</span> util_tests(<span class="keywordtype">void</span>)</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;{</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keywordtype">bool</span> test_state = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  assert_run_print(test_crc(),    <span class="stringliteral">&quot;Util CRC&quot;</span>,   test_state);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  assert_run_print(test_pn9(),    <span class="stringliteral">&quot;Util PN9&quot;</span>,   test_state);</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  assert_run_print(test_shake(),  <span class="stringliteral">&quot;Util SHAKE&quot;</span>,   test_state);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keywordflow">return</span> test_state;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

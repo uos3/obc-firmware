@@ -77,7 +77,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Shake<div class="ingroups"><a class="el" href="group__packet.html">Packet Modules</a></div></div>  </div>
+<div class="title">Shake</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -86,57 +86,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga24cdccdf7ce12eab9c4ec08adf0b43df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__shake.html#ga24cdccdf7ce12eab9c4ec08adf0b43df">Packet_sign_shake128</a> (uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)</td></tr>
-<tr class="separator:ga24cdccdf7ce12eab9c4ec08adf0b43df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga862d79c0d0bb9edc0da5b78e077688dc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__shake.html#ga862d79c0d0bb9edc0da5b78e077688dc">shake128_init</a> (<a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *c)</td></tr>
-<tr class="separator:ga862d79c0d0bb9edc0da5b78e077688dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab1ceb30fea2aba3ec09d2b40479aed3a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__shake.html#gab1ceb30fea2aba3ec09d2b40479aed3a">shake_update</a> (<a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *c, const void *data, size_t len)</td></tr>
-<tr class="separator:gab1ceb30fea2aba3ec09d2b40479aed3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga39a58a18510856e0ea2345b492a644e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__shake.html#ga39a58a18510856e0ea2345b492a644e9">shake_xof</a> (<a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *c)</td></tr>
-<tr class="separator:ga39a58a18510856e0ea2345b492a644e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4c14050724bec7aa9669d45db2a93c6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__shake.html#ga4c14050724bec7aa9669d45db2a93c6e">shake_out</a> (<a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *c, void *out, size_t len)</td></tr>
-<tr class="separator:ga4c14050724bec7aa9669d45db2a93c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac78218ab825ef2879ce67a59b4095ded"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac78218ab825ef2879ce67a59b4095ded"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>sha3_keccakf</b> (uint64_t st[25])</td></tr>
-<tr class="separator:gac78218ab825ef2879ce67a59b4095ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5e41509ab9663d06bc7f68366f30d94e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__shake.html#ga5e41509ab9663d06bc7f68366f30d94e">Util_shake_init</a> (<a class="el" href="structutil__shake__ctx__t.html">util_shake_ctx_t</a> *c, uint8_t output_length)</td></tr>
+<tr class="separator:ga5e41509ab9663d06bc7f68366f30d94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga198e003d97b063a268d108b817294192"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__shake.html#ga198e003d97b063a268d108b817294192">Util_shake_update</a> (<a class="el" href="structutil__shake__ctx__t.html">util_shake_ctx_t</a> *c, const uint8_t *data, uint32_t data_length)</td></tr>
+<tr class="separator:ga198e003d97b063a268d108b817294192"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9837e42458e102206090d9684cf00517"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__shake.html#ga9837e42458e102206090d9684cf00517">Util_shake_out</a> (<a class="el" href="structutil__shake__ctx__t.html">util_shake_ctx_t</a> *c, uint8_t *out)</td></tr>
+<tr class="separator:ga9837e42458e102206090d9684cf00517"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Packet SHAKE Hash Routines. </p>
 <p>Copyright (c) 2015 Markku-Juhani O. Saarinen The MIT License (MIT) </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ga24cdccdf7ce12eab9c4ec08adf0b43df"></a>
+<a class="anchor" id="ga5e41509ab9663d06bc7f68366f30d94e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Packet_sign_shake128 </td>
+          <td class="memname">void Util_shake_init </td>
           <td>(</td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>input</em>, </td>
+          <td class="paramtype"><a class="el" href="structutil__shake__ctx__t.html">util_shake_ctx_t</a> *&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>input_length</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>key_length</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>output</em>&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>output_length</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -145,68 +120,40 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>sha3_keccakf</b> (uin
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculate the 128-bit Hash of an Input Data Buffer and Input Key Buffer using the SHAKE-128 Extensible Hash Function.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">input</td><td>Input data buffer to calculated </td></tr>
-    <tr><td class="paramname">input_length</td><td>Length of the input data buffer </td></tr>
-    <tr><td class="paramname">key</td><td>Input key buffer to calculated </td></tr>
-    <tr><td class="paramname">key_length</td><td>Length of the input key buffer </td></tr>
-    <tr><td class="paramname">output</td><td>Pointer to 128-bit Output buffer </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definition at line <a class="el" href="shake_8c_source.html#l00011">11</a> of file <a class="el" href="shake_8c_source.html">shake.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ga862d79c0d0bb9edc0da5b78e077688dc"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int shake128_init </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *&#160;</td>
-          <td class="paramname"><em>c</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 <p>Initialises a SHA3 context object</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">c</td><td>Pointer to pre-allocated SHA3 context object </td></tr>
+    <tr><td class="paramname">output_length</td><td>Length in bytes of intended Hash Function output </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="shake_8c_source.html#l00131">131</a> of file <a class="el" href="shake_8c_source.html">shake.c</a>.</p>
+<p>Definition at line <a class="el" href="shake_8c_source.html#l00116">116</a> of file <a class="el" href="shake_8c_source.html">shake.c</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="gab1ceb30fea2aba3ec09d2b40479aed3a"></a>
+<a class="anchor" id="ga198e003d97b063a268d108b817294192"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int shake_update </td>
+          <td class="memname">void Util_shake_update </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structutil__shake__ctx__t.html">util_shake_ctx_t</a> *&#160;</td>
           <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const void *&#160;</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>len</em>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>data_length</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -220,61 +167,30 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>sha3_keccakf</b> (uin
   <table class="params">
     <tr><td class="paramname">c</td><td>Pointer to allocated &amp; initialised SHA3 context object </td></tr>
     <tr><td class="paramname">data</td><td>Input data buffer </td></tr>
-    <tr><td class="paramname">len</td><td>Length of the input data buffer </td></tr>
+    <tr><td class="paramname">data_length</td><td>Length of the input data buffer </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="shake_8c_source.html#l00147">147</a> of file <a class="el" href="shake_8c_source.html">shake.c</a>.</p>
+<p>Definition at line <a class="el" href="shake_8c_source.html#l00129">129</a> of file <a class="el" href="shake_8c_source.html">shake.c</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ga39a58a18510856e0ea2345b492a644e9"></a>
+<a class="anchor" id="ga9837e42458e102206090d9684cf00517"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void shake_xof </td>
+          <td class="memname">void Util_shake_out </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *&#160;</td>
-          <td class="paramname"><em>c</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Performs a SHAKE XOF Hash operation on SHA3 context</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">c</td><td>Pointer to allocated &amp; initialised SHA3 context object </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definition at line <a class="el" href="shake_8c_source.html#l00167">167</a> of file <a class="el" href="shake_8c_source.html">shake.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ga4c14050724bec7aa9669d45db2a93c6e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void shake_out </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structsha3__ctx__t.html">sha3_ctx_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structutil__shake__ctx__t.html">util_shake_ctx_t</a> *&#160;</td>
           <td class="paramname"><em>c</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>out</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>len</em>&#160;</td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -283,17 +199,17 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>sha3_keccakf</b> (uin
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Exports requested length of output of SHA3 context</p>
+<p>Produces output of SHA3 context.</p>
+<p>Note: This should only be run once for an initialised context object.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">c</td><td>Pointer to allocated &amp; initialised SHA3 context object </td></tr>
     <tr><td class="paramname">out</td><td>Output data buffer </td></tr>
-    <tr><td class="paramname">len</td><td>Length of the output data buffer </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="shake_8c_source.html#l00175">175</a> of file <a class="el" href="shake_8c_source.html">shake.c</a>.</p>
+<p>Definition at line <a class="el" href="shake_8c_source.html#l00147">147</a> of file <a class="el" href="shake_8c_source.html">shake.c</a>.</p>
 
 </div>
 </div>

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/obc-firmware/src/packet/test/shake.c Source File</title>
+<title>UoS³ Flight Computer Firmware: /home/travis/build/uos3/obc-firmware/src/util/test/shake.c Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,7 +80,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_4c1d7596aae66359654516e3185e0009.html">packet</a></li><li class="navelem"><a class="el" href="dir_32ba9aea9f6275fb88c6dc477605da95.html">test</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b7878ad5ecbf2506f4125b9d34c97e45.html">util</a></li><li class="navelem"><a class="el" href="dir_3738d2d7977d5154e41a0efcde8066fb.html">test</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,11 +91,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;../../firmware.h&quot;</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &quot;../../test.h&quot;</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#define BITS_128  16 // 128-bit = 16-byte</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;uint8_t buffer_test[BITS_128];</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;uint8_t pattern_1600bit[200] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;uint8_t util_shake_test_buffer[16];</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;uint8_t util_shake_test_pattern_1600bit[200] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
@@ -112,22 +112,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3 };</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">/* 128-bit result from NIST Test Vectors (SHAKE-128, 0-bit Input Message Length)</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">  [ https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHAKE128_Msg0.pdf ] */</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;uint8_t pattern_0bit_output[16] = { 0x7F, 0x9C, 0x2B, 0xA4, 0xE8, 0x8F, 0x82, 0x7D,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                                    0x61, 0x60, 0x45, 0x50, 0x76, 0x05, 0x85, 0x3E };</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">/* 128-bit result from NIST Test Vectors (SHAKE-128, 1600-bit Input Message Length)</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">  [ https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHAKE128_Msg1600.pdf ] */</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;uint8_t pattern_1600bit_output[16] = { 0x13, 0x1A, 0xB8, 0xD2, 0xB5, 0x94, 0x94, 0x6B,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                                        0x9C, 0x81, 0x33, 0x3F, 0x9B, 0xB6, 0xE0, 0xCE };</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">/* Sample 1024-bit Packet &amp; 128-bit Key */</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;uint8_t pattern_packet[256] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                  0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3 };</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">/* 128-bit result from NIST Test Vectors (SHAKE-128, 0-bit Input Message Length)</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">  [ https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHAKE128_Msg0.pdf ] */</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;uint8_t util_shake_test_pattern_0bit_output[16] = { 0x7F, 0x9C, 0x2B, 0xA4, 0xE8, 0x8F, 0x82, 0x7D,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                                    0x61, 0x60, 0x45, 0x50, 0x76, 0x05, 0x85, 0x3E };</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">/* 128-bit result from NIST Test Vectors (SHAKE-128, 1600-bit Input Message Length)</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">  [ https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHAKE128_Msg1600.pdf ] */</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;uint8_t util_shake_test_pattern_1600bit_output[16] = { 0x13, 0x1A, 0xB8, 0xD2, 0xB5, 0x94, 0x94, 0x6B,</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                                        0x9C, 0x81, 0x33, 0x3F, 0x9B, 0xB6, 0xE0, 0xCE };</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">/* Sample 1024-bit Packet &amp; 128-bit Key */</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;uint8_t util_shake_test_pattern_packet[256] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
@@ -144,82 +144,62 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3 };</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;uint8_t pattern_packet_key[16] = { 0x45, 0xDA, 0x82, 0x92, 0xF7, 0x44, 0xD4, 0xEB,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                                    0x6C, 0x81, 0x33, 0x3F, 0x9B, 0xB6, 0xE0, 0xCE };</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;uint8_t pattern_packet_output[16] = { 0x87, 0x7e, 0x5a, 0xb8, 0x8f, 0xd1, 0x46, 0x6d,</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                       0x9a, 0x3d, 0x0b, 0x07, 0x25, 0x85, 0xdd, 0x23 };</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keywordtype">bool</span> test_shake(<span class="keywordtype">void</span>)</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;{</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <a class="code" href="structsha3__ctx__t.html">sha3_ctx_t</a> sha3;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">/* 0-bit Message Test */</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <a class="code" href="group__shake.html#ga862d79c0d0bb9edc0da5b78e077688dc">shake128_init</a>(&amp;sha3);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <a class="code" href="group__shake.html#ga39a58a18510856e0ea2345b492a644e9">shake_xof</a>(&amp;sha3);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <a class="code" href="group__shake.html#ga4c14050724bec7aa9669d45db2a93c6e">shake_out</a>(&amp;sha3, buffer_test, BITS_128);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">if</span>(TEST_VERBOSE)</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  {</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <a class="code" href="group__debug.html#ga04e7902963bb476b4de6122b37b27c18">Debug_print</a>(<span class="stringliteral">&quot;0-bit SHAKE-128 Output:\r\n&quot;</span>);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <a class="code" href="group__tests.html#gaf5c8b09411cbaa65b0201467dc70ffb5">buffer_print_hex</a>(buffer_test, BITS_128);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  }</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordflow">if</span>(memcmp(buffer_test, pattern_0bit_output, BITS_128) != 0)</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  {</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  }</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">/* 1600-bit Message Test */</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <a class="code" href="group__shake.html#ga862d79c0d0bb9edc0da5b78e077688dc">shake128_init</a>(&amp;sha3);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <a class="code" href="group__shake.html#gab1ceb30fea2aba3ec09d2b40479aed3a">shake_update</a>(&amp;sha3, pattern_1600bit, 200);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <a class="code" href="group__shake.html#ga39a58a18510856e0ea2345b492a644e9">shake_xof</a>(&amp;sha3);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <a class="code" href="group__shake.html#ga4c14050724bec7aa9669d45db2a93c6e">shake_out</a>(&amp;sha3, buffer_test, BITS_128);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordflow">if</span>(TEST_VERBOSE)</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  {</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <a class="code" href="group__debug.html#ga04e7902963bb476b4de6122b37b27c18">Debug_print</a>(<span class="stringliteral">&quot;1600-bit SHAKE-128 Output:\r\n&quot;</span>);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <a class="code" href="group__tests.html#gaf5c8b09411cbaa65b0201467dc70ffb5">buffer_print_hex</a>(buffer_test, BITS_128);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  }</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordflow">if</span>(memcmp(buffer_test, pattern_1600bit_output, BITS_128) != 0)</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  }</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="comment">/* Sample Packet Signing Test */</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <a class="code" href="group__shake.html#ga24cdccdf7ce12eab9c4ec08adf0b43df">Packet_sign_shake128</a>(pattern_packet, 256, pattern_packet_key, 16, buffer_test);</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">if</span>(TEST_VERBOSE)</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  {</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <a class="code" href="group__debug.html#ga04e7902963bb476b4de6122b37b27c18">Debug_print</a>(<span class="stringliteral">&quot;Sample Packet Signing Output:\r\n&quot;</span>);</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <a class="code" href="group__tests.html#gaf5c8b09411cbaa65b0201467dc70ffb5">buffer_print_hex</a>(buffer_test, BITS_128);</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  }</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordflow">if</span>(memcmp(buffer_test, pattern_packet_output, BITS_128) != 0)</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  }</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;}</div>
-<div class="ttc" id="structsha3__ctx__t_html"><div class="ttname"><a href="structsha3__ctx__t.html">sha3_ctx_t</a></div><div class="ttdef"><b>Definition:</b> <a href="shake_8h_source.html#l00035">shake.h:35</a></div></div>
-<div class="ttc" id="group__shake_html_ga24cdccdf7ce12eab9c4ec08adf0b43df"><div class="ttname"><a href="group__shake.html#ga24cdccdf7ce12eab9c4ec08adf0b43df">Packet_sign_shake128</a></div><div class="ttdeci">void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00011">shake.c:11</a></div></div>
-<div class="ttc" id="group__shake_html_ga39a58a18510856e0ea2345b492a644e9"><div class="ttname"><a href="group__shake.html#ga39a58a18510856e0ea2345b492a644e9">shake_xof</a></div><div class="ttdeci">void shake_xof(sha3_ctx_t *c)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00167">shake.c:167</a></div></div>
-<div class="ttc" id="group__shake_html_ga4c14050724bec7aa9669d45db2a93c6e"><div class="ttname"><a href="group__shake.html#ga4c14050724bec7aa9669d45db2a93c6e">shake_out</a></div><div class="ttdeci">void shake_out(sha3_ctx_t *c, void *out, size_t len)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00175">shake.c:175</a></div></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3 };</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;uint8_t util_shake_test_pattern_packet_key[16] = { 0x45, 0xDA, 0x82, 0x92, 0xF7, 0x44, 0xD4, 0xEB,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                                    0x6C, 0x81, 0x33, 0x3F, 0x9B, 0xB6, 0xE0, 0xCE };</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;uint8_t util_shake_test_pattern_packet_output[16] = { 0x87, 0x7e, 0x5a, 0xb8, 0x8f, 0xd1, 0x46, 0x6d,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                                       0x9a, 0x3d, 0x0b, 0x07, 0x25, 0x85, 0xdd, 0x23 };</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keywordtype">bool</span> test_shake(<span class="keywordtype">void</span>)</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;{</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="structutil__shake__ctx__t.html">util_shake_ctx_t</a> shake_ctx;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">/* 0-bit Message Test */</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <a class="code" href="group__shake.html#ga5e41509ab9663d06bc7f68366f30d94e">Util_shake_init</a>(&amp;shake_ctx, 16);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <a class="code" href="group__shake.html#ga9837e42458e102206090d9684cf00517">Util_shake_out</a>(&amp;shake_ctx, util_shake_test_buffer);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordflow">if</span>(TEST_VERBOSE)</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <a class="code" href="group__debug.html#ga04e7902963bb476b4de6122b37b27c18">Debug_print</a>(<span class="stringliteral">&quot;0-bit SHAKE-128 Output:\r\n&quot;</span>);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <a class="code" href="group__tests.html#gaf5c8b09411cbaa65b0201467dc70ffb5">buffer_print_hex</a>(util_shake_test_buffer, 16);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  }</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">if</span>(memcmp(util_shake_test_buffer, util_shake_test_pattern_0bit_output, 16) != 0)</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  }</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="comment">/* 1600-bit Message Test */</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <a class="code" href="group__shake.html#ga5e41509ab9663d06bc7f68366f30d94e">Util_shake_init</a>(&amp;shake_ctx, 16);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <a class="code" href="group__shake.html#ga198e003d97b063a268d108b817294192">Util_shake_update</a>(&amp;shake_ctx, util_shake_test_pattern_1600bit, 200);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <a class="code" href="group__shake.html#ga9837e42458e102206090d9684cf00517">Util_shake_out</a>(&amp;shake_ctx, util_shake_test_buffer);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordflow">if</span>(TEST_VERBOSE)</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <a class="code" href="group__debug.html#ga04e7902963bb476b4de6122b37b27c18">Debug_print</a>(<span class="stringliteral">&quot;1600-bit SHAKE-128 Output:\r\n&quot;</span>);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="group__tests.html#gaf5c8b09411cbaa65b0201467dc70ffb5">buffer_print_hex</a>(util_shake_test_buffer, 16);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">if</span>(memcmp(util_shake_test_buffer, util_shake_test_pattern_1600bit_output, 16) != 0)</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  }</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}</div>
+<div class="ttc" id="group__shake_html_ga5e41509ab9663d06bc7f68366f30d94e"><div class="ttname"><a href="group__shake.html#ga5e41509ab9663d06bc7f68366f30d94e">Util_shake_init</a></div><div class="ttdeci">void Util_shake_init(util_shake_ctx_t *c, uint8_t output_length)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00116">shake.c:116</a></div></div>
+<div class="ttc" id="structutil__shake__ctx__t_html"><div class="ttname"><a href="structutil__shake__ctx__t.html">util_shake_ctx_t</a></div><div class="ttdef"><b>Definition:</b> <a href="shake_8h_source.html#l00020">shake.h:20</a></div></div>
+<div class="ttc" id="group__shake_html_ga9837e42458e102206090d9684cf00517"><div class="ttname"><a href="group__shake.html#ga9837e42458e102206090d9684cf00517">Util_shake_out</a></div><div class="ttdeci">void Util_shake_out(util_shake_ctx_t *c, uint8_t *output)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00147">shake.c:147</a></div></div>
 <div class="ttc" id="group__debug_html_ga04e7902963bb476b4de6122b37b27c18"><div class="ttname"><a href="group__debug.html#ga04e7902963bb476b4de6122b37b27c18">Debug_print</a></div><div class="ttdeci">void Debug_print(char *fmt,...)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2debug_8c_source.html#l00016">debug.c:16</a></div></div>
-<div class="ttc" id="group__shake_html_ga862d79c0d0bb9edc0da5b78e077688dc"><div class="ttname"><a href="group__shake.html#ga862d79c0d0bb9edc0da5b78e077688dc">shake128_init</a></div><div class="ttdeci">int shake128_init(sha3_ctx_t *c)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00131">shake.c:131</a></div></div>
-<div class="ttc" id="group__tests_html_gaf5c8b09411cbaa65b0201467dc70ffb5"><div class="ttname"><a href="group__tests.html#gaf5c8b09411cbaa65b0201467dc70ffb5">buffer_print_hex</a></div><div class="ttdeci">void buffer_print_hex(uint8_t *buffer, uint32_t length)</div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00052">test.c:52</a></div></div>
-<div class="ttc" id="group__shake_html_gab1ceb30fea2aba3ec09d2b40479aed3a"><div class="ttname"><a href="group__shake.html#gab1ceb30fea2aba3ec09d2b40479aed3a">shake_update</a></div><div class="ttdeci">int shake_update(sha3_ctx_t *c, const void *data, size_t len)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00147">shake.c:147</a></div></div>
+<div class="ttc" id="group__tests_html_gaf5c8b09411cbaa65b0201467dc70ffb5"><div class="ttname"><a href="group__tests.html#gaf5c8b09411cbaa65b0201467dc70ffb5">buffer_print_hex</a></div><div class="ttdeci">void buffer_print_hex(uint8_t *buffer, uint32_t length)</div><div class="ttdef"><b>Definition:</b> <a href="test_8c_source.html#l00053">test.c:53</a></div></div>
+<div class="ttc" id="group__shake_html_ga198e003d97b063a268d108b817294192"><div class="ttname"><a href="group__shake.html#ga198e003d97b063a268d108b817294192">Util_shake_update</a></div><div class="ttdeci">void Util_shake_update(util_shake_ctx_t *c, const uint8_t *data, uint32_t data_length)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00129">shake.c:129</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

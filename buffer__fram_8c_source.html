@@ -91,72 +91,65 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="buffer__fram_8c.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_crc(uint16_t *crc)</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_CRC, (uint8_t*)crc, BUFFER_FRAM_SIZE_CRC);</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;}</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_read_crc(uint16_t *crc)</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <a class="code" href="group__fram.html#ga1502dcc9599763b823938c6c4c396ce0">FRAM_read</a>(BUFFER_FRAM_ADDRESS_CRC, (uint8_t*)crc, BUFFER_FRAM_SIZE_CRC);</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_last_index_stored(uint16_t *index)</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;{</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <a class="code" href="group__fram.html#ga1502dcc9599763b823938c6c4c396ce0">FRAM_read</a>(BUFFER_FRAM_ADDRESS_LAST_INDEX, (uint8_t*)index, BUFFER_FRAM_SIZE_LAST_INDEX);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_read_last_index_stored(uint16_t *index)</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_LAST_INDEX, (uint8_t*)index, BUFFER_FRAM_SIZE_LAST_INDEX);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">/*** Read ***/</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">bool</span> Buffer_FRAM_cache_read(<a class="code" href="structbuffer__cache__t.html">buffer_cache_t</a> *buffer)</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <a class="code" href="group__fram.html#ga1502dcc9599763b823938c6c4c396ce0">FRAM_read</a>(0x00000000, (uint8_t *)buffer, <span class="keyword">sizeof</span>(<a class="code" href="structbuffer__cache__t.html">buffer_cache_t</a>));</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keywordflow">if</span>(buffer-&gt;crc == <a class="code" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a>((uint8_t *)&amp;buffer, <span class="keyword">sizeof</span>(<a class="code" href="structbuffer__cache__t.html">buffer_cache_t</a>) - <span class="keyword">sizeof</span>(uint16_t)))</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  }</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;}</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_read_data(uint16_t slot, uint8_t *data)</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <a class="code" href="group__fram.html#ga1502dcc9599763b823938c6c4c396ce0">FRAM_read</a>((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">/*** Write ***/</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_last_slot_transmitted(uint16_t *slot)</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;{</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <a class="code" href="group__fram.html#ga1502dcc9599763b823938c6c4c396ce0">FRAM_read</a>(BUFFER_FRAM_ADDRESS_LAST_SLOT, (uint8_t*)slot, BUFFER_FRAM_SIZE_LAST_SLOT);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> Buffer_FRAM_update_crc(<a class="code" href="structbuffer__cache__t.html">buffer_cache_t</a> *buffer)</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  buffer-&gt;crc = <a class="code" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a>((uint8_t *)&amp;buffer, <span class="keyword">sizeof</span>(<a class="code" href="structbuffer__cache__t.html">buffer_cache_t</a>) - <span class="keyword">sizeof</span>(uint16_t));</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_CRC, (uint8_t *)&amp;(buffer-&gt;crc), BUFFER_FRAM_SIZE_CRC);</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_read_last_slot_transmitted(uint16_t *slot)</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_last_index_stored(<a class="code" href="structbuffer__cache__t.html">buffer_cache_t</a> *buffer)</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;{</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_LAST_SLOT, (uint8_t*)slot, BUFFER_FRAM_SIZE_LAST_SLOT);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_LAST_INDEX, (uint8_t *)&amp;(buffer-&gt;last_index_stored), <span class="keyword">sizeof</span>(buffer-&gt;last_index_stored));</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  Buffer_FRAM_update_crc(buffer);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_occupancy(uint8_t *occupancy)</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_last_slot_transmitted(<a class="code" href="structbuffer__cache__t.html">buffer_cache_t</a> *buffer)</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;{</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_OCCUPANCY, occupancy, BUFFER_FRAM_SIZE_OCCUPANCY);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_read_occupancy(uint8_t *occupancy)</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;{</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="group__fram.html#ga1502dcc9599763b823938c6c4c396ce0">FRAM_read</a>(BUFFER_FRAM_ADDRESS_OCCUPANCY, occupancy, BUFFER_FRAM_SIZE_OCCUPANCY);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_indexes(uint16_t *indexes)</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;{</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_INDEXES, (uint8_t*)indexes, BUFFER_FRAM_SIZE_INDEXES);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_read_indexes(uint16_t *indexes)</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;{</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="group__fram.html#ga1502dcc9599763b823938c6c4c396ce0">FRAM_read</a>(BUFFER_FRAM_ADDRESS_INDEXES, (uint8_t*)indexes, BUFFER_FRAM_SIZE_INDEXES);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_data(uint16_t slot, uint8_t *data)</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;{</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_read_data(uint16_t slot, uint8_t *data)</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;{</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <a class="code" href="group__fram.html#ga1502dcc9599763b823938c6c4c396ce0">FRAM_read</a>((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_LAST_SLOT, (uint8_t *)&amp;(buffer-&gt;last_slot_transmitted), <span class="keyword">sizeof</span>(buffer-&gt;last_slot_transmitted));</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  Buffer_FRAM_update_crc(buffer);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_occupancy(<a class="code" href="structbuffer__cache__t.html">buffer_cache_t</a> *buffer)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_OCCUPANCY, (uint8_t *)&amp;(buffer-&gt;occupancy), <span class="keyword">sizeof</span>(buffer-&gt;occupancy));</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  Buffer_FRAM_update_crc(buffer);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_indexes(<a class="code" href="structbuffer__cache__t.html">buffer_cache_t</a> *buffer)</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;{</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>(BUFFER_FRAM_ADDRESS_INDEXES, (uint8_t *)&amp;(buffer-&gt;indexes), <span class="keyword">sizeof</span>(buffer-&gt;indexes));</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  Buffer_FRAM_update_crc(buffer);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keywordtype">void</span> Buffer_FRAM_write_data(uint16_t slot, uint8_t *data)</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;{</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <a class="code" href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a>((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="ttc" id="structbuffer__cache__t_html"><div class="ttname"><a href="structbuffer__cache__t.html">buffer_cache_t</a></div><div class="ttdef"><b>Definition:</b> <a href="buffer_8h_source.html#l00048">buffer.h:48</a></div></div>
 <div class="ttc" id="group__fram_html_ga1502dcc9599763b823938c6c4c396ce0"><div class="ttname"><a href="group__fram.html#ga1502dcc9599763b823938c6c4c396ce0">FRAM_read</a></div><div class="ttdeci">void FRAM_read(uint32_t address, uint8_t *data, uint32_t length)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2fram_8c_source.html#l00036">fram.c:36</a></div></div>
 <div class="ttc" id="group__fram_html_ga356c8be1d76eb93e9c954ac912a16186"><div class="ttname"><a href="group__fram.html#ga356c8be1d76eb93e9c954ac912a16186">FRAM_write</a></div><div class="ttdeci">void FRAM_write(uint32_t address, uint8_t *data, uint32_t length)</div><div class="ttdef"><b>Definition:</b> <a href="gnulinux_2fram_8c_source.html#l00025">fram.c:25</a></div></div>
+<div class="ttc" id="group__crc_html_ga9dc28c2eb39cbd42a50b3c5b9f353183"><div class="ttname"><a href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a></div><div class="ttdeci">uint16_t Util_crc16(const uint8_t *buf, uint32_t size)</div><div class="ttdef"><b>Definition:</b> <a href="crc_8c_source.html#l00100">crc.c:100</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

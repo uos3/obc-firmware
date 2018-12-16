@@ -1,14 +1,9 @@
 var searchData=
 [
-  ['sha3_5fctx_5ft',['sha3_ctx_t',['../structsha3__ctx__t.html',1,'']]],
   ['shake',['Shake',['../group__shake.html',1,'']]],
-  ['shake128_5finit',['shake128_init',['../group__shake.html#ga862d79c0d0bb9edc0da5b78e077688dc',1,'shake128_init(sha3_ctx_t *c):&#160;shake.c'],['../group__shake.html#ga862d79c0d0bb9edc0da5b78e077688dc',1,'shake128_init(sha3_ctx_t *c):&#160;shake.c']]],
-  ['shake_5fout',['shake_out',['../group__shake.html#ga4c14050724bec7aa9669d45db2a93c6e',1,'shake_out(sha3_ctx_t *c, void *out, size_t len):&#160;shake.c'],['../group__shake.html#ga4c14050724bec7aa9669d45db2a93c6e',1,'shake_out(sha3_ctx_t *c, void *out, size_t len):&#160;shake.c']]],
-  ['shake_5fupdate',['shake_update',['../group__shake.html#gab1ceb30fea2aba3ec09d2b40479aed3a',1,'shake_update(sha3_ctx_t *c, const void *data, size_t len):&#160;shake.c'],['../group__shake.html#gab1ceb30fea2aba3ec09d2b40479aed3a',1,'shake_update(sha3_ctx_t *c, const void *data, size_t len):&#160;shake.c']]],
-  ['shake_5fxof',['shake_xof',['../group__shake.html#ga39a58a18510856e0ea2345b492a644e9',1,'shake_xof(sha3_ctx_t *c):&#160;shake.c'],['../group__shake.html#ga39a58a18510856e0ea2345b492a644e9',1,'shake_xof(sha3_ctx_t *c):&#160;shake.c']]],
   ['spi',['Spi',['../group__spi.html',1,'']]],
-  ['spi_2ec',['spi.c',['../gnulinux_2spi_8c.html',1,'']]],
   ['spi_2ec',['spi.c',['../uos3-proto_2spi_8c.html',1,'']]],
+  ['spi_2ec',['spi.c',['../gnulinux_2spi_8c.html',1,'']]],
   ['spi_5fburstread16',['SPI_burstread16',['../group__spi.html#ga204527ea9c7480beb11d28bc8158a814',1,'SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len):&#160;spi.c'],['../group__spi.html#ga204527ea9c7480beb11d28bc8158a814',1,'SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len):&#160;spi.c'],['../group__spi.html#ga204527ea9c7480beb11d28bc8158a814',1,'SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len):&#160;spi.c']]],
   ['spi_5fburstread32',['SPI_burstread32',['../group__spi.html#gaaed8c3836261cecffa070ab1b2da88a5',1,'SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len):&#160;spi.c'],['../group__spi.html#gaaed8c3836261cecffa070ab1b2da88a5',1,'SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len):&#160;spi.c'],['../group__spi.html#gaaed8c3836261cecffa070ab1b2da88a5',1,'SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len):&#160;spi.c']]],
   ['spi_5fburstread8',['SPI_burstread8',['../group__spi.html#ga0d9ee9f33f39be6ed8aedd20fde4e114',1,'SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len):&#160;spi.c'],['../group__spi.html#ga0d9ee9f33f39be6ed8aedd20fde4e114',1,'SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len):&#160;spi.c'],['../group__spi.html#ga0d9ee9f33f39be6ed8aedd20fde4e114',1,'SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len):&#160;spi.c']]],

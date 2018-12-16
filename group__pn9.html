@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>UoS³ Flight Computer Firmware: PN9</title>
+<title>UoS³ Flight Computer Firmware: Pn9</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -74,14 +74,67 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">PN9<div class="ingroups"><a class="el" href="group__packet.html">Packet Modules</a></div></div>  </div>
+<div class="title">Pn9</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Packet PN9 Routines.  
+<p>PN9 Routines.  
 <a href="#details">More...</a></p>
-<p>Packet PN9 Routines. </p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga71b82702111b4b014e7b731be253a59a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a> (uint8_t *buffer, uint32_t preroll, uint32_t length)</td></tr>
+<tr class="separator:ga71b82702111b4b014e7b731be253a59a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<p>PN9 Routines. </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga71b82702111b4b014e7b731be253a59a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Util_pn9 </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>preroll</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>XOR a byte buffer with the PN9 sequence used in the CC1120.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>Pointer to the buffer to process </td></tr>
+    <tr><td class="paramname">preroll</td><td>Iterations of the sequence to run before processing the buffer </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="pn9_8c_source.html#l00011">11</a> of file <a class="el" href="pn9_8c_source.html">pn9.c</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

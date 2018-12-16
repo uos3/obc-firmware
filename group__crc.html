@@ -77,42 +77,40 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Crc<div class="ingroups"><a class="el" href="group__packet.html">Packet Modules</a></div></div>  </div>
+<div class="title">Crc</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Packet CRC Routines.  
+<p>CRC Routines.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gad514a3af471c92b05d6c46c986a79440"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__crc.html#gad514a3af471c92b05d6c46c986a79440">Packet_crc16</a> (uint8_t *input, uint32_t length, uint16_t *output)</td></tr>
-<tr class="separator:gad514a3af471c92b05d6c46c986a79440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5ca064a122ce065a94693ce4d8f7564b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__crc.html#ga5ca064a122ce065a94693ce4d8f7564b">Util_crc8</a> (const uint8_t *buf, uint32_t size)</td></tr>
+<tr class="separator:ga5ca064a122ce065a94693ce4d8f7564b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9dc28c2eb39cbd42a50b3c5b9f353183"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a> (const uint8_t *buf, uint32_t size)</td></tr>
+<tr class="separator:ga9dc28c2eb39cbd42a50b3c5b9f353183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6cabbb0576312e2c7fbe9c16df1e27e5"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__crc.html#ga6cabbb0576312e2c7fbe9c16df1e27e5">Util_crc32</a> (const uint8_t *buf, uint32_t size)</td></tr>
+<tr class="separator:ga6cabbb0576312e2c7fbe9c16df1e27e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Packet CRC Routines. </p>
+<p>CRC Routines. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="gad514a3af471c92b05d6c46c986a79440"></a>
+<a class="anchor" id="ga5ca064a122ce065a94693ce4d8f7564b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Packet_crc16 </td>
+          <td class="memname">uint8_t Util_crc8 </td>
           <td>(</td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>input</em>, </td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>length</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint16_t *&#160;</td>
-          <td class="paramname"><em>output</em>&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -121,18 +119,91 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculate the 16-bit CRC of the input buffer, using the CRC16-CCITT standard.</p>
+<p>Calculate the 8-bit CRC of the input buffer, using the CRC-8 standard.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">input</td><td>Input buffer to calculated </td></tr>
-    <tr><td class="paramname">length</td><td>Length of the input buffer </td></tr>
-    <tr><td class="paramname">output</td><td>Pointer to store the output </td></tr>
+    <tr><td class="paramname">buf</td><td>Input buffer to calculated </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the input buffer (in bytes) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The 8bit CRC of the input buffer </dd></dl>
+
+<p>Definition at line <a class="el" href="crc_8c_source.html#l00088">88</a> of file <a class="el" href="crc_8c_source.html">crc.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga9dc28c2eb39cbd42a50b3c5b9f353183"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t Util_crc16 </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate the 16-bit CRC of the input buffer, using the CRC-16-CCITT standard.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buf</td><td>Input buffer to calculated </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the input buffer (in bytes) </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The 16bit CRC of the input buffer </dd></dl>
 
-<p>Definition at line <a class="el" href="crc16_8c_source.html#l00011">11</a> of file <a class="el" href="crc16_8c_source.html">crc16.c</a>.</p>
+<p>Definition at line <a class="el" href="crc_8c_source.html#l00100">100</a> of file <a class="el" href="crc_8c_source.html">crc.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga6cabbb0576312e2c7fbe9c16df1e27e5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t Util_crc32 </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate the 32-bit CRC of the input buffer, using the CRC-32 standard.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buf</td><td>Input buffer to calculated </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the input buffer (in bytes) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The 32bit CRC of the input buffer </dd></dl>
+
+<p>Definition at line <a class="el" href="crc_8c_source.html#l00112">112</a> of file <a class="el" href="crc_8c_source.html">crc.c</a>.</p>
 
 </div>
 </div>

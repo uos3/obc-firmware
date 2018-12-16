@@ -87,29 +87,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group__crc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__crc.html">Crc</a></td></tr>
-<tr class="memdesc:group__crc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packet CRC Routines. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:group__cw"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__cw.html">CW</a></td></tr>
 <tr class="memdesc:group__cw"><td class="mdescLeft">&#160;</td><td class="mdescRight">CW (Morse Code) Routines. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group__pn9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__pn9.html">PN9</a></td></tr>
-<tr class="memdesc:group__pn9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packet PN9 Routines. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group__shake"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__shake.html">Shake</a></td></tr>
-<tr class="memdesc:group__shake"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packet SHAKE Hash Routines. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga9352a9df79251b2024a0ee7104f584f4"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__packet.html#ga9352a9df79251b2024a0ee7104f584f4">Packet_telemetry_1024_encode</a> (<a class="el" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *packet, uint16_t origin, uint8_t *key, uint32_t key_length)</td></tr>
-<tr class="separator:ga9352a9df79251b2024a0ee7104f584f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae297de3b11d21a99c5634079493bcf43"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae297de3b11d21a99c5634079493bcf43"></a>
-uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>Packet_telecommand_512_encode</b> (<a class="el" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *packet, uint16_t origin, uint8_t *key, uint32_t key_length)</td></tr>
-<tr class="separator:gae297de3b11d21a99c5634079493bcf43"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaaa305339391f6688c74ff33aab626474"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaaa305339391f6688c74ff33aab626474"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Packet_telemetry_1024_decode</b> (uint8_t *input_buffer, <a class="el" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *output, uint8_t *key, uint32_t key_length)</td></tr>
-<tr class="separator:gaaa305339391f6688c74ff33aab626474"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga622d4fd1f81fe3b5c4179c2b61237bcb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__packet.html#ga622d4fd1f81fe3b5c4179c2b61237bcb">Packet_telemetry_1024_encode</a> (<a class="el" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)</td></tr>
+<tr class="separator:ga622d4fd1f81fe3b5c4179c2b61237bcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Packet Functions &amp; Definitions. </p>
@@ -117,15 +102,21 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>Packet_telemetry_1024
 <p>High-level Data Packet Modules</p>
 <p>Functions for Packet Operations </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ga9352a9df79251b2024a0ee7104f584f4"></a>
+<a class="anchor" id="ga622d4fd1f81fe3b5c4179c2b61237bcb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t* Packet_telemetry_1024_encode </td>
+          <td class="memname">void Packet_telemetry_1024_encode </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *&#160;</td>
-          <td class="paramname"><em>packet</em>, </td>
+          <td class="paramname"><em>input_packet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>output_buffer</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -166,7 +157,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>Packet_telemetry_1024
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the packet buffer ready for transmission </dd></dl>
 
-<p>Definition at line <a class="el" href="packet_8c_source.html#l00011">11</a> of file <a class="el" href="packet_8c_source.html">packet.c</a>.</p>
+<p>Definition at line <a class="el" href="packet_8c_source.html#l00101">101</a> of file <a class="el" href="packet_8c_source.html">packet.c</a>.</p>
 
 </div>
 </div>
