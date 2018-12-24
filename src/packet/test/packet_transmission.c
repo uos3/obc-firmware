@@ -49,7 +49,7 @@ bool test_packet_transmission_telecommand(void)
   /* Attempt decode */
   if(!Packet_telecommand_512_decode(transmission_buffer, &test_rx_packet, spacecraft_id, tc_sign_key, sizeof(tc_sign_key)))
   {
-    if(TEST_VERBOSE)
+    if(1)
     {
       Debug_print("Decode Failed\r\n");
       Debug_print("reference\r\n");
@@ -57,6 +57,7 @@ bool test_packet_transmission_telecommand(void)
       Debug_print("transmitted\r\n");
       buffer_print_hex((uint8_t *)&test_rx_packet, sizeof(test_rx_packet));
     }
+    return false;
   }
 
   /* Compare data with ref packet */
@@ -129,6 +130,7 @@ bool test_packet_transmission_telemetry(void)
       Debug_print("transmitted\r\n");
       buffer_print_hex((uint8_t *)&test_rx_packet, sizeof(test_rx_packet));
     }
+    return false;
   }
 
   /* Compare data with ref packet */
