@@ -10,10 +10,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
-
 /* Pins: GPIO0_RADIO_RX / GPIO0_RADIO_TX */
-bool cc1125_pollGPIO(uint8_t gpio_pin)
+bool cc112x_pollGPIO(uint8_t gpio_pin)
 {
   return GPIO_read(gpio_pin);
 }

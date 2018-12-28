@@ -5,7 +5,7 @@ static const registerSetting_t preferredSettings_fsk[]=
   {CC112X_IOCFG3,            0x59},
   {CC112X_IOCFG2,            0x13},
   {CC112X_IOCFG1,            0xB0},
-  {CC112X_IOCFG0,            0x06},
+  {CC112X_IOCFG0,            0x06}, // PKT_SYNC_RXTX
   {CC112X_SYNC_CFG1,         0x0B},
   {CC112X_DEVIATION_M,       0xDA},
   {CC112X_MODCFG_DEV_E,      0x00},

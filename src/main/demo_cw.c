@@ -67,15 +67,7 @@ static uint32_t buffer_length = 16;
 
 static void cw_tone_on(void)
 {
-  uint8_t pwr_reg;
-
-  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-  manualCalibration(SPI_RADIO_TX);
-
-  radio_set_freq_f(SPI_RADIO_TX, &freq);
-
-  radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
-
+  /* Enable TX */
   SPI_cmd(SPI_RADIO_TX, CC112X_STX);
 
   LED_on(LED_B);
@@ -83,13 +75,15 @@ static void cw_tone_on(void)
 
 static void cw_tone_off(void)
 {
-  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+  /* Enable and calibrate frequency synthesizer */
+  SPI_cmd(SPI_RADIO_TX, CC112X_SFSTXON);
 
   LED_off(LED_B);
 }
 
 int main(void)
 {
+  uint8_t pwr_reg;
   char output[100];
 
   Board_init();
@@ -99,6 +93,16 @@ int main(void)
 
   sprintf(output,"Freq: %.3fMHz, Power: %+.1fdBmW\r\n", freq, pwr);
   UART_puts(UART_INTERFACE, output);
+
+  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+  manualCalibration(SPI_RADIO_TX);
+
+  radio_set_freq_f(SPI_RADIO_TX, &freq);
+
+  radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
+  
+  /* Enable and calibrate frequency synthesizer */
+  SPI_cmd(SPI_RADIO_TX, CC112X_SFSTXON);
 
   while(1)
   {
