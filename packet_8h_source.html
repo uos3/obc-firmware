@@ -92,80 +92,98 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef __PACKET_FORMAT_H__</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __PACKET_FORMAT_H__</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#define PACKET_PREAMBLE_WORD 0x55555555</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PACKET_PREAMBLE_LENGTH 4</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#define PACKET_SYNC_WORD 0x42A6F8B3</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PACKET_SYNC_LENGTH 4</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#define PACKET_SPACECRAFT_ID 0x4242</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PACKET_CODED_DATA_LENGTH 1024</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">// Compile-time assertions in &lt; C11, Source: https://stackoverflow.com/a/3385694</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(!!(COND))*2-1]</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define COMPILE_TIME_ASSERT3(X,L) STATIC_ASSERT(X,static_assertion_at_line_##L)</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define COMPILE_TIME_ASSERT2(X,L) COMPILE_TIME_ASSERT3(X,L)</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define COMPILE_TIME_ASSERT(X)    COMPILE_TIME_ASSERT2(X,__LINE__)</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#define PACKET_PREAMBLE_WORD 0x55555555</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PACKET_PREAMBLE_LENGTH 4</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structpacket__telemetry__1024.html">   25</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  uint16_t spacecraft;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  uint16_t type;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  uint8_t data[106]; <span class="comment">/* 848 bits */</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  uint8_t hash[16];</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  uint16_t crc;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;} <a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a>;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="structpacket__telemetry__1024__hash.html">   33</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a> {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  uint8_t data[110];</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#define PACKET_SYNC_WORD 0x42A6F8B3</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PACKET_SYNC_LENGTH 4</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#define PACKET_SPACECRAFT_ID 0x4242</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PACKET_CODED_DATA_LENGTH 1024</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="structpacket__telemetry__1024.html">   31</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  uint16_t spacecraft;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  uint16_t type;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  uint8_t data[106]; <span class="comment">/* 848 bits */</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  uint8_t hash[16];</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  uint16_t _crc;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;} <a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  uint16_t crc;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;} <a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a>;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="structpacket__telemetry__1024__crc.html">   39</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a> {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  uint8_t data[126];</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  uint16_t crc;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;} <a class="code" href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">// Telecommand with 256 bit (: 128b hash: 10 bytes data, 64b hash: 18 bytes data</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;COMPILE_TIME_ASSERT(<span class="keyword">sizeof</span>(<a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a>)==128);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="structpacket__telemetry__1024__hash.html">   41</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a> {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  uint8_t data[110];</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  uint8_t hash[16];</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  uint16_t _crc;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;} <a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a>;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structpacket__telecommand__512.html">   47</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  uint16_t spacecraft;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  uint16_t type;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  uint8_t data[42]; <span class="comment">/* 336 bits */</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  uint8_t hash[16];</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  uint16_t crc;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;} <a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="structpacket__telecommand__512__hash.html">   55</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a> {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  uint8_t data[110];</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  uint8_t hash[16];</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  uint16_t _crc;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;} <a class="code" href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="structpacket__telecommand__512__crc.html">   61</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a> {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  uint8_t data[126];</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  uint16_t crc;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;} <a class="code" href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a>;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  PACKET_TYPE_NULL = 0</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;} packet_type;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keywordtype">void</span> Packet_telecommand_512_encode(<a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keywordtype">bool</span> Packet_telecommand_512_decode(uint8_t *input_buffer, <a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__packet.html#ga622d4fd1f81fe3b5c4179c2b61237bcb">Packet_telemetry_1024_encode</a>(<a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;COMPILE_TIME_ASSERT(<span class="keyword">sizeof</span>(<a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a>)==128);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="structpacket__telemetry__1024__crc.html">   49</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a> {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  uint8_t data[126];</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  uint16_t crc;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;} <a class="code" href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;COMPILE_TIME_ASSERT(<span class="keyword">sizeof</span>(<a class="code" href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a>)==128);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">// Telecommand with 256 bit (: 128b hash: 10 bytes data, 64b hash: 18 bytes data</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="structpacket__telecommand__512.html">   59</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  uint16_t spacecraft;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  uint16_t type;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  uint8_t data[42]; <span class="comment">/* 336 bits */</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  uint8_t hash[16];</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  uint16_t crc;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;} <a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;COMPILE_TIME_ASSERT(<span class="keyword">sizeof</span>(<a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a>)==64);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="structpacket__telecommand__512__hash.html">   69</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a> {</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  uint8_t data[46];</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  uint8_t hash[16];</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  uint16_t _crc;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;} <a class="code" href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;COMPILE_TIME_ASSERT(<span class="keyword">sizeof</span>(<a class="code" href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a>)==64);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="structpacket__telecommand__512__crc.html">   77</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a> {</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  uint8_t data[62];</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  uint16_t crc;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;} <a class="code" href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;COMPILE_TIME_ASSERT(<span class="keyword">sizeof</span>(<a class="code" href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a>)==64);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  PACKET_TYPE_NULL = 0</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;} packet_type;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keywordtype">void</span> Packet_telecommand_512_encode(<a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *input_packet, uint8_t *output_buffer, <span class="keyword">const</span> uint16_t origin, <span class="keyword">const</span> uint8_t *key, uint32_t key_length);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keywordtype">bool</span> Packet_telecommand_512_decode(uint8_t *input_buffer, <a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *output_packet, <span class="keyword">const</span> uint16_t destination, <span class="keyword">const</span> uint8_t *key, uint32_t key_length);</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keywordtype">bool</span> Packet_telemetry_1024_decode(uint8_t *input_buffer, <a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keywordtype">void</span> Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* __PACKET_FORMAT_H__ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="structpacket__telecommand__512__hash_html"><div class="ttname"><a href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00055">packet.h:55</a></div></div>
-<div class="ttc" id="structpacket__telemetry__1024__crc_html"><div class="ttname"><a href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00039">packet.h:39</a></div></div>
-<div class="ttc" id="structpacket__telemetry__1024__hash_html"><div class="ttname"><a href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00033">packet.h:33</a></div></div>
-<div class="ttc" id="group__packet_html_ga622d4fd1f81fe3b5c4179c2b61237bcb"><div class="ttname"><a href="group__packet.html#ga622d4fd1f81fe3b5c4179c2b61237bcb">Packet_telemetry_1024_encode</a></div><div class="ttdeci">void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)</div><div class="ttdef"><b>Definition:</b> <a href="packet_8c_source.html#l00101">packet.c:101</a></div></div>
-<div class="ttc" id="structpacket__telemetry__1024_html"><div class="ttname"><a href="structpacket__telemetry__1024.html">packet_telemetry_1024</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00025">packet.h:25</a></div></div>
-<div class="ttc" id="structpacket__telecommand__512__crc_html"><div class="ttname"><a href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00061">packet.h:61</a></div></div>
-<div class="ttc" id="structpacket__telecommand__512_html"><div class="ttname"><a href="structpacket__telecommand__512.html">packet_telecommand_512</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00047">packet.h:47</a></div></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__packet.html#ga0186eae3cca81ac20502af19a2472844">Packet_telemetry_1024_encode</a>(<a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *input_packet, uint8_t *output_buffer, <span class="keyword">const</span> uint16_t origin, <span class="keyword">const</span> uint8_t *key, uint32_t key_length);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="keywordtype">bool</span> Packet_telemetry_1024_decode(uint8_t *input_buffer, <a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *output_packet, <span class="keyword">const</span> uint16_t destination, <span class="keyword">const</span> uint8_t *key, uint32_t key_length);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keywordtype">void</span> Packet_sign_shake128(<span class="keyword">const</span> uint8_t *input, uint32_t input_length, <span class="keyword">const</span> uint8_t *key, uint32_t key_length, uint8_t *output);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* __PACKET_FORMAT_H__ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="group__packet_html_ga0186eae3cca81ac20502af19a2472844"><div class="ttname"><a href="group__packet.html#ga0186eae3cca81ac20502af19a2472844">Packet_telemetry_1024_encode</a></div><div class="ttdeci">void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, const uint16_t origin, const uint8_t *key, uint32_t key_length)</div><div class="ttdef"><b>Definition:</b> <a href="packet_8c_source.html#l00104">packet.c:104</a></div></div>
+<div class="ttc" id="structpacket__telecommand__512__hash_html"><div class="ttname"><a href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00069">packet.h:69</a></div></div>
+<div class="ttc" id="structpacket__telemetry__1024__crc_html"><div class="ttname"><a href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00049">packet.h:49</a></div></div>
+<div class="ttc" id="structpacket__telemetry__1024__hash_html"><div class="ttname"><a href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00041">packet.h:41</a></div></div>
+<div class="ttc" id="structpacket__telemetry__1024_html"><div class="ttname"><a href="structpacket__telemetry__1024.html">packet_telemetry_1024</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00031">packet.h:31</a></div></div>
+<div class="ttc" id="structpacket__telecommand__512__crc_html"><div class="ttname"><a href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00077">packet.h:77</a></div></div>
+<div class="ttc" id="structpacket__telecommand__512_html"><div class="ttname"><a href="structpacket__telecommand__512.html">packet_telecommand_512</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00059">packet.h:59</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

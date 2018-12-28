@@ -91,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;../firmware.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">void</span> Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">void</span> Packet_sign_shake128(<span class="keyword">const</span> uint8_t *input, uint32_t input_length, <span class="keyword">const</span> uint8_t *key, uint32_t key_length, uint8_t *output)</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <a class="code" href="structutil__shake__ctx__t.html">util_shake_ctx_t</a> shake_ctx;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <a class="code" href="group__shake.html#ga5e41509ab9663d06bc7f68366f30d94e">Util_shake_init</a>(&amp;shake_ctx, 16);</div>
@@ -102,12 +102,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <a class="code" href="group__shake.html#ga9837e42458e102206090d9684cf00517">Util_shake_out</a>(&amp;shake_ctx, output);</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">void</span> Packet_telecommand_512_encode(<a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">void</span> Packet_telecommand_512_encode(<a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *input_packet, uint8_t *output_buffer, <span class="keyword">const</span> uint16_t origin, <span class="keyword">const</span> uint8_t *key, uint32_t key_length)</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;{</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  input_packet-&gt;spacecraft = origin;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="comment">/* Authentication hash */</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  Packet_sign_shake128(input_packet-&gt;data, 46, key, key_length, input_packet-&gt;hash);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  Packet_sign_shake128(((<a class="code" href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a> *)input_packet)-&gt;data, 46, key, key_length, input_packet-&gt;hash);</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="comment">/* Integrity CRC */</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  input_packet-&gt;crc = <a class="code" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a>(((<a class="code" href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a> *)input_packet)-&gt;data, 62);</div>
@@ -120,131 +120,133 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  labrador_ldpc_copy_encode(LABRADOR_LDPC_CODE_TC512, &amp;((uint8_t *)input_packet)[32], &amp;output_buffer[64]);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">/* Interleave to improve FEC performance */</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  Packet_interleave_32x32((uint8_t *)output_buffer);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  Packet_interleave_32x32(output_buffer);</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">bool</span> Packet_telecommand_512_decode(uint8_t *input_buffer, <a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length)</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">bool</span> Packet_telecommand_512_decode(uint8_t *input_buffer, <a class="code" href="structpacket__telecommand__512.html">packet_telecommand_512</a> *output_packet, <span class="keyword">const</span> uint16_t destination, <span class="keyword">const</span> uint8_t *key, uint32_t key_length)</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;{</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  uint8_t ldpc_wa[LABRADOR_LDPC_BF_WORKING_LEN_TC512];</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  Packet_uninterleave_32x32(input_buffer);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">/* Attempt decode of first half of packet */</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordflow">if</span>(!labrador_ldpc_decode_bf(LABRADOR_LDPC_CODE_TC512,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                             input_buffer,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                             (uint8_t *)output_packet,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                             ldpc_wa,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                             50, <span class="comment">/* Iterations to use. TODO: Vary this for CPU budget */</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                             NULL))</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="comment">/* Un-whiten first half of packet */</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a>((uint8_t *)output_packet, 0, 32);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="comment">/* Check of the spacecraft id matching our destination, easy and cheap initial sanity check */</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">if</span>(output_packet-&gt;spacecraft != destination)</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  }</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="comment">/* Attempt decode of second half of packet */</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">if</span>(!labrador_ldpc_decode_bf(LABRADOR_LDPC_CODE_TC512,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                             &amp;input_buffer[64],</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                             &amp;((uint8_t *)output_packet)[32],</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                             ldpc_wa,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                             50, <span class="comment">/* Iterations to use. TODO: Vary this for CPU budget */</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                             NULL))</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  }</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">/* Un-whiten second half of packet */</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <a class="code" href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a>((uint8_t *)&amp;((uint8_t *)output_packet)[32], 32, 32);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint8_t ldpc_out[LABRADOR_LDPC_OUTPUT_LEN_TC512];</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  Packet_uninterleave_32x32(input_buffer);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="comment">/* Attempt decode of first half of packet */</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordflow">if</span>(!labrador_ldpc_decode_bf(LABRADOR_LDPC_CODE_TC512,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                             input_buffer,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                             (uint8_t *)output_packet,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                             ldpc_wa,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                             50, <span class="comment">/* Iterations to use. TODO: Vary this for CPU budget */</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                             NULL))</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">/* Un-whiten first half of packet */</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a>((uint8_t *)output_packet, 0, 32);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="comment">/* Check of the spacecraft id matching our destination, easy and cheap initial sanity check */</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">if</span>(output_packet-&gt;spacecraft != destination)</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  {</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="comment">/* Attempt decode of second half of packet */</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordflow">if</span>(!labrador_ldpc_decode_bf(LABRADOR_LDPC_CODE_TC512,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                             &amp;input_buffer[64],</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                             ldpc_out,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                             ldpc_wa,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                             50, <span class="comment">/* Iterations to use. TODO: Vary this for CPU budget */</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                             NULL))</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  {</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  }</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  memcpy(&amp;((uint8_t *)output_packet)[32], ldpc_out, 32);</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">/* Check packet CRC */</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">if</span>(output_packet-&gt;crc != <a class="code" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a>(output_packet-&gt;data, 62))</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  {</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  }</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">/* Check packet authentication hash */</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  uint8_t packet_hash[16];</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  Packet_sign_shake128(output_packet-&gt;data, 46, key, key_length, packet_hash);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">if</span>(memcmp(packet_hash, output_packet-&gt;hash, 16) != 0)</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  {</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">/* Un-whiten second half of packet */</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <a class="code" href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a>(&amp;((uint8_t *)output_packet)[32], 32, 32);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">/* Check packet CRC */</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">if</span>(output_packet-&gt;crc != <a class="code" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a>(((<a class="code" href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a> *)output_packet)-&gt;data, 62))</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  {</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="comment">/* Check packet authentication hash */</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  uint8_t packet_hash[16];</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  Packet_sign_shake128(((<a class="code" href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a> *)output_packet)-&gt;data, 46, key, key_length, packet_hash);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordflow">if</span>(memcmp(packet_hash, output_packet-&gt;hash, 16) != 0)</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  }</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="group__packet.html#ga622d4fd1f81fe3b5c4179c2b61237bcb">  101</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__packet.html#ga622d4fd1f81fe3b5c4179c2b61237bcb">Packet_telemetry_1024_encode</a>(<a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;{</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  input_packet-&gt;spacecraft = origin;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  Packet_sign_shake128(input_packet-&gt;data, 110, key, key_length, input_packet-&gt;hash);</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  input_packet-&gt;crc = <a class="code" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a>(input_packet-&gt;data, 126);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <a class="code" href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a>((uint8_t *)input_packet, 0, 128);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="comment">/* TODO: Add encoder for Matt&#39;s r=1/3 Turbo FEC */</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="comment">/* packet[1024b] -&gt; output_buffer[3072b] */</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  memcpy(output_buffer, input_packet, <span class="keyword">sizeof</span>(<a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a>));</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="comment">/* TODO: Need a rectangular interleaver */</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="comment">//Packet_interleave_64x64((uint8_t *)output_buffer);</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="keywordtype">bool</span> Packet_telemetry_1024_decode(uint8_t *input_buffer, <a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length)</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;{</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="comment">/* TODO: Need a rectangular interleaver */</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="comment">//Packet_uninterleave_64x64(input_buffer);</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="comment">/* TODO: Add hard-decoder for Matt&#39;s r=1/3 Turbo FEC (not used on the spacecraft) */</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="comment">/* input_buffer[3072b] -&gt; output_packet [1024b] */</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  memcpy(output_packet, input_buffer, <span class="keyword">sizeof</span>(<a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a>));</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <a class="code" href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a>((uint8_t *)output_packet, 0, 128);</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="comment">/* Check of the spacecraft id matching our destination, easy and cheap initial sanity check */</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">if</span>(output_packet-&gt;spacecraft != destination)</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  {</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  }</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  uint16_t packet_crc;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  packet_crc = <a class="code" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a>(((<a class="code" href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a> *)output_packet)-&gt;data, 126);</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  <span class="keywordflow">if</span>(memcmp(&amp;packet_crc, &amp;output_packet-&gt;crc, 16) != 0)</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  {</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  }</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  uint8_t packet_hash[16];</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  Packet_sign_shake128(((<a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a> *)output_packet)-&gt;data, 110, key, key_length, packet_hash);</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="keywordflow">if</span>(memcmp(packet_hash, output_packet-&gt;hash, 16) != 0)</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  {</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  }</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;}</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="group__packet.html#ga0186eae3cca81ac20502af19a2472844">  104</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__packet.html#ga0186eae3cca81ac20502af19a2472844">Packet_telemetry_1024_encode</a>(<a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *input_packet, uint8_t *output_buffer, <span class="keyword">const</span> uint16_t origin, <span class="keyword">const</span> uint8_t *key, uint32_t key_length)</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;{</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  input_packet-&gt;spacecraft = origin;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  Packet_sign_shake128(((<a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a> *)input_packet)-&gt;data, 110, key, key_length, input_packet-&gt;hash);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  input_packet-&gt;crc = <a class="code" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a>(((<a class="code" href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a> *)input_packet)-&gt;data, 126);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <a class="code" href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a>((uint8_t *)input_packet, 0, 128);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="comment">/* TODO: Add encoder for Matt&#39;s r=1/3 Turbo FEC */</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="comment">/* packet[1024b] -&gt; output_buffer[3072b] */</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  memcpy(output_buffer, input_packet, <span class="keyword">sizeof</span>(<a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a>));</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">/* TODO: Need a rectangular interleaver */</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="comment">//Packet_interleave_64x64((uint8_t *)output_buffer);</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;}</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="keywordtype">bool</span> Packet_telemetry_1024_decode(uint8_t *input_buffer, <a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a> *output_packet, <span class="keyword">const</span> uint16_t destination, <span class="keyword">const</span> uint8_t *key, uint32_t key_length)</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;{</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="comment">/* TODO: Need a rectangular interleaver */</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="comment">//Packet_uninterleave_64x64(input_buffer);</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="comment">/* TODO: Add hard-decoder for Matt&#39;s r=1/3 Turbo FEC (not used on the spacecraft) */</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="comment">/* input_buffer[3072b] -&gt; output_packet [1024b] */</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  memcpy(output_packet, input_buffer, <span class="keyword">sizeof</span>(<a class="code" href="structpacket__telemetry__1024.html">packet_telemetry_1024</a>));</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <a class="code" href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a>((uint8_t *)output_packet, 0, 128);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="comment">/* Check of the spacecraft id matching our destination, easy and cheap initial sanity check */</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keywordflow">if</span>(output_packet-&gt;spacecraft != destination)</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  }</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <span class="keywordflow">if</span>(output_packet-&gt;crc != <a class="code" href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a>(((<a class="code" href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a> *)output_packet)-&gt;data, 126))</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  {</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  }</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  uint8_t packet_hash[16];</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  Packet_sign_shake128(((<a class="code" href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a> *)output_packet)-&gt;data, 110, key, key_length, packet_hash);</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="keywordflow">if</span>(memcmp(packet_hash, output_packet-&gt;hash, 16) != 0)</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  {</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  }</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;}</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;</div>
 <div class="ttc" id="group__shake_html_ga5e41509ab9663d06bc7f68366f30d94e"><div class="ttname"><a href="group__shake.html#ga5e41509ab9663d06bc7f68366f30d94e">Util_shake_init</a></div><div class="ttdeci">void Util_shake_init(util_shake_ctx_t *c, uint8_t output_length)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00116">shake.c:116</a></div></div>
 <div class="ttc" id="structutil__shake__ctx__t_html"><div class="ttname"><a href="structutil__shake__ctx__t.html">util_shake_ctx_t</a></div><div class="ttdef"><b>Definition:</b> <a href="shake_8h_source.html#l00020">shake.h:20</a></div></div>
+<div class="ttc" id="group__packet_html_ga0186eae3cca81ac20502af19a2472844"><div class="ttname"><a href="group__packet.html#ga0186eae3cca81ac20502af19a2472844">Packet_telemetry_1024_encode</a></div><div class="ttdeci">void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, const uint16_t origin, const uint8_t *key, uint32_t key_length)</div><div class="ttdef"><b>Definition:</b> <a href="packet_8c_source.html#l00104">packet.c:104</a></div></div>
 <div class="ttc" id="group__shake_html_ga9837e42458e102206090d9684cf00517"><div class="ttname"><a href="group__shake.html#ga9837e42458e102206090d9684cf00517">Util_shake_out</a></div><div class="ttdeci">void Util_shake_out(util_shake_ctx_t *c, uint8_t *output)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00147">shake.c:147</a></div></div>
-<div class="ttc" id="structpacket__telemetry__1024__crc_html"><div class="ttname"><a href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00039">packet.h:39</a></div></div>
-<div class="ttc" id="structpacket__telemetry__1024__hash_html"><div class="ttname"><a href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00033">packet.h:33</a></div></div>
-<div class="ttc" id="group__packet_html_ga622d4fd1f81fe3b5c4179c2b61237bcb"><div class="ttname"><a href="group__packet.html#ga622d4fd1f81fe3b5c4179c2b61237bcb">Packet_telemetry_1024_encode</a></div><div class="ttdeci">void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)</div><div class="ttdef"><b>Definition:</b> <a href="packet_8c_source.html#l00101">packet.c:101</a></div></div>
+<div class="ttc" id="structpacket__telecommand__512__hash_html"><div class="ttname"><a href="structpacket__telecommand__512__hash.html">packet_telecommand_512_hash</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00069">packet.h:69</a></div></div>
+<div class="ttc" id="structpacket__telemetry__1024__crc_html"><div class="ttname"><a href="structpacket__telemetry__1024__crc.html">packet_telemetry_1024_crc</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00049">packet.h:49</a></div></div>
+<div class="ttc" id="structpacket__telemetry__1024__hash_html"><div class="ttname"><a href="structpacket__telemetry__1024__hash.html">packet_telemetry_1024_hash</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00041">packet.h:41</a></div></div>
 <div class="ttc" id="group__crc_html_ga9dc28c2eb39cbd42a50b3c5b9f353183"><div class="ttname"><a href="group__crc.html#ga9dc28c2eb39cbd42a50b3c5b9f353183">Util_crc16</a></div><div class="ttdeci">uint16_t Util_crc16(const uint8_t *buf, uint32_t size)</div><div class="ttdef"><b>Definition:</b> <a href="crc_8c_source.html#l00100">crc.c:100</a></div></div>
 <div class="ttc" id="group__pn9_html_ga71b82702111b4b014e7b731be253a59a"><div class="ttname"><a href="group__pn9.html#ga71b82702111b4b014e7b731be253a59a">Util_pn9</a></div><div class="ttdeci">void Util_pn9(uint8_t *buffer, uint32_t preroll, uint32_t length)</div><div class="ttdef"><b>Definition:</b> <a href="pn9_8c_source.html#l00011">pn9.c:11</a></div></div>
 <div class="ttc" id="group__shake_html_ga198e003d97b063a268d108b817294192"><div class="ttname"><a href="group__shake.html#ga198e003d97b063a268d108b817294192">Util_shake_update</a></div><div class="ttdeci">void Util_shake_update(util_shake_ctx_t *c, const uint8_t *data, uint32_t data_length)</div><div class="ttdef"><b>Definition:</b> <a href="shake_8c_source.html#l00129">shake.c:129</a></div></div>
-<div class="ttc" id="structpacket__telemetry__1024_html"><div class="ttname"><a href="structpacket__telemetry__1024.html">packet_telemetry_1024</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00025">packet.h:25</a></div></div>
-<div class="ttc" id="structpacket__telecommand__512__crc_html"><div class="ttname"><a href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00061">packet.h:61</a></div></div>
-<div class="ttc" id="structpacket__telecommand__512_html"><div class="ttname"><a href="structpacket__telecommand__512.html">packet_telecommand_512</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00047">packet.h:47</a></div></div>
+<div class="ttc" id="structpacket__telemetry__1024_html"><div class="ttname"><a href="structpacket__telemetry__1024.html">packet_telemetry_1024</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00031">packet.h:31</a></div></div>
+<div class="ttc" id="structpacket__telecommand__512__crc_html"><div class="ttname"><a href="structpacket__telecommand__512__crc.html">packet_telecommand_512_crc</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00077">packet.h:77</a></div></div>
+<div class="ttc" id="structpacket__telecommand__512_html"><div class="ttname"><a href="structpacket__telecommand__512.html">packet_telecommand_512</a></div><div class="ttdef"><b>Definition:</b> <a href="packet_8h_source.html#l00059">packet.h:59</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

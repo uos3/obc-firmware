@@ -302,8 +302,8 @@ Please use a more specific name by including a (larger) part of the path!
    /home/travis/build/uos3/obc-firmware/src/util/test/pn9.c
 Please use a more specific name by including a (larger) part of the path!
 /home/travis/build/uos3/obc-firmware/src/util/shake.c:4: warning: the name `sha3.c' supplied as the second argument in the \file statement is not an input file
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:33: warning: Compound packet_telemetry_1024_hash is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:25: warning: Compound packet_telemetry_1024 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:41: warning: Compound packet_telemetry_1024_hash is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:31: warning: Compound packet_telemetry_1024 is not documented.
 /home/travis/build/uos3/obc-firmware/src/cc1125/cc1125.h:7: warning: Compound registerSetting_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/board/uos3-proto/wdt.c:18: warning: Compound WDT is not documented.
 /home/travis/build/uos3/obc-firmware/src/board/uos3-proto/led.c:17: warning: Compound LED is not documented.
@@ -311,16 +311,16 @@ Please use a more specific name by including a (larger) part of the path!
 /home/travis/build/uos3/obc-firmware/src/board/uos3-proto/i2c.c:31: warning: Compound I2C_port_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/util/shake.h:20: warning: Compound util_shake_ctx_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/board/uos3-proto/spi.c:28: warning: Compound SPI_port is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:55: warning: Compound packet_telecommand_512_hash is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:69: warning: Compound packet_telecommand_512_hash is not documented.
 /home/travis/build/uos3/obc-firmware/src/configuration/configuration.h:83: warning: Compound configuration_t is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:39: warning: Compound packet_telemetry_1024_crc is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:49: warning: Compound packet_telemetry_1024_crc is not documented.
 /home/travis/build/uos3/obc-firmware/src/board/uos3-proto/gpio.c:20: warning: Compound GPIO is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:61: warning: Compound packet_telecommand_512_crc is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:77: warning: Compound packet_telecommand_512_crc is not documented.
 /home/travis/build/uos3/obc-firmware/src/mission/mission.h:18: warning: Compound mission_state_data_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/board/uos3-proto/eps.c:69: warning: Compound eps_master_packet_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/configuration/configuration.h:42: warning: Compound configuration_data_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/board/uos3-proto/spi.c:62: warning: Compound SPI_t is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:47: warning: Compound packet_telecommand_512 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:59: warning: Compound packet_telecommand_512 is not documented.
 /home/travis/build/uos3/obc-firmware/src/mission/mission.h:33: warning: Compound subsystems_ok_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/board/uos3-proto/eps.c:78: warning: Compound eps_slave_packet_single_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/packet/telemetry.h:34: warning: Compound packet_telemetry_realtime is not documented.
@@ -654,9 +654,9 @@ Generating docs for file /home/travis/build/uos3/obc-fir/home/travis/build/uos3/
 /home/travis/build/uos3/obc-firmware/src/board/uart.h:134: warning: Found unknown command `\function'
 /home/travis/build/uos3/obc-firmware/src/board/uart.h:145: warning: Found unknown command `\function'
 /home/travis/build/uos3/obc-firmware/src/board/gnulinux/wdt.c:17: warning: Found unknown command `\function'
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:75: warning: Found unknown command `\function'
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:75: warning: argument 'packet' of command @param is not found in the argument list of Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:75: warning: The following parameters of Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length) are not documented:
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:93: warning: Found unknown command `\function'
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:93: warning: argument 'packet' of command @param is not found in the argument list of Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, const uint16_t origin, const uint8_t *key, uint32_t key_length)
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:93: warning: The following parameters of Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, const uint16_t origin, const uint8_t *key, uint32_t key_length) are not documented:
   parameter 'input_packet'
   parameter 'output_buffer'
 /home/travis/build/uos3/obc-firmware/src/test.h:36: warning: Found unknown command `\function'
@@ -746,26 +746,26 @@ Generating docs for file /home/travis/build/uos3/obc-fir/home/travis/build/uos3/
 /home/travis/build/uos3/obc-firmware/src/mission/mission.h:24: warning: Member configuration_crcfail (variable) of class mission_state_data_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/mission/mission.h:28: warning: Member data (variable) of class mission_state_t is not documented.
 /home/travis/build/uos3/obc-firmware/src/mission/mission.h:29: warning: Member crc (variable) of class mission_state_t is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:48: warning: Member spacecraft (variable) of class packet_telecommand_512 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:49: warning: Member type (variable) of class packet_telecommand_512 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:50: warning: Member data[42] (variable) of class packet_telecommand_512 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:51: warning: Member hash[16] (variable) of class packet_telecommand_512 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:52: warning: Member crc (variable) of class packet_telecommand_512 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:62: warning: Member data[126] (variable) of class packet_telecommand_512_crc is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:63: warning: Member crc (variable) of class packet_telecommand_512_crc is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:56: warning: Member data[110] (variable) of class packet_telecommand_512_hash is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:57: warning: Member hash[16] (variable) of class packet_telecommand_512_hash is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:58: warning: Member _crc (variable) of class packet_telecommand_512_hash is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:26: warning: Member spacecraft (variable) of class packet_telemetry_1024 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:27: warning: Member type (variable) of class packet_telemetry_1024 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:28: warning: Member data[106] (variable) of class packet_telemetry_1024 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:29: warning: Member hash[16] (variable) of class packet_telemetry_1024 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:30: warning: Member crc (variable) of class packet_telemetry_1024 is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:40: warning: Member data[126] (variable) of class packet_telemetry_1024_crc is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:41: warning: Member crc (variable) of class packet_telemetry_1024_crc is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:34: warning: Member data[110] (variable) of class packet_telemetry_1024_hash is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:35: warning: Member hash[16] (variable) of class packet_telemetry_1024_hash is not documented.
-/home/travis/build/uos3/obc-firmware/src/packet/packet.h:36: warning: Member _crc (variable) of class packet_telemetry_1024_hash is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:60: warning: Member spacecraft (variable) of class packet_telecommand_512 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:61: warning: Member type (variable) of class packet_telecommand_512 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:62: warning: Member data[42] (variable) of class packet_telecommand_512 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:63: warning: Member hash[16] (variable) of class packet_telecommand_512 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:64: warning: Member crc (variable) of class packet_telecommand_512 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:78: warning: Member data[62] (variable) of class packet_telecommand_512_crc is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:79: warning: Member crc (variable) of class packet_telecommand_512_crc is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:70: warning: Member data[46] (variable) of class packet_telecommand_512_hash is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:71: warning: Member hash[16] (variable) of class packet_telecommand_512_hash is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:72: warning: Member _crc (variable) of class packet_telecommand_512_hash is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:32: warning: Member spacecraft (variable) of class packet_telemetry_1024 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:33: warning: Member type (variable) of class packet_telemetry_1024 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:34: warning: Member data[106] (variable) of class packet_telemetry_1024 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:35: warning: Member hash[16] (variable) of class packet_telemetry_1024 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:36: warning: Member crc (variable) of class packet_telemetry_1024 is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:50: warning: Member data[126] (variable) of class packet_telemetry_1024_crc is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:51: warning: Member crc (variable) of class packet_telemetry_1024_crc is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:42: warning: Member data[110] (variable) of class packet_telemetry_1024_hash is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:43: warning: Member hash[16] (variable) of class packet_telemetry_1024_hash is not documented.
+/home/travis/build/uos3/obc-firmware/src/packet/packet.h:44: warning: Member _crc (variable) of class packet_telemetry_1024_hash is not documented.
 /home/travis/build/uos3/obc-firmware/src/packet/telemetry.h:35: warning: Member time (variable) of class packet_telemetry_realtime is not documented.
 /home/travis/build/uos3/obc-firmware/src/packet/telemetry.h:36: warning: Member sequence (variable) of class packet_telemetry_realtime is not documented.
 /home/travis/build/uos3/obc-firmware/src/packet/telemetry.h:37: warning: Member battery_voltage (variable) of class packet_telemetry_realtime is not documented.
@@ -879,5 +879,5 @@ Generating file index...
 Generating file member index...
 Generating example index...
 finalizing index lists...
-lookup cache used 602/65536 hits=3033 misses=607
+lookup cache used 603/65536 hits=3066 misses=610
 finished...

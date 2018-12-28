@@ -4,7 +4,7 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>LCOV - test-c06f828-dirty-coverage.info - packet/packet.c</title>
+  <title>LCOV - test-9bed542-dirty-coverage.info - packet/packet.c</title>
   <link rel="stylesheet" type="text/css" href="../gcov.css">
 </head>
 
@@ -28,16 +28,16 @@
           </tr>
           <tr>
             <td class="headerItem">Test:</td>
-            <td class="headerValue">test-c06f828-dirty-coverage.info</td>
+            <td class="headerValue">test-9bed542-dirty-coverage.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">39</td>
+            <td class="headerCovTableEntry">43</td>
             <td class="headerCovTableEntry">51</td>
-            <td class="headerCovTableEntryMed">76.5 %</td>
+            <td class="headerCovTableEntryMed">84.3 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-12-16</td>
+            <td class="headerValue">2018-12-28</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">5</td>
@@ -70,23 +70,23 @@
 <span class="lineNum">       8 </span>            : 
 <a name="9"><span class="lineNum">       9 </span>            : #include &quot;../firmware.h&quot;</a>
 <span class="lineNum">      10 </span>            : 
-<span class="lineNum">      11 </span><span class="lineCov">          3 : void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)</span>
+<span class="lineNum">      11 </span><span class="lineCov">          5 : void Packet_sign_shake128(const uint8_t *input, uint32_t input_length, const uint8_t *key, uint32_t key_length, uint8_t *output)</span>
 <span class="lineNum">      12 </span>            : {
 <span class="lineNum">      13 </span>            :   util_shake_ctx_t shake_ctx;
-<span class="lineNum">      14 </span><span class="lineCov">          3 :   Util_shake_init(&amp;shake_ctx, 16);</span>
+<span class="lineNum">      14 </span><span class="lineCov">          5 :   Util_shake_init(&amp;shake_ctx, 16);</span>
 <span class="lineNum">      15 </span>            : 
-<span class="lineNum">      16 </span><span class="lineCov">          3 :   Util_shake_update(&amp;shake_ctx, input, input_length);</span>
-<span class="lineNum">      17 </span><span class="lineCov">          3 :   Util_shake_update(&amp;shake_ctx, key, key_length);</span>
+<span class="lineNum">      16 </span><span class="lineCov">          5 :   Util_shake_update(&amp;shake_ctx, input, input_length);</span>
+<span class="lineNum">      17 </span><span class="lineCov">          5 :   Util_shake_update(&amp;shake_ctx, key, key_length);</span>
 <span class="lineNum">      18 </span>            : 
-<span class="lineNum">      19 </span><span class="lineCov">          3 :   Util_shake_out(&amp;shake_ctx, output);</span>
-<a name="20"><span class="lineNum">      20 </span><span class="lineCov">          3 : }</span></a>
+<span class="lineNum">      19 </span><span class="lineCov">          5 :   Util_shake_out(&amp;shake_ctx, output);</span>
+<a name="20"><span class="lineNum">      20 </span><span class="lineCov">          5 : }</span></a>
 <span class="lineNum">      21 </span>            : 
-<span class="lineNum">      22 </span><span class="lineCov">          1 : void Packet_telecommand_512_encode(packet_telecommand_512 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)</span>
+<span class="lineNum">      22 </span><span class="lineCov">          1 : void Packet_telecommand_512_encode(packet_telecommand_512 *input_packet, uint8_t *output_buffer, const uint16_t origin, const uint8_t *key, uint32_t key_length)</span>
 <span class="lineNum">      23 </span>            : {
 <span class="lineNum">      24 </span><span class="lineCov">          1 :   input_packet-&gt;spacecraft = origin;</span>
 <span class="lineNum">      25 </span>            : 
 <span class="lineNum">      26 </span>            :   /* Authentication hash */
-<span class="lineNum">      27 </span><span class="lineCov">          1 :   Packet_sign_shake128(input_packet-&gt;data, 46, key, key_length, input_packet-&gt;hash);</span>
+<span class="lineNum">      27 </span><span class="lineCov">          1 :   Packet_sign_shake128(((packet_telecommand_512_hash *)input_packet)-&gt;data, 46, key, key_length, input_packet-&gt;hash);</span>
 <span class="lineNum">      28 </span>            : 
 <span class="lineNum">      29 </span>            :   /* Integrity CRC */
 <span class="lineNum">      30 </span><span class="lineCov">          1 :   input_packet-&gt;crc = Util_crc16(((packet_telecommand_512_crc *)input_packet)-&gt;data, 62);</span>
@@ -99,122 +99,123 @@
 <span class="lineNum">      37 </span><span class="lineCov">          1 :   labrador_ldpc_copy_encode(LABRADOR_LDPC_CODE_TC512, &amp;((uint8_t *)input_packet)[32], &amp;output_buffer[64]);</span>
 <span class="lineNum">      38 </span>            : 
 <span class="lineNum">      39 </span>            :   /* Interleave to improve FEC performance */
-<span class="lineNum">      40 </span><span class="lineCov">          1 :   Packet_interleave_32x32((uint8_t *)output_buffer);</span>
+<span class="lineNum">      40 </span><span class="lineCov">          1 :   Packet_interleave_32x32(output_buffer);</span>
 <a name="41"><span class="lineNum">      41 </span><span class="lineCov">          1 : }</span></a>
 <span class="lineNum">      42 </span>            : 
-<span class="lineNum">      43 </span><span class="lineCov">          1 : bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512 *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length)</span>
+<span class="lineNum">      43 </span><span class="lineCov">          1 : bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512 *output_packet, const uint16_t destination, const uint8_t *key, uint32_t key_length)</span>
 <span class="lineNum">      44 </span>            : {
 <span class="lineNum">      45 </span>            :   uint8_t ldpc_wa[LABRADOR_LDPC_BF_WORKING_LEN_TC512];
-<span class="lineNum">      46 </span>            : 
-<span class="lineNum">      47 </span><span class="lineCov">          1 :   Packet_uninterleave_32x32(input_buffer);</span>
-<span class="lineNum">      48 </span>            : 
-<span class="lineNum">      49 </span>            :   /* Attempt decode of first half of packet */
-<span class="lineNum">      50 </span><span class="lineCov">          1 :   if(!labrador_ldpc_decode_bf(LABRADOR_LDPC_CODE_TC512,</span>
-<span class="lineNum">      51 </span>            :                              input_buffer,
-<span class="lineNum">      52 </span>            :                              (uint8_t *)output_packet,
-<span class="lineNum">      53 </span>            :                              ldpc_wa,
-<span class="lineNum">      54 </span>            :                              50, /* Iterations to use. TODO: Vary this for CPU budget */
-<span class="lineNum">      55 </span>            :                              NULL))
-<span class="lineNum">      56 </span>            :   {
-<span class="lineNum">      57 </span><span class="lineNoCov">          0 :     return false;</span>
-<span class="lineNum">      58 </span>            :   }
-<span class="lineNum">      59 </span>            : 
-<span class="lineNum">      60 </span>            :   /* Un-whiten first half of packet */
-<span class="lineNum">      61 </span><span class="lineCov">          1 :   Util_pn9((uint8_t *)output_packet, 0, 32);</span>
-<span class="lineNum">      62 </span>            : 
-<span class="lineNum">      63 </span>            :   /* Check of the spacecraft id matching our destination, easy and cheap initial sanity check */
-<span class="lineNum">      64 </span><span class="lineCov">          1 :   if(output_packet-&gt;spacecraft != destination)</span>
-<span class="lineNum">      65 </span>            :   {
-<span class="lineNum">      66 </span><span class="lineNoCov">          0 :     return false;</span>
-<span class="lineNum">      67 </span>            :   }
-<span class="lineNum">      68 </span>            : 
-<span class="lineNum">      69 </span>            :   /* Attempt decode of second half of packet */
-<span class="lineNum">      70 </span><span class="lineCov">          2 :   if(!labrador_ldpc_decode_bf(LABRADOR_LDPC_CODE_TC512,</span>
-<span class="lineNum">      71 </span><span class="lineCov">          1 :                              &amp;input_buffer[64],</span>
-<span class="lineNum">      72 </span>            :                              &amp;((uint8_t *)output_packet)[32],
-<span class="lineNum">      73 </span>            :                              ldpc_wa,
-<span class="lineNum">      74 </span>            :                              50, /* Iterations to use. TODO: Vary this for CPU budget */
-<span class="lineNum">      75 </span>            :                              NULL))
-<span class="lineNum">      76 </span>            :   {
-<span class="lineNum">      77 </span><span class="lineNoCov">          0 :     return false;</span>
-<span class="lineNum">      78 </span>            :   }
-<span class="lineNum">      79 </span>            : 
-<span class="lineNum">      80 </span>            :   /* Un-whiten second half of packet */
-<span class="lineNum">      81 </span><span class="lineCov">          1 :   Util_pn9((uint8_t *)&amp;((uint8_t *)output_packet)[32], 32, 32);</span>
+<span class="lineNum">      46 </span>            :   uint8_t ldpc_out[LABRADOR_LDPC_OUTPUT_LEN_TC512];
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span><span class="lineCov">          1 :   Packet_uninterleave_32x32(input_buffer);</span>
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :   /* Attempt decode of first half of packet */
+<span class="lineNum">      51 </span><span class="lineCov">          1 :   if(!labrador_ldpc_decode_bf(LABRADOR_LDPC_CODE_TC512,</span>
+<span class="lineNum">      52 </span>            :                              input_buffer,
+<span class="lineNum">      53 </span>            :                              (uint8_t *)output_packet,
+<span class="lineNum">      54 </span>            :                              ldpc_wa,
+<span class="lineNum">      55 </span>            :                              50, /* Iterations to use. TODO: Vary this for CPU budget */
+<span class="lineNum">      56 </span>            :                              NULL))
+<span class="lineNum">      57 </span>            :   {
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">      59 </span>            :   }
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            :   /* Un-whiten first half of packet */
+<span class="lineNum">      62 </span><span class="lineCov">          1 :   Util_pn9((uint8_t *)output_packet, 0, 32);</span>
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            :   /* Check of the spacecraft id matching our destination, easy and cheap initial sanity check */
+<span class="lineNum">      65 </span><span class="lineCov">          1 :   if(output_packet-&gt;spacecraft != destination)</span>
+<span class="lineNum">      66 </span>            :   {
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">      68 </span>            :   }
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            :   /* Attempt decode of second half of packet */
+<span class="lineNum">      71 </span><span class="lineCov">          1 :   if(!labrador_ldpc_decode_bf(LABRADOR_LDPC_CODE_TC512,</span>
+<span class="lineNum">      72 </span><span class="lineCov">          1 :                              &amp;input_buffer[64],</span>
+<span class="lineNum">      73 </span>            :                              ldpc_out,
+<span class="lineNum">      74 </span>            :                              ldpc_wa,
+<span class="lineNum">      75 </span>            :                              50, /* Iterations to use. TODO: Vary this for CPU budget */
+<span class="lineNum">      76 </span>            :                              NULL))
+<span class="lineNum">      77 </span>            :   {
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">      79 </span>            :   }
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span><span class="lineCov">          1 :   memcpy(&amp;((uint8_t *)output_packet)[32], ldpc_out, 32);</span>
 <span class="lineNum">      82 </span>            : 
-<span class="lineNum">      83 </span>            :   /* Check packet CRC */
-<span class="lineNum">      84 </span><span class="lineCov">          1 :   if(output_packet-&gt;crc != Util_crc16(output_packet-&gt;data, 62))</span>
-<span class="lineNum">      85 </span>            :   {
-<span class="lineNum">      86 </span><span class="lineCov">          1 :     return false;</span>
-<span class="lineNum">      87 </span>            :   }
-<span class="lineNum">      88 </span>            : 
-<span class="lineNum">      89 </span>            :   /* Check packet authentication hash */
-<span class="lineNum">      90 </span>            :   uint8_t packet_hash[16];
-<span class="lineNum">      91 </span><span class="lineNoCov">          0 :   Packet_sign_shake128(output_packet-&gt;data, 46, key, key_length, packet_hash);</span>
-<span class="lineNum">      92 </span><span class="lineNoCov">          0 :   if(memcmp(packet_hash, output_packet-&gt;hash, 16) != 0)</span>
-<span class="lineNum">      93 </span>            :   {
-<span class="lineNum">      94 </span><span class="lineNoCov">          0 :     return false;</span>
-<span class="lineNum">      95 </span>            :   }
-<span class="lineNum">      96 </span>            : 
-<span class="lineNum">      97 </span><span class="lineNoCov">          0 :   return true;</span>
-<span class="lineNum">      98 </span>            : }
-<a name="99"><span class="lineNum">      99 </span>            : </a>
-<span class="lineNum">     100 </span>            : 
-<span class="lineNum">     101 </span><span class="lineCov">          1 : void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)</span>
-<span class="lineNum">     102 </span>            : {
-<span class="lineNum">     103 </span><span class="lineCov">          1 :   input_packet-&gt;spacecraft = origin;</span>
-<span class="lineNum">     104 </span>            : 
-<span class="lineNum">     105 </span><span class="lineCov">          1 :   Packet_sign_shake128(input_packet-&gt;data, 110, key, key_length, input_packet-&gt;hash);</span>
-<span class="lineNum">     106 </span>            : 
-<span class="lineNum">     107 </span><span class="lineCov">          1 :   input_packet-&gt;crc = Util_crc16(input_packet-&gt;data, 126);</span>
-<span class="lineNum">     108 </span>            : 
-<span class="lineNum">     109 </span><span class="lineCov">          1 :   Util_pn9((uint8_t *)input_packet, 0, 128);</span>
-<span class="lineNum">     110 </span>            : 
-<span class="lineNum">     111 </span>            :   /* TODO: Add encoder for Matt's r=1/3 Turbo FEC */
-<span class="lineNum">     112 </span>            :   /* packet[1024b] -&gt; output_buffer[3072b] */
-<span class="lineNum">     113 </span><span class="lineCov">          1 :   memcpy(output_buffer, input_packet, sizeof(packet_telemetry_1024));</span>
-<span class="lineNum">     114 </span>            : 
-<span class="lineNum">     115 </span>            :   /* TODO: Need a rectangular interleaver */
-<span class="lineNum">     116 </span>            :   //Packet_interleave_64x64((uint8_t *)output_buffer);
-<a name="117"><span class="lineNum">     117 </span><span class="lineCov">          1 : }</span></a>
-<span class="lineNum">     118 </span>            : 
-<span class="lineNum">     119 </span><span class="lineCov">          1 : bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length)</span>
-<span class="lineNum">     120 </span>            : {
-<span class="lineNum">     121 </span>            :   /* TODO: Need a rectangular interleaver */
-<span class="lineNum">     122 </span>            :   //Packet_uninterleave_64x64(input_buffer);
-<span class="lineNum">     123 </span>            : 
-<span class="lineNum">     124 </span>            :   /* TODO: Add hard-decoder for Matt's r=1/3 Turbo FEC (not used on the spacecraft) */
-<span class="lineNum">     125 </span>            :   /* input_buffer[3072b] -&gt; output_packet [1024b] */
-<span class="lineNum">     126 </span><span class="lineCov">          1 :   memcpy(output_packet, input_buffer, sizeof(packet_telemetry_1024));</span>
-<span class="lineNum">     127 </span>            : 
-<span class="lineNum">     128 </span><span class="lineCov">          1 :   Util_pn9((uint8_t *)output_packet, 0, 128);</span>
-<span class="lineNum">     129 </span>            : 
-<span class="lineNum">     130 </span>            :   /* Check of the spacecraft id matching our destination, easy and cheap initial sanity check */
-<span class="lineNum">     131 </span><span class="lineCov">          1 :   if(output_packet-&gt;spacecraft != destination)</span>
-<span class="lineNum">     132 </span>            :   {
-<span class="lineNum">     133 </span><span class="lineNoCov">          0 :     return false;</span>
-<span class="lineNum">     134 </span>            :   }
-<span class="lineNum">     135 </span>            : 
-<span class="lineNum">     136 </span>            :   uint16_t packet_crc;
-<span class="lineNum">     137 </span><span class="lineCov">          1 :   packet_crc = Util_crc16(((packet_telemetry_1024_crc *)output_packet)-&gt;data, 126);</span>
-<span class="lineNum">     138 </span><span class="lineCov">          1 :   if(memcmp(&amp;packet_crc, &amp;output_packet-&gt;crc, 16) != 0)</span>
-<span class="lineNum">     139 </span>            :   {
-<span class="lineNum">     140 </span><span class="lineCov">          1 :         return false;</span>
-<span class="lineNum">     141 </span>            :   }
-<span class="lineNum">     142 </span>            : 
-<span class="lineNum">     143 </span>            :   uint8_t packet_hash[16];
-<span class="lineNum">     144 </span><span class="lineNoCov">          0 :   Packet_sign_shake128(((packet_telemetry_1024_hash *)output_packet)-&gt;data, 110, key, key_length, packet_hash);</span>
-<span class="lineNum">     145 </span><span class="lineNoCov">          0 :   if(memcmp(packet_hash, output_packet-&gt;hash, 16) != 0)</span>
-<span class="lineNum">     146 </span>            :   {
-<span class="lineNum">     147 </span><span class="lineNoCov">          0 :         return false;</span>
-<span class="lineNum">     148 </span>            :   }
-<span class="lineNum">     149 </span>            : 
-<span class="lineNum">     150 </span><span class="lineNoCov">          0 :   return true;</span>
-<span class="lineNum">     151 </span>            : }
-<span class="lineNum">     152 </span>            : 
-<span class="lineNum">     153 </span>            : /**
-<span class="lineNum">     154 </span>            :  * @}
-<span class="lineNum">     155 </span>            :  */
+<span class="lineNum">      83 </span>            :   /* Un-whiten second half of packet */
+<span class="lineNum">      84 </span><span class="lineCov">          1 :   Util_pn9(&amp;((uint8_t *)output_packet)[32], 32, 32);</span>
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            :   /* Check packet CRC */
+<span class="lineNum">      87 </span><span class="lineCov">          1 :   if(output_packet-&gt;crc != Util_crc16(((packet_telecommand_512_crc *)output_packet)-&gt;data, 62))</span>
+<span class="lineNum">      88 </span>            :   {
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">      90 </span>            :   }
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :   /* Check packet authentication hash */
+<span class="lineNum">      93 </span>            :   uint8_t packet_hash[16];
+<span class="lineNum">      94 </span><span class="lineCov">          1 :   Packet_sign_shake128(((packet_telecommand_512_hash *)output_packet)-&gt;data, 46, key, key_length, packet_hash);</span>
+<span class="lineNum">      95 </span><span class="lineCov">          1 :   if(memcmp(packet_hash, output_packet-&gt;hash, 16) != 0)</span>
+<span class="lineNum">      96 </span>            :   {
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">      98 </span>            :   }
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span><span class="lineCov">          1 :   return true;</span>
+<span class="lineNum">     101 </span>            : }
+<a name="102"><span class="lineNum">     102 </span>            : </a>
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span><span class="lineCov">          1 : void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, const uint16_t origin, const uint8_t *key, uint32_t key_length)</span>
+<span class="lineNum">     105 </span>            : {
+<span class="lineNum">     106 </span><span class="lineCov">          1 :   input_packet-&gt;spacecraft = origin;</span>
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span><span class="lineCov">          1 :   Packet_sign_shake128(((packet_telemetry_1024_hash *)input_packet)-&gt;data, 110, key, key_length, input_packet-&gt;hash);</span>
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span><span class="lineCov">          1 :   input_packet-&gt;crc = Util_crc16(((packet_telemetry_1024_crc *)input_packet)-&gt;data, 126);</span>
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span><span class="lineCov">          1 :   Util_pn9((uint8_t *)input_packet, 0, 128);</span>
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            :   /* TODO: Add encoder for Matt's r=1/3 Turbo FEC */
+<span class="lineNum">     115 </span>            :   /* packet[1024b] -&gt; output_buffer[3072b] */
+<span class="lineNum">     116 </span><span class="lineCov">          1 :   memcpy(output_buffer, input_packet, sizeof(packet_telemetry_1024));</span>
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            :   /* TODO: Need a rectangular interleaver */
+<span class="lineNum">     119 </span>            :   //Packet_interleave_64x64((uint8_t *)output_buffer);
+<a name="120"><span class="lineNum">     120 </span><span class="lineCov">          1 : }</span></a>
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span><span class="lineCov">          1 : bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *output_packet, const uint16_t destination, const uint8_t *key, uint32_t key_length)</span>
+<span class="lineNum">     123 </span>            : {
+<span class="lineNum">     124 </span>            :   /* TODO: Need a rectangular interleaver */
+<span class="lineNum">     125 </span>            :   //Packet_uninterleave_64x64(input_buffer);
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            :   /* TODO: Add hard-decoder for Matt's r=1/3 Turbo FEC (not used on the spacecraft) */
+<span class="lineNum">     128 </span>            :   /* input_buffer[3072b] -&gt; output_packet [1024b] */
+<span class="lineNum">     129 </span><span class="lineCov">          1 :   memcpy(output_packet, input_buffer, sizeof(packet_telemetry_1024));</span>
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span><span class="lineCov">          1 :   Util_pn9((uint8_t *)output_packet, 0, 128);</span>
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            :   /* Check of the spacecraft id matching our destination, easy and cheap initial sanity check */
+<span class="lineNum">     134 </span><span class="lineCov">          1 :   if(output_packet-&gt;spacecraft != destination)</span>
+<span class="lineNum">     135 </span>            :   {
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">     137 </span>            :   }
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span><span class="lineCov">          1 :   if(output_packet-&gt;crc != Util_crc16(((packet_telemetry_1024_crc *)output_packet)-&gt;data, 126))</span>
+<span class="lineNum">     140 </span>            :   {
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     142 </span>            :   }
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :   uint8_t packet_hash[16];
+<span class="lineNum">     145 </span><span class="lineCov">          1 :   Packet_sign_shake128(((packet_telemetry_1024_hash *)output_packet)-&gt;data, 110, key, key_length, packet_hash);</span>
+<span class="lineNum">     146 </span><span class="lineCov">          1 :   if(memcmp(packet_hash, output_packet-&gt;hash, 16) != 0)</span>
+<span class="lineNum">     147 </span>            :   {
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     149 </span>            :   }
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span><span class="lineCov">          1 :   return true;</span>
+<span class="lineNum">     152 </span>            : }
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            : /**
+<span class="lineNum">     155 </span>            :  * @}
+<span class="lineNum">     156 </span>            :  */
 </pre>
       </td>
     </tr>
