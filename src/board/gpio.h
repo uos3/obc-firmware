@@ -60,4 +60,26 @@ void GPIO_write(uint8_t gpio_number, bool state);
  */
 bool GPIO_read(uint8_t gpio_number);
 
+/**
+ * @function
+ * @ingroup gpio
+ *
+ * Sets up a rising-edge interrupt on the specified GPIO pin
+ *
+ * @param gpio_number ID of the GPIO pin
+ * @param pointer to the function to be called in the interrupt
+ * @returns true on success, false on failure
+ */
+bool GPIO_set_risingInterrupt(uint8_t gpio_number, void interrupt_callback(void));
+
+/**
+ * @function
+ * @ingroup gpio
+ *
+ * Removes an interrupt on the specified GPIO pin
+ *
+ * @param gpio_number ID of the GPIO pin
+ */
+void GPIO_reset_interrupt(uint8_t gpio_number);
+
 #endif /*  __GPIO_H__ */
