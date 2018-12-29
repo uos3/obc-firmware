@@ -22,44 +22,32 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 
-/* Note that this module currently has no locking of the underlying physical port */
-
-/* SPI physical port description struct */
 typedef struct Radio_device {
   uint8_t   spi_device;
   uint8_t   device_id;
-  bool      initialised;
 } Radio_device;
 
 static Radio_device Radio_transmitter =
 {
   .spi_device = SPI_RADIO_TX,
   .device_id = 0x8F, // cc1125
-  .initialised = false
 };
 static Radio_device Radio_receiver =
 {
   .spi_device = SPI_RADIO_RX,
   .device_id = 0x8F, // cc1125
-  .initialised = false
 };
 
-static void Radio_init(Radio_device* radio)
-{
-  /* Check Physical SPI is initialised */
-  if(!radio->initialised)
-  {
-    
-
-    radio->initialised = true;
-  }
-}
-
-static uint8_t Radio_query_partnumber(Radio_device* radio)
+static uint8_t Radio_query_partnumber(Radio_device *radio)
 {
   uint8_t result;
   cc112xSpiReadReg(radio->spi_device, CC112X_PARTNUMBER, &result);
   return result;
+}
+
+static void Radio_configure(Radio_device *radio, radio_config_t *config)
+{
+  
 }
 
 /** Public Functions */
@@ -67,20 +55,21 @@ static uint8_t Radio_query_partnumber(Radio_device* radio)
 
 uint8_t Radio_tx_msk(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t data_length, void *end_of_tx_handler)
 {
-  if(!Radio_transmitter.initialised)
-  {
-    return RADIO_STATUS_NOT_INITIALISED;
-  }
-
   if(Radio_transmitter.busy)
   {
     return RADIO_STATUS_BUSY;
   }
+
+  /* Reset Radio */
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
   
   if(Radio_query_partnumber(&Radio_transmitter) != Radio_transmitter.device_id)
   {
     return RADIO_STATUS_WRONGPART;
   }
+
+  /* Configure Radio */
+
 
   return RADIO_STATUS_OK;
 }
@@ -97,12 +86,6 @@ void Radio_tx_morse(radio_config_t *radio_config, uint8_t *text_buffer, uint32_t
 
 }
 
-void Radio_tx_standby(radio_config_t *radio_config)
-{
-  Radio_init(&Radio_transmitter);
-
-}
-
 void Radio_tx_off(radio_config_t *radio_config)
 {
   Radio_init(&Radio_transmitter);
@@ -111,8 +94,6 @@ void Radio_tx_off(radio_config_t *radio_config)
 
 
 void Radio_rx_receive(radio_config_t *radio_config, void *received_packet_handler);
-
-void Radio_rx_standby(radio_config_t *radio_config);
 
 void Radio_rx_off(radio_config_t *radio_config);
 

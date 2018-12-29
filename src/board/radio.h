@@ -27,14 +27,10 @@ void Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t d
 
 void Radio_tx_morse(radio_config_t *radio_config, uint8_t *text_buffer, uint32_t text_length, void *end_of_tx_handler);
 
-void Radio_tx_standby(radio_config_t *radio_config);
-
 void Radio_tx_off(radio_config_t *radio_config);
 
 
-void Radio_rx_receive(radio_config_t *radio_config, void *received_packet_handler);
-
-void Radio_rx_standby(radio_config_t *radio_config);
+void Radio_rx_receive(radio_config_t *radio_config, uint8_t *receive_buffer, uint32_t receive_length, void received_packet_handler(void));
 
 void Radio_rx_off(radio_config_t *radio_config);
 
