@@ -35,7 +35,6 @@
 /* Hardware Drivers */
 #include "board/fram.h"
 #include "board/temperature_sensors.h"
-#include "board/watchdog_int.h"
 #include "board/imu.h"
 #include "board/camera.h"
 #include "board/eps.h"

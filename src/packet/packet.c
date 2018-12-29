@@ -8,7 +8,7 @@
 
 #include "../firmware.h"
 
-void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, uint32_t key_length, uint8_t *output)
+void Packet_sign_shake128(const uint8_t *input, uint32_t input_length, const uint8_t *key, uint32_t key_length, uint8_t *output)
 {
   util_shake_ctx_t shake_ctx;
   Util_shake_init(&shake_ctx, 16);
@@ -19,12 +19,12 @@ void Packet_sign_shake128(uint8_t *input, uint32_t input_length, uint8_t *key, u
   Util_shake_out(&shake_ctx, output);
 }
 
-void Packet_telecommand_512_encode(packet_telecommand_512 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)
+void Packet_telecommand_512_encode(packet_telecommand_512 *input_packet, uint8_t *output_buffer, const uint16_t origin, const uint8_t *key, uint32_t key_length)
 {
   input_packet->spacecraft = origin;
 
   /* Authentication hash */
-  Packet_sign_shake128(input_packet->data, 46, key, key_length, input_packet->hash);
+  Packet_sign_shake128(((packet_telecommand_512_hash *)input_packet)->data, 46, key, key_length, input_packet->hash);
 
   /* Integrity CRC */
   input_packet->crc = Util_crc16(((packet_telecommand_512_crc *)input_packet)->data, 62);
@@ -37,12 +37,13 @@ void Packet_telecommand_512_encode(packet_telecommand_512 *input_packet, uint8_t
   labrador_ldpc_copy_encode(LABRADOR_LDPC_CODE_TC512, &((uint8_t *)input_packet)[32], &output_buffer[64]);
 
   /* Interleave to improve FEC performance */
-  Packet_interleave_32x32((uint8_t *)output_buffer);
+  Packet_interleave_32x32(output_buffer);
 }
 
-bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512 *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length)
+bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512 *output_packet, const uint16_t destination, const uint8_t *key, uint32_t key_length)
 {
   uint8_t ldpc_wa[LABRADOR_LDPC_BF_WORKING_LEN_TC512];
+  uint8_t ldpc_out[LABRADOR_LDPC_OUTPUT_LEN_TC512];
 
   Packet_uninterleave_32x32(input_buffer);
 
@@ -69,7 +70,7 @@ bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512
   /* Attempt decode of second half of packet */
   if(!labrador_ldpc_decode_bf(LABRADOR_LDPC_CODE_TC512,
                              &input_buffer[64],
-                             &((uint8_t *)output_packet)[32],
+                             ldpc_out,
                              ldpc_wa,
                              50, /* Iterations to use. TODO: Vary this for CPU budget */
                              NULL))
@@ -77,18 +78,20 @@ bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512
     return false;
   }
 
+  memcpy(&((uint8_t *)output_packet)[32], ldpc_out, 32);
+
   /* Un-whiten second half of packet */
-  Util_pn9((uint8_t *)&((uint8_t *)output_packet)[32], 32, 32);
+  Util_pn9(&((uint8_t *)output_packet)[32], 32, 32);
 
   /* Check packet CRC */
-  if(output_packet->crc != Util_crc16(output_packet->data, 62))
+  if(output_packet->crc != Util_crc16(((packet_telecommand_512_crc *)output_packet)->data, 62))
   {
     return false;
   }
 
   /* Check packet authentication hash */
   uint8_t packet_hash[16];
-  Packet_sign_shake128(output_packet->data, 46, key, key_length, packet_hash);
+  Packet_sign_shake128(((packet_telecommand_512_hash *)output_packet)->data, 46, key, key_length, packet_hash);
   if(memcmp(packet_hash, output_packet->hash, 16) != 0)
   {
     return false;
@@ -98,13 +101,13 @@ bool Packet_telecommand_512_decode(uint8_t *input_buffer, packet_telecommand_512
 }
 
 
-void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, uint16_t origin, uint8_t *key, uint32_t key_length)
+void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *output_buffer, const uint16_t origin, const uint8_t *key, uint32_t key_length)
 {
   input_packet->spacecraft = origin;
 
-  Packet_sign_shake128(input_packet->data, 110, key, key_length, input_packet->hash);
+  Packet_sign_shake128(((packet_telemetry_1024_hash *)input_packet)->data, 110, key, key_length, input_packet->hash);
 
-  input_packet->crc = Util_crc16(input_packet->data, 126);
+  input_packet->crc = Util_crc16(((packet_telemetry_1024_crc *)input_packet)->data, 126);
 
   Util_pn9((uint8_t *)input_packet, 0, 128);
 
@@ -116,7 +119,7 @@ void Packet_telemetry_1024_encode(packet_telemetry_1024 *input_packet, uint8_t *
   //Packet_interleave_64x64((uint8_t *)output_buffer);
 }
 
-bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *output_packet, uint16_t destination, uint8_t *key, uint32_t key_length)
+bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *output_packet, const uint16_t destination, const uint8_t *key, uint32_t key_length)
 {
   /* TODO: Need a rectangular interleaver */
   //Packet_uninterleave_64x64(input_buffer);
@@ -133,9 +136,7 @@ bool Packet_telemetry_1024_decode(uint8_t *input_buffer, packet_telemetry_1024 *
     return false;
   }
 
-  uint16_t packet_crc;
-  packet_crc = Util_crc16(((packet_telemetry_1024_crc *)output_packet)->data, 126);
-  if(memcmp(&packet_crc, &output_packet->crc, 16) != 0)
+  if(output_packet->crc != Util_crc16(((packet_telemetry_1024_crc *)output_packet)->data, 126))
   {
   	return false;
   }
