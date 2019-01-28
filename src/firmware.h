@@ -39,6 +39,7 @@
 #include "board/imu.h"
 #include "board/camera.h"
 #include "board/eps.h"
+#include "board/gnss.h"
 
 /* radio stuff */
 #include "cc1125/cc112x_spi.h"
