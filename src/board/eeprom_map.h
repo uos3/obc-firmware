@@ -1,0 +1,1 @@
+#define EE_REBOOT_COUNT   0x00000000

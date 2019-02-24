@@ -19,6 +19,9 @@
 /* Board-specific header file, completed by macro: 'board/<board>/board.h' */
 #include BOARD_INCLUDE
 
+/* Utilities */
+#include "utility/circ_queue.h"
+
 /* Generic Board Module header files */
 #include "board/board.h"
 #include "board/led.h"
@@ -41,6 +44,9 @@
 #include "board/eps.h"
 #include "board/gnss.h"
 
+/* Mission */
+//#include "mission/mission.h"
+
 /* radio stuff */
 #include "cc1125/cc112x_spi.h"
 #include "cc1125/cc1125.h"
@@ -60,8 +66,7 @@
 /* Configuration */
 #include "configuration/configuration.h"
 
-/* Mission */
-#include "mission/mission.h"
+
 
 /* ... */
 

@@ -150,7 +150,7 @@ for i in `seq 2 $OPTIND`; do shift; done
 
 ## Read Arguments
 board=${1,,}
-shift 
+shift
 program=${1,,}
 shift
 
