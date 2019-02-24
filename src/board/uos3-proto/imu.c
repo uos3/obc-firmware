@@ -33,12 +33,17 @@
 #define MPU_WHO_AM_I 117
 #define MPU_INT_BYPASS_ENABLE 55
 
+
 #define MAG_HXL 3
 #define MAG_HYL 5
 #define MAG_HZL 7 // offsets in magnetometer, note little endian, so need to be read opposite way round
 #define MAG_ST2 0x09
 #define MAG_CNTL1 10 // Magnetometer control register
 #define MAG_STA1 2 // read only gives flags at 1 for DRDY and 2 for DOR (data ready and overload), used in read cycle
+#define MAG_ASAX 10
+#define MAG_ASAY 11
+#define MAG_ASAZ 12
+
 
 void IMU_Init(void)
 {
@@ -186,10 +191,15 @@ void IMU_read_gyro(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z)
 
 void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z)
 {
-	// TODO: Adjust using calibration data from ASAX, ASAY, ASAZ registers.
+	// TODO: Adjust using calibration data from ASAX, ASAY, ASAZ registers -- 
 
-	*magno_x = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HXL);
-	*magno_y = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HYL);
-	*magno_z = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HZL);
+	int16_t magno_calib_x = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ASAX);
+	int16_t magno_calib_y = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ASAY);
+	int16_t magno_calib_z = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ASAZ);
+	
+
+	*magno_x = (int16_t)(I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HXL) * (((magno_calib_x -128) * 0.5 ) / 128 + 1));
+	*magno_y = (int16_t)(I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HYL) * (((magno_calib_y -128) * 0.5 ) / 128 + 1));
+	*magno_z = (int16_t)(I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HZL) * (((magno_calib_z -128) * 0.5 ) / 128 + 1));
 	(void)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ST2);
 }

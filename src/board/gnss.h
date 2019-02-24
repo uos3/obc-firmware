@@ -9,7 +9,7 @@
 void GNSS_Init(void);
 
 /*Retrieves longitude, latitude, time and standard deviations */
-int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd);
+int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint32_t *time, uint64_t *ex_time);
 
 /*Dynamically sends command to GNSS, not implemented, may be continued after further discussion
 bool GNSS_sendCommand(char GNSS_Command, char *GNSS_reply);*/

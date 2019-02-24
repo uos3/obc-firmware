@@ -44,11 +44,12 @@ void GNSS_Init(void){
   return false;
 }*/
 
-int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd){
+int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint32_t *time, uint64_t *ex_time){
 
     RTC_init();
 
     uint64_t start_timestamp;
+    uint64_t current_time;
     uint64_t timeout = 10000;
     int var_counter = 1;
 
@@ -59,6 +60,8 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
     char long_sd_str[20] = "\0";
     char lat_sd_str[20] = "\0";
     char alt_sd_str[20] = "\0";
+    char week_no[20] = "\0";
+    char seconds[20] = "\0";
     uint32_t longlat_factor = 7, alt_factor = 2;
 
     RTC_getTime_ms(&start_timestamp);
@@ -68,9 +71,25 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
     bool command_wait = true;
 
     while  (!RTC_timerElapsed_ms(start_timestamp, timeout)){
+        
         char c = UART_getc(UART_GNSS);
         if(c == ';'){
             command_wait = false;
+            var_counter = 1;
+        }
+        if(command_wait == true){
+
+            if(c==','){
+                var_counter++;
+                
+            }
+            if(var_counter==6){
+                append(week_no, c);
+            }
+            if(var_counter==7){
+                append(seconds, c);
+            }
+    
         }
         if(command_wait == false){
             append(received_Message, c);
@@ -155,7 +174,9 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                 compress(long_sd, long_sd_str);
                 compress(lat_sd, lat_sd_str);
                 compress(alt_sd, alt_sd_str);
-
+                *time  = (uint32_t)(atoi(week_no) * 604799 + atoi(seconds));
+                RTC_getTime_ms(&current_time);
+                *ex_time = current_time - start_timestamp;
                 return 0; 
             }
         }
