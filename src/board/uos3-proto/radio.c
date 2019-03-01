@@ -38,22 +38,41 @@ static Radio_device Radio_receiver =
   .device_id = 0x8F, // cc1125
 };
 
-static uint8_t Radio_query_partnumber(Radio_device *radio)
+#define RADIO_TX_FREQUENCY 145500000 // Hz - TODO: Move this to a central config file
+
+  #if (RADIO_TX_FREQUENCY >= 136700000) && (RADIO_TX_FREQUENCY <= 160000000)
+    #define _CC112X_FREQ_DIV  24
+    #define _CC112X_BANDSEL   11
+  #elif (RADIO_TX_FREQUENCY >= 410000000) && (RADIO_TX_FREQUENCY <= 480000000)
+    #define _CC112X_FREQ_DIV  8
+    #define _CC112X_BANDSEL   4
+  #else
+    #error RADIO_TX_FREQUENCY not within defined limits
+  #endif
+  #define CC112X_FS_CFG_VAL   (0x10 | _CC112X_BANDSEL)
+
+  #define _CC112X_XO_FREQ   38400000 // Hz
+  #define _CC112X_FREQ_IVAL (((65536LL * RADIO_TX_FREQUENCY) / _CC112X_XO_FREQ) * _CC112X_FREQ_DIV)
+
+static inline uint8_t Radio_query_partnumber(Radio_device *radio)
 {
   uint8_t result;
-  cc112xSpiReadReg(radio->spi_device, CC112X_PARTNUMBER, &result);
+  SPI_read16(radio->spi_device, (CC112X_PARTNUMBER | 0x8000), &result)
   return result;
 }
 
-static void Radio_configure(Radio_device *radio, radio_config_t *config)
-{
-  
-}
+/* This is a macro to preserve config size information */
+#define RADIO_CONFIGURE(_radio_id,_cfg)   uint8_t writebyte; \
+                                          for(uint16_t i = 0; i < (sizeof(_cfg) / sizeof(radio_config_register_t)); i++) { \
+                                            writeByte = _cfg[i].data; \
+                                            cc112xSpiWriteReg(_radio_id, _cfg[i].addr, &writeByte); \
+                                          }
+
 
 /** Public Functions */
 
 
-uint8_t Radio_tx_msk(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t data_length, void *end_of_tx_handler)
+Radio_Status_t Radio_tx_msk(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t data_length, void *end_of_tx_handler)
 {
   if(Radio_transmitter.busy)
   {
@@ -74,28 +93,80 @@ uint8_t Radio_tx_msk(radio_config_t *radio_config, uint8_t *data_buffer, uint32_
   return RADIO_STATUS_OK;
 }
 
-void Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t data_length, void *end_of_tx_handler)
+Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t data_length, void *end_of_tx_handler)
 {
-  Radio_init(&Radio_transmitter);
+  if(Radio_transmitter.busy)
+  {
+    return RADIO_STATUS_BUSY;
+  }
 
+  /* Reset Radio */
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
+  
+  if(Radio_query_partnumber(&Radio_transmitter) != Radio_transmitter.device_id)
+  {
+    return RADIO_STATUS_WRONGPART;
+  }
+
+  /* Configure Radio */
+  RADIO_CONFIGURE(Radio_transmitter.spi_device, Radio_Config_TX_FSK);
+
+  return RADIO_STATUS_OK;
 }
 
-void Radio_tx_morse(radio_config_t *radio_config, uint8_t *text_buffer, uint32_t text_length, void *end_of_tx_handler)
+Radio_Status_t Radio_tx_morse(radio_config_t *radio_config, uint8_t *text_buffer, uint32_t text_length, void *end_of_tx_handler(void))
 {
-  Radio_init(&Radio_transmitter);
+  if(Radio_transmitter.busy)
+  {
+    return RADIO_STATUS_BUSY;
+  }
 
+  /* Reset Radio */
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
+  
+  if(Radio_query_partnumber(&Radio_transmitter) != Radio_transmitter.device_id)
+  {
+    return RADIO_STATUS_WRONGPART;
+  }
+
+  /* Configure Radio */
+
+  GPIO_set_risingInterrupt(GPIO0_RADIO_TX, end_of_tx_handler);
+
+  return RADIO_STATUS_OK;
 }
 
-void Radio_tx_off(radio_config_t *radio_config)
+Radio_Status_t Radio_tx_off(radio_config_t *radio_config)
 {
-  Radio_init(&Radio_transmitter);
+  /* Reset Radio */
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
 
+  Radio_transmitter.busy = false;
+  
+  /* Test we can still talk to it */
+  if(Radio_query_partnumber(&Radio_transmitter) != Radio_transmitter.device_id)
+  {
+    return RADIO_STATUS_WRONGPART;
+  }
+
+  /* Power Down Radio */
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SPWD);
+
+  return RADIO_STATUS_OK;
 }
 
 
-void Radio_rx_receive(radio_config_t *radio_config, void *received_packet_handler);
+Radio_Status_t Radio_rx_receive(radio_config_t *radio_config, void *received_packet_handler)
+{
 
-void Radio_rx_off(radio_config_t *radio_config);
+  return RADIO_STATUS_OK;
+}
+
+Radio_Status_t Radio_rx_off(radio_config_t *radio_config)
+{
+
+  return RADIO_STATUS_OK;
+}
 
 
 
