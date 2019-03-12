@@ -53,7 +53,7 @@ subsystems_ok_t subsystems_ok;
 // Custom structs
 typedef struct task_t {
 	 /* Rate at which the task should tick, and hence its priority */
-   uint32_t period;
+   uint64_t period;
 
 	 /* Function to call for task's tick which takes and returns the state */
    int8_t (*TickFct)(int8_t);
@@ -73,7 +73,23 @@ typedef enum mode_n {
    DL  //data downlinking
 } mode_n;
 
+//Can be assigned to general tasks in mission code, each task doesn't have to be mode specfic
 
+typedef enum FBU_task{
+	//LISTEN_FOR_GS,
+	SAVE_MORSE_TELEMETRY,
+	EXIT_FBU
+} FBU_task;
+
+typedef enum AD_task{
+	AD_SAVE_MORSE_TELEMETRY,
+	//AD_CHECK_HEALTH,
+	TRANSMIT_MORSE_TELEMETRY,
+	//AD_CHECK_VOLTAGE,
+	//WAIT_FOR_RECHARGE, 
+	ANTENNA_DEPLOY_ATTEMPT, //may be able to remove and do in either of previous tasks
+	EXIT_AD // To NF or LP
+} AD_task;
 
 typedef enum NF_task {
 	SAVE_EPS_HEALTH,
@@ -83,6 +99,40 @@ typedef enum NF_task {
 	PROCESS_GS_COMMAND,
 	CHECK_HEALTH
 } NF_task;
+
+typedef enum LP_task{
+	//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
+	LP_POWER_DOWN,
+	LP_LISTEN_FOR_GS, //Config update from this task
+	LP_CHECK_HEALTH,
+	EXIT_LP
+} LP_task;
+
+typedef enum SM_task{
+	//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
+	SM_POWER_DOWN,
+	SM_LISTEN_FOR_GS, //return to NF, got to CFU or reboot through this 
+	SM_CHEK_HEALTH, //Periodically read, save and transmit health packets
+	EXIT_SM //May be achieved through SM_LISTEN_FOR_GS
+} SM_task;
+
+typedef enum CFU_task{
+	//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
+	READ_CF, //Also check values are in range
+	EXIT_CFU //return to previous mode
+} CFU_task;
+
+typedef enum PT_task{
+	SAVE_IMAGE,
+	EXIT_PT
+} PT_task;
+
+typedef enum DL_task{
+	DOWNLINK,
+	TAKE_PICTURE,
+	EXIT_DL
+} DL_task;
+
 
 typedef struct opmode_t {
    void (*Mode_startup)(void); // Points to start-up code for this mode
@@ -107,6 +157,16 @@ void Mission_SEU(void);
 
 // Start-up
 void Mode_init(int8_t type);
+
+
+//Timers
+
+void timer0_isr();
+void timer1_isr();
+void timer2_isr();
+void timer3_isr();
+void timer4_isr();
+void timer5_isr();
 
 // Tasks
 int8_t save_eps_health_data(int8_t r);

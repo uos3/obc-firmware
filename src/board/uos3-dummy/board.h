@@ -78,5 +78,6 @@
 
 #define I2C_TEMP			0x0
 #define I2C_IMU				0x1
+#define I2C_KILL            0x2
 
 #endif /*  __BOARD_UOS3_PROTO_H__ */

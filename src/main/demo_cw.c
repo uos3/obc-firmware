@@ -57,7 +57,7 @@ static const registerSetting_t preferredSettings_cw[]=
    {CC112X_SERIAL_STATUS,     0x08},
 };
 
-#define UART_INTERFACE UART_CAMERA
+#define UART_INTERFACE UART_GNSS
 
 static double freq = 145.5;
 static double pwr = 10.0;

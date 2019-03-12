@@ -45,9 +45,16 @@ int main(void)
 void image_length_add(uint8_t *data, uint32_t data_length)
 {
     char output[60];
+    //test
+    char data_out[data_length];
     (void) data;
     
     image_length += data_length;
+    //test
+    for(i=0; i<data_length; i++){
+        sprintf(data_out,"%02" PRIx8 ", ", data[i] );
+        UART_puts(UART_GNSS, data_out);
+    }
 
     sprintf(output, "0x%02"PRIx8", 0x%02"PRIx8" ..(%"PRIu32"B).. 0x%02"PRIx8", 0x%02"PRIx8"\r\n",
      data[0], data[1],

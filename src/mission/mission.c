@@ -8,6 +8,7 @@
 
 #include "../firmware.h"
 #include "mission.h"
+#include <string.h>
 
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
@@ -18,7 +19,7 @@
 #include "../board/memory_map.h"
 #include "../board/radio.h"
 
-#define UART_INTERFACE UART_CAMERA
+//#define UART_INTERFACE UART_GNSS
 
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
 
@@ -28,6 +29,24 @@ int8_t transmit_next_telemetry(int8_t t);
 int8_t save_imu_data(int8_t t);
 int8_t save_gps_data(int8_t t);
 int8_t check_health_status(int8_t t);
+int8_t save_image_data(int8_t t);
+int8_t ad_deploy_attempt(int8_t t);
+int8_t exit_ad(int8_t);
+int8_t save_morse_telemetry(int8_t t);
+int8_t transmit_morse_telemetry(int8_t t);
+int8_t free_timers(void);
+
+int8_t send_morse_telemetry (int8_t t);
+int8_t exit_fbu (int8_t t);
+int8_t exit_ad (int8_t);
+int8_t save_morse_telemetry (int8_t);
+int8_t transmit_morse_telemetry (int8_t);
+int8_t save_attitude (int8_t t);
+int8_t get_available_timer();
+
+void set_timer_for_task(uint8_t id, uint8_t task_id, uint64_t period, void (*timer_isr)() );
+
+
 
 
 opmode_t modes[8];
@@ -46,6 +65,16 @@ uint8_t current_mode; // for deciding which enums to use
 
 int8_t timer_to_task[MAX_TASKS]; // timer_id -> task_id (reset look-up table)
 
+int8_t mode_init_trigger = 1;
+
+//FBU
+bool FBU_exit_switch = false;
+
+
+//ADM 
+char ADM_status = 'N';
+uint16_t deploy_attempts = 0;
+
 // Error detection
 uint8_t flash_errors;
 uint8_t ram_errors;
@@ -54,6 +83,10 @@ uint8_t ram_errors;
 uint16_t data_packets_pending;
 uint8_t rx_noisefloor;
 
+//Morse transmitter settings
+static double freq = 145.5;
+static double pwr = 10.0;
+
 void (*timer_isr_map[MAX_TASKS]) (); // map of timer-id to isr functions
 
 void timer0_isr(){
@@ -61,7 +94,7 @@ void timer0_isr(){
   UART_puts(UART_INTERFACE, "**timer0_interrupt!**\r\n");
 
   // Schedule task
-  task_q[0] = 1;
+  task_q[0] = 0;
 }
 
 void timer1_isr(){
@@ -72,6 +105,38 @@ void timer1_isr(){
   task_q[1] = 1;
 }
 
+void timer2_isr(){
+	TimerIntClear(TIMER2_BASE, TIMER_TIMA_TIMEOUT);
+  UART_puts(UART_INTERFACE, "**timer2_interrupt!**\r\n");
+
+  // Schedule task
+  task_q[2] = 2;
+}
+
+void timer3_isr(){
+	TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
+  UART_puts(UART_INTERFACE, "**timer3_interrupt!**\r\n");
+
+  // Schedule task
+  task_q[3] = 3;
+}
+
+void timer4_isr(){
+	TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+  UART_puts(UART_INTERFACE, "**timer4_interrupt!**\r\n");
+
+  // Schedule task
+  task_q[4] = 4;
+}
+
+void timer5_isr(){
+	TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+  UART_puts(UART_INTERFACE, "**timer5_interrupt!**\r\n");
+
+  // Schedule task
+  task_q[5] = 5;
+}
+
 uint32_t ALL_TIMER_PERIPHERALS[6] =
   { SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_TIMER1, SYSCTL_PERIPH_TIMER2,
     SYSCTL_PERIPH_TIMER3, SYSCTL_PERIPH_TIMER4, SYSCTL_PERIPH_TIMER5 };
@@ -79,9 +144,15 @@ uint32_t ALL_TIMER_PERIPHERALS[6] =
 uint32_t ALL_TIMER_BASES[6] =
   {TIMER0_BASE, TIMER1_BASE, TIMER2_BASE, TIMER3_BASE, TIMER4_BASE, TIMER5_BASE};
 
-uint32_t ulPeriod;
+uint64_t ulPeriod;
 
-void set_timer_for_task(uint8_t id, uint8_t task_id, uint32_t period, void (*timer_isr)() ){
+void set_timer_for_task(uint8_t id, uint8_t task_id, uint64_t period, void (*timer_isr)() ){
+  
+  char outs[100];
+  sprintf(outs, "Timer id: %" PRId8 " set with task %" PRId8 " with period %" PRId64 "\r\n", id, task_id, period);
+  UART_puts(UART_INTERFACE, outs);
+
+
   TimerLoadSet(ALL_TIMER_BASES[id], TIMER_A, period-1); // prime it (-1 is unnecessery but keep it just to avoid sysclock conflict?)
 
   TimerIntRegister(ALL_TIMER_BASES[id], TIMER_A, timer_isr); // this is for dynamic interrupt compilation
@@ -94,19 +165,57 @@ void set_timer_for_task(uint8_t id, uint8_t task_id, uint32_t period, void (*tim
 void stop_timer_for_task(uint8_t id){
   TimerDisable(ALL_TIMER_BASES[id], TIMER_A);
   timer_to_task[id] = -1; //free timer
+  char out[100];
+  sprintf(out, "Timer %" PRId8 " stopped, timer_to_task = %" PRId8 "\r\n", id, timer_to_task[id]);
+  UART_puts(UART_INTERFACE, out);
+}
+
+int8_t free_timers(){
+
+  //Free all timers that have been used within the mode
+    for(uint8_t ids = 0; ids <6; ids++){
+      stop_timer_for_task(ids);
+    }
+    return 0;
 }
 
 int8_t get_available_timer(){
   int8_t id = -1;
-
   for (uint8_t i=0; i<6; i++){
+    char out_g[100];
+    sprintf(out_g, "Timer %" PRId8 " status %" PRId8 "\r\n", i, timer_to_task[i]);
+    UART_puts(UART_INTERFACE, out_g);
     if (timer_to_task[i] == -1) {
+      UART_puts(UART_INTERFACE, "TIMER FREE\r\n");
       id = i;
       break;
     }
   }
 
   return id;
+}
+
+static void cw_tone_on(void)
+{
+  uint8_t pwr_reg;
+
+  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+  manualCalibration(SPI_RADIO_TX);
+
+  radio_set_freq_f(SPI_RADIO_TX, &freq);
+
+  radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
+
+  SPI_cmd(SPI_RADIO_TX, CC112X_STX);
+
+  LED_on(LED_B);
+}
+
+static void cw_tone_off(void)
+{
+  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+
+  LED_off(LED_B);
 }
 
 void Mission_init(void)
@@ -136,21 +245,32 @@ void Mission_init(void)
 
   // Initialise timers
   for (uint8_t i=0; i<6; i++) SysCtlPeripheralEnable(ALL_TIMER_PERIPHERALS[i]);
-  for (uint8_t i=0; i<6; i++) while(!SysCtlPeripheralReady(ALL_TIMER_PERIPHERALS[i]));
+  for (uint8_t i=0; i<6; i++) {
+    while(!SysCtlPeripheralReady(ALL_TIMER_PERIPHERALS[i]));
+  }
   for (uint8_t i=0; i<6; i++){
     TimerConfigure(ALL_TIMER_BASES[i], TIMER_CFG_PERIODIC); // set it to periodically trigger interrupt
     TimerIntEnable(ALL_TIMER_BASES[i], TIMER_TIMA_TIMEOUT); // enable interrupt
   }
   timer_isr_map[0] = &timer0_isr;
   timer_isr_map[1] = &timer1_isr;
+  timer_isr_map[2] = &timer2_isr;
+  timer_isr_map[3] = &timer3_isr;
+  timer_isr_map[4] = &timer4_isr;
+  timer_isr_map[5] = &timer5_isr;
+
 
   ulPeriod = (SysCtlClockGet()) ; // 1Hz update rate
    // third will miss sometimes if processor busy
 
-  Mode_init(NF);
+  Mode_init(FBU);
 }
 
 void queue_task(int8_t task_id){
+  char output_1[100];
+
+  sprintf(output_1,"Task ID: : " PRId8 "\r\n", task_id);
+  UART_puts(UART_INTERFACE, output_1);
   task_q[no_of_tasks_queued] = task_id;
   no_of_tasks_queued++;
 
@@ -159,32 +279,83 @@ void queue_task(int8_t task_id){
 
   sprintf(output,"set timer: : %+06d\r\n", timer_id);
   UART_puts(UART_INTERFACE, output);
-  set_timer_for_task(timer_id, task_id, ulPeriod, timer_isr_map[task_id]);
+  set_timer_for_task(timer_id, task_id, ulPeriod * current_tasks[task_id].period, timer_isr_map[task_id]);
 }
 
-int8_t save_eps_health_data(int8_t t);
-int8_t transmit_next_telemetry(int8_t t);
-int8_t save_imu_data(int8_t t);
-int8_t save_gps_data(int8_t t);
-int8_t check_health_status(int8_t t);
 
 void Mode_init(int8_t type){
   switch(type){
-    case NF:{
+    case FBU:{
       Node* task_pq = newNode(0, 0);
+
+      task_t* tasks_FBU = (task_t *) malloc (sizeof(task_t)*2);
+
+      tasks_FBU[SAVE_MORSE_TELEMETRY].period = 10; //300
+      tasks_FBU[SAVE_MORSE_TELEMETRY].TickFct = &send_morse_telemetry;
+
+      tasks_FBU[EXIT_FBU].period = 20;
+      tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
+
+
+      current_mode = FBU;
+      current_tasks = tasks_FBU;
+
+      // for (uint8_t i=0; i<tasks; i++)
+      // queue_task(tasks[i]);
+      //ccmer_priorities[i] = -1;
+      queue_task(SAVE_MORSE_TELEMETRY);
+      queue_task(EXIT_FBU);
+      mode_init_trigger = 1;
+    
+    } break;
+    case AD:{
+      //Node* task_pq = newNode(0, 0);
+
+      task_t* tasks_AD = (task_t *) malloc (sizeof(task_t)*4);
+
+      tasks_AD[AD_SAVE_MORSE_TELEMETRY].period = 30; //300
+      tasks_AD[AD_SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
+
+      tasks_AD[TRANSMIT_MORSE_TELEMETRY].period = 60;
+      tasks_AD[TRANSMIT_MORSE_TELEMETRY].TickFct = &transmit_morse_telemetry;
+
+      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 90;
+      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
+
+      tasks_AD[EXIT_AD].period = 95;
+      tasks_AD[EXIT_AD].TickFct = &exit_ad;
+
+
+      current_mode = AD;
+      current_tasks = tasks_AD;
+
+      // for (uint8_t i=0; i<tasks; i++)
+      // queue_task(tasks[i]);
+      //ccmer_priorities[i] = -1;
+      //queue_task(EXIT_AD);
+      queue_task(AD_SAVE_MORSE_TELEMETRY);
+      queue_task(TRANSMIT_MORSE_TELEMETRY);
+      queue_task(ANTENNA_DEPLOY_ATTEMPT);
+      queue_task(EXIT_AD);
+      mode_init_trigger = 1;
+
+    
+    }break;
+    case NF:{
+      //Node* task_pq = newNode(0, 0);
 
       //task_t* tasks = (task_t *) malloc (sizeof(task_t)*6);
 
-      task_t* tasks = (task_t *) malloc (sizeof(task_t)*2);
+      task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*4);
 
-      tasks[SAVE_EPS_HEALTH].period = 5; //300
-      tasks[SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
+      tasks_NF[SAVE_EPS_HEALTH].period =10; //300
+      tasks_NF[SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks[TRANSMIT].period = 10;
-      tasks[TRANSMIT].TickFct = &save_imu_data;
+      tasks_NF[TRANSMIT].period = 20;
+      tasks_NF[TRANSMIT].TickFct = &save_imu_data;
 
-			//tasks[SAVE_ATTITUDE].period = 600;
-			//tasks[SAVE_ATTITUDE].TickFct = &save_imu_data;
+			tasks_NF[SAVE_ATTITUDE].period = 30;
+			tasks_NF[SAVE_ATTITUDE].TickFct = &save_attitude;
 
 			//tasks[1].period = 10; // 600
 			//tasks[1].TickFct = &save_gps_data; //SAVE_GPS_POS
@@ -193,23 +364,35 @@ void Mode_init(int8_t type){
 			//tasks[CHECK_HEALTH].TickFct = &check_health_status;
 
       current_mode = NF;
-      current_tasks = tasks;
+      current_tasks = tasks_NF;
 
       // for (uint8_t i=0; i<tasks; i++)
       // queue_task(tasks[i]);
       //ccmer_priorities[i] = -1;
       queue_task(SAVE_EPS_HEALTH);
       queue_task(TRANSMIT);
+      queue_task(SAVE_ATTITUDE);
+      mode_init_trigger = 1;
+      
     } break;
   }
 }
 
 void Mission_loop(void)
 {
+  //Keep no_of_tasks_queued in range
+  if (mode_init_trigger == 0){
+    for (uint8_t i=0; i<MAX_TASKS; i++){
+      if (task_q[i] != -1){
+        no_of_tasks_queued++;
+      }
+	}
+  }
+  mode_init_trigger = 0;
   // Sort list of pending tasks by their priorities
   for (uint8_t i=0; i<MAX_TASKS; i++){
     if (task_q[i] != -1)
-      circ_push(&task_pq, i, current_tasks[task_q[i]].period);
+      circ_push(&task_pq, task_q[i], current_tasks[task_q[i]].period);
 
       // Remove task from standard queue
       task_q[i] = -1;
@@ -261,6 +444,7 @@ void add_telemetry(uint8_t* value, uint8_t bytes){
   uint8_t index = 0;
   while (bytes-->0){
     telemetry[buffer_tracker++] = value[index++];
+
   }
 }
 
@@ -325,7 +509,8 @@ uint16_t perform_subsystem_check(){
 }
 
 int8_t save_eps_health_data(int8_t t){
-  uint8_t i; // loop counter
+  //Uncomment code when EPS board being used
+  /*uint8_t i; // loop counter
 	uint32_t eeprom_read;
   start_telemetry();
 
@@ -366,7 +551,7 @@ int8_t save_eps_health_data(int8_t t){
 
 	add_telemetry(subsystem_status, 2);
 
-  end_telemetry();
+  end_telemetry();*/
 
   UART_puts(UART_INTERFACE, "[TASK #001] Finished saving EPS health data.\r\n");
 
@@ -374,12 +559,111 @@ int8_t save_eps_health_data(int8_t t){
 }
 
 int8_t save_gps_data(int8_t t){
+  //PARTIALLY COMPLETED TASK IN MAIN FOLDER
+}
 
+int8_t send_morse_telemetry (int8_t t){
+  //TODO: test and change string to fully match TMTC specification
+  char morse_string[30];
+
+  UART_puts(UART_INTERFACE, "[FBU][TASK #001] Sending morse telemetry...\r\n");
+  
+  //char batt_str[20];
+  uint16_t batt_volt = 5;
+  //**UNCOMMENT WHEN YOU HAVE ACCESS TO WORKING EPS BOARD
+  //EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header
+  if(Antenna_read_deployment_switch()){
+    ADM_status = 'Y';
+  }
+  //sprintf(batt_str, "%" PRId16, batt_volt);
+
+  sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId16 "  K\0", batt_volt, ADM_status, deploy_attempts);
+  //Packet_cw_transmit_buffer(morse_string, strlen(morse_string), cw_tone_on, cw_tone_off); ***UNCOMMENT WHEN TX IS WORKING
+  Delay_ms(2000);  //REMOVE WHEN TX IS WORKING
+  UART_puts(UART_INTERFACE, "[FBU][TASK #001] Morse telemetry sent\r\n");
+  return 0;
+
+}
+int8_t exit_fbu(int8_t t){
+  if (FBU_exit_switch == true){
+
+    //Free all timers that have been used within FBU mode
+    free_timers();
+    UART_puts(UART_INTERFACE, "[FBU][TASK #002] Wait period finished, entering ADM mode.\r\n");
+    Mode_init(AD);
+    return 0;
+  }
+  else{
+      UART_puts(UART_INTERFACE, "[FBU][TASK #002] Begin AD wait.\r\n");
+      //Delay_ms(500);
+      FBU_exit_switch = true;
+      return 0;
+  }
+}
+
+int8_t ad_deploy_attempt(int8_t t){
+  //ATTEMPT TO DEPLOY ANTENNA
+  UART_puts(UART_INTERFACE, "[AD][TASK #003] Antenna deploy attempt\r\n");
+  return 0;
+}
+
+int8_t save_morse_telemetry(int8_t t){
+  //SAVE MORSE TELEMETRY
+  //Have to change FBU mode to use this and transmit more telemetry
+  UART_puts(UART_INTERFACE, "[AD][TASK #001] Save Morse telemtry\r\n");
+  return 0;
+}
+
+int8_t transmit_morse_telemetry(int8_t t){
+  //TRANSMIT MORSE TELEMETRY
+  UART_puts(UART_INTERFACE, "[TASK #002] Transmit morse telemetry\r\n");
+   // free_timers(4);
+  //Mode_init(NF);
+  return 0;
+}
+
+
+int8_t exit_ad(int8_t t){
+  //EXIT AD MODE
+  //UART_puts(UART_INTERFACE, "[AD][TASK #002] Exit AD mode\r\n");
+  free_timers();
+  UART_puts(UART_INTERFACE, "[AD][TASK #002] Exit AD mode\r\n");
+  Mode_init(NF);
+  return 0;
 }
 
 int8_t save_imu_data(int8_t t){
   UART_puts(UART_INTERFACE, "[TASK #003] Saving IMU payload data...\r\n");
-  
+  /*
+  // TODO: Generate dataset id
+	add_telemetry((uint16_t)0, 2);
+
+	// TODO: Get timestamp
+	add_telemetry((uint32_t)0, 4);
+
+	// TODO: Get IMU temperature based on Ed's new driver
+
+	// Take multiple samples
+	for (uint8_t i=0; i<6; i++){
+		int16_t accel_data[3], gyro_data[3];
+		//IMU_read_accel(accel_data[0], accel_data[1], accel_data[2]);
+		//IMU_read_gyro(gyro_data[0], gyro_data[1], gyro_data[2]);
+
+		add_telemetry((int16_t)&accel_data, 6); // 2bytes * 3
+		add_telemetry((int16_t)&gyro_data, 6); // 2bytes * 3
+
+		Delay_ms(500); // TODO: update time once it has been determined
+	}
+
+	end_telemetry();*/
+
+  UART_puts(UART_INTERFACE, "[TASK #003] Finished saving IMU payload data.\r\n");
+}
+
+
+int8_t save_image_data(int8_t t){
+   UART_puts(UART_INTERFACE, "[TASK #004] Saving IMU payload data...\r\n");
+  /*
   // TODO: Generate dataset id
 	add_telemetry((uint16_t)0, 2);
 
@@ -398,12 +682,10 @@ int8_t save_imu_data(int8_t t){
 		add_telemetry((int16_t)&gyro_data, 6); // 2bytes * 3
 
 		Delay_ms(500); // TODO: update time once it has been determined
-	}
-
-	end_telemetry();
-
-  UART_puts(UART_INTERFACE, "[TASK #003] Finished saving IMU payload data.\r\n");
+  
+}*/
 }
+
 
 void update_radio_parameters(){
 	// TODO: read these from the config
@@ -464,6 +746,14 @@ int8_t check_health_status(int8_t t){
 	// Calculate checksums for all payload
 
 }
+
+
+int8_t save_attitude(int8_t t){
+  	  UART_puts(UART_INTERFACE, "IN EXTRA TASK\r\n");
+      Delay_ms(500);
+  return 0;
+}
+
 
 int8_t process_gs_command(int8_t t){
 	switch(t){

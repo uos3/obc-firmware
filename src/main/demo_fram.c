@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#define UART_INTERFACE UART_CAMERA
+#define UART_INTERFACE UART_GNSS
 
 static uint32_t address;
 

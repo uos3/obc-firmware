@@ -66,6 +66,11 @@
 /* Configuration */
 #include "configuration/configuration.h"
 
+/* Test Interface */
+
+#define UART_INTERFACE UART_GNSS
+//#define UART_INTERFACE UART_CAMERA
+
 
 
 /* ... */

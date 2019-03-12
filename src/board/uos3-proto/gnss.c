@@ -73,6 +73,7 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
     while  (!RTC_timerElapsed_ms(start_timestamp, timeout)){
         
         char c = UART_getc(UART_GNSS);
+        //UART_putc(UART_CAMERA, c);
         if(c == ';'){
             command_wait = false;
             var_counter = 1;
@@ -85,6 +86,8 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
             }
             if(var_counter==6){
                 append(week_no, c);
+                //UART_puts(UART_CAMERA, "\r\nWeek no\r\n");
+                //UART_puts(UART_CAMERA, c);
             }
             if(var_counter==7){
                 append(seconds, c);
