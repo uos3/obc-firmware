@@ -454,6 +454,40 @@ void Mode_init(int8_t type){
       queue_task(LP_PROCESS_GS_COMMAND);
       mode_init_trigger = 1;
     }break;
+    case SM:{
+      //CAN'T COMMAND OUT OF THIS MODE AO NO EXIT FUNCTION NEEDED, JUST USES CHECK HEALTH
+      Node* task_pq = newNode(0, 0);
+
+      task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*4);
+
+      modes[LP].Mode_startup = &lp_init;
+      modes[LP].opmode_tasks = tasks_LP;
+      modes[LP].num_tasks = 4;
+
+      tasks_LP[LP_SAVE_EPS_HEALTH].period =30; //300
+      tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
+
+      tasks_LP[LP_CHECK_HEALTH].period = 30; //300
+      tasks_LP[LP_CHECK_HEALTH].TickFct = &lp_check_health;
+
+			tasks_LP[LP_TRANSMIT_TELEMETRY].period = 60;
+			tasks_LP[LP_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
+
+      tasks_LP[LP_PROCESS_GS_COMMAND].period = 5;
+			tasks_LP[LP_PROCESS_GS_COMMAND].TickFct = &lp_process_gs;
+
+      current_mode = LP;
+      current_tasks = tasks_LP; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
+
+      // for (uint8_t i=0; i<tasks; i++)
+      // queue_task(tasks[i]);
+      //ccmer_priorities[i] = -1;
+      queue_task(LP_SAVE_EPS_HEALTH);
+      queue_task(LP_CHECK_HEALTH);
+      queue_task(LP_TRANSMIT_TELEMETRY);
+      queue_task(LP_PROCESS_GS_COMMAND);
+      mode_init_trigger = 1;
+    }break;
   }
   modes[current_mode].Mode_startup();
 }
