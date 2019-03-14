@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <stdint.h>
 // Function to Create A New Node
-Node* newNode(int d, int p)
+Node* newNode(int d, uint32_t p)
 {
     Node* temp = (Node*)malloc(sizeof(Node));
     temp->data = d;
@@ -32,7 +32,7 @@ void circ_pop(Node** head)
 }
 
 // Function to push according to priority
-void circ_push(Node** head, int d, int p)
+void circ_push(Node** head, int d, uint32_t p)
 {
     Node* start = (*head);
 

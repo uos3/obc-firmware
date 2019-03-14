@@ -53,7 +53,7 @@ subsystems_ok_t subsystems_ok;
 // Custom structs
 typedef struct task_t {
 	 /* Rate at which the task should tick, and hence its priority */
-   uint64_t period;
+   uint32_t period;
 
 	 /* Function to call for task's tick which takes and returns the state */
    int8_t (*TickFct)(int8_t);
@@ -102,10 +102,10 @@ typedef enum NF_task {
 
 typedef enum LP_task{
 	//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
-	LP_POWER_DOWN,
-	LP_LISTEN_FOR_GS, //Config update from this task
-	LP_CHECK_HEALTH,
-	EXIT_LP
+	LP_SAVE_EPS_HEALTH,
+	LP_CHECK_HEALTH, //Config update from this task
+	LP_TRANSMIT_TELEMETRY,
+	LP_PROCESS_GS_COMMAND
 } LP_task;
 
 typedef enum SM_task{
@@ -169,7 +169,6 @@ void timer4_isr();
 void timer5_isr();
 
 // Tasks
-int8_t save_eps_health_data(int8_t r);
-int8_t transmit_next_telemetry(int8_t t);
+//TRANSFER FROM .C FILE
 
 #endif /*  __MISSION_H__ */

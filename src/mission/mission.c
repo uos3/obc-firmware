@@ -35,16 +35,24 @@ int8_t exit_ad(int8_t);
 int8_t save_morse_telemetry(int8_t t);
 int8_t transmit_morse_telemetry(int8_t t);
 int8_t free_timers(void);
-
 int8_t send_morse_telemetry (int8_t t);
 int8_t exit_fbu (int8_t t);
-int8_t exit_ad (int8_t);
+int8_t exit_ad (int8_t t);
 int8_t save_morse_telemetry (int8_t);
 int8_t transmit_morse_telemetry (int8_t);
 int8_t save_attitude (int8_t t);
 int8_t get_available_timer();
+int8_t lp_check_health(int8_t t);
+int8_t lp_process_gs(int8_t t);
 
-void set_timer_for_task(uint8_t id, uint8_t task_id, uint64_t period, void (*timer_isr)() );
+
+//Mode initialisation functions
+void fbu_init(void);
+void ad_init(void);
+void nf_init(void);
+void lp_init(void);
+
+void set_timer_for_task(uint8_t id, uint8_t task_id, uint32_t period, void (*timer_isr)() );
 
 
 
@@ -144,13 +152,13 @@ uint32_t ALL_TIMER_PERIPHERALS[6] =
 uint32_t ALL_TIMER_BASES[6] =
   {TIMER0_BASE, TIMER1_BASE, TIMER2_BASE, TIMER3_BASE, TIMER4_BASE, TIMER5_BASE};
 
-uint64_t ulPeriod;
+uint32_t ulPeriod;
 
-void set_timer_for_task(uint8_t id, uint8_t task_id, uint64_t period, void (*timer_isr)() ){
-  
-  char outs[100];
-  sprintf(outs, "Timer id: %" PRId8 " set with task %" PRId8 " with period %" PRId64 "\r\n", id, task_id, period);
-  UART_puts(UART_INTERFACE, outs);
+void set_timer_for_task(uint8_t id, uint8_t task_id, uint32_t period, void (*timer_isr)() ){
+  //SHOWING STATUS OF TIMERS - TO REMOVE
+  /*char outs[100];
+  sprintf(outs, "Timer id: %" PRId8 " set with task %" PRId8 " with period %" PRId32 "\r\n", id, task_id, period);
+  UART_puts(UART_INTERFACE, outs);*/
 
 
   TimerLoadSet(ALL_TIMER_BASES[id], TIMER_A, period-1); // prime it (-1 is unnecessery but keep it just to avoid sysclock conflict?)
@@ -165,9 +173,10 @@ void set_timer_for_task(uint8_t id, uint8_t task_id, uint64_t period, void (*tim
 void stop_timer_for_task(uint8_t id){
   TimerDisable(ALL_TIMER_BASES[id], TIMER_A);
   timer_to_task[id] = -1; //free timer
-  char out[100];
+  //SHOWING STATUS OF TIMERS - TO REMOVE
+  /*char out[100];
   sprintf(out, "Timer %" PRId8 " stopped, timer_to_task = %" PRId8 "\r\n", id, timer_to_task[id]);
-  UART_puts(UART_INTERFACE, out);
+  UART_puts(UART_INTERFACE, out);*/
 }
 
 int8_t free_timers(){
@@ -182,11 +191,12 @@ int8_t free_timers(){
 int8_t get_available_timer(){
   int8_t id = -1;
   for (uint8_t i=0; i<6; i++){
-    char out_g[100];
+    //SHOWING TIMER STATUS - TO REMOVE
+  /*  char out_g[100];
     sprintf(out_g, "Timer %" PRId8 " status %" PRId8 "\r\n", i, timer_to_task[i]);
-    UART_puts(UART_INTERFACE, out_g);
+    UART_puts(UART_INTERFACE, out_g);*/
     if (timer_to_task[i] == -1) {
-      UART_puts(UART_INTERFACE, "TIMER FREE\r\n");
+      //UART_puts(UART_INTERFACE, "TIMER FREE\r\n");   TO REMOVE
       id = i;
       break;
     }
@@ -228,11 +238,14 @@ void Mission_init(void)
   EEPROM_init();
   I2C_init(0);
   UART_init(UART_INTERFACE, 9600);
-
+  //TESTING SIZE OF INT - TO REMOVE
+  /*char intsize[100];
+  sprintf(intsize, "Size of int is: %lu", (unsigned long) sizeof(int8_t));
+  UART_puts(UART_INTERFACE, intsize);*/
   int16_t temp = Temperature_read_tmp100();
-  char output[100];
-  sprintf(output,"%d\r\n", temp);
-	UART_puts(UART_INTERFACE, output);
+  //char output[100];
+  //sprintf(output,"%d\r\n", temp);
+	//UART_puts(UART_INTERFACE, output);
 
   UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVER INITIALISED**\r\n");
 
@@ -260,17 +273,29 @@ void Mission_init(void)
   timer_isr_map[5] = &timer5_isr;
 
 
-  ulPeriod = (SysCtlClockGet()) ; // 1Hz update rate
+  ulPeriod = SysCtlClockGet(); // 1Hz update rate
+  //PRINTS ULPERIOD - TO REMOVE
+  /*char output3[100];
+  sprintf(output3,"ULPERIOD: %" PRIu32 "\r\n", ulPeriod);
+	UART_puts(UART_INTERFACE, output3);
+  Delay_ms(5000);*/
    // third will miss sometimes if processor busy
 
   Mode_init(FBU);
 }
 
 void queue_task(int8_t task_id){
-  char output_1[100];
+  //PRINTS TIMER STATUS - TO REMOVE
+  /*for (uint8_t i=0; i<6; i++){
+      char out_g[100];
+      sprintf(out_g, "[[QUEUE TASK]] Timer %" PRId8 " status %" PRId8 "\r\n", i, timer_to_task[i]);
+      UART_puts(UART_INTERFACE, out_g);
+    }*/
 
+  /*char output_1[100];
+  //PRINTS TASK ID - TO REMOVE
   sprintf(output_1,"Task ID: : " PRId8 "\r\n", task_id);
-  UART_puts(UART_INTERFACE, output_1);
+  UART_puts(UART_INTERFACE, output_1);*/
   task_q[no_of_tasks_queued] = task_id;
   no_of_tasks_queued++;
 
@@ -284,16 +309,30 @@ void queue_task(int8_t task_id){
 
 
 void Mode_init(int8_t type){
+  //
+  /*for (uint8_t i=0; i<6; i++){
+    char out_g[100];
+    sprintf(out_g, "[[MODE INIT]] Timer %" PRId8 " status %" PRId8 "\r\n", i, timer_to_task[i]);
+    UART_puts(UART_INTERFACE, out_g);
+  }*/
+
+
   switch(type){
     case FBU:{
+      //NEED TO REINITIALISE IN EACH DIFFERENT MODE?
       Node* task_pq = newNode(0, 0);
 
       task_t* tasks_FBU = (task_t *) malloc (sizeof(task_t)*2);
 
-      tasks_FBU[SAVE_MORSE_TELEMETRY].period = 10; //300
+      modes[FBU].Mode_startup = &fbu_init;
+      modes[FBU].opmode_tasks = tasks_FBU;
+      modes[FBU].num_tasks = 2;
+
+
+      tasks_FBU[SAVE_MORSE_TELEMETRY].period = 20; //300
       tasks_FBU[SAVE_MORSE_TELEMETRY].TickFct = &send_morse_telemetry;
 
-      tasks_FBU[EXIT_FBU].period = 20;
+      tasks_FBU[EXIT_FBU].period = 40;
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
 
 
@@ -309,9 +348,13 @@ void Mode_init(int8_t type){
     
     } break;
     case AD:{
-      //Node* task_pq = newNode(0, 0);
+      Node* task_pq = newNode(0, 0);
 
       task_t* tasks_AD = (task_t *) malloc (sizeof(task_t)*4);
+
+      modes[AD].Mode_startup = &ad_init;
+      modes[AD].opmode_tasks = tasks_AD;
+      modes[AD].num_tasks = 4;
 
       tasks_AD[AD_SAVE_MORSE_TELEMETRY].period = 30; //300
       tasks_AD[AD_SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
@@ -322,7 +365,7 @@ void Mode_init(int8_t type){
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 90;
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
 
-      tasks_AD[EXIT_AD].period = 95;
+      tasks_AD[EXIT_AD].period = 100;
       tasks_AD[EXIT_AD].TickFct = &exit_ad;
 
 
@@ -342,11 +385,13 @@ void Mode_init(int8_t type){
     
     }break;
     case NF:{
-      //Node* task_pq = newNode(0, 0);
+      Node* task_pq = newNode(0, 0);
 
-      //task_t* tasks = (task_t *) malloc (sizeof(task_t)*6);
+      task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*3);
 
-      task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*4);
+      modes[NF].Mode_startup = &nf_init;
+      modes[NF].opmode_tasks = tasks_NF;
+      modes[NF].num_tasks = 3;
 
       tasks_NF[SAVE_EPS_HEALTH].period =10; //300
       tasks_NF[SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
@@ -375,7 +420,42 @@ void Mode_init(int8_t type){
       mode_init_trigger = 1;
       
     } break;
+    case LP:{
+      //CAN'T COMMAND OUT OF THIS MODE AO NO EXIT FUNCTION NEEDED, JUST USES CHECK HEALTH
+      Node* task_pq = newNode(0, 0);
+
+      task_t* tasks_LP = (task_t *) malloc (sizeof(task_t)*4);
+
+      modes[LP].Mode_startup = &lp_init;
+      modes[LP].opmode_tasks = tasks_LP;
+      modes[LP].num_tasks = 4;
+
+      tasks_LP[LP_SAVE_EPS_HEALTH].period =30; //300
+      tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
+
+      tasks_LP[LP_CHECK_HEALTH].period = 30; //300
+      tasks_LP[LP_CHECK_HEALTH].TickFct = &lp_check_health;
+
+			tasks_LP[LP_TRANSMIT_TELEMETRY].period = 60;
+			tasks_LP[LP_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
+
+      tasks_LP[LP_PROCESS_GS_COMMAND].period = 5;
+			tasks_LP[LP_PROCESS_GS_COMMAND].TickFct = &lp_process_gs;
+
+      current_mode = LP;
+      current_tasks = tasks_LP; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
+
+      // for (uint8_t i=0; i<tasks; i++)
+      // queue_task(tasks[i]);
+      //ccmer_priorities[i] = -1;
+      queue_task(LP_SAVE_EPS_HEALTH);
+      queue_task(LP_CHECK_HEALTH);
+      queue_task(LP_TRANSMIT_TELEMETRY);
+      queue_task(LP_PROCESS_GS_COMMAND);
+      mode_init_trigger = 1;
+    }break;
   }
+  modes[current_mode].Mode_startup();
 }
 
 void Mission_loop(void)
@@ -417,7 +497,7 @@ void Mission_loop(void)
 
 
     // pop
-    circ_pop(&task_pq);
+    if(!circ_isEmpty(&task_pq)) circ_pop(&task_pq);
   }
 
   // Sleep
@@ -590,7 +670,7 @@ int8_t exit_fbu(int8_t t){
     //Free all timers that have been used within FBU mode
     free_timers();
     UART_puts(UART_INTERFACE, "[FBU][TASK #002] Wait period finished, entering ADM mode.\r\n");
-    Mode_init(AD);
+    Mode_init(LP);
     return 0;
   }
   else{
@@ -686,6 +766,32 @@ int8_t save_image_data(int8_t t){
 }*/
 }
 
+void fbu_init(){
+  UART_puts(UART_INTERFACE, "[FBU] FBU INITIALISED\r\n");
+}
+
+void ad_init(){
+  UART_puts(UART_INTERFACE, "[AD] AD INITIALISED\r\n");
+}
+
+void nf_init(){
+  UART_puts(UART_INTERFACE, "[NF] NF INITIALISED\r\n");
+}
+
+void lp_init(){
+
+  //Suspend all activities in queue from previous mode
+  while(!circ_isEmpty(&task_pq)){
+    circ_pop(&task_pq);
+  }
+
+  //UNCOMMENT WHEN WORKING EPS BOARD AVAILABLE
+  /*EPS_setPowerRail(EPS_PWR_CAM, 0);
+  EPS_setPowerRail(EPS_PWR_GPS, 0);
+  EPS_setPowerRail(EPS_PWR_GPSLNA, 0);*/
+
+  UART_puts(UART_INTERFACE, "[LP] LP INITIALISED\r\n");
+}
 
 void update_radio_parameters(){
 	// TODO: read these from the config
@@ -700,7 +806,7 @@ void update_radio_parameters(){
 }
 
 int8_t transmit_next_telemetry(int8_t t){
-  uint8_t data_read[TELEMETRY_SIZE];
+  /*uint8_t data_read[TELEMETRY_SIZE];
 
   // Read lookup table to find where to look in FRAM
 	int16_t telemetry_available = find_next_telemetry();
@@ -729,10 +835,10 @@ int8_t transmit_next_telemetry(int8_t t){
 		while( cc1125_pollGPIO(GPIO0_RADIO_TX)) {} ;
 
 		EPS_setPowerRail(EPS_PWR_TX, 0);
-
+    
 	  UART_puts(UART_INTERFACE, "[TASK #002] Finished transmit next telemetry\r\n");
 		return 0;
-	}
+	}*/
 
   UART_puts(UART_INTERFACE, "[TASK #002] Finished transmit next telemetry\r\n");
 	return 1;
@@ -752,6 +858,17 @@ int8_t save_attitude(int8_t t){
   	  UART_puts(UART_INTERFACE, "IN EXTRA TASK\r\n");
       Delay_ms(500);
   return 0;
+}
+
+
+int8_t lp_check_health(int8_t t){
+  UART_puts(UART_INTERFACE, "[LP][TASK #001] Finished transmit next telemetry\r\n");
+  return 0;
+}
+
+
+int8_t lp_process_gs(int8_t t){
+  UART_puts(UART_INTERFACE, "[LP][TASK #003] Finished transmit next telemetry\r\n");
 }
 
 
