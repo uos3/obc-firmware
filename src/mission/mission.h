@@ -92,12 +92,12 @@ typedef enum AD_task{
 } AD_task;
 
 typedef enum NF_task {
-	SAVE_EPS_HEALTH,
-	TRANSMIT,
-	SAVE_ATTITUDE,
-	SAVE_GPS_POS,
-	PROCESS_GS_COMMAND,
-	CHECK_HEALTH
+	NF_SAVE_EPS_HEALTH,
+	NF_SAVE_GPS_POS,
+	NF_SAVE_ATTITUDE,
+	NF_TRANSMIT_TELEMETRY, //Difference between transmit telemetry and downlink
+	NF_PROCESS_GS_COMMAND,
+	NF_CHECK_HEALTH //WHAT IS GATHERED IN CHECK HEALTH?
 } NF_task;
 
 typedef enum LP_task{
@@ -110,10 +110,11 @@ typedef enum LP_task{
 
 typedef enum SM_task{
 	//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
-	SM_POWER_DOWN,
-	SM_LISTEN_FOR_GS, //return to NF, got to CFU or reboot through this 
-	SM_CHEK_HEALTH, //Periodically read, save and transmit health packets
-	EXIT_SM //May be achieved through SM_LISTEN_FOR_GS
+	SM_SAVE_EPS_HEALTH,
+	SM_CHECK_HEALTH, //Config update from this task
+	SM_TRANSMIT_TELEMETRY,
+	SM_PROCESS_GS_COMMAND,
+	REBOOT_CHECK
 } SM_task;
 
 typedef enum CFU_task{
@@ -123,14 +124,17 @@ typedef enum CFU_task{
 } CFU_task;
 
 typedef enum PT_task{
-	SAVE_IMAGE,
+	PT_TAKE_PICTURE,
 	EXIT_PT
 } PT_task;
 
 typedef enum DL_task{
-	DOWNLINK,
-	TAKE_PICTURE,
-	EXIT_DL
+	DL_SAVE_EPS_HEALTH,
+	DL_SAVE_GPS_POSITION,
+	DL_SAVE_ATTITUDE,
+	DL_TAKE_PICTURE,
+	DL_POLL_TRANSMITTER,
+	DL_CHECK_HEALTH
 } DL_task;
 
 

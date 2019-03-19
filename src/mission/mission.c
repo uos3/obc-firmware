@@ -42,19 +42,24 @@ int8_t save_morse_telemetry (int8_t);
 int8_t transmit_morse_telemetry (int8_t);
 int8_t save_attitude (int8_t t);
 int8_t get_available_timer();
-int8_t lp_check_health(int8_t t);
-int8_t lp_process_gs(int8_t t);
-
+int8_t sm_reboot(int8_t t);
+int8_t process_gs_command(int8_t t);
+int8_t poll_transmitter(int8_t t);
+int8_t take_picture(int8_t);
 
 //Mode initialisation functions
 void fbu_init(void);
 void ad_init(void);
 void nf_init(void);
 void lp_init(void);
+void sm_init(void);
+void cfu_init(void);
+void pt_init(void);
+void dl_init(void);
+void suspend_all_tasks();
+void mode_switch(uint8_t mode);
 
 void set_timer_for_task(uint8_t id, uint8_t task_id, uint32_t period, void (*timer_isr)() );
-
-
 
 
 opmode_t modes[8];
@@ -70,6 +75,7 @@ volatile uint8_t no_of_tasks_queued;
 // Properties
 task_t* current_tasks;
 uint8_t current_mode; // for deciding which enums to use
+uint8_t previous_mode; // for returning to previous mode from certain modes such as PT
 
 int8_t timer_to_task[MAX_TASKS]; // timer_id -> task_id (reset look-up table)
 
@@ -77,7 +83,6 @@ int8_t mode_init_trigger = 1;
 
 //FBU
 bool FBU_exit_switch = false;
-
 
 //ADM 
 char ADM_status = 'N';
@@ -90,6 +95,10 @@ uint8_t ram_errors;
 // State variables
 uint16_t data_packets_pending;
 uint8_t rx_noisefloor;
+
+//  Picture taking wait period, 1 by default, 0 may crate bug with scheduler to best to avoid
+
+uint32_t picture_wait_period =1;
 
 //Morse transmitter settings
 static double freq = 145.5;
@@ -309,13 +318,13 @@ void queue_task(int8_t task_id){
 
 
 void Mode_init(int8_t type){
-  //
   /*for (uint8_t i=0; i<6; i++){
     char out_g[100];
     sprintf(out_g, "[[MODE INIT]] Timer %" PRId8 " status %" PRId8 "\r\n", i, timer_to_task[i]);
     UART_puts(UART_INTERFACE, out_g);
   }*/
 
+  //TODO: alter all times to correct times for mission and for test
 
   switch(type){
     case FBU:{
@@ -348,7 +357,7 @@ void Mode_init(int8_t type){
     
     } break;
     case AD:{
-      Node* task_pq = newNode(0, 0);
+      //Node* task_pq = newNode(0, 0);
 
       task_t* tasks_AD = (task_t *) malloc (sizeof(task_t)*4);
 
@@ -385,7 +394,8 @@ void Mode_init(int8_t type){
     
     }break;
     case NF:{
-      Node* task_pq = newNode(0, 0);
+      //Difference between data downlink mode and transitting telemetry? Is telemetry just for camera data?
+      //Node* task_pq = newNode(0, 0);
 
       task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*3);
 
@@ -393,20 +403,23 @@ void Mode_init(int8_t type){
       modes[NF].opmode_tasks = tasks_NF;
       modes[NF].num_tasks = 3;
 
-      tasks_NF[SAVE_EPS_HEALTH].period =10; //300
-      tasks_NF[SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
+      tasks_NF[NF_SAVE_EPS_HEALTH].period =10; //300
+      tasks_NF[NF_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_NF[TRANSMIT].period = 20;
-      tasks_NF[TRANSMIT].TickFct = &save_imu_data;
+      tasks_NF[NF_SAVE_GPS_POS].period = 20;
+      tasks_NF[NF_SAVE_GPS_POS].TickFct = &save_gps_data;
 
-			tasks_NF[SAVE_ATTITUDE].period = 30;
-			tasks_NF[SAVE_ATTITUDE].TickFct = &save_attitude;
+			tasks_NF[NF_SAVE_ATTITUDE].period = 50;
+			tasks_NF[NF_SAVE_ATTITUDE].TickFct = &save_attitude;
 
-			//tasks[1].period = 10; // 600
-			//tasks[1].TickFct = &save_gps_data; //SAVE_GPS_POS
+      tasks_NF[NF_TRANSMIT_TELEMETRY].period = 30;
+      tasks_NF[NF_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-			//tasks[CHECK_HEALTH].period = 30;
-			//tasks[CHECK_HEALTH].TickFct = &check_health_status;
+			tasks_NF[NF_PROCESS_GS_COMMAND].period = 5; // 600
+			tasks_NF[NF_PROCESS_GS_COMMAND].TickFct = &process_gs_command; //SAVE_GPS_POS
+
+			tasks_NF[NF_CHECK_HEALTH].period = 40;
+			tasks_NF[NF_CHECK_HEALTH].TickFct = &check_health_status;
 
       current_mode = NF;
       current_tasks = tasks_NF;
@@ -414,15 +427,18 @@ void Mode_init(int8_t type){
       // for (uint8_t i=0; i<tasks; i++)
       // queue_task(tasks[i]);
       //ccmer_priorities[i] = -1;
-      queue_task(SAVE_EPS_HEALTH);
-      queue_task(TRANSMIT);
-      queue_task(SAVE_ATTITUDE);
+      queue_task(NF_SAVE_EPS_HEALTH);
+      queue_task(NF_SAVE_GPS_POS);
+      queue_task(NF_SAVE_ATTITUDE);
+      queue_task(NF_TRANSMIT_TELEMETRY);
+      queue_task(NF_PROCESS_GS_COMMAND);
+      queue_task(NF_CHECK_HEALTH);
       mode_init_trigger = 1;
       
     } break;
     case LP:{
       //CAN'T COMMAND OUT OF THIS MODE AO NO EXIT FUNCTION NEEDED, JUST USES CHECK HEALTH
-      Node* task_pq = newNode(0, 0);
+      //Node* task_pq = newNode(0, 0);
 
       task_t* tasks_LP = (task_t *) malloc (sizeof(task_t)*4);
 
@@ -434,13 +450,13 @@ void Mode_init(int8_t type){
       tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_LP[LP_CHECK_HEALTH].period = 30; //300
-      tasks_LP[LP_CHECK_HEALTH].TickFct = &lp_check_health;
+      tasks_LP[LP_CHECK_HEALTH].TickFct = &check_health_status;
 
 			tasks_LP[LP_TRANSMIT_TELEMETRY].period = 60;
 			tasks_LP[LP_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
       tasks_LP[LP_PROCESS_GS_COMMAND].period = 5;
-			tasks_LP[LP_PROCESS_GS_COMMAND].TickFct = &lp_process_gs;
+			tasks_LP[LP_PROCESS_GS_COMMAND].TickFct = &process_gs_command;
 
       current_mode = LP;
       current_tasks = tasks_LP; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
@@ -455,40 +471,126 @@ void Mode_init(int8_t type){
       mode_init_trigger = 1;
     }break;
     case SM:{
-      //CAN'T COMMAND OUT OF THIS MODE AO NO EXIT FUNCTION NEEDED, JUST USES CHECK HEALTH
-      Node* task_pq = newNode(0, 0);
+      //Node* task_pq = newNode(0, 0);
 
-      task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*4);
+      task_t* tasks_SM = (task_t *) malloc (sizeof(task_t)*5);
 
-      modes[LP].Mode_startup = &lp_init;
-      modes[LP].opmode_tasks = tasks_LP;
-      modes[LP].num_tasks = 4;
+      modes[SM].Mode_startup = &sm_init;
+      modes[SM].opmode_tasks = tasks_SM;
+      modes[SM].num_tasks = 5;
 
-      tasks_LP[LP_SAVE_EPS_HEALTH].period =30; //300
-      tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
+      tasks_SM[SM_SAVE_EPS_HEALTH].period =30; //300
+      tasks_SM[SM_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_LP[LP_CHECK_HEALTH].period = 30; //300
-      tasks_LP[LP_CHECK_HEALTH].TickFct = &lp_check_health;
+      tasks_SM[SM_CHECK_HEALTH].period = 30; //300
+      tasks_SM[SM_CHECK_HEALTH].TickFct = check_health_status;
 
-			tasks_LP[LP_TRANSMIT_TELEMETRY].period = 60;
-			tasks_LP[LP_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
+			tasks_SM[SM_TRANSMIT_TELEMETRY].period = 60;
+			tasks_SM[SM_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-      tasks_LP[LP_PROCESS_GS_COMMAND].period = 5;
-			tasks_LP[LP_PROCESS_GS_COMMAND].TickFct = &lp_process_gs;
+      tasks_SM[SM_PROCESS_GS_COMMAND].period = 5;
+			tasks_SM[SM_PROCESS_GS_COMMAND].TickFct = &process_gs_command;
 
-      current_mode = LP;
-      current_tasks = tasks_LP; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
+      tasks_SM[REBOOT_CHECK].period = 5;
+			tasks_SM[REBOOT_CHECK].TickFct = &sm_reboot;
+
+
+      current_mode = SM;
+      current_tasks = tasks_SM; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
 
       // for (uint8_t i=0; i<tasks; i++)
       // queue_task(tasks[i]);
       //ccmer_priorities[i] = -1;
-      queue_task(LP_SAVE_EPS_HEALTH);
-      queue_task(LP_CHECK_HEALTH);
-      queue_task(LP_TRANSMIT_TELEMETRY);
-      queue_task(LP_PROCESS_GS_COMMAND);
+      queue_task(SM_SAVE_EPS_HEALTH);
+      queue_task(SM_CHECK_HEALTH);
+      queue_task(SM_TRANSMIT_TELEMETRY);
+      queue_task(SM_PROCESS_GS_COMMAND);
+      queue_task(REBOOT_CHECK);
+      mode_init_trigger = 1;
+    }break;
+  case CFU:{
+      //Node* task_pq = newNode(0, 0);
+
+      task_t* tasks_CFU = (task_t *) malloc (sizeof(task_t));
+
+      modes[CFU].Mode_startup = &cfu_init;
+      modes[CFU].opmode_tasks = tasks_CFU;
+      modes[CFU].num_tasks = 1;
+
+      //NO ACTUAL RECURRING TASKS, CAN THE TASKS JUST BE LEFT AS EMPTY?
+      current_mode = CFU;
+      current_tasks = tasks_CFU; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
+
+      // for (uint8_t i=0; i<tasks; i++)
+      // queue_task(tasks[i]);
+      //ccmer_priorities[i] = -1;
+      mode_init_trigger = 1;
+    }break;
+    case PT:{
+      //Node* task_pq = newNode(0, 0);
+
+      task_t* tasks_PT = (task_t *) malloc (sizeof(task_t));
+
+      modes[PT].Mode_startup = &pt_init;
+      modes[PT].opmode_tasks = tasks_PT;
+      modes[PT].num_tasks = 1;
+
+
+      //NO ACTUAL RECURRING TASKS, CAN THE TASKS JUST BE LEFT AS EMPTY?
+      //ALL TIMING OCCURS IN NF MODE
+      current_mode = PT;
+      current_tasks = tasks_PT; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
+
+      // for (uint8_t i=0; i<tasks; i++)
+      // queue_task(tasks[i]);
+      //ccmer_priorities[i] = -1;
+      mode_init_trigger = 1;
+    }break;
+    case DL:{
+      //Node* task_pq = newNode(0, 0);
+
+      task_t* tasks_DL = (task_t *) malloc (sizeof(task_t)*6);
+
+      modes[DL].Mode_startup = &dl_init;
+      modes[DL].opmode_tasks = tasks_DL;
+      modes[DL].num_tasks = 6;
+
+      tasks_DL[DL_SAVE_EPS_HEALTH].period =20; //300
+      tasks_DL[DL_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
+
+      tasks_DL[DL_SAVE_GPS_POSITION].period = 30; //300
+      tasks_DL[DL_SAVE_GPS_POSITION].TickFct = save_gps_data;
+
+			tasks_DL[DL_SAVE_ATTITUDE].period = 60;
+			tasks_DL[DL_SAVE_ATTITUDE].TickFct = &save_attitude;
+
+      tasks_DL[DL_TAKE_PICTURE].period = 5;
+			tasks_DL[DL_TAKE_PICTURE].TickFct = &take_picture;
+
+      tasks_DL[DL_POLL_TRANSMITTER].period = 1; //Should be 1ms but 1s should be sufficient?
+			tasks_DL[DL_POLL_TRANSMITTER].TickFct = &poll_transmitter; //To get 1ms a lot has to be changed in the code
+
+      tasks_DL[DL_CHECK_HEALTH].period = 5;
+			tasks_DL[DL_CHECK_HEALTH].TickFct = &check_health_status;
+
+      current_mode = DL;
+      current_tasks = tasks_DL; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
+
+      // for (uint8_t i=0; i<tasks; i++)
+      // queue_task(tasks[i]);
+      //ccmer_priorities[i] = -1;
+      queue_task(DL_SAVE_EPS_HEALTH);
+      queue_task(DL_SAVE_GPS_POSITION);
+      queue_task(DL_SAVE_ATTITUDE);
+      queue_task(DL_TAKE_PICTURE);
+      queue_task(DL_POLL_TRANSMITTER);
+      queue_task(DL_CHECK_HEALTH);
       mode_init_trigger = 1;
     }break;
   }
+  //Starts after timers assigned but unless timer has extremey short period (<<1s) this should be fine 
+  /*TODO: Put queue_task after Mode_startup() and use a bool trigger to prevent tasks being queued if PT 
+  or CFU modes (only init called)*/
   modes[current_mode].Mode_startup();
 }
 
@@ -673,7 +775,9 @@ int8_t save_eps_health_data(int8_t t){
 }
 
 int8_t save_gps_data(int8_t t){
+  UART_puts(UART_INTERFACE, "[GENERAL][TASK #?] Save Eps data\r\n");
   //PARTIALLY COMPLETED TASK IN MAIN FOLDER
+  return 0;
 }
 
 int8_t send_morse_telemetry (int8_t t){
@@ -702,9 +806,8 @@ int8_t exit_fbu(int8_t t){
   if (FBU_exit_switch == true){
 
     //Free all timers that have been used within FBU mode
-    free_timers();
     UART_puts(UART_INTERFACE, "[FBU][TASK #002] Wait period finished, entering ADM mode.\r\n");
-    Mode_init(LP);
+    mode_switch(SM);
     return 0;
   }
   else{
@@ -740,9 +843,21 @@ int8_t transmit_morse_telemetry(int8_t t){
 int8_t exit_ad(int8_t t){
   //EXIT AD MODE
   //UART_puts(UART_INTERFACE, "[AD][TASK #002] Exit AD mode\r\n");
-  free_timers();
+  
   UART_puts(UART_INTERFACE, "[AD][TASK #002] Exit AD mode\r\n");
-  Mode_init(NF);
+  
+  mode_switch(NF);
+  return 0;
+}
+
+void mode_switch(uint8_t mode){
+  free_timers();
+  previous_mode = current_mode;
+  Mode_init(mode);
+}
+
+int8_t sm_reboot(int8_t t){
+  UART_puts(UART_INTERFACE, "[SM][TASK?] No contact from ground, rebooting...\r\n");
   return 0;
 }
 
@@ -800,6 +915,8 @@ int8_t save_image_data(int8_t t){
 }*/
 }
 
+//MODE INITIALISATION FUNCTIONS-------------------------------------------
+
 void fbu_init(){
   UART_puts(UART_INTERFACE, "[FBU] FBU INITIALISED\r\n");
 }
@@ -815,9 +932,7 @@ void nf_init(){
 void lp_init(){
 
   //Suspend all activities in queue from previous mode
-  while(!circ_isEmpty(&task_pq)){
-    circ_pop(&task_pq);
-  }
+  suspend_all_tasks();
 
   //UNCOMMENT WHEN WORKING EPS BOARD AVAILABLE
   /*EPS_setPowerRail(EPS_PWR_CAM, 0);
@@ -826,6 +941,64 @@ void lp_init(){
 
   UART_puts(UART_INTERFACE, "[LP] LP INITIALISED\r\n");
 }
+
+void sm_init(){
+
+  //Suspend all activities in queue from previous mode
+  suspend_all_tasks();
+
+  //UNCOMMENT WHEN WORKING EPS BOARD AVAILABLE
+  /*EPS_setPowerRail(EPS_PWR_CAM, 0);
+  EPS_setPowerRail(EPS_PWR_GPS, 0);
+  EPS_setPowerRail(EPS_PWR_GPSLNA, 0);*/
+
+  UART_puts(UART_INTERFACE, "[SM] SM INITIALISED\r\n");
+}
+
+void cfu_init(){
+  //suspend data gathering, picture taking and downlinking
+  suspend_all_tasks();
+  //Open recieved file and verify values
+
+  //Overwrite config file
+
+  //Return becon with configuration state
+
+  //Return to previous mode
+  mode_switch(NF);
+
+}
+
+void pt_init(){
+
+  //Take pciture
+
+  //Process and write data to FRAM buffer
+
+
+  //Return to previous mode
+  if (previous_mode == DL){
+    mode_switch(DL);
+  }
+  else{
+    mode_switch(NF);
+  }
+
+}
+
+void dl_init(){
+  //Transfer packets to cc1125 buffer
+  
+}
+
+void suspend_all_tasks(){
+  while(!circ_isEmpty(&task_pq)){
+    circ_pop(&task_pq);
+  }
+}
+
+//---------------------------------------------------------------------------
+
 
 void update_radio_parameters(){
 	// TODO: read these from the config
@@ -885,24 +1058,24 @@ int8_t check_health_status(int8_t t){
 
 	// Calculate checksums for all payload
 
+  UART_puts(UART_INTERFACE, "[GENERAL] Finished checking health\r\n");
+  return 0;
+}
+
+int8_t poll_transmitter(int8_t t){
+  UART_puts(UART_INTERFACE, "[DL] Finished polling transmitter\r\n");
+  return 0;
+}
+
+int8_t take_picture(int8_t t){
+  UART_puts(UART_INTERFACE, "[DL] Taking picture\r\n");
+  return 0;
 }
 
 
 int8_t save_attitude(int8_t t){
-  	  UART_puts(UART_INTERFACE, "IN EXTRA TASK\r\n");
-      Delay_ms(500);
+  	  UART_puts(UART_INTERFACE, "[NF][TASK #002] Finished saving attitude\r\n");
   return 0;
-}
-
-
-int8_t lp_check_health(int8_t t){
-  UART_puts(UART_INTERFACE, "[LP][TASK #001] Finished transmit next telemetry\r\n");
-  return 0;
-}
-
-
-int8_t lp_process_gs(int8_t t){
-  UART_puts(UART_INTERFACE, "[LP][TASK #003] Finished transmit next telemetry\r\n");
 }
 
 
@@ -928,6 +1101,7 @@ int8_t process_gs_command(int8_t t){
 		//reboot or switch-off subsystem
 		break;
 	}
+  UART_puts(UART_INTERFACE, "[GENERAL][TASK #?] Finished processing gs command.\r\n");
 }
 
 
