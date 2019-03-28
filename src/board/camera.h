@@ -25,6 +25,6 @@
  * @parameter Pointer to function to save each page
  * @returns Whether or not the image capture was successful
  */
-bool Camera_capture(uint32_t page_size, void (*page_store)(uint8_t*,uint32_t));
+bool Camera_capture(uint32_t page_size, void (*page_store)(uint8_t*,uint32_t, uint32_t));
 
 #endif /*  __CAMERA_H__ */

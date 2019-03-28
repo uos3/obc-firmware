@@ -96,8 +96,9 @@ typedef enum NF_task {
 	NF_SAVE_GPS_POS,
 	NF_SAVE_ATTITUDE,
 	NF_TRANSMIT_TELEMETRY, //Difference between transmit telemetry and downlink
-	NF_PROCESS_GS_COMMAND,
-	NF_CHECK_HEALTH //WHAT IS GATHERED IN CHECK HEALTH?
+	//NF_PROCESS_GS_COMMAND,
+	NF_CHECK_HEALTH, //WHAT IS GATHERED IN CHECK HEALTH?
+	NF_TAKE_PICTURE
 } NF_task;
 
 typedef enum LP_task{

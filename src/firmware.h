@@ -23,6 +23,7 @@
 #include "utility/circ_queue.h"
 
 /* Generic Board Module header files */
+#include "board/antenna.h"
 #include "board/board.h"
 #include "board/led.h"
 #include "board/uart.h"

@@ -17,13 +17,13 @@ int main(void)
     LED_on(LED_B);
 
     /* On period */
-    Delay_ms(500);
+    Delay_ms(5000);
     WDT_kick();
 
     LED_off(LED_B);
 
     /* Off period */
-    Delay_ms(500);
+    Delay_ms(5000);
     WDT_kick();
   }
 }

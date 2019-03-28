@@ -53,7 +53,7 @@ bool Configuration_verify_checksum(void)
 static void Configuration_load_defaults(void)
 {
   /* Set defaults.. */
-
+  //OTHERWISE NO CONFIG FILE LOADED IF SAVING CONFIG SAVE FAILS
 
   Configuration_update_checksum();
 }

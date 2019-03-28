@@ -104,10 +104,15 @@ static bool Camera_command(char *command, uint32_t command_length, char *respons
   return true;
 }
 
-bool Camera_capture(uint32_t page_size, void (*page_store)(uint8_t*,uint32_t))
+bool Camera_capture(uint32_t page_size, void (*page_store)(uint8_t*,uint32_t, uint32_t))
 {
+  uint32_t counter = 0;
   uint32_t jpegsize, i=0, j=0, endfoundcount = 0;
   uint8_t page_buffer[page_size];
+
+  //char pg_output[100];
+  //sprintf(pg_output, "page size is: %d\r\n", page_size);
+  //UART_puts(UART_GNSS, pg_output);
 
   // initialise camera
   if(!Camera_command(LK_RESET, sizeof(LK_RESET), LK_RESET_RE, sizeof(LK_RESET_RE)))
@@ -141,7 +146,11 @@ bool Camera_capture(uint32_t page_size, void (*page_store)(uint8_t*,uint32_t))
   {
     return false;
   }
-  jpegsize = UART_getw4(UART_CAMERA); // file size (lowest 32 bits)
+  jpegsize = UART_getw4(UART_CAMERA); // file size (lowest 32 bits
+
+  char jp_output[100];
+  sprintf(jp_output, "jpeg size is: %d\r\n", page_size);
+  UART_puts(UART_GNSS, jp_output);
 
   // offset in file start (0 here)
   LK_READPICTURE[6] = 0x00;
@@ -164,9 +173,11 @@ bool Camera_capture(uint32_t page_size, void (*page_store)(uint8_t*,uint32_t))
   {
     return false;
   }
-
+  UART_puts(UART_GNSS, "In Camera driver\r\n");
   for(i=0; i<jpegsize && endfoundcount<2;i++)
   {
+    //DELAYS THE READING OF CHARACTER  FROM CAMERA SO GETS STUCK IMN LOOP
+    //UART_puts(UART_GNSS, "In Camera driver loop\r\n");
     page_buffer[j] = UART_getc(UART_CAMERA);
 
     if(page_buffer[j] == JPEG_END[endfoundcount])
@@ -180,9 +191,14 @@ bool Camera_capture(uint32_t page_size, void (*page_store)(uint8_t*,uint32_t))
 
     j++;
     if(j==page_size || endfoundcount==2)
-    {
-      page_store(page_buffer, j);
+    { 
+      page_store(page_buffer, j, counter);
+      //UART_puts(UART_GNSS, "In Camera driver if statement\r\n");
+      char i_output[100];
+      sprintf(i_output, "i output is: %d, j output is: %d, endfoundcount is: %d\r\n", i, j, endfoundcount);
+      UART_puts(UART_GNSS, i_output);
       j=0;
+      counter++;
     }
   }
 

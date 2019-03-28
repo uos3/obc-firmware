@@ -284,13 +284,13 @@ void Mission_init(void)
 
   ulPeriod = SysCtlClockGet(); // 1Hz update rate
   //PRINTS ULPERIOD - TO REMOVE
-  /*char output3[100];
+  char output3[100];
   sprintf(output3,"ULPERIOD: %" PRIu32 "\r\n", ulPeriod);
 	UART_puts(UART_INTERFACE, output3);
-  Delay_ms(5000);*/
+  Delay_ms(5000);
    // third will miss sometimes if processor busy
-
-  Mode_init(FBU);
+  mode_switch(FBU);
+  //Mode_init(FBU);
 }
 
 void queue_task(int8_t task_id){
@@ -339,7 +339,7 @@ void Mode_init(int8_t type){
 
 
       tasks_FBU[SAVE_MORSE_TELEMETRY].period = 20; //300
-      tasks_FBU[SAVE_MORSE_TELEMETRY].TickFct = &send_morse_telemetry;
+      tasks_FBU[SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
 
       tasks_FBU[EXIT_FBU].period = 40;
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
@@ -415,11 +415,11 @@ void Mode_init(int8_t type){
       tasks_NF[NF_TRANSMIT_TELEMETRY].period = 30;
       tasks_NF[NF_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-			tasks_NF[NF_PROCESS_GS_COMMAND].period = 5; // 600
-			tasks_NF[NF_PROCESS_GS_COMMAND].TickFct = &process_gs_command; //SAVE_GPS_POS
-
 			tasks_NF[NF_CHECK_HEALTH].period = 40;
 			tasks_NF[NF_CHECK_HEALTH].TickFct = &check_health_status;
+
+      tasks_NF[NF_TAKE_PICTURE].period = 5; // 600
+			tasks_NF[NF_TAKE_PICTURE].TickFct = &process_gs_command; //SAVE_GPS_POS
 
       current_mode = NF;
       current_tasks = tasks_NF;
@@ -431,8 +431,8 @@ void Mode_init(int8_t type){
       queue_task(NF_SAVE_GPS_POS);
       queue_task(NF_SAVE_ATTITUDE);
       queue_task(NF_TRANSMIT_TELEMETRY);
-      queue_task(NF_PROCESS_GS_COMMAND);
       queue_task(NF_CHECK_HEALTH);
+      queue_task(NF_TAKE_PICTURE);
       mode_init_trigger = 1;
       
     } break;
@@ -775,8 +775,43 @@ int8_t save_eps_health_data(int8_t t){
 }
 
 int8_t save_gps_data(int8_t t){
-  UART_puts(UART_INTERFACE, "[GENERAL][TASK #?] Save Eps data\r\n");
-  //PARTIALLY COMPLETED TASK IN MAIN FOLDER
+  //Driver needs to be updated
+
+  UART_puts(UART_INTERFACE, "[TASK #003] Saving GPS payload data...\r\n");
+
+  start_telemetry();
+
+  // TODO: Generate dataset id
+	add_telemetry((uint16_t)0, 2);
+
+	// TODO: Get timestamp
+	add_telemetry((uint32_t)0, 4);
+
+
+	// Take multiple samples
+	for (uint8_t i=0; i<4; i++){
+		int32_t longitude, latitude, altitude;
+    uint8_t long_sd, lat_sd, alt_sd;
+    uint32_t time;
+    uint64_t ex_time;
+
+    GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &time, &ex_time);
+		
+    //Use cast and number of bytes
+    add_telemetry((int32_t)&longitude, 4); 
+		add_telemetry((int32_t)&latitude, 4); 
+    add_telemetry((int32_t)&altitude, 4); 
+		add_telemetry((uint8_t)&long_sd, 1); 
+    add_telemetry((uint8_t)&lat_sd, 1); 
+		add_telemetry((uint8_t)&alt_sd, 1); 
+    add_telemetry((uint32_t)&time, 4); 
+	}
+
+	end_telemetry();
+
+
+
+  UART_puts(UART_INTERFACE, "[GENERAL][TASK #?] Save GPS data\r\n");
   return 0;
 }
 
@@ -820,6 +855,8 @@ int8_t exit_fbu(int8_t t){
 
 int8_t ad_deploy_attempt(int8_t t){
   //ATTEMPT TO DEPLOY ANTENNA
+  Antenna_deploy();
+  deploy_attempts++;
   UART_puts(UART_INTERFACE, "[AD][TASK #003] Antenna deploy attempt\r\n");
   return 0;
 }
@@ -864,6 +901,8 @@ int8_t sm_reboot(int8_t t){
 int8_t save_imu_data(int8_t t){
   UART_puts(UART_INTERFACE, "[TASK #003] Saving IMU payload data...\r\n");
   /*
+  start_telemetry();
+
   // TODO: Generate dataset id
 	add_telemetry((uint16_t)0, 2);
 
@@ -891,28 +930,35 @@ int8_t save_imu_data(int8_t t){
 
 
 int8_t save_image_data(int8_t t){
-   UART_puts(UART_INTERFACE, "[TASK #004] Saving IMU payload data...\r\n");
+  UART_puts(UART_INTERFACE, "[TASK #004] Saving Image data...\r\n");
+  
+
+  
+  
+  
+  
   /*
   // TODO: Generate dataset id
-	add_telemetry((uint16_t)0, 2);
+  add_telemetry((uint16_t)0, 2);
 
-	// TODO: Get timestamp
-	add_telemetry((uint32_t)0, 4);
+  // TODO: Get timestamp
+  add_telemetry((uint32_t)0, 4);
 
-	// TODO: Get IMU temperature based on Ed's new driver
+  // TODO: Get IMU temperature based on Ed's new driver
 
-	// Take multiple samples
-	for (uint8_t i=0; i<6; i++){
-		int16_t accel_data[3], gyro_data[3];
-		IMU_read_accel(accel_data[0], accel_data[1], accel_data[2]);
-		IMU_read_gyro(gyro_data[0], gyro_data[1], gyro_data[2]);
+  // Take multiple samples
+  for (uint8_t i=0; i<6; i++){
+    int16_t accel_data[3], gyro_data[3];
+    IMU_read_accel(accel_data[0], accel_data[1], accel_data[2]);
+    IMU_read_gyro(gyro_data[0], gyro_data[1], gyro_data[2]);
 
-		add_telemetry((int16_t)&accel_data, 6); // 2bytes * 3
-		add_telemetry((int16_t)&gyro_data, 6); // 2bytes * 3
+    add_telemetry((int16_t)&accel_data, 6); // 2bytes * 3
+    add_telemetry((int16_t)&gyro_data, 6); // 2bytes * 3
 
-		Delay_ms(500); // TODO: update time once it has been determined
-  
-}*/
+    Delay_ms(500); // TODO: update time once it has been determined
+    
+  }*/
+  return 0;
 }
 
 //MODE INITIALISATION FUNCTIONS-------------------------------------------
@@ -958,8 +1004,11 @@ void sm_init(){
 void cfu_init(){
   //suspend data gathering, picture taking and downlinking
   suspend_all_tasks();
-  //Open recieved file and verify values
+  //Open recieved file and verify values (assuming the data has already been stored
+  //in the spacecraft_configuration struct from the data uplink)
 
+  //Configuration_save_to_eeprom();
+  
   //Overwrite config file
 
   //Return becon with configuration state
@@ -971,10 +1020,9 @@ void cfu_init(){
 
 void pt_init(){
 
-  //Take pciture
+  //Take pciture and write to FRAM buffer
 
-  //Process and write data to FRAM buffer
-
+  save_image_data(NULL);
 
   //Return to previous mode
   if (previous_mode == DL){
@@ -1011,6 +1059,7 @@ void update_radio_parameters(){
 	// -get packet wait
 	// -manual calibration
 }
+//SO THIS FUNCTION TRANSMITS THE CURRENT IMU AND GPS DATA IN A BEACON, DL MODE DOWNLINKS ALL DATA STORED IN THE BUFFER
 
 int8_t transmit_next_telemetry(int8_t t){
   /*uint8_t data_read[TELEMETRY_SIZE];
@@ -1052,6 +1101,7 @@ int8_t transmit_next_telemetry(int8_t t){
 }
 
 int8_t check_health_status(int8_t t){
+
 	// load allowed voltage of battery
 
 	// Get current voltage of battery from EPS board
@@ -1083,6 +1133,8 @@ int8_t process_gs_command(int8_t t){
 	switch(t){
 		case IMAGE_REQUEST:
 		// schedule a time for the PT context
+      //tasks_NF[NF_TAKE_PICTURE].period = 5; // 600
+			//tasks_NF[NF_TAKE_PICTURE].TickFct = &process_gs_command; //SAVE_GPS_POS
 		break;
 		case ACK_REC_PACKETS:
 		// update entries for packets in meta-table stored in FRAM
