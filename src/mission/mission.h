@@ -155,6 +155,12 @@ typedef enum GS_command {
 	MANUAL_OVERRIDE
 } GS_command;
 
+//Will be in radio driver when finalised
+typedef struct radio_config_t {
+	double frequency; // MHz
+	double power; // dBm
+} radio_config_t;
+
 // Main functions
 void Mission_init(void);
 void Mission_loop(void);

@@ -2,7 +2,7 @@
 #include "../firmware.h"
 
 #define UART_INTERFACE UART_GNSS
-#define BURN_TIME 5000
+#define BURN_TIME 6000
 #define WAIT_TIME 30000
 
 void Antenna_deploy_demo(void);

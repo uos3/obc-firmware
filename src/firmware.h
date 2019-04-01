@@ -36,6 +36,7 @@
 #include "board/debug.h"
 #include "board/random.h"
 #include "board/ldpc.h"
+#include "board/memory_map.h"
 /* Hardware Drivers */
 #include "board/fram.h"
 #include "board/temperature_sensors.h"

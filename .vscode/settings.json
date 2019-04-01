@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "firmware.h": "c"
+        "firmware.h": "c",
+        "debug.h": "c"
     }
 }

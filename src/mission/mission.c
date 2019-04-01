@@ -85,8 +85,9 @@ int8_t mode_init_trigger = 1;
 bool FBU_exit_switch = false;
 
 //ADM 
-char ADM_status = 'N';
-uint16_t deploy_attempts = 0;
+uint32_t ADM_status;
+char ADM_char;
+uint32_t deploy_attempts;
 
 // Error detection
 uint8_t flash_errors;
@@ -96,11 +97,15 @@ uint8_t ram_errors;
 uint16_t data_packets_pending;
 uint8_t rx_noisefloor;
 
+
 //  Picture taking wait period, 1 by default, 0 may crate bug with scheduler to best to avoid
 
 uint32_t picture_wait_period =1;
 
-//Morse transmitter settings
+//Transmitter settings
+
+radio_config_t radio_config;
+
 static double freq = 145.5;
 static double pwr = 10.0;
 
@@ -247,6 +252,13 @@ void Mission_init(void)
   EEPROM_init();
   I2C_init(0);
   UART_init(UART_INTERFACE, 9600);
+  Buffer_init();
+  
+
+  //radio_config.frequency 
+  
+  //Radio_rx_receive(radio_config_t *radio_config, void *received_packet_handler);
+  
   //TESTING SIZE OF INT - TO REMOVE
   /*char intsize[100];
   sprintf(intsize, "Size of int is: %lu", (unsigned long) sizeof(int8_t));
@@ -287,7 +299,12 @@ void Mission_init(void)
   char output3[100];
   sprintf(output3,"ULPERIOD: %" PRIu32 "\r\n", ulPeriod);
 	UART_puts(UART_INTERFACE, output3);
-  Delay_ms(5000);
+  //Delay_ms(5000);
+  UART_puts(UART_INTERFACE, "Before\r\n");
+  EEPROM_read(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
+  UART_puts(UART_INTERFACE, "Middle\r\n");
+  EEPROM_read(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
+  UART_puts(UART_INTERFACE, "After\r\n");
    // third will miss sometimes if processor busy
   mode_switch(FBU);
   //Mode_init(FBU);
@@ -374,6 +391,7 @@ void Mode_init(int8_t type){
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 90;
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
 
+      //remove in final build
       tasks_AD[EXIT_AD].period = 100;
       tasks_AD[EXIT_AD].TickFct = &exit_ad;
 
@@ -406,20 +424,20 @@ void Mode_init(int8_t type){
       tasks_NF[NF_SAVE_EPS_HEALTH].period =10; //300
       tasks_NF[NF_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_NF[NF_SAVE_GPS_POS].period = 20;
+      tasks_NF[NF_SAVE_GPS_POS].period = spacecraft_configuration.data.gps_acquisition_interval;
       tasks_NF[NF_SAVE_GPS_POS].TickFct = &save_gps_data;
 
-			tasks_NF[NF_SAVE_ATTITUDE].period = 50;
+			tasks_NF[NF_SAVE_ATTITUDE].period = spacecraft_configuration.data.imu_acquisition_interval;
 			tasks_NF[NF_SAVE_ATTITUDE].TickFct = &save_attitude;
 
-      tasks_NF[NF_TRANSMIT_TELEMETRY].period = 30;
+      tasks_NF[NF_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
       tasks_NF[NF_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-			tasks_NF[NF_CHECK_HEALTH].period = 40;
+			tasks_NF[NF_CHECK_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
 			tasks_NF[NF_CHECK_HEALTH].TickFct = &check_health_status;
 
-      tasks_NF[NF_TAKE_PICTURE].period = 5; // 600
-			tasks_NF[NF_TAKE_PICTURE].TickFct = &process_gs_command; //SAVE_GPS_POS
+      tasks_NF[NF_TAKE_PICTURE].period = spacecraft_configuration.data.image_acquisition_time; // 600
+			tasks_NF[NF_TAKE_PICTURE].TickFct = &take_picture; //SAVE_GPS_POS
 
       current_mode = NF;
       current_tasks = tasks_NF;
@@ -432,7 +450,7 @@ void Mode_init(int8_t type){
       queue_task(NF_SAVE_ATTITUDE);
       queue_task(NF_TRANSMIT_TELEMETRY);
       queue_task(NF_CHECK_HEALTH);
-      queue_task(NF_TAKE_PICTURE);
+      //queue_task(NF_TAKE_PICTURE);
       mode_init_trigger = 1;
       
     } break;
@@ -743,7 +761,7 @@ int8_t save_eps_health_data(int8_t t){
   add_telemetry(get_temp(TEMP_PA), 1);
 
   // read EEPROM for reboot_count
-	EEPROM_read(EE_REBOOT_COUNT, &eeprom_read, 1);
+	EEPROM_read(EEPROM_REBOOT_COUNT, &eeprom_read, 1);
 	add_telemetry((uint8_t)eeprom_read, 1);
 
   // [CLARIFY] data_packets_pending
@@ -789,7 +807,7 @@ int8_t save_gps_data(int8_t t){
 
 
 	// Take multiple samples
-	for (uint8_t i=0; i<4; i++){
+	for (uint8_t i=0; i<spacecraft_configuration.data.gps_sample_count; i++){
 		int32_t longitude, latitude, altitude;
     uint8_t long_sd, lat_sd, alt_sd;
     uint32_t time;
@@ -817,36 +835,41 @@ int8_t save_gps_data(int8_t t){
 
 int8_t send_morse_telemetry (int8_t t){
   //TODO: test and change string to fully match TMTC specification
-  char morse_string[30];
+  //char morse_string[30];
 
-  UART_puts(UART_INTERFACE, "[FBU][TASK #001] Sending morse telemetry...\r\n");
+  //UART_puts(UART_INTERFACE, "[FBU][TASK #001] Sending morse telemetry...\r\n");
   
   //char batt_str[20];
-  uint16_t batt_volt = 5;
+  //uint16_t batt_volt = 5;
   //**UNCOMMENT WHEN YOU HAVE ACCESS TO WORKING EPS BOARD
   //EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header
-  if(Antenna_read_deployment_switch()){
-    ADM_status = 'Y';
-  }
+  //if(Antenna_read_deployment_switch()){
+    //ADM_status = 'Y';
+  //}
   //sprintf(batt_str, "%" PRId16, batt_volt);
 
-  sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId16 "  K\0", batt_volt, ADM_status, deploy_attempts);
+  //sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId16 "  K\0", batt_volt, ADM_status, deploy_attempts);
   //Packet_cw_transmit_buffer(morse_string, strlen(morse_string), cw_tone_on, cw_tone_off); ***UNCOMMENT WHEN TX IS WORKING
-  Delay_ms(2000);  //REMOVE WHEN TX IS WORKING
+  //Delay_ms(2000);  //REMOVE WHEN TX IS WORKING
   UART_puts(UART_INTERFACE, "[FBU][TASK #001] Morse telemetry sent\r\n");
   return 0;
 
 }
 int8_t exit_fbu(int8_t t){
   if (FBU_exit_switch == true){
-
     //Free all timers that have been used within FBU mode
-    UART_puts(UART_INTERFACE, "[FBU][TASK #002] Wait period finished, entering ADM mode.\r\n");
-    mode_switch(SM);
+    UART_puts(UART_INTERFACE, "[TASK] Wait Period Finished, Exiting FBU Mode...\r\n");
+      if(ADM_status == 1){
+        UART_puts(UART_INTERFACE, "[TASK] Entering ADM Mode.\r\n");
+        mode_switch(AD);
+      }
+      else{
+        UART_puts(UART_INTERFACE, "[TASK] Entering NF Mode.\r\n");
+        mode_switch(NF);
+      }
     return 0;
   }
   else{
-      UART_puts(UART_INTERFACE, "[FBU][TASK #002] Begin AD wait.\r\n");
       //Delay_ms(500);
       FBU_exit_switch = true;
       return 0;
@@ -855,24 +878,55 @@ int8_t exit_fbu(int8_t t){
 
 int8_t ad_deploy_attempt(int8_t t){
   //ATTEMPT TO DEPLOY ANTENNA
-  Antenna_deploy();
-  deploy_attempts++;
-  UART_puts(UART_INTERFACE, "[AD][TASK #003] Antenna deploy attempt\r\n");
+  uint16_t batt_volt;
+  UART_puts(UART_INTERFACE, "[TASK] Attempting To Deploy Antenna...\r\n");
+  EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header)
+  if(batt_volt >= 7.5){
+    Antenna_deploy();
+    ADM_status = 1;
+    EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
+    deploy_attempts++;
+    EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
+    mode_switch(NF);
+    UART_puts(UART_INTERFACE, "[TASK] Antenna Deployed, Switched to NF Mode.\r\n");
+  }
+  else{
+    UART_puts(UART_INTERFACE, "[TASK] Insufficient Battery Voltage, Waiting.\r\n");
+    deploy_attempts++;
+    EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
+
+  }
   return 0;
 }
 
 int8_t save_morse_telemetry(int8_t t){
   //SAVE MORSE TELEMETRY
-  //Have to change FBU mode to use this and transmit more telemetry
-  UART_puts(UART_INTERFACE, "[AD][TASK #001] Save Morse telemtry\r\n");
+  UART_puts(UART_INTERFACE, "[TASK] Saving Morse Telemetry...\r\n");
+  char *morse_data;
+  char morse_string[30];
+  
+  //char batt_str[20];
+  uint16_t batt_volt = 5;
+  //**UNCOMMENT WHEN YOU HAVE ACCESS TO WORKING EPS BOARD
+  //EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header
+  if(ADM_status == 1){
+    ADM_char = 'Y';
+  }
+  else{
+    ADM_char = 'N';
+  }
+  //sprintf(batt_str, "%" PRId16, batt_volt);
+
+  sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId32 "  K\0", batt_volt, ADM_char, deploy_attempts);
+  morse_data = &morse_string;
+  Buffer_store_new_data(&morse_data);
+  UART_puts(UART_INTERFACE, "[TASK] Morse Telemetry Saved.\r\n");
   return 0;
 }
 
 int8_t transmit_morse_telemetry(int8_t t){
   //TRANSMIT MORSE TELEMETRY
   UART_puts(UART_INTERFACE, "[TASK #002] Transmit morse telemetry\r\n");
-   // free_timers(4);
-  //Mode_init(NF);
   return 0;
 }
 
@@ -912,7 +966,7 @@ int8_t save_imu_data(int8_t t){
 	// TODO: Get IMU temperature based on Ed's new driver
 
 	// Take multiple samples
-	for (uint8_t i=0; i<6; i++){
+	for (uint8_t i=0; i<spacecraft_configuration.data.imu_sample_count; i++){
 		int16_t accel_data[3], gyro_data[3];
 		//IMU_read_accel(accel_data[0], accel_data[1], accel_data[2]);
 		//IMU_read_gyro(gyro_data[0], gyro_data[1], gyro_data[2]);
@@ -1118,6 +1172,7 @@ int8_t poll_transmitter(int8_t t){
 }
 
 int8_t take_picture(int8_t t){
+  mode_switch(PT);
   UART_puts(UART_INTERFACE, "[DL] Taking picture\r\n");
   return 0;
 }
