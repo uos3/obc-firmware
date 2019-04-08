@@ -12,6 +12,8 @@ int main(void)
   UART_init(UART_GNSS, 9600);
   UART_init(UART_EPS, 9600);
 
+  UART_puts(UART_GNSS, "\r\nUART initialised\r\n");
+
   while(1)
   {
     LED_off(LED_B);

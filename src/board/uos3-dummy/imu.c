@@ -49,7 +49,7 @@ void IMU_Init(void)
 	i2cstring[1] = i2cstatus | MPU_INT_BYPASS_ENABLE; // flag bypass on
 	i2cstring[3] = 0; // null terminated string
 	I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring); // turn on bypass to Magnetometer so visible on I2C
-
+	WDT_kick();
 	// setup magnetometer
 	i2cstring[0] = MAG_CNTL1;
 	i2cstring[2] = 0;

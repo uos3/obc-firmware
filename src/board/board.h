@@ -20,4 +20,6 @@
  */
 void Board_init(void);
 
+void WTD_wait_to_kick();
+
 #endif /*  __BOARD_H__ */

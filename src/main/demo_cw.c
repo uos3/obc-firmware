@@ -93,6 +93,7 @@ int main(void)
   char output[100];
 
   Board_init();
+  WDT_kick();
 
   UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\nCW Radio Demo\r\n");
@@ -104,10 +105,10 @@ int main(void)
   {
     sprintf(output,"Sending Beacon :\"%s\"\r\n", buffer);
     UART_puts(UART_INTERFACE, output);
-
     Packet_cw_transmit_buffer(buffer, buffer_length, cw_tone_on, cw_tone_off);
     UART_puts(UART_INTERFACE, "Sent.\r\n");
 
-    Delay_ms(3000);
+    Delay_ms(500);
+    WDT_kick();
   }
 }
