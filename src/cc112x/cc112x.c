@@ -1,16 +1,25 @@
-
-#include "cc1125.h"
-#include "cc112x_spi.h"
-#include "inttypes.h"
-
 #include "../firmware.h"
 
 #if CC_XO_FREQ != 38400000
   #error CC112X Lib is currently hardcoded for CC_XO_FREQ of 38.4MHz
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
+void cc112x_reset(uint8_t spi_device_id)
+{
+  SPI_cmd(spi_device_id, CC112X_SRES);
+}
+
+void cc112x_powerdown(uint8_t spi_device_id)
+{
+  SPI_cmd(spi_device_id, CC112X_SPWD);
+}
+
+uint8_t cc112x_query_partnumber(uint8_t spi_device_id)
+{
+  uint8_t result;
+  SPI_read16(spi_device_id, (CC112X_PARTNUMBER | 0x8000), &result);
+  return result;
+}
 
 void cc112x_cfg_frequency(uint8_t spi_device_id, cc112x_bandsel_option_t bandsel_option, uint32_t _frequency_word)
 {
@@ -42,7 +51,7 @@ void cc112x_cfg_preamble(uint8_t spi_device_id, cc112x_preamble_option_t preambl
 {
   uint8_t val;
 
-  val = (uint8_t)(((preamble_length & 0x0F) << 2) || (preamble_option & 0x03));
+  val = (uint8_t)(((preamble_length & 0x0F) << 2) | (preamble_option & 0x03));
   SPI_write8(spi_device_id, (uint8_t)(CC112X_PREAMBLE_CFG1 & 0x7F), &val);
 }
 
@@ -50,7 +59,7 @@ void cc112x_cfg_syncword(uint8_t spi_device_id, cc112x_syncword_length_t syncwor
 {
   uint8_t val;
 
-  val = (uint8_t)(((syncword_length & 0x07) << 2) || (syncword_errorcheck & 0x03));
+  val = (uint8_t)(((syncword_length & 0x07) << 2) | (syncword_errorcheck & 0x03));
   SPI_write8(spi_device_id, (uint8_t)(CC112X_SYNC_CFG0 & 0x7F), &val);
 }
 
@@ -66,18 +75,18 @@ void cc112x_cfg_packetlength(uint8_t spi_device_id, cc112x_packetlength_t packet
 }
 
 
-  /* Assume decimation factor of 32 */
-  /* RxBW = Fosc / (Decimation Factor * BB_CIC_DECFACT * 8)
-   * BB_CIC_DECFACT=15, RxBW = 10KHz
-   * BB_CIC_DECFACT=12, RxBW = 12.5KHz
-   * BB_CIC_DECFACT=10, RxBW = 15KHz
-   * BB_CIC_DECFACT=8,  RxBW = 18.75KHz
-   * BB_CIC_DECFACT=6,  RxBW = 25KHz
-   */
-
 void cc112x_cfg_rx_filterwidth(uint8_t spi_device_id, cc112x_rx_filterwidth_t filterwidth_option)
 {
   uint8_t val;
+
+  /* Assume decimation factor of 32 */
+  /* RxBW = Fosc / (Decimation Factor * BB_CIC_DECFACT * 8)
+     BB_CIC_DECFACT=15, RxBW = 10KHz
+     BB_CIC_DECFACT=12, RxBW = 12.5KHz
+     BB_CIC_DECFACT=10, RxBW = 15KHz
+     BB_CIC_DECFACT=8,  RxBW = 18.75KHz
+     BB_CIC_DECFACT=6,  RxBW = 25KHz
+  */
 
   /* Note: Decimation factor of 32 selected */
   val = (uint8_t)((1 << 6) || (filterwidth_option & 0x3F));
@@ -86,14 +95,16 @@ void cc112x_cfg_rx_filterwidth(uint8_t spi_device_id, cc112x_rx_filterwidth_t fi
 
 void cc112x_cfg_msk_params(uint8_t spi_device_id, cc112x_msk_symbolrate_t msk_symbolrate)
 {
+  (void)spi_device_id;
+  (void)msk_symbolrate;
   return;
 }
 
 void cc112x_cfg_fsk_params(uint8_t spi_device_id, cc112x_fsk_symbolrate_t fsk_symbolrate, cc112x_fsk_deviation_t fsk_deviation)
 {
   uint8_t val;
-  uint8_t symbolrate_exponent, deviation_exponent;
-  uint32_t symbolrate_mantissa, deviation_mantissa;
+  uint8_t symbolrate_exponent, deviation_exponent, deviation_mantissa;
+  uint32_t symbolrate_mantissa;
 
   if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_1200)
   {
@@ -131,6 +142,39 @@ void cc112x_cfg_fsk_params(uint8_t spi_device_id, cc112x_fsk_symbolrate_t fsk_sy
     //deviation_mantissa = ;
     //deviation_exponent = ;
   }
+  else if(fsk_deviation == CC112X_FSK_DEVIATION_4K)
+  {
+    //deviation_mantissa = ;
+    //deviation_exponent = ;
+  }
+  else if(fsk_deviation == CC112X_FSK_DEVIATION_2K)
+  {
+    //deviation_mantissa = ;
+    //deviation_exponent = ;
+  }
+  else if(fsk_deviation == CC112X_FSK_DEVIATION_1K)
+  {
+    //deviation_mantissa = ;
+    //deviation_exponent = ;
+  }
+  else if(fsk_deviation == CC112X_FSK_DEVIATION_500)
+  {
+    //deviation_mantissa = ;
+    //deviation_exponent = ;
+  }
+  else if(fsk_deviation == CC112X_FSK_DEVIATION_250)
+  {
+    //deviation_mantissa = ;
+    //deviation_exponent = ;
+  }
+  else if(fsk_deviation == CC112X_FSK_DEVIATION_100)
+  {
+    //deviation_mantissa = ;
+    //deviation_exponent = ;
+  }
+  // TODO: Remove
+  deviation_mantissa = 0;
+  deviation_exponent = 0;
 
   // dev
   //5K: m=17 e=3
@@ -153,7 +197,20 @@ void cc112x_cfg_fsk_params(uint8_t spi_device_id, cc112x_fsk_symbolrate_t fsk_sy
 
 void cc112x_cfg_ook_params(uint8_t spi_device_id, cc112x_ook_symbolrate_t ook_symbolrate)
 {
-  
+  (void)ook_symbolrate;
+  /*
+  {CC112X_SYNC_CFG0,         0x00}, // No sync word
+  {CC112X_DEVIATION_M,       0xDA},
+  {CC112X_MODCFG_DEV_E,      0x18}, // OOK
+  {CC112X_PREAMBLE_CFG1,     0x00}, // No preamble
+  */
+
+  cc112x_cfg_syncword(spi_device_id, CC112x_SYNCWORD_LENGTH_DISABLED, CC112x_SYNCWORD_ERRORCHECK_DISABLED);
+
+  cc112x_cfg_preamble(spi_device_id, CC112x_PREAMBLE_OPTION_0xAA, CC112x_PREAMBLE_LENGTH_0B);
+
+
+  return;
 }
 
 

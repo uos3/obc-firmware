@@ -40,8 +40,9 @@
 #include "board/eps.h"
 
 /* radio stuff */
-#include "cc1125/cc112x_spi.h"
-#include "cc1125/cc1125.h"
+#include "board/radio.h"
+#include "cc112x/cc112x_spi.h"
+#include "cc112x/cc112x.h"
 
 /* Packet */
 #include "packet/packet.h"

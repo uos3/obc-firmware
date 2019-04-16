@@ -1,5 +1,4 @@
 #include "cc112x_spi.h"
-#include <stdint.h>
 
 #include "../firmware.h"
 

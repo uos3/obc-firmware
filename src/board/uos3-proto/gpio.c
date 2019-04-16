@@ -220,7 +220,7 @@ static inline void GPIO_InterruptHandler_GPIO(uint32_t _status, uint8_t _gpio_nu
 {
   if((_status & GPIO_gpios[_gpio_number].int_pin) && (GPIO_states[_gpio_number].int_function != NULL))
   {
-    GPIO_states[_gpio_number].int_function();
+    (*GPIO_states[_gpio_number].int_function)();
   }
 }
 
@@ -248,7 +248,7 @@ static void GPIO_PortA_InterruptHandler(void)
   }
 }
 
-bool GPIO_set_risingInterrupt(uint8_t gpio_number, void interrupt_callback(void))
+bool GPIO_set_risingInterrupt(uint8_t gpio_number, void *interrupt_callback(void))
 {
   if(gpio_number >= NUMBER_OF_GPIOS)
     return false;
@@ -259,7 +259,8 @@ bool GPIO_set_risingInterrupt(uint8_t gpio_number, void interrupt_callback(void)
 
   GPIOIntTypeSet(gpio->port, gpio->pin, GPIO_RISING_EDGE);
 
-  gpio_state->int_function = interrupt_callback;
+  #warning "Phil isn't sure about this:"
+  gpio_state->int_function = &interrupt_callback;
 
   if(gpio->port == GPIO_PORTA_BASE)
   {

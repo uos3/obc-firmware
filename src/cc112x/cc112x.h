@@ -5,6 +5,18 @@
 
 #define CC_XO_FREQ 38400000
 
+/*** Device Control ***/
+
+void cc112x_reset(uint8_t spi_device_id);
+
+void cc112x_powerdown(uint8_t spi_device_id);
+
+uint8_t cc112x_query_partnumber(uint8_t spi_device_id);
+
+void cc112x_manualCalibration(uint8_t spi_device_id);
+
+/*** Configuration ***/
+
 typedef struct cc112x_reg_t
 {
   uint16_t  addr;
@@ -114,7 +126,5 @@ typedef enum {
 void cc112x_cfg_ook_params(uint8_t spi_device_id, cc112x_ook_symbolrate_t ook_symbolrate);
 
 void cc112x_set_config(uint8_t spi_device_id, const cc112x_reg_t *cfg, uint16_t len);
-
-void cc112x_manualCalibration(uint8_t spi_device_id);
 
 #endif /* __CC112x_H__ */

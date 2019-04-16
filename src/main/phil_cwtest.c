@@ -228,15 +228,4 @@ int main(void)
 
     Delay_ms(1000);
   }
-
-  while(1)
-  {
-    sprintf(output,"Sending Beacon :\"%s\"\r\n", buffer);
-    UART_puts(UART_INTERFACE, output);
-
-    Packet_cw_transmit_buffer(buffer, buffer_length, cw_tone_on, cw_tone_off);
-    UART_puts(UART_INTERFACE, "Sent.\r\n");
-
-    Delay_ms(3000);
-  }
 }
