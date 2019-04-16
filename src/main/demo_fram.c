@@ -11,10 +11,20 @@ static uint32_t address;
 static uint8_t data_write[DATA_BUFFER_LENGTH];
 static uint8_t data_read[DATA_BUFFER_LENGTH];
 
+#define PRINT_BUFFER_LENGTH 200
+uint32_t print_buffer_counter;
+
+#define PRINTF_BUFFER_COUNTER_APPEND_ARGS(output, print_buffer_counter, ...) \
+  print_buffer_counter += (size_t)snprintf( \
+    (output+print_buffer_counter), \
+    (PRINT_BUFFER_LENGTH-print_buffer_counter), \
+    __VA_ARGS__ \
+  );
+
 int main(void)
 {
   uint32_t i;
-  char output[200];
+  char output[PRINT_BUFFER_LENGTH];
 
   Board_init();
 
@@ -44,24 +54,54 @@ int main(void)
       data_read[i] = 0x00;
     }
 
-    sprintf(output,"Write:\r\n * Address: 0x%08lx\r\n * Data: 0x", address);
+    print_buffer_counter = 0;
+    PRINTF_BUFFER_COUNTER_APPEND_ARGS(
+      output,
+      print_buffer_counter,
+      "Write:\r\n * Address: 0x%08lx\r\n * Data: 0x",
+      address
+    );
     for(i=0;i<DATA_BUFFER_LENGTH;i++)
     {
-      sprintf(output, "%s%02x", output, data_write[i]);
+      PRINTF_BUFFER_COUNTER_APPEND_ARGS(
+        output,
+        print_buffer_counter,
+        "%02x",
+        data_write[i]
+      );
     }
-    sprintf(output, "%s\r\n", output);
+    PRINTF_BUFFER_COUNTER_APPEND_ARGS(
+      output,
+      print_buffer_counter,
+      "\r\n"
+    );
     UART_puts(UART_INTERFACE, output);
 
     FRAM_write(address, data_write, DATA_BUFFER_LENGTH);
 
     FRAM_read(address, data_read, DATA_BUFFER_LENGTH);
 
-    sprintf(output,"Read:\r\n * Address: 0x%08lx\r\n * Data: 0x", address);
+    print_buffer_counter = 0;
+    PRINTF_BUFFER_COUNTER_APPEND_ARGS(
+      output,
+      print_buffer_counter,
+      "Read:\r\n * Address: 0x%08lx\r\n * Data: 0x",
+      address
+    );
     for(i=0;i<DATA_BUFFER_LENGTH;i++)
     {
-      sprintf(output, "%s%02x", output, data_read[i]);
+      PRINTF_BUFFER_COUNTER_APPEND_ARGS(
+        output,
+        print_buffer_counter,
+        "%02x",
+        data_read[i]
+      );
     }
-    sprintf(output, "%s\r\n", output);
+    PRINTF_BUFFER_COUNTER_APPEND_ARGS(
+      output,
+      print_buffer_counter,
+      "\r\n"
+    );
     UART_puts(UART_INTERFACE, output);
 
     if(memcmp(data_read, data_write, DATA_BUFFER_LENGTH) == 0)
