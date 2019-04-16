@@ -26,6 +26,8 @@ env:
   - BOARD=uos3-proto MAIN=demo_blinky
   - BOARD=uos3-proto MAIN=demo_uart
   - BOARD=uos3-proto MAIN=demo_watchdog
+  - BOARD=uos3-proto MAIN=demo_fram
+  - BOARD=uos3-proto MAIN=demo_cw
   - BOARD=uos3-proto MAIN=tx-test
   - BOARD=uos3-proto MAIN=txrx-uart
 
