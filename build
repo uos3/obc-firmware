@@ -167,7 +167,12 @@ if [ -z "$program" ]; then
     board="uos3-proto" ## insert default option here
 fi
 if [ ! -e "src/main/$program.c" ]; then
-    print_err "$_ERROR_ Main Program File \"$program\" not found"
+    print_err "$_ERROR_ Main Program file \"$program\" not found"
+    print "$_INFO_ Available Main Program files are:"
+    for f in src/main/*.c
+    do
+        echo "  $(basename $f)"
+    done
     exit 1
 fi
 
