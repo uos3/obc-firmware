@@ -44,7 +44,7 @@ void GNSS_Init(void){
   return false;
 }*/
 
-int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint32_t *time, uint64_t *ex_time){
+int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint16_t *week_num, uint32_t *week_seconds, uint64_t *ex_time){
 
     RTC_init();
 
@@ -62,7 +62,7 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
     char alt_sd_str[20] = "\0";
     char week_no[20] = "\0";
     char seconds[20] = "\0";
-    uint32_t longlat_factor = 7, alt_factor = 2;
+    uint32_t longlat_factor = 6, alt_factor = 1, seconds_factor = 2;
 
     RTC_getTime_ms(&start_timestamp);
     //Abbreviated ascii format gives response easier to pass through algorithm, despite no checksum
@@ -73,7 +73,7 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
     while  (!RTC_timerElapsed_ms(start_timestamp, timeout)){
         
         char c = UART_getc(UART_GNSS);
-        //UART_putc(UART_CAMERA, c);
+        UART_putc(UART_CAMERA, c);
         if(c == ';'){
             command_wait = false;
             var_counter = 1;
@@ -84,12 +84,12 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                 var_counter++;
                 
             }
-            if(var_counter==6){
+            if(var_counter==6 && c != ','){
                 append(week_no, c);
                 //UART_puts(UART_CAMERA, "\r\nWeek no\r\n");
                 //UART_puts(UART_CAMERA, c);
             }
-            if(var_counter==7){
+            if(var_counter==7 && c != ','){
                 append(seconds, c);
             }
     
@@ -108,11 +108,11 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                     switch(var_counter){
                         case 3 :
                             //UART_puts(UART_CAMERA, "\n\rlong\n\r");
-                            append(long_str, received_Message[i]);
+                            append(lat_str, received_Message[i]);
                             break;
                         case 4 :
                             //UART_puts(UART_CAMERA, "\n\rlat\n\r");
-                            append(lat_str, received_Message[i]);
+                            append(long_str, received_Message[i]);
                             break;
                         case 5 :
                             //UART_puts(UART_CAMERA, "\n\ralt\n\r");
@@ -120,11 +120,11 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                             break;
                         case 8 :
                             //UART_puts(UART_CAMERA, "\n\rlongsd\n\r");
-                            append(long_sd_str, received_Message[i]);
+                            append(lat_sd_str, received_Message[i]);
                             break;
                         case 9 :
                             //UART_puts(UART_CAMERA, "\n\rlatsd\n\r");
-                            append(lat_sd_str, received_Message[i]);
+                            append(long_sd_str, received_Message[i]);
                             break;
                         case 10 :
                             //UART_puts(UART_CAMERA, "\n\raltsd\n\r");
@@ -153,21 +153,24 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                 adjust_decimal(longlat_factor, long_str);
                 adjust_decimal(longlat_factor, lat_str);
                 adjust_decimal(alt_factor , alt_str);
+                adjust_decimal(seconds_factor, seconds);
 
                 /*UART_puts(UART_CAMERA, "\n\r");
                 UART_puts(UART_CAMERA, long_str);
-                UART_puts(UART_CAMERA, "\n\r");
+                UART_puts(UART_CAMERA, "\n\r");*/
                 UART_puts(UART_CAMERA, lat_str);
                 UART_puts(UART_CAMERA, "\n\r");
-                UART_puts(UART_CAMERA, alt_str);
+                /*UART_puts(UART_CAMERA, alt_str);
                 UART_puts(UART_CAMERA, "\n\r");
                 UART_puts(UART_CAMERA, long_sd_str);
-                UART_puts(UART_CAMERA, "\n\r");
+                UART_puts(UART_CAMERA, "\n\r");*/
                 UART_puts(UART_CAMERA, lat_sd_str);
-                UART_puts(UART_CAMERA, "\n\r");
+                UART_puts(UART_CAMERA, "\n\r");/*
                 UART_puts(UART_CAMERA, alt_sd_str);
+                UART_puts(UART_CAMERA, "\n\r");*/
+                UART_puts(UART_CAMERA, seconds);
                 UART_puts(UART_CAMERA, "\n\r");
-                UART_puts(UART_CAMERA, "end of adjusted string values");*/
+                UART_puts(UART_CAMERA, "end of adjusted string values\n");
 
                 
 
@@ -177,7 +180,13 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                 compress(long_sd, long_sd_str);
                 compress(lat_sd, lat_sd_str);
                 compress(alt_sd, alt_sd_str);
-                *time  = (uint32_t)(atoi(week_no) * 604799 + atoi(seconds));
+                char buffer[15];
+                itoa(lat_sd, buffer, 10);
+                UART_puts(UART_CAMERA, buffer);
+                UART_puts(UART_CAMERA, "\n\r");
+
+                *week_num = (uint16_t)atoi(week_no);
+                *week_seconds  = (uint32_t)atoi(seconds);
                 RTC_getTime_ms(&current_time);
                 *ex_time = current_time - start_timestamp;
                 return 0; 
@@ -194,7 +203,9 @@ void append(char *append_str, char append_c){
 }
 
 void compress(uint8_t *s_d, char s_d_str[]){
-    *s_d = (uint8_t)(log(atoi(s_d_str))* 100);
+    double intermed;
+    intermed = log10(atof(s_d_str))* 100;
+    *s_d = (uint8_t)intermed;
 }
 
 void adjust_decimal(uint32_t factor, char *to_adjust){

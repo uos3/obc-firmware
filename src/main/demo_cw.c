@@ -60,7 +60,7 @@ static const registerSetting_t preferredSettings_cw[]=
 #define UART_INTERFACE UART_GNSS
 
 static double freq = 145.5;
-static double pwr = 10.0;
+static double pwr = 15.0;
 
 static uint8_t buffer[17] = "UOS3 UOS3 UOS3 k\0";
 static uint32_t buffer_length = 16;

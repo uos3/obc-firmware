@@ -89,6 +89,10 @@ uint32_t ADM_status;
 char ADM_char;
 uint32_t deploy_attempts;
 
+
+//Camera
+bool image_trigger;
+
 // Error detection
 uint8_t flash_errors;
 uint8_t ram_errors;
@@ -293,6 +297,7 @@ void Mission_init(void)
   timer_isr_map[4] = &timer4_isr;
   timer_isr_map[5] = &timer5_isr;
 
+  image_trigger = false;
 
   ulPeriod = SysCtlClockGet(); // 1Hz update rate
   //PRINTS ULPERIOD - TO REMOVE
@@ -307,7 +312,6 @@ void Mission_init(void)
   UART_puts(UART_INTERFACE, "After\r\n");
    // third will miss sometimes if processor busy
   mode_switch(FBU);
-  //Mode_init(FBU);
 }
 
 void queue_task(int8_t task_id){
@@ -335,11 +339,6 @@ void queue_task(int8_t task_id){
 
 
 void Mode_init(int8_t type){
-  /*for (uint8_t i=0; i<6; i++){
-    char out_g[100];
-    sprintf(out_g, "[[MODE INIT]] Timer %" PRId8 " status %" PRId8 "\r\n", i, timer_to_task[i]);
-    UART_puts(UART_INTERFACE, out_g);
-  }*/
 
   //TODO: alter all times to correct times for mission and for test
 
@@ -355,9 +354,10 @@ void Mode_init(int8_t type){
       modes[FBU].num_tasks = 2;
 
 
-      tasks_FBU[SAVE_MORSE_TELEMETRY].period = 20; //300
+      tasks_FBU[SAVE_MORSE_TELEMETRY].period = 20;
       tasks_FBU[SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
 
+      //should be 45 minutes when overflows are fixed
       tasks_FBU[EXIT_FBU].period = 40;
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
 
@@ -365,11 +365,10 @@ void Mode_init(int8_t type){
       current_mode = FBU;
       current_tasks = tasks_FBU;
 
-      // for (uint8_t i=0; i<tasks; i++)
-      // queue_task(tasks[i]);
-      //ccmer_priorities[i] = -1;
+
       queue_task(SAVE_MORSE_TELEMETRY);
       queue_task(EXIT_FBU);
+      //trigger fixes a 'quirk' of the scheduler
       mode_init_trigger = 1;
     
     } break;
@@ -382,7 +381,7 @@ void Mode_init(int8_t type){
       modes[AD].opmode_tasks = tasks_AD;
       modes[AD].num_tasks = 4;
 
-      tasks_AD[AD_SAVE_MORSE_TELEMETRY].period = 30; //300
+      tasks_AD[AD_SAVE_MORSE_TELEMETRY].period = 30;
       tasks_AD[AD_SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
 
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].period = 60;
@@ -399,10 +398,7 @@ void Mode_init(int8_t type){
       current_mode = AD;
       current_tasks = tasks_AD;
 
-      // for (uint8_t i=0; i<tasks; i++)
-      // queue_task(tasks[i]);
-      //ccmer_priorities[i] = -1;
-      //queue_task(EXIT_AD);
+
       queue_task(AD_SAVE_MORSE_TELEMETRY);
       queue_task(TRANSMIT_MORSE_TELEMETRY);
       queue_task(ANTENNA_DEPLOY_ATTEMPT);
@@ -415,13 +411,14 @@ void Mode_init(int8_t type){
       //Difference between data downlink mode and transitting telemetry? Is telemetry just for camera data?
       //Node* task_pq = newNode(0, 0);
 
-      task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*3);
+      task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*6);
 
       modes[NF].Mode_startup = &nf_init;
       modes[NF].opmode_tasks = tasks_NF;
       modes[NF].num_tasks = 3;
 
-      tasks_NF[NF_SAVE_EPS_HEALTH].period =10; //300
+
+      tasks_NF[NF_SAVE_EPS_HEALTH].period =30; 
       tasks_NF[NF_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_NF[NF_SAVE_GPS_POS].period = spacecraft_configuration.data.gps_acquisition_interval;
@@ -436,62 +433,58 @@ void Mode_init(int8_t type){
 			tasks_NF[NF_CHECK_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
 			tasks_NF[NF_CHECK_HEALTH].TickFct = &check_health_status;
 
-      tasks_NF[NF_TAKE_PICTURE].period = spacecraft_configuration.data.image_acquisition_time; // 600
-			tasks_NF[NF_TAKE_PICTURE].TickFct = &take_picture; //SAVE_GPS_POS
+      tasks_NF[NF_TAKE_PICTURE].period = spacecraft_configuration.data.image_acquisition_time;
+			tasks_NF[NF_TAKE_PICTURE].TickFct = &take_picture; 
+      
 
       current_mode = NF;
       current_tasks = tasks_NF;
 
-      // for (uint8_t i=0; i<tasks; i++)
-      // queue_task(tasks[i]);
-      //ccmer_priorities[i] = -1;
+
       queue_task(NF_SAVE_EPS_HEALTH);
       queue_task(NF_SAVE_GPS_POS);
       queue_task(NF_SAVE_ATTITUDE);
       queue_task(NF_TRANSMIT_TELEMETRY);
       queue_task(NF_CHECK_HEALTH);
-      //queue_task(NF_TAKE_PICTURE);
+      if(image_trigger == true){
+        queue_task(NF_TAKE_PICTURE);
+      } 
       mode_init_trigger = 1;
       
     } break;
     case LP:{
-      //CAN'T COMMAND OUT OF THIS MODE AO NO EXIT FUNCTION NEEDED, JUST USES CHECK HEALTH
+      //CAN'T COMMAND OUT OF THIS MODE O NO EXIT FUNCTION NEEDED, JUST USES CHECK HEALTH
       //Node* task_pq = newNode(0, 0);
 
-      task_t* tasks_LP = (task_t *) malloc (sizeof(task_t)*4);
+      task_t* tasks_LP = (task_t *) malloc (sizeof(task_t)*3);
 
       modes[LP].Mode_startup = &lp_init;
       modes[LP].opmode_tasks = tasks_LP;
       modes[LP].num_tasks = 4;
 
+
       tasks_LP[LP_SAVE_EPS_HEALTH].period =30; //300
       tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_LP[LP_CHECK_HEALTH].period = 30; //300
+      tasks_LP[LP_CHECK_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval; //300
       tasks_LP[LP_CHECK_HEALTH].TickFct = &check_health_status;
 
-			tasks_LP[LP_TRANSMIT_TELEMETRY].period = 60;
+			tasks_LP[LP_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
 			tasks_LP[LP_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
-
-      tasks_LP[LP_PROCESS_GS_COMMAND].period = 5;
-			tasks_LP[LP_PROCESS_GS_COMMAND].TickFct = &process_gs_command;
 
       current_mode = LP;
       current_tasks = tasks_LP; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
 
-      // for (uint8_t i=0; i<tasks; i++)
-      // queue_task(tasks[i]);
-      //ccmer_priorities[i] = -1;
+
       queue_task(LP_SAVE_EPS_HEALTH);
       queue_task(LP_CHECK_HEALTH);
       queue_task(LP_TRANSMIT_TELEMETRY);
-      queue_task(LP_PROCESS_GS_COMMAND);
       mode_init_trigger = 1;
     }break;
     case SM:{
       //Node* task_pq = newNode(0, 0);
 
-      task_t* tasks_SM = (task_t *) malloc (sizeof(task_t)*5);
+      task_t* tasks_SM = (task_t *) malloc (sizeof(task_t)*4);
 
       modes[SM].Mode_startup = &sm_init;
       modes[SM].opmode_tasks = tasks_SM;
@@ -506,9 +499,7 @@ void Mode_init(int8_t type){
 			tasks_SM[SM_TRANSMIT_TELEMETRY].period = 60;
 			tasks_SM[SM_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-      tasks_SM[SM_PROCESS_GS_COMMAND].period = 5;
-			tasks_SM[SM_PROCESS_GS_COMMAND].TickFct = &process_gs_command;
-
+      //Give a period of 2 days once timer overflows are fixed
       tasks_SM[REBOOT_CHECK].period = 5;
 			tasks_SM[REBOOT_CHECK].TickFct = &sm_reboot;
 
@@ -516,13 +507,10 @@ void Mode_init(int8_t type){
       current_mode = SM;
       current_tasks = tasks_SM; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
 
-      // for (uint8_t i=0; i<tasks; i++)
-      // queue_task(tasks[i]);
-      //ccmer_priorities[i] = -1;
+
       queue_task(SM_SAVE_EPS_HEALTH);
       queue_task(SM_CHECK_HEALTH);
       queue_task(SM_TRANSMIT_TELEMETRY);
-      queue_task(SM_PROCESS_GS_COMMAND);
       queue_task(REBOOT_CHECK);
       mode_init_trigger = 1;
     }break;
@@ -559,9 +547,6 @@ void Mode_init(int8_t type){
       current_mode = PT;
       current_tasks = tasks_PT; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
 
-      // for (uint8_t i=0; i<tasks; i++)
-      // queue_task(tasks[i]);
-      //ccmer_priorities[i] = -1;
       mode_init_trigger = 1;
     }break;
     case DL:{
@@ -576,13 +561,13 @@ void Mode_init(int8_t type){
       tasks_DL[DL_SAVE_EPS_HEALTH].period =20; //300
       tasks_DL[DL_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_DL[DL_SAVE_GPS_POSITION].period = 30; //300
+      tasks_DL[DL_SAVE_GPS_POSITION].period = spacecraft_configuration.data.gps_acquisition_interval; //300
       tasks_DL[DL_SAVE_GPS_POSITION].TickFct = save_gps_data;
 
-			tasks_DL[DL_SAVE_ATTITUDE].period = 60;
+			tasks_DL[DL_SAVE_ATTITUDE].period = spacecraft_configuration.data.imu_acquisition_interval;
 			tasks_DL[DL_SAVE_ATTITUDE].TickFct = &save_attitude;
 
-      tasks_DL[DL_TAKE_PICTURE].period = 5;
+      tasks_DL[DL_TAKE_PICTURE].period = spacecraft_configuration.data.image_acquisition_time;
 			tasks_DL[DL_TAKE_PICTURE].TickFct = &take_picture;
 
       tasks_DL[DL_POLL_TRANSMITTER].period = 1; //Should be 1ms but 1s should be sufficient?
@@ -594,9 +579,6 @@ void Mode_init(int8_t type){
       current_mode = DL;
       current_tasks = tasks_DL; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
 
-      // for (uint8_t i=0; i<tasks; i++)
-      // queue_task(tasks[i]);
-      //ccmer_priorities[i] = -1;
       queue_task(DL_SAVE_EPS_HEALTH);
       queue_task(DL_SAVE_GPS_POSITION);
       queue_task(DL_SAVE_ATTITUDE);
@@ -663,9 +645,14 @@ void Mission_loop(void)
 
 void Mission_SEU(void)
 {
-	/* TODO: Power Reset / Reboot */
+	/* Uncomment when working EPS board available
+    Turns off mcu power rail and the eps logic turns it back on automatically 
+    as the eps mcu will continually check to see if the tobc mcu is on (not yet implemented)*/
+  //EPS_setPowerRail(EPS_PWR_MCU, 0);
 
 }
+
+//Telemetry functions to remove from use ------------------------------------------------------------------
 
 uint8_t telemetry[104]; //832 bits (104 bytes) available for each payload
 uint8_t buffer_tracker;
@@ -732,6 +719,9 @@ void end_telemetry(){
 	FRAM_write(location, telemetry, FRAM_PAYLOAD_SIZE);
   UART_puts(UART_INTERFACE, "[TASK #001] FRAM write complete.\r\n");
 }
+
+//Telemetry functions to remove from use ------------------------------------------------------------------
+
 
 uint16_t perform_subsystem_check(){
 	uint16_t status = 0;
@@ -810,10 +800,11 @@ int8_t save_gps_data(int8_t t){
 	for (uint8_t i=0; i<spacecraft_configuration.data.gps_sample_count; i++){
 		int32_t longitude, latitude, altitude;
     uint8_t long_sd, lat_sd, alt_sd;
-    uint32_t time;
+    uint16_t week_num;
+    uint32_t week_seconds;
     uint64_t ex_time;
 
-    GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &time, &ex_time);
+    GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &week_num, &week_seconds, &ex_time);
 		
     //Use cast and number of bytes
     add_telemetry((int32_t)&longitude, 4); 
@@ -822,7 +813,7 @@ int8_t save_gps_data(int8_t t){
 		add_telemetry((uint8_t)&long_sd, 1); 
     add_telemetry((uint8_t)&lat_sd, 1); 
 		add_telemetry((uint8_t)&alt_sd, 1); 
-    add_telemetry((uint32_t)&time, 4); 
+    //add_telemetry((uint32_t)&time, 4); 
 	}
 
 	end_telemetry();
@@ -855,6 +846,8 @@ int8_t send_morse_telemetry (int8_t t){
   return 0;
 
 }
+
+
 int8_t exit_fbu(int8_t t){
   if (FBU_exit_switch == true){
     //Free all timers that have been used within FBU mode
@@ -952,7 +945,7 @@ int8_t sm_reboot(int8_t t){
   return 0;
 }
 
-int8_t save_imu_data(int8_t t){
+int8_t save_attitude(int8_t t){
   UART_puts(UART_INTERFACE, "[TASK #003] Saving IMU payload data...\r\n");
   /*
   start_telemetry();
@@ -1018,14 +1011,18 @@ int8_t save_image_data(int8_t t){
 //MODE INITIALISATION FUNCTIONS-------------------------------------------
 
 void fbu_init(){
+  //Not (yet?) needed
+  //Exit fbu immediately if antenna is not already deployed
   UART_puts(UART_INTERFACE, "[FBU] FBU INITIALISED\r\n");
 }
 
 void ad_init(){
+  //Not (yet?) needed
   UART_puts(UART_INTERFACE, "[AD] AD INITIALISED\r\n");
 }
 
 void nf_init(){
+  //Not (yet?) needed
   UART_puts(UART_INTERFACE, "[NF] NF INITIALISED\r\n");
 }
 
@@ -1173,36 +1170,38 @@ int8_t poll_transmitter(int8_t t){
 
 int8_t take_picture(int8_t t){
   mode_switch(PT);
+  image_trigger = false;
   UART_puts(UART_INTERFACE, "[DL] Taking picture\r\n");
   return 0;
 }
 
 
-int8_t save_attitude(int8_t t){
-  	  UART_puts(UART_INTERFACE, "[NF][TASK #002] Finished saving attitude\r\n");
-  return 0;
-}
-
-
 int8_t process_gs_command(int8_t t){
+  //Reciever interupt has not been finsished so not completely sure what the parameters of this function will look like
 	switch(t){
 		case IMAGE_REQUEST:
-		// schedule a time for the PT context
-      //tasks_NF[NF_TAKE_PICTURE].period = 5; // 600
-			//tasks_NF[NF_TAKE_PICTURE].TickFct = &process_gs_command; //SAVE_GPS_POS
+    image_trigger = true;
+    if (current_mode == NF){
+      queue_task(NF_TAKE_PICTURE);
+    }
+    UART_puts(UART_INTERFACE, "[TASK] Image Scheduled.\r\n");
 		break;
 		case ACK_REC_PACKETS:
 		// update entries for packets in meta-table stored in FRAM
 		break;
 		case DL_REQUEST:
-		// schedule a time for the DL context
+    //Dowlinking timing handled inside DL mode, basically an augmented version of NF mode
+      mode_switch(DL);
 		break;
 		case UPDATE_CONFIG:
+      mode_switch(CFU);
+      UART_puts(UART_INTERFACE, "[TASK] Switched to config update mode.\r\n");
 		//generate config bytes and save to EEPROM
 		// in two separate locations
 		break;
 		case ENTER_SAFE_MODE:
-		// switch context
+      mode_switch(SM);
+      UART_puts(UART_INTERFACE, "[TASK] Switched to safe mode.\r\n");
 		break;
 		case MANUAL_OVERRIDE:
 		//reboot or switch-off subsystem
