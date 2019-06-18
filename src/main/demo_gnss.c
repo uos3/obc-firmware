@@ -33,7 +33,7 @@ int main(void){
     seconds_p = &seconds;
     //To ensure the GNSS has time to boot up
     Delay_ms(5000);
-
+    //IMPLEMENT RETURN 1 LOGIC -- ALL ZEROS
     while(1){
         Delay_ms(2500);
         LED_on(LED_B);

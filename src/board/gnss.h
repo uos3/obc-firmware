@@ -21,7 +21,8 @@ void adjust_decimal(uint32_t factor, char *to_adjust);
 
 void compress(uint8_t *s_d, char s_d_str[]);
 
+unsigned long CalculateBlockCRC32(unsigned long ulCount, /* Number of bytes in the data block */unsigned char *ucBuffer );
 
-
+unsigned long CRC32Value(int i);
 
 #endif /* __GNSS_H__ */

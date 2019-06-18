@@ -256,6 +256,7 @@ void Mission_init(void)
   EEPROM_init();
   I2C_init(0);
   UART_init(UART_INTERFACE, 9600);
+  GNSS_Init();
   Buffer_init();
   
 
