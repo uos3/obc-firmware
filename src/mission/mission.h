@@ -43,6 +43,14 @@ typedef struct subsystems_ok_t {
 	bool eps:1;
 } subsystems_ok_t;
 
+typedef struct timer_properties_t {
+	uint32_t Timer_period[6];
+	double Timer_division[6];
+	uint16_t Initial_Timer_count[6];
+	uint16_t Timer_count[6];
+	uint16_t Timer_mod[6];
+} timer_properties_t;
+
 
 mission_state_t mission_state;
 

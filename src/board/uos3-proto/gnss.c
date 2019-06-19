@@ -30,7 +30,7 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
 
     char crc_string[200] = "\0";
     char received_Message[200] = "\0";
-    char long_str[20];
+    char long_str[20] = "\0";
     char lat_str[20] = "\0";
     char alt_str[20] = "\0";
     char long_sd_str[20] = "\0";
@@ -38,8 +38,8 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
     char alt_sd_str[20] = "\0";
     char week_no[20] = "\0";
     char seconds[20] = "\0";
-    char crc_str[20] = "\0";
-
+    char crc_str[30] = "\0";
+    char crc_hex[30];
 
     uint32_t longlat_factor = 6, alt_factor = 1, seconds_factor = 2;
 
@@ -174,7 +174,7 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                 UART_puts(UART_CAMERA, "\n\r");
                 UART_puts(UART_CAMERA, "end of adjusted string values\n");*/
 
-                UART_puts(UART_CAMERA, crc_string);
+                //UART_puts(UART_CAMERA, crc_string);
             
 
                 *longitude = (int32_t)(atoi(long_str));
@@ -194,16 +194,28 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
 
                 unsigned long iLen = strlen(crc_string);
                 unsigned long CRC = CalculateBlockCRC32(iLen, (unsigned char*)crc_string);
-                int crc_hex = (int)strtol(crc_str, NULL, 16);
 
-                if((int)crc_hex == (int)CRC){
-                    UART_puts(UART_CAMERA, "\r\nCRC's match\r\n");
+                sprintf(crc_hex, "%lx", CRC);
+
+                for(int crc_count = 0; crc_count < 8; crc_count++){
+                    if(crc_hex[crc_count] != crc_str[crc_count]){
+                        *longitude = 0;
+                        *latitude = 0;
+                        *altitude = 0;
+                        *long_sd = 0;
+                        *lat_sd = 0;
+                        *alt_sd = 0;
+                        *week_num = 0;
+                        *week_seconds = 0;
+                        UART_puts(UART_CAMERA, "\r\n**FAILED!!**\r\n");
+                        return 1;
+                    }
                 }
 
-                char output_str[80];
-                sprintf(output_str, "\r\nCheckSum: %lx\r\n", CRC);
-                UART_puts(UART_CAMERA, output_str);
-                UART_puts(UART_CAMERA, "\r\n-----------------------------------\r\n\r\n\r\n");
+                UART_puts(UART_CAMERA, "\r\nSUCCESS\r\n");
+
+
+                UART_puts(UART_CAMERA, crc_hex);
                 RTC_getTime_ms(&current_time);
                 *ex_time = current_time - start_timestamp;
                 return 0; 

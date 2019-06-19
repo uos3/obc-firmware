@@ -41,7 +41,7 @@ int main(void){
         UART_init(UART_CAMERA, 9600);
         UART_puts(UART_CAMERA, "\n\rGNSS data collection:\n\r");
         char message[500];
-        GNSS_getData(longitude_p, latitude_p, altitude_p, long_sd_p, lat_sd_p, alt_sd_p, week_p, seconds_p, ex_time_p);
+        GNSS_getData(zzzlongitude_p, latitude_p, altitude_p, long_sd_p, lat_sd_p, alt_sd_p, week_p, seconds_p, ex_time_p);
         UART_puts(UART_CAMERA, "\n\rData collection complete:");
         sprintf(message, "\n\rLongitude: %" PRId32 "\n\rLatitude: %" PRId32 "\n\rAltitude: %" PRId32 "\n\rLatitude s_d: %" PRId8 
         "\n\rLongitude s_d: %" PRId8 "\n\rAltitude s_d: %" PRId8 "\n\rTime to execute: %" PRId64 " milliseconds \n\rWeek Number: %" PRId16 "\n\rWeek Seconds: %" PRId32 "\n\r",

@@ -46,6 +46,7 @@ int8_t sm_reboot(int8_t t);
 int8_t process_gs_command(int8_t t);
 int8_t poll_transmitter(int8_t t);
 int8_t take_picture(int8_t);
+void Timer_Update(uint8_t);
 
 //Mode initialisation functions
 void fbu_init(void);
@@ -63,6 +64,7 @@ void set_timer_for_task(uint8_t id, uint8_t task_id, uint32_t period, void (*tim
 
 
 opmode_t modes[8];
+timer_properties_t Timer_Properties;
 
 // [ RUN-TIME ]
 // Total number of tasks that can be run concurrently (limited by number of avail. timers)
@@ -90,6 +92,17 @@ char ADM_char;
 uint32_t deploy_attempts;
 
 
+uint32_t ALL_TIMER_PERIPHERALS[6] =
+  { SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_TIMER1, SYSCTL_PERIPH_TIMER2,
+    SYSCTL_PERIPH_TIMER3, SYSCTL_PERIPH_TIMER4, SYSCTL_PERIPH_TIMER5 };
+
+uint32_t ALL_TIMER_BASES[6] =
+  {TIMER0_BASE, TIMER1_BASE, TIMER2_BASE, TIMER3_BASE, TIMER4_BASE, TIMER5_BASE};
+
+uint32_t ulPeriod;
+
+void (*timer_isr_map[MAX_TASKS]) (); // map of timer-id to isr functions
+
 //Camera
 bool image_trigger;
 
@@ -101,8 +114,38 @@ uint8_t ram_errors;
 uint16_t data_packets_pending;
 uint8_t rx_noisefloor;
 
-
-//  Picture taking wait period, 1 by default, 0 may crate bug with scheduler to best to avoid
+void Timer_Update(uint8_t Timer_id){
+    char Interrupt_string[50];
+    if(Timer_Properties.Timer_division[Timer_id] > 1){
+      if(Timer_Properties.Timer_count[Timer_id] == 0){
+        sprintf(Interrupt_string, "**Interrupt_%dExecution!**\r\n", Timer_id);
+        UART_puts(UART_INTERFACE, Interrupt_string);
+        // Schedule task
+        task_q[Timer_id] = Timer_id;
+        TimerDisable(ALL_TIMER_BASES[Timer_id], TIMER_A);
+        TimerLoadSet(ALL_TIMER_BASES[Timer_id], TIMER_A, 100*ulPeriod-1); // prime it (-1 is unnecessery but keep it just to avoid sysclock conflict?)
+        TimerIntRegister(ALL_TIMER_BASES[Timer_id], TIMER_A, timer_isr_map[Timer_id]); // this is for dynamic interrupt compilation
+        TimerEnable(ALL_TIMER_BASES[Timer_id], TIMER_A); 	 // start timer
+        Timer_Properties.Timer_count[Timer_id] = Timer_Properties.Initial_Timer_count[Timer_id];
+      } 
+      if (Timer_Properties.Timer_count[Timer_id] == 1){
+        TimerDisable(ALL_TIMER_BASES[Timer_id], TIMER_A);
+        TimerLoadSet(ALL_TIMER_BASES[Timer_id], TIMER_A, Timer_Properties.Timer_mod[Timer_id]*ulPeriod-1); // prime it (-1 is unnecessery but keep it just to avoid sysclock conflict?)
+        TimerIntRegister(ALL_TIMER_BASES[Timer_id], TIMER_A, timer_isr_map[Timer_id]); // this is for dynamic interrupt compilation
+        TimerEnable(ALL_TIMER_BASES[Timer_id], TIMER_A); 	 // start timer
+        Timer_Properties.Timer_count[Timer_id]--;
+      }
+      else{
+        Timer_Properties.Timer_count[Timer_id]--;
+      }
+    } 
+  else{
+  // Schedule task
+    sprintf(Interrupt_string, "**Interrupt_%dExecution!**\r\n", Timer_id);
+    UART_puts(UART_INTERFACE, Interrupt_string);
+    task_q[Timer_id] = Timer_id;
+  }
+}
 
 uint32_t picture_wait_period =1;
 
@@ -113,64 +156,52 @@ radio_config_t radio_config;
 static double freq = 145.5;
 static double pwr = 10.0;
 
-void (*timer_isr_map[MAX_TASKS]) (); // map of timer-id to isr functions
 
 void timer0_isr(){
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer0_interrupt!**\r\n");
-
-  // Schedule task
-  task_q[0] = 0;
+  Timer_Update(0);
 }
 
 void timer1_isr(){
 	TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer1_interrupt!**\r\n");
-
+  Timer_Update(1);
   // Schedule task
-  task_q[1] = 1;
+  //task_q[1] = 1;
 }
 
 void timer2_isr(){
 	TimerIntClear(TIMER2_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer2_interrupt!**\r\n");
-
+  Timer_Update(2);
   // Schedule task
-  task_q[2] = 2;
+  //task_q[2] = 2;
 }
 
 void timer3_isr(){
 	TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer3_interrupt!**\r\n");
-
+  Timer_Update(3);
   // Schedule task
-  task_q[3] = 3;
+  //task_q[3] = 3;
 }
 
 void timer4_isr(){
 	TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer4_interrupt!**\r\n");
-
+  Timer_Update(4);
   // Schedule task
-  task_q[4] = 4;
+  //task_q[4] = 4;
 }
 
 void timer5_isr(){
 	TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
   UART_puts(UART_INTERFACE, "**timer5_interrupt!**\r\n");
-
+  Timer_Update(5);
   // Schedule task
-  task_q[5] = 5;
+  //task_q[5] = 5;
 }
-
-uint32_t ALL_TIMER_PERIPHERALS[6] =
-  { SYSCTL_PERIPH_TIMER0, SYSCTL_PERIPH_TIMER1, SYSCTL_PERIPH_TIMER2,
-    SYSCTL_PERIPH_TIMER3, SYSCTL_PERIPH_TIMER4, SYSCTL_PERIPH_TIMER5 };
-
-uint32_t ALL_TIMER_BASES[6] =
-  {TIMER0_BASE, TIMER1_BASE, TIMER2_BASE, TIMER3_BASE, TIMER4_BASE, TIMER5_BASE};
-
-uint32_t ulPeriod;
 
 void set_timer_for_task(uint8_t id, uint8_t task_id, uint32_t period, void (*timer_isr)() ){
   //SHOWING STATUS OF TIMERS - TO REMOVE
@@ -306,16 +337,13 @@ void Mission_init(void)
   sprintf(output3,"ULPERIOD: %" PRIu32 "\r\n", ulPeriod);
 	UART_puts(UART_INTERFACE, output3);
   //Delay_ms(5000);
-  UART_puts(UART_INTERFACE, "Before\r\n");
   EEPROM_read(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
-  UART_puts(UART_INTERFACE, "Middle\r\n");
   EEPROM_read(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
-  UART_puts(UART_INTERFACE, "After\r\n");
    // third will miss sometimes if processor busy
   mode_switch(FBU);
 }
 
-void queue_task(int8_t task_id){
+void queue_task(int8_t task_id, uint32_t task_period, double Timer_division){
   //PRINTS TIMER STATUS - TO REMOVE
   /*for (uint8_t i=0; i<6; i++){
       char out_g[100];
@@ -333,9 +361,16 @@ void queue_task(int8_t task_id){
   int8_t timer_id = get_available_timer();
   char output[100];
 
+  
+
   sprintf(output,"set timer: : %+06d\r\n", timer_id);
   UART_puts(UART_INTERFACE, output);
-  set_timer_for_task(timer_id, task_id, ulPeriod * current_tasks[task_id].period, timer_isr_map[task_id]);
+  if(Timer_division<=1.0){
+    set_timer_for_task(timer_id, task_id, ulPeriod * current_tasks[task_id].period, timer_isr_map[task_id]);
+  }
+  if(Timer_division>1.0){
+    set_timer_for_task(timer_id, task_id, ulPeriod * 100, timer_isr_map[task_id]);
+  }
 }
 
 
@@ -355,11 +390,11 @@ void Mode_init(int8_t type){
       modes[FBU].num_tasks = 2;
 
 
-      tasks_FBU[SAVE_MORSE_TELEMETRY].period = 20;
+      tasks_FBU[SAVE_MORSE_TELEMETRY].period = 120;
       tasks_FBU[SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
 
       //should be 45 minutes when overflows are fixed
-      tasks_FBU[EXIT_FBU].period = 40;
+      tasks_FBU[EXIT_FBU].period = 140;
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
 
 
@@ -367,8 +402,8 @@ void Mode_init(int8_t type){
       current_tasks = tasks_FBU;
 
 
-      queue_task(SAVE_MORSE_TELEMETRY);
-      queue_task(EXIT_FBU);
+      /*queue_task(SAVE_MORSE_TELEMETRY);
+      queue_task(EXIT_FBU);*/
       //trigger fixes a 'quirk' of the scheduler
       mode_init_trigger = 1;
     
@@ -400,10 +435,10 @@ void Mode_init(int8_t type){
       current_tasks = tasks_AD;
 
 
-      queue_task(AD_SAVE_MORSE_TELEMETRY);
+      /*queue_task(AD_SAVE_MORSE_TELEMETRY);
       queue_task(TRANSMIT_MORSE_TELEMETRY);
       queue_task(ANTENNA_DEPLOY_ATTEMPT);
-      queue_task(EXIT_AD);
+      queue_task(EXIT_AD);*/
       mode_init_trigger = 1;
 
     
@@ -416,7 +451,7 @@ void Mode_init(int8_t type){
 
       modes[NF].Mode_startup = &nf_init;
       modes[NF].opmode_tasks = tasks_NF;
-      modes[NF].num_tasks = 3;
+      modes[NF].num_tasks = 6;
 
 
       tasks_NF[NF_SAVE_EPS_HEALTH].period =30; 
@@ -442,13 +477,13 @@ void Mode_init(int8_t type){
       current_tasks = tasks_NF;
 
 
-      queue_task(NF_SAVE_EPS_HEALTH);
+      /*queue_task(NF_SAVE_EPS_HEALTH);
       queue_task(NF_SAVE_GPS_POS);
       queue_task(NF_SAVE_ATTITUDE);
       queue_task(NF_TRANSMIT_TELEMETRY);
-      queue_task(NF_CHECK_HEALTH);
+      queue_task(NF_CHECK_HEALTH);*/
       if(image_trigger == true){
-        queue_task(NF_TAKE_PICTURE);
+        //queue_task(NF_TAKE_PICTURE);
       } 
       mode_init_trigger = 1;
       
@@ -461,7 +496,7 @@ void Mode_init(int8_t type){
 
       modes[LP].Mode_startup = &lp_init;
       modes[LP].opmode_tasks = tasks_LP;
-      modes[LP].num_tasks = 4;
+      modes[LP].num_tasks = 3;
 
 
       tasks_LP[LP_SAVE_EPS_HEALTH].period =30; //300
@@ -477,9 +512,9 @@ void Mode_init(int8_t type){
       current_tasks = tasks_LP; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
 
 
-      queue_task(LP_SAVE_EPS_HEALTH);
+      /*queue_task(LP_SAVE_EPS_HEALTH);
       queue_task(LP_CHECK_HEALTH);
-      queue_task(LP_TRANSMIT_TELEMETRY);
+      queue_task(LP_TRANSMIT_TELEMETRY);*/
       mode_init_trigger = 1;
     }break;
     case SM:{
@@ -489,7 +524,7 @@ void Mode_init(int8_t type){
 
       modes[SM].Mode_startup = &sm_init;
       modes[SM].opmode_tasks = tasks_SM;
-      modes[SM].num_tasks = 5;
+      modes[SM].num_tasks = 4;
 
       tasks_SM[SM_SAVE_EPS_HEALTH].period =30; //300
       tasks_SM[SM_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
@@ -509,10 +544,10 @@ void Mode_init(int8_t type){
       current_tasks = tasks_SM; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
 
 
-      queue_task(SM_SAVE_EPS_HEALTH);
+      /*queue_task(SM_SAVE_EPS_HEALTH);
       queue_task(SM_CHECK_HEALTH);
       queue_task(SM_TRANSMIT_TELEMETRY);
-      queue_task(REBOOT_CHECK);
+      queue_task(REBOOT_CHECK);*/
       mode_init_trigger = 1;
     }break;
   case CFU:{
@@ -528,9 +563,6 @@ void Mode_init(int8_t type){
       current_mode = CFU;
       current_tasks = tasks_CFU; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
 
-      // for (uint8_t i=0; i<tasks; i++)
-      // queue_task(tasks[i]);
-      //ccmer_priorities[i] = -1;
       mode_init_trigger = 1;
     }break;
     case PT:{
@@ -580,18 +612,30 @@ void Mode_init(int8_t type){
       current_mode = DL;
       current_tasks = tasks_DL; //SWITCH TO MODES.OPMODE_TASKS FOR CLEANER SOLUTION
 
-      queue_task(DL_SAVE_EPS_HEALTH);
+      /*queue_task(DL_SAVE_EPS_HEALTH);
       queue_task(DL_SAVE_GPS_POSITION);
       queue_task(DL_SAVE_ATTITUDE);
       queue_task(DL_TAKE_PICTURE);
       queue_task(DL_POLL_TRANSMITTER);
-      queue_task(DL_CHECK_HEALTH);
+      queue_task(DL_CHECK_HEALTH);*/
       mode_init_trigger = 1;
     }break;
   }
   //Starts after timers assigned but unless timer has extremey short period (<<1s) this should be fine 
   /*TODO: Put queue_task after Mode_startup() and use a bool trigger to prevent tasks being queued if PT 
   or CFU modes (only init called)*/
+
+
+  if(modes[type].num_tasks != 1){
+    for(int task_counter = 0 ;task_counter < modes[type].num_tasks; task_counter++){
+      Timer_Properties.Timer_period[task_counter] = modes[type].opmode_tasks[task_counter].period;
+      Timer_Properties.Timer_division[task_counter] = modes[type].opmode_tasks[task_counter].period / 100.;
+      Timer_Properties.Timer_count[task_counter] = (uint16_t)Timer_Properties.Timer_division[task_counter];
+      Timer_Properties.Initial_Timer_count[task_counter] = Timer_Properties.Timer_count[task_counter];
+      Timer_Properties.Timer_mod[task_counter] = modes[type].opmode_tasks[task_counter].period % 100;
+      queue_task(task_counter, modes[type].opmode_tasks[task_counter].period, Timer_Properties.Timer_division[task_counter]);
+      }
+    }
   modes[current_mode].Mode_startup();
 }
 
@@ -865,6 +909,7 @@ int8_t exit_fbu(int8_t t){
   }
   else{
       //Delay_ms(500);
+      UART_puts(UART_INTERFACE, "[TASK] FBU Wait Period Begin...\r\n");
       FBU_exit_switch = true;
       return 0;
   }
@@ -1183,7 +1228,7 @@ int8_t process_gs_command(int8_t t){
 		case IMAGE_REQUEST:
     image_trigger = true;
     if (current_mode == NF){
-      queue_task(NF_TAKE_PICTURE);
+      //queue_task(NF_TAKE_PICTURE);
     }
     UART_puts(UART_INTERFACE, "[TASK] Image Scheduled.\r\n");
 		break;
