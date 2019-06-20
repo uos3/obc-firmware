@@ -18,12 +18,208 @@ void GNSS_Init(void){
     UART_init(UART_GNSS, 9600);
 }
 
-int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint16_t *week_num, uint32_t *week_seconds, uint64_t *ex_time){
+//Returns all zeros if unsuccessful
+int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint16_t *week_num, uint32_t *week_seconds){
+
+    RTC_init();
+    //Will timeout after 5 seconds if driver hangs
+    timeout = 2500;
+    int var_counter = 1;
+    bool star_trigger = false;
+
+    char crc_string[200] = "\0";
+    char received_Message[200] = "\0";
+    char long_str[20] = "\0";
+    char lat_str[20] = "\0";
+    char alt_str[20] = "\0";
+    char long_sd_str[20] = "\0";
+    char lat_sd_str[20] = "\0";
+    char alt_sd_str[20] = "\0";
+    char week_no[20] = "\0";
+    char seconds[20] = "\0";
+    char crc_str[30] = "\0";
+    char crc_hex[30];
+
+    uint32_t longlat_factor = 6, alt_factor = 1, seconds_factor = 2;
+
+    RTC_getTime_ms(&start_timestamp);
+    UART_puts(UART_GNSS, "\r\n#LOG,COM1,0,91.0,UNKNOWN,0,51.872,004c0000,c00c,13307;BESTPOSA*3ecfb309\r\n");
+
+    bool command_wait = true;
+    uint16_t hash_count = 0;
+
+    while  (!RTC_timerElapsed_ms(start_timestamp, timeout)){
+        char c;
+        if(!UART_getc_nonblocking(UART_GNSS, &c)){continue;}
+        if(c =='#' && hash_count < 2){
+            hash_count++;
+            continue;
+        }
+        if(hash_count < 2){
+            continue;
+        }
+        if(c == '*'){
+            star_trigger = true;
+        }
+        if(hash_count == 2 && star_trigger != true){
+            append(crc_string, c);
+        }
+        if(hash_count == 2 && star_trigger == true){
+            if(c != '*'){
+                append(crc_str, c);
+            }
+        }
+        if(c == ';'){
+            command_wait = false;
+            var_counter = 1;
+        }
+        if(command_wait == true){
+
+            if(c==','){
+                var_counter++;
+                
+            }
+            if(var_counter==6 && c != ','){
+                append(week_no, c);
+ 
+            }
+            if(var_counter==7 && c != ','){
+                append(seconds, c);
+            }
+    
+        }
+        if(command_wait == false){
+            append(received_Message, c);
+            if (c == '\r'){
+                //Will not be able to get stuck in this loop, always a '\0' character 
+                int i = 0;
+                while(received_Message[i] != '\0'){
+                    if(RTC_timerElapsed_ms(start_timestamp, timeout)){
+                        *longitude = 0;
+                        *latitude = 0;
+                        *altitude = 0;
+                        *long_sd = 0;
+                        *lat_sd = 0;
+                        *alt_sd = 0;
+                        *week_num = 0;
+                        *week_seconds = 0;
+                        return 1;
+                        }
+                    if(received_Message[i] == ','){
+                        var_counter++;
+                        i++;
+                        continue;
+                    }
+                    switch(var_counter){
+                        case 3 :
+                            append(lat_str, received_Message[i]);
+                            break;
+                        case 4 :
+                            append(long_str, received_Message[i]);
+                            break;
+                        case 5 :
+                            append(alt_str, received_Message[i]);
+                            break;
+                        case 8 :
+                            append(lat_sd_str, received_Message[i]);
+                            break;
+                        case 9 :
+                            append(long_sd_str, received_Message[i]);
+                            break;
+                        case 10 :
+                            append(alt_sd_str, received_Message[i]);
+                            break;
+                        default :
+                            break;
+                    }
+                    i++;
+                }
+
+                adjust_decimal(longlat_factor, long_str);
+                adjust_decimal(longlat_factor, lat_str);
+                adjust_decimal(alt_factor , alt_str);
+                adjust_decimal(seconds_factor, seconds);
+
+                *longitude = (int32_t)(atoi(long_str));
+                *latitude = (int32_t)(atoi(lat_str));
+                *altitude = (int32_t)(atoi(alt_str));
+                compress(long_sd, long_sd_str);
+                compress(lat_sd, lat_sd_str);
+                compress(alt_sd, alt_sd_str);
+
+                *week_num = (uint16_t)atoi(week_no);
+                *week_seconds  = (uint32_t)atoi(seconds);
+
+                unsigned long iLen = strlen(crc_string);
+                unsigned long CRC = CalculateBlockCRC32(iLen, (unsigned char*)crc_string);
+
+                sprintf(crc_hex, "%lx", CRC);
+
+                for(int crc_count = 0; crc_count < 8; crc_count++){
+                    if(RTC_timerElapsed_ms(start_timestamp, timeout)){return 1;}
+                    if(crc_hex[crc_count] != crc_str[crc_count]){
+                        *longitude = 0;
+                        *latitude = 0;
+                        *altitude = 0;
+                        *long_sd = 0;
+                        *lat_sd = 0;
+                        *alt_sd = 0;
+                        *week_num = 0;
+                        *week_seconds = 0;
+                        return 1;
+                    }
+                }
+                return 0; 
+            }
+        }
+    }
+    *longitude = 0;
+    *latitude = 0;
+    *altitude = 0;
+    *long_sd = 0;
+    *lat_sd = 0;
+    *alt_sd = 0;
+    *week_num = 0;
+    *week_seconds = 0;
+  return 1;
+}
+
+void append(char *append_str, char append_c){
+    size_t len = strlen(append_str);
+    append_str[len] = append_c;
+    append_str[len+1] = '\0';
+}
+
+void compress(uint8_t *s_d, char s_d_str[]){
+    double intermed;
+    intermed = log10(atof(s_d_str))* 100;
+    *s_d = (uint8_t)intermed;
+}
+
+void adjust_decimal(uint32_t factor, char *to_adjust){
+    uint32_t adjustment_counter = 0, decimal_counter = 0, len_counter =0;
+    while(to_adjust[len_counter] != '\0'){
+        len_counter++;
+    }
+    for(decimal_counter = 0; decimal_counter < len_counter; decimal_counter++){
+        if(to_adjust[decimal_counter] == '.'){
+            if((decimal_counter + factor) > len_counter){return;}
+            for(adjustment_counter = decimal_counter; adjustment_counter <= (decimal_counter + factor) ; adjustment_counter++){
+                to_adjust[adjustment_counter] = to_adjust[adjustment_counter + 1];
+                if(adjustment_counter == (decimal_counter + factor)){
+                    to_adjust[adjustment_counter + 1] = '.';
+                    return;
+                }
+            }
+        }
+    }
+}
+
+
+int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint16_t *week_num, uint32_t *week_seconds, uint64_t *ex_time){
 
     RTC_init();
 
-    /*uint64_t start_timestamp;
-    uint64_t current_time;*/
     timeout = 10000;
     int var_counter = 1;
     bool star_trigger = false;
@@ -50,8 +246,9 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
     uint16_t hash_count = 0;
 
     while  (!RTC_timerElapsed_ms(start_timestamp, timeout)){
-        
-        char c = UART_getc(UART_GNSS);
+        char c;
+        if(!UART_getc_nonblocking(UART_GNSS, &c)){continue;}
+        //char c = UART_getc(UART_GNSS);
         UART_putc(UART_CAMERA, c);
         if(c =='#' && hash_count < 2){
             hash_count++;
@@ -98,10 +295,19 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
         if(command_wait == false){
             append(received_Message, c);
             if (c == '\r'){
-                //Shouldn't be able to get stuck in this loop, always a '\0' character 
+                //Will not be able to get stuck in this loop, always a '\0' character 
                 int i = 0;
                 while(received_Message[i] != '\0'){
-                    if(RTC_timerElapsed_ms(start_timestamp, timeout)){return 1;}
+                    if(RTC_timerElapsed_ms(start_timestamp, timeout)){
+                        *longitude = 0;
+                        *latitude = 0;
+                        *altitude = 0;
+                        *long_sd = 0;
+                        *lat_sd = 0;
+                        *alt_sd = 0;
+                        *week_num = 0;
+                        *week_seconds = 0;
+                        return 1;}
                     if(received_Message[i] == ','){
                         var_counter++;
                         i++;
@@ -222,39 +428,15 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
             }
         }
     }
-  return 1;
-}
-
-void append(char *append_str, char append_c){
-    size_t len = strlen(append_str);
-    append_str[len] = append_c;
-    append_str[len+1] = '\0';
-}
-
-void compress(uint8_t *s_d, char s_d_str[]){
-    double intermed;
-    intermed = log10(atof(s_d_str))* 100;
-    *s_d = (uint8_t)intermed;
-}
-
-void adjust_decimal(uint32_t factor, char *to_adjust){
-    uint32_t adjustment_counter = 0, decimal_counter = 0, len_counter =0;
-    while(to_adjust[len_counter] != '\0'){
-        if(RTC_timerElapsed_ms(start_timestamp, timeout)){return 1;}
-        len_counter++;
-    }
-    for(decimal_counter = 0; decimal_counter < len_counter; decimal_counter++){
-        if(to_adjust[decimal_counter] == '.'){
-            if((decimal_counter + factor) > len_counter){return;}
-            for(adjustment_counter = decimal_counter; adjustment_counter <= (decimal_counter + factor) ; adjustment_counter++){
-                to_adjust[adjustment_counter] = to_adjust[adjustment_counter + 1];
-                if(adjustment_counter == (decimal_counter + factor)){
-                    to_adjust[adjustment_counter + 1] = '.';
-                    return;
-                }
-            }
-        }
-    }
+    *longitude = 0;
+    *latitude = 0;
+    *altitude = 0;
+    *long_sd = 0;
+    *lat_sd = 0;
+    *alt_sd = 0;
+    *week_num = 0;
+    *week_seconds = 0;
+    return 1;
 }
 
 /*CALCULATES CRC FOR GNSS*/

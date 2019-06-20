@@ -849,7 +849,7 @@ int8_t save_gps_data(int8_t t){
     uint32_t week_seconds;
     uint64_t ex_time;
 
-    GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &week_num, &week_seconds, &ex_time);
+    GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &week_num, &week_seconds);
 		
     //Use cast and number of bytes
     add_telemetry((int32_t)&longitude, 4); 
