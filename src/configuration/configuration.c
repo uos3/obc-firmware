@@ -55,6 +55,18 @@ static void Configuration_load_defaults(void)
   /* Set defaults.. */
   //OTHERWISE NO CONFIG FILE LOADED IF SAVING CONFIG SAVE FAILS
 
+  spacecraft_configuration.data.imu_acquisition_interval = 30;
+  spacecraft_configuration.data.imu_sample_count = 4;
+  spacecraft_configuration.data.imu_sample_interval = 1;
+
+  spacecraft_configuration.data.gps_acquisition_interval = 60;
+  spacecraft_configuration.data.gps_sample_count = 6;
+  spacecraft_configuration.data.gps_sample_interval = 1;
+
+  spacecraft_configuration.data.health_acquisition_interval = 120;
+  spacecraft_configuration.data.image_acquisition_time = 360;
+  spacecraft_configuration.data.tx_interval = 20;
+
   Configuration_update_checksum();
 }
 

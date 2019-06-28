@@ -203,3 +203,8 @@ void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z)
 	*magno_z = (int16_t)(I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HZL) * (((magno_calib_z -128) * 0.5 ) / 128 + 1));
 	(void)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ST2);
 }
+
+void IMU_read_temp(int16_t *temp)
+{
+	*temp = (int16_t)I2CReceive16(I2C_IMU, MPU_I2C_ADDR, MPU_TEMP_OUT);
+}

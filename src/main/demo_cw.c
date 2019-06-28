@@ -60,7 +60,7 @@ static const registerSetting_t preferredSettings_cw[]=
 #define UART_INTERFACE UART_GNSS
 
 static double freq = 145.5;
-static double pwr = 15.0;
+static double pwr = 10.0;
 
 static uint8_t buffer[17] = "UOS3 UOS3 UOS3 k\0";
 static uint32_t buffer_length = 16;
@@ -97,7 +97,7 @@ int main(void)
 
   UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\nCW Radio Demo\r\n");
-
+  GPIO_write(0x00000008, false);
   sprintf(output,"Freq: %.3fMHz, Power: %+.1fdBmW\r\n", freq, pwr);
   UART_puts(UART_INTERFACE, output);
 

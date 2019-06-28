@@ -17,7 +17,7 @@
 void Antenna_deploy(void)
 {
   GPIO_set(GPIO_PB5);
-  Delay_ms(5000);
+  Delay_ms(7000);
   GPIO_reset(GPIO_PB5);
 }
 

@@ -32,12 +32,12 @@ int main(void)
     LED_on(LED_B);
 
     written = 0;
-    EEPROM_write(EEPROM_MISSION_DATA_ADDRESS, &written, 4);
+    EEPROM_write(EEPROM_DEPLOY_STATUS, &written, 4);
 
     sprintf(output,"Written: %d\r\n", written);
     UART_puts(UART_INTERFACE, output);
 
-    EEPROM_read(EEPROM_MISSION_DATA_ADDRESS, &read, 4);
+    EEPROM_read(EEPROM_DEPLOY_STATUS, &read, 4);
 
     sprintf(output,"Read: %d\r\n", read);
     UART_puts(UART_INTERFACE, output);

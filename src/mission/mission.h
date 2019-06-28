@@ -84,19 +84,14 @@ typedef enum mode_n {
 //Can be assigned to general tasks in mission code, each task doesn't have to be mode specfic
 
 typedef enum FBU_task{
-	//LISTEN_FOR_GS,
 	SAVE_MORSE_TELEMETRY,
 	EXIT_FBU
 } FBU_task;
 
 typedef enum AD_task{
 	AD_SAVE_MORSE_TELEMETRY,
-	//AD_CHECK_HEALTH,
 	TRANSMIT_MORSE_TELEMETRY,
-	//AD_CHECK_VOLTAGE,
-	//WAIT_FOR_RECHARGE, 
 	ANTENNA_DEPLOY_ATTEMPT, //may be able to remove and do in either of previous tasks
-	EXIT_AD // To NF or LP
 } AD_task;
 
 typedef enum NF_task {
@@ -104,7 +99,6 @@ typedef enum NF_task {
 	NF_SAVE_GPS_POS,
 	NF_SAVE_ATTITUDE,
 	NF_TRANSMIT_TELEMETRY, //Difference between transmit telemetry and downlink
-	//NF_PROCESS_GS_COMMAND,
 	NF_CHECK_HEALTH, //WHAT IS GATHERED IN CHECK HEALTH?
 	NF_TAKE_PICTURE
 } NF_task;
@@ -114,7 +108,6 @@ typedef enum LP_task{
 	LP_SAVE_EPS_HEALTH,
 	LP_CHECK_HEALTH, //Config update from this task
 	LP_TRANSMIT_TELEMETRY,
-	LP_PROCESS_GS_COMMAND
 } LP_task;
 
 typedef enum SM_task{
@@ -122,10 +115,10 @@ typedef enum SM_task{
 	SM_SAVE_EPS_HEALTH,
 	SM_CHECK_HEALTH, //Config update from this task
 	SM_TRANSMIT_TELEMETRY,
-	SM_PROCESS_GS_COMMAND,
 	REBOOT_CHECK
 } SM_task;
 
+/* not needed
 typedef enum CFU_task{
 	//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
 	READ_CF, //Also check values are in range
@@ -136,19 +129,19 @@ typedef enum PT_task{
 	PT_TAKE_PICTURE,
 	EXIT_PT
 } PT_task;
-
+*/
 typedef enum DL_task{
 	DL_SAVE_EPS_HEALTH,
 	DL_SAVE_GPS_POSITION,
 	DL_SAVE_ATTITUDE,
-	DL_TAKE_PICTURE,
 	DL_POLL_TRANSMITTER,
-	DL_CHECK_HEALTH
+	DL_CHECK_HEALTH,
+	DL_TAKE_PICTURE
 } DL_task;
 
 
 typedef struct opmode_t {
-   void (*Mode_startup)(void); // Points to start-up code for this mode
+   bool (*Mode_startup)(void); // Points to start-up code for this mode
    task_t* opmode_tasks;
    uint8_t num_tasks;
 } opmode_t;

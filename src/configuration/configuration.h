@@ -140,4 +140,8 @@ void Configuration_Init(void);
 
 bool Configuration_verify_checksum(void);
 
+static void Configuration_load_defaults(void);
+
+//static void Configuration_update_checksum(void);
+
 #endif /*  __CONFIGURATION_H__ */
