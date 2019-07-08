@@ -45,6 +45,10 @@ typedef struct subsystems_ok_t {
 
 typedef struct timer_properties_t {
 	uint32_t Timer_period[6];
+	double Timer_division[6];
+	uint16_t Initial_Timer_count[6];
+	uint16_t Timer_count[6];
+	uint16_t Timer_mod[6];
 } timer_properties_t;
 
 
@@ -167,12 +171,12 @@ void Mode_init(int8_t type);
 
 //Timers
 
-void timer0_isr(void);
-void timer1_isr(void);
-void timer2_isr(void);
-void timer3_isr(void);
-void timer4_isr(void);
-void timer5_isr(void);
+void timer0_isr();
+void timer1_isr();
+void timer2_isr();
+void timer3_isr();
+void timer4_isr();
+void timer5_isr();
 
 // Tasks
 //TRANSFER FROM .C FILE

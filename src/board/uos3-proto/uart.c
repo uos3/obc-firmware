@@ -33,7 +33,7 @@ typedef struct UART {
 } UART;
 
 /* Array of enabled UARTs */
-static UART UART_uarts[3] = 
+static UART UART_uarts[5] = 
   {
     { 
       SYSCTL_PERIPH_GPIOA,
@@ -66,6 +66,28 @@ static UART UART_uarts[3] =
       GPIO_PE1_U7TX,
       GPIO_PIN_0,
       GPIO_PIN_1,
+      false
+    },
+    { //UART6 eventually for debugging, not used in the main system
+      SYSCTL_PERIPH_GPIOD,
+      SYSCTL_PERIPH_UART6,
+      GPIO_PORTD_BASE,
+      UART6_BASE,
+      GPIO_PD4_U6RX,
+      GPIO_PD5_U6TX,
+      GPIO_PIN_4,
+      GPIO_PIN_5,
+      false
+    },
+    { //UART4 eventually for debugging, not used in the main system
+      SYSCTL_PERIPH_GPIOC,
+      SYSCTL_PERIPH_UART4,
+      GPIO_PORTC_BASE,
+      UART4_BASE,
+      GPIO_PC4_U4RX,
+      GPIO_PC5_U4TX,
+      GPIO_PIN_4,
+      GPIO_PIN_5,
       false
     }
   };

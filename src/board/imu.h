@@ -96,6 +96,17 @@ void IMU_read_gyro(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z);
  */
 void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z);
 
+/**
+ * @function
+ * @ingroup imu
+ *
+ * Read IMU Temperature
+ *
+ * @parameter Pointer to temperature-value data storage
+ */
+
+void IMU_read_temp(int16_t *temp);
+
 void IMU_set_accel_sensitivity(imu_accel_sensitivity_t imu_accel_sensitivity);
 void IMU_set_accel_bandwidth(imu_bandwidth_t imu_accel_bandwidth);
 

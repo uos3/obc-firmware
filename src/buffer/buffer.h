@@ -11,9 +11,9 @@
 #ifndef __BUFFER_H__
 #define __BUFFER_H__
 
-#define BUFFER_SLOT_SIZE (uint32_t)848
+#define BUFFER_SLOT_SIZE (uint32_t)848  //bits -> 106bytes
 
-#if(FRAM_SIZE == 0x20000)
+#if(FRAM_SIZE == 0x20000) //bytes
  #define BUFFER_SLOTS 1210
 #elif(FRAM_SIZE == 0x80000)
  #define BUFFER_SLOTS 4840

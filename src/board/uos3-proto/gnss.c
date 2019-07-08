@@ -14,6 +14,19 @@ uint64_t start_timestamp;
 uint64_t current_time;
 uint64_t timeout;
 
+/*-------------------------------------------------------------
+Format of returned values:
+Longitude - 10^-7 degrees
+Latitude - 10^-7 degrees
+Altitude - centimeters
+sd values - 100* log10(meters)
+weeks - int
+seconds - milliseconds from the start of that week
+execution time - milliseconds (850ms to 900ms)
+
+The elevation mask has been set to -15 degrees
+-------------------------------------------------------------*/
+
 void GNSS_Init(void){
     UART_init(UART_GNSS, 9600);
 }
@@ -21,7 +34,7 @@ void GNSS_Init(void){
 //Returns all zeros if unsuccessful
 int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint16_t *week_num, uint32_t *week_seconds){
 
-    RTC_init();
+    RTC_init(); //not really needed here, should be deleted?
     //Will timeout after 5 seconds if driver hangs
     timeout = 2500;
     int var_counter = 1;
@@ -39,6 +52,15 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
     char seconds[20] = "\0";
     char crc_str[30] = "\0";
     char crc_hex[30];
+
+    *longitude = 0;
+    *latitude = 0;
+    *altitude = 0;
+    *long_sd = 0;
+    *lat_sd = 0;
+    *alt_sd = 0;
+    *week_num = 0;
+    *week_seconds = 0;
 
     uint32_t longlat_factor = 6, alt_factor = 1, seconds_factor = 2;
 
@@ -95,14 +117,6 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                 int i = 0;
                 while(received_Message[i] != '\0'){
                     if(RTC_timerElapsed_ms(start_timestamp, timeout)){
-                        *longitude = 0;
-                        *latitude = 0;
-                        *altitude = 0;
-                        *long_sd = 0;
-                        *lat_sd = 0;
-                        *alt_sd = 0;
-                        *week_num = 0;
-                        *week_seconds = 0;
                         return 1;
                         }
                     if(received_Message[i] == ','){
@@ -158,14 +172,6 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                 for(int crc_count = 0; crc_count < 8; crc_count++){
                     if(RTC_timerElapsed_ms(start_timestamp, timeout)){return 1;}
                     if(crc_hex[crc_count] != crc_str[crc_count]){
-                        *longitude = 0;
-                        *latitude = 0;
-                        *altitude = 0;
-                        *long_sd = 0;
-                        *lat_sd = 0;
-                        *alt_sd = 0;
-                        *week_num = 0;
-                        *week_seconds = 0;
                         return 1;
                     }
                 }
@@ -173,14 +179,6 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
             }
         }
     }
-    *longitude = 0;
-    *latitude = 0;
-    *altitude = 0;
-    *long_sd = 0;
-    *lat_sd = 0;
-    *alt_sd = 0;
-    *week_num = 0;
-    *week_seconds = 0;
   return 1;
 }
 
@@ -236,6 +234,16 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
     char seconds[20] = "\0";
     char crc_str[30] = "\0";
     char crc_hex[30];
+
+    *longitude = 0;
+    *latitude = 0;
+    *altitude = 0;
+    *long_sd = 0;
+    *lat_sd = 0;
+    *alt_sd = 0;
+    *week_num = 0;
+    *week_seconds = 0;
+                        
 
     uint32_t longlat_factor = 6, alt_factor = 1, seconds_factor = 2;
 
@@ -299,14 +307,6 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
                 int i = 0;
                 while(received_Message[i] != '\0'){
                     if(RTC_timerElapsed_ms(start_timestamp, timeout)){
-                        *longitude = 0;
-                        *latitude = 0;
-                        *altitude = 0;
-                        *long_sd = 0;
-                        *lat_sd = 0;
-                        *alt_sd = 0;
-                        *week_num = 0;
-                        *week_seconds = 0;
                         return 1;}
                     if(received_Message[i] == ','){
                         var_counter++;
@@ -405,14 +405,7 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
 
                 for(int crc_count = 0; crc_count < 8; crc_count++){
                     if(crc_hex[crc_count] != crc_str[crc_count]){
-                        *longitude = 0;
-                        *latitude = 0;
-                        *altitude = 0;
-                        *long_sd = 0;
-                        *lat_sd = 0;
-                        *alt_sd = 0;
-                        *week_num = 0;
-                        *week_seconds = 0;
+
                         UART_puts(UART_CAMERA, "\r\n**FAILED!!**\r\n");
                         return 1;
                     }
@@ -428,14 +421,7 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
             }
         }
     }
-    *longitude = 0;
-    *latitude = 0;
-    *altitude = 0;
-    *long_sd = 0;
-    *lat_sd = 0;
-    *alt_sd = 0;
-    *week_num = 0;
-    *week_seconds = 0;
+    UART_puts(UART_CAMERA, "\r\n**FAILED!!**\r\n");
     return 1;
 }
 

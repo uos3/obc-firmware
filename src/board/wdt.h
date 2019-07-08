@@ -3,7 +3,7 @@
  *
  * @brief External watchdog driver
  *
- * @details Driver for kicking the external window watchdog device.
+ * @details Driver for configuring internal watchdog
  *
  * @ingroup drivers
  */
@@ -11,15 +11,11 @@
 #ifndef __WDT_H__
 #define __WDT_H__
 
+#include "../firmware.h"
 #include <stdint.h>
 #include <stdbool.h>
 
-/**
- * @function
- * @ingroup wdt
- *
- * Kicks the external window watchdog device.
- */
-void WDT_kick(void);
-
-#endif /*  __LED_H__ */
+uint32_t temporary_time2;             //used for controlling/reseting internal watchdogs
+void setup_internal_watchdogs(void);  //setting up internal watchdogs-to be called in the beginning of mission init
+void internal_wdt_handler(void);      //watchdogs int. handler
+#endif
