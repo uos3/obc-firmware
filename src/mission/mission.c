@@ -922,7 +922,7 @@ int8_t save_attitude(int8_t t){
   data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);//place in the FRAM packet
 	// Get IMU temperature based on Ed's driver
   IMU_read_temp(&mems_temp);
-  data_split_16(mems_temp, &data_byte16;                                              //split it
+  data_split_16(mems_temp, &data_byte16);                                              //split it
   data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);//place in the FRAM packet
 	
   // Take multiple samples

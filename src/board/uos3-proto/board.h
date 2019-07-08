@@ -67,7 +67,7 @@
 
 
 #define UART_GNSS			0x0
-#define UART_CAMERA		0x1
+#define UART_CAMERA		    0x1
 #define UART_EPS			0x2
 
 
