@@ -51,7 +51,7 @@ static char LK_JPEGSIZE_RE[] = {0x76, 0x00, 0x34, 0x00, 0x04}; //, 0x00, 0x00, 0
 //static char LK_STOP_RE[]   = {0x76, 0x00, 0x36, 0x00, 0x00};
 
 static char LK_READPICTURE[] = {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A,  0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,  0x00, 0x00};
-static char LK_PICTURE_TIME_dot1ms[]  = {0x00, 0x0A}; // 0.1 ms
+static char LK_PICTURE_TIME_dot1ms[]  = {0x00, 0x0a}; // 0.1 ms
 static char LK_READPICTURE_RE[]  = {0x76, 0x00, 0x32, 0x00, 0x00};
 static char JPEG_START[]     = {0xFF, 0xD8};
 static char JPEG_END[]   = {0xFF, 0xD9};
@@ -112,7 +112,7 @@ static bool Camera_command(char *command, uint32_t command_length, char *respons
 
 bool Camera_capture(uint32_t page_size, uint32_t *image_length, uint32_t *number_of_pages, uint8_t *total_data)
 {
-  uint32_t jpegsize=0;                  //storing the total size of the jpeg
+  uint32_t jpegsize=0;                //storing the total size of the jpeg
   uint32_t i = 0;                     //variable for the for loop which is controlling the total jpeg data
   uint32_t j = 0;                     //variable for the for loop which is controlling the page jpeg data
   uint32_t endfoundcount = 0;         //variable used for finding the end of the jpeg : FF D9
@@ -133,8 +133,8 @@ bool Camera_capture(uint32_t page_size, uint32_t *image_length, uint32_t *number
   }
 
   // set compression
-  //LK_COMPRESSION[8] = 0x66; //for demo only, without the FRAM
-  LK_COMPRESSION[8] = 0x10;
+  LK_COMPRESSION[8] = 0x99; //for demo only, without the FRAM
+  //LK_COMPRESSION[8] = 0x10;
   if(!Camera_command(LK_COMPRESSION, sizeof(LK_COMPRESSION), LK_COMPRESSION_RE, sizeof(LK_COMPRESSION_RE)))
   {
     return false;

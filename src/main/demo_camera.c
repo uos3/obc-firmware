@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 //#define PAGE_LENGTH 5000 //Buffer_slot_size is 3392bytes, do changed the page size!
-#define PAGE_LENGTH 106    //fram slot size in bytes
+#define PAGE_LENGTH 106
 
 uint32_t image_length, number_of_pages;     //variables to store the length of the received image and number of pages received
 uint8_t *total_data;                        //variable to store the picture
@@ -23,13 +23,11 @@ int main(void)
   UART_puts(UART_GNSS, "Camera Demo\r\n");
   UART_init(UART_CAMERA, 115200);
   int stop = 1;
-  while(1)
+  while(stop)
   { 
     image_length = 0;
     number_of_pages = 0;
     LED_on(LED_B);
-    //total_data = (uint8_t) malloc(sizeof(uint8_t) * 50 * PAGE_LENGTH);
-    //total_data = (uint8_t) malloc(sizeof(uint8_t) * 2 * PAGE_LENGTH);
     UART_puts(UART_GNSS, "\r\nCapturing..\r\n");
     RTC_getTime_ms(&timestamp);
     sprintf(time, "Time is %d\r\n",timestamp);
@@ -41,7 +39,7 @@ int main(void)
         UART_puts(UART_GNSS,output);
         char output[20];
         int print = 0;
-        while (print<=image_length)
+        while (print<=(image_length-1))
         {
           sprintf(output, "0x%02"PRIx8" ", total_data[print]);
           UART_puts(UART_GNSS, output);
@@ -53,10 +51,10 @@ int main(void)
         sprintf(output, "FAIL (%"PRIu32" Bytes) -- (Number of received pages - %"PRIu32")\r\n", image_length, number_of_pages);
         UART_puts(UART_GNSS, output);
     }
+    stop--;
     LED_off(LED_B);
     /* On period */
     Delay_ms(1000);
-    //free(total_data);
   }
 }
 /* 
