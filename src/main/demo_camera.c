@@ -19,11 +19,11 @@ int main(void)
   Board_init();
   RTC_init();
 
-  UART_init(UART_GNSS, 115200);
+  UART_init(UART_GNSS,115200);
   UART_puts(UART_GNSS, "Camera Demo\r\n");
   UART_init(UART_CAMERA, 115200);
   int stop = 1;
-  while(stop)
+  while(1)
   { 
     image_length = 0;
     number_of_pages = 0;
