@@ -12,36 +12,35 @@
 #include "../uart.h"
 #include "../rtc.h"
 #include "../delay.h"
-//#include "../fram.h"
-//#include "/buffer/buffer.h"
-
 #include "../camera.h"
 
 //LK_POWERUP[] = {0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};
-//static char LK_POWERUP[] = {0x0d, 0x0a, 0x00, 0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a}; // Init end
+static char LK_POWERUP[] = {0x36, 0x32, 0x35, 0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a}; // Init end
 //LK_POWERUP[] = {0x0d,0x0a,0,4,0,0x49,0x68,0x69,0x68,0x20,0x65,0xc,0};
 
 static char LK_RESET[]     = {0x56, 0x00, 0x26, 0x00};
-static char LK_RESET_RE[]    = {0x36, 0x32, 0x35, 0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};
-//static char LK_RESET_RE[]    = {0x76, 0x00, 0x31, 0x00};
+//static char LK_RESET_RE[]    = {0x36, 0x32, 0x35, 0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};
+//static char LK_RESET_RE[]    = {0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};
+static char LK_RESET_RE[]    = {0x76, 0x00, 0x26, 0x00};
 
 //commands for the camera baudrate settings -> datasheet
 //static char LK_BAUDRATE_9600[] = {0x56, 0x00, 0x24, 0x03, 0x01, 0xAE};
 //static char LK_BAUDRATE_19200[]  = {0x56, 0x00, 0x24, 0x03, 0x01, 0x56, 0xe4};
 static char LK_BAUDRATE_38400[]  = {0x56, 0x00, 0x24, 0x03, 0x01, 0x2a, 0xf2};
+//static char LK_BAUDRATE_115200[] = {0x56, 0x00, 0x24, 0x03, 0x01, 0x0D, 0xA6};
 static char LK_BAUDRATE_RE[] = {0x76, 0x00, 0x24, 0x00, 0x00};
 
 //commands for the camera resolution settings -> datasheet
 //static char LK_RESOLUTION_VGA[] = {0x56, 0x00, 0x54, 0x01, 0x00};
 static char LK_RESOLUTION_160[] = {0x56, 0x00, 0x54, 0x01, 0x22};
-//static char LK_RESOLUTION_800[] = {0x56, 0x00, 0x54, 0x01, 0x1D};
-//static char LK_RESOLUTION_1280[] = {0x56, 0x00, 0x54, 0x01, 0x1B};
-//static char LK_RESOLUTION_1600[] = {0x56, 0x00, 0x54, 0x01, 0x21};
+static char LK_RESOLUTION_800[] = {0x56, 0x00, 0x54, 0x01, 0x1D};
+static char LK_RESOLUTION_1280[] = {0x56, 0x00, 0x54, 0x01, 0x1B};
+static char LK_RESOLUTION_1600[] = {0x56, 0x00, 0x54, 0x01, 0x21};
 static char LK_RESOLUTION_RE[] = {0x76, 0x00, 0x54, 0x00, 0x00}; // v T; response from the camera after setting the resolution
 
 //setting compression rate -> value of compression in last HEX number
 static char LK_COMPRESSION[] = {0x56, 0x00, 0x31, 0x05, 0x01, 0x01, 0x12, 0x04, 0x00}; // Value in last byte
-static char LK_COMPRESSION_RE[] = {0x76, 0x00, 0x31, 0x00, 0x00}; // v 1
+static char LK_COMPRESSION_RE[] = {0x76, 0x00, 0x31, 0x00, 0x00}; // value in last byte
 
 
 
@@ -66,7 +65,6 @@ static bool UART_waitmatch(char *string, uint32_t string_length, uint32_t timeou
   uint32_t index;
   uint64_t start_timestamp;
   RTC_getTime_ms(&start_timestamp);
-
   index = 0;
   while(!RTC_timerElapsed_ms(start_timestamp, timeout))
   {
@@ -98,7 +96,6 @@ static uint32_t UART_getw4(uint8_t serial)
 static bool Camera_command(char *command, uint32_t command_length, char *response, uint32_t response_length)
 {
   uint32_t attempts = 1;
-
   UART_putb(UART_CAMERA,command,command_length);
   while(!UART_waitmatch(response, response_length, 3000))
   {
@@ -121,46 +118,36 @@ bool Camera_capture(uint32_t page_size, uint32_t *image_length, uint32_t *number
   uint32_t page_count = 1;            //variable for counting number of pages, initialised as 1, as we start on the first page
   uint32_t startfoundcount = 0;
   // initialise camera
+  Delay_ms(3000);
   if(!Camera_command(LK_RESET, sizeof(LK_RESET), LK_RESET_RE, sizeof(LK_RESET_RE)))
   {
     UART_puts(UART_GNSS, "1");
     return false;
   }
-
-  Delay_ms(2000); // 2-3 sec gap required by data sheet before camera ready
-  if(!Camera_command(LK_BAUDRATE_38400, sizeof(LK_BAUDRATE_38400), LK_BAUDRATE_RE, sizeof(LK_BAUDRATE_RE)))
-  {
-    UART_puts(UART_GNSS, "2");
-    return false;
-  }
-  Delay_ms(100);
+  Delay_ms(3000); // 2-3 sec gap required by data sheet before camera ready
   // set resolution
-  if(!Camera_command(LK_RESOLUTION_160, sizeof(LK_RESOLUTION_160), LK_RESOLUTION_RE, sizeof(LK_RESOLUTION_RE)))
+  if(!Camera_command(LK_RESOLUTION_1600, sizeof(LK_RESOLUTION_1600), LK_RESOLUTION_RE, sizeof(LK_RESOLUTION_RE)))
   {
     UART_puts(UART_GNSS, "3");
-    return false;
+    return false; 
   }
-  Delay_ms(100);
   // set compression
-  LK_COMPRESSION[8] = 0x99; //for demo only, without the FRAM
-  //LK_COMPRESSION[8] = 0x10;
+  LK_COMPRESSION[8] = 0x10;
   if(!Camera_command(LK_COMPRESSION, sizeof(LK_COMPRESSION), LK_COMPRESSION_RE, sizeof(LK_COMPRESSION_RE)))
   {
-    UART_puts(UART_GNSS, "1");
+    UART_puts(UART_GNSS, "4");
     return false;
   }
-  Delay_ms(100);
   // take picture
   if(!Camera_command(LK_PICTURE, sizeof(LK_PICTURE), LK_PICTURE_RE, sizeof(LK_PICTURE_RE)))
   {
-    UART_puts(UART_GNSS, "1");
+    UART_puts(UART_GNSS, "5");
     return false;
   }
-  Delay_ms(3000);
   // read size
   if(!Camera_command(LK_JPEGSIZE, sizeof(LK_JPEGSIZE), LK_JPEGSIZE_RE, sizeof(LK_JPEGSIZE_RE)))
   {
-    UART_puts(UART_GNSS, "1");
+    UART_puts(UART_GNSS, "6");
     return false;
   }
   jpegsize = UART_getw4(UART_CAMERA); // file size (lowest 32 bits), sizeof char is 8bits which is 0x?? HEX number

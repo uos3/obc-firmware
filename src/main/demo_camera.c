@@ -19,9 +19,9 @@ int main(void)
   Board_init();
   RTC_init();
 
-  UART_init(UART_GNSS,115200);
+  UART_init(UART_GNSS,38400);
   UART_puts(UART_GNSS, "Camera Demo\r\n");
-  UART_init(UART_CAMERA, 115200);
+  UART_init(UART_CAMERA, 38400);
   int stop = 1;
   while(1)
   { 

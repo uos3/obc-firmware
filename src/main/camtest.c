@@ -327,7 +327,7 @@ unsigned int take_picture(char *picture_storage)
 int main(void)
 {  
   Board_init(); // start the board
-  setupwatchdoginterrupt();
+  //setupwatchdoginterrupt();
  
   UART_init(DEBUG_SERIAL, 115200);   DISP1("\n\n\r    Satellite UART Camera test.\n\r")
   UART_init(CAM_SERIAL, 115200);   

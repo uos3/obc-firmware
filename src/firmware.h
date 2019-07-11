@@ -45,6 +45,7 @@
 #include "board/camera.h"
 #include "board/eps.h"
 #include "board/gnss.h"
+#include "board/uos3-proto/board.h"
 
 /* Mission */
 //#include "mission/mission.h"
