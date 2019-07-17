@@ -13,6 +13,7 @@
 #include "../rtc.h"
 #include "../delay.h"
 #include "../camera.h"
+//#include "../buffer/buffer.h"
 
 static char LK_RESET[]     = {0x56, 0x00, 0x26, 0x00};
 static char LK_RESET_RE[]    = {0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};  //legit!
@@ -33,7 +34,7 @@ static char LK_RESOLUTION_1600[] = {0x56, 0x00, 0x54, 0x01, 0x21};
 static char LK_RESOLUTION_RE[] = {0x76, 0x00, 0x54, 0x00, 0x00}; // v T; response from the camera after setting the resolution
 
 //setting compression rate -> value of compression in last HEX number
-static char LK_COMPRESSION[] = {0x56, 0x00, 0x31, 0x05, 0x01, 0x01, 0x12, 0x04, 0x00}; // Value in last byte
+static char LK_COMPRESSION[] = {0x56, 0x00, 0x31, 0x05, 0x01, 0x01, 0x12, 0x04, 0x10}; // Value in last byte
 static char LK_COMPRESSION_RE[] = {0x76, 0x00, 0x31, 0x00, 0x00}; // value in last byte
 
 static char LK_PICTURE[]   = {0x56, 0x00, 0x36, 0x01, 0x00};
@@ -50,36 +51,36 @@ static char JPEG_START[]     = {0xFF, 0xD8};
 static char JPEG_END[]   = {0xFF, 0xD9};
 
 #define CAMWRITE(a) UART_putb(UART_CAMERA,a,sizeof(a)); // send this message
-/*
+
 static bool UART_waitmatch(char *string, uint32_t string_length, uint32_t timeout)  ///use this legit!
 {
   char c;
-  uint32_t index;
+  uint32_t index=0;
   uint64_t start_timestamp;
   RTC_getTime_ms(&start_timestamp);
-
-  index = 0;
   while(!RTC_timerElapsed_ms(start_timestamp, timeout))
   {
-    if(UART_getc_nonblocking(UART_CAMERA, &c))
-    {
-      if(c == string[index])
+    if(UART_charsAvail(UART_CAMERA)){
+      if(UART_getc_nonblocking(UART_CAMERA, &c))
       {
-        index++;
-        if(index == string_length)
+        if(c == string[index])
         {
-          return true;
+          index++;
+          if(index == string_length)
+          {
+            return true;
+          }
         }
-      }
-      else
-      {
-        index = 0;
+        else
+        {
+          index = 0;
+        }
       }
     }
   }
   return false;
 }
-*/
+/*
 static bool UART_command_match(char *string, uint32_t string_length)
 {
   char data_in;
@@ -99,18 +100,17 @@ static bool UART_command_match(char *string, uint32_t string_length)
   }
   if(index == string_length){ return true;}
   else{ return false;}
-}
+}*/
 
 static uint32_t UART_getw4(uint8_t serial)
 {
   char c1=UART_getc(serial),c2=UART_getc(serial),c3=UART_getc(serial),c4=UART_getc(serial);
   return (uint32_t)((c1 << 24) | (c2 << 16) | (c3 << 8) | (c4 << 0)); //shifting values of read char/hex numbers to create one 32bit number
 }
-/*
+
 static bool Camera_command(char *command, uint32_t command_length, char *response, uint32_t response_length)
 {
   uint32_t attempts = 1;
-
   UART_putb(UART_CAMERA,command,command_length);
   while(!UART_waitmatch(response, response_length, 3000))
   {
@@ -122,8 +122,8 @@ static bool Camera_command(char *command, uint32_t command_length, char *respons
     UART_putb(UART_CAMERA,command,command_length);
   } 
   return true;
-}*/
-
+}
+/*
 static bool Camera_command(char *command, char *response)
 {
   uint32_t attempts = 1;
@@ -141,94 +141,104 @@ static bool Camera_command(char *command, char *response)
   { 
   return true;
   }
-}
+}*/
 
 bool Camera_capture()
 {
-  uint16_t rest, page_size = 104;   //BUFFER_SLOT_SIZE / 8 =106; but it need to be multiple integer of 8
-  uint32_t jpegsize, number_of_pages;
-  uint8_t count=0, page_buffer[page_size];
+  uint8_t pagesize = 104;//((uint8_t)(BUFFER_SLOT_SIZE/64))*8;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
+  uint8_t begin_marker[5], end_marker[6];
+  uint8_t count_begin_marker = 0, count_end_marker = 0, count_picture_data = 0;
+  uint8_t page_buffer[pagesize];
+  uint32_t jpegsize;                                       //stores the size of the image
+  uint32_t jpeg_adress = 0x0000;                           //initial adress of the camera memory from which we reed the data
+  uint64_t timestamp;
   bool endflag = false;
-  char bin;
   // initialise camera
-  if(!Camera_command(LK_RESET, LK_RESET_RE))
+  if(!Camera_command(LK_RESET, sizeof(LK_RESET), LK_RESET_RE, sizeof(LK_RESET_RE)))
   {
     UART_puts(UART_GNSS, "1");
     return false;
   }
   Delay_ms(3000); // 2-3 sec gap required by data sheet before camera ready
   // set resolution
-  if(!Camera_command(LK_RESOLUTION_1600, LK_RESOLUTION_RE))
+  if(!Camera_command(LK_RESOLUTION_1600, sizeof(LK_RESOLUTION_1600),LK_RESOLUTION_RE, sizeof(LK_RESOLUTION_RE)))
   {
     UART_puts(UART_GNSS, "3");
     return false; 
   }
-  // set compression
-  set_compression(0x10);
-  if(!Camera_command(LK_COMPRESSION, LK_COMPRESSION_RE))
+  // set compression 
+  if(!Camera_command(LK_COMPRESSION, sizeof(LK_COMPRESSION), LK_COMPRESSION_RE, sizeof(LK_COMPRESSION_RE)))
   {
     UART_puts(UART_GNSS, "4");
     return false;
   }
   // take picture
-  if(!Camera_command(LK_PICTURE, LK_PICTURE_RE))
+  if(!Camera_command(LK_PICTURE, sizeof(LK_PICTURE), LK_PICTURE_RE, sizeof(LK_PICTURE_RE)))
   {
     UART_puts(UART_GNSS, "5");
     return false;
   }
   // read size
-  if(!Camera_command(LK_JPEGSIZE, LK_JPEGSIZE_RE))
+  if(!Camera_command(LK_JPEGSIZE, sizeof(LK_JPEGSIZE),LK_JPEGSIZE_RE, sizeof(LK_JPEGSIZE_RE)))
   {
     UART_puts(UART_GNSS, "6");
     return false;
   }
   jpegsize = UART_getw4(UART_CAMERA);
-  number_of_pages = jpegsize/page_size;
  //unnecessary for the operation, just for the debugging, takes time to print----------------------------
   char jp_output[100];
   sprintf(jp_output, "jpeg size is: %d\r\n", jpegsize); //output of the sprintf is the char buffer specified in first argument
   UART_puts(UART_GNSS, jp_output); //print this message about size of jpeg
- //------------------------------------------------------------------------------------------------------
-  Delay_ms(100);
+ //-----------------------------------------------------------------------------------------------------
   // offset in file start (0 here) - place where in the command is starting address
-  LK_READPICTURE[6] = 0x00;
-  LK_READPICTURE[7] = 0x00;
-  LK_READPICTURE[8] = 0x00;
-  LK_READPICTURE[9] = 0x00;
+  //LK_READPICTURE[6] = 0x00;
+  //LK_READPICTURE[7] = 0x00;
+  //LK_READPICTURE[8] = 0x00;
+  //LK_READPICTURE[9] = 0x00;
   // write length to obtain +8 bytes?
-  LK_READPICTURE[10] = (char)((page_size >> 24) & 0xFF);
-  LK_READPICTURE[11] = (char)((page_size >> 16) & 0xFF);
-  LK_READPICTURE[12] = (char)((page_size >> 8) & 0xFF);
-  LK_READPICTURE[13] = (char)(page_size & 0xFF);
+  LK_READPICTURE[13] = pagesize;    //number of bites we will be reading in each camera data packet
   // 0.1ms
   LK_READPICTURE[14] = LK_PICTURE_TIME_dot1ms[0];
   LK_READPICTURE[15] = LK_PICTURE_TIME_dot1ms[1];
-
-  //UART_puts(UART_GNSS, "In Camera driver\r\n");
-  //for(i=0; i<jpegsize && endfoundcount<2;i++)
+  //camera response structure: 0x76 0x00 0x32 0x00 x00 <data> 0x76 0x76 0x00 0x32 0x00 0x00
   while(!endflag)
   {
-    if(!Camera_command(LK_READPICTURE, LK_READPICTURE_RE))
-    {
-      return false;
+    LK_READPICTURE[8] = jpeg_adress / 256;  //should give the possibility to make 630 readings
+    LK_READPICTURE[9] = jpeg_adress % 256;  //but may need be extended to bytes 6 and 7
+    CAMWRITE(LK_READPICTURE);
+    RTC_getTime_ms(&timestamp);
+    while(!RTC_timerElapsed_ms(timestamp,100)){
+      if(UART_charsAvail(UART_CAMERA)){
+        if(count_begin_marker<5){                                  //read first five characters which are response markers
+            UART_getc_nonblocking(UART_CAMERA, &begin_marker[count_begin_marker]);
+            count_begin_marker++; 
+        }
+        else if(count_begin_marker>=5 && count_picture_data<pagesize && !endflag)
+        {
+          UART_getc_nonblocking(UART_CAMERA, &page_buffer[count_picture_data]);
+          if((page_buffer[count_picture_data-1]==0xFF) && (page_buffer[count_picture_data]==0xd9)){
+              endflag = true;
+          }
+          else
+          {
+          count_picture_data++;
+          }
+            
+        }
+        else
+        {
+          UART_getc_nonblocking(UART_CAMERA, &end_marker[count_end_marker]);
+          count_end_marker++;
+        }
+      }
     }
-    Delay_ms(10);
-    //DELAYS THE READING OF CHARACTER  FROM CAMERA SO GETS STUCK IN LOOP
-    //UART_puts(UART_EPS, "In Camera driver loop\r\n");
-    for(int count = 0; count<page_size; count++){
-        page_buffer[count] = UART_getc(UART_CAMERA);  //characters in line
-        if((page_buffer[count-1]==0xFF) && (page_buffer[count]==0xD9)) endflag = true;
-    }
-    Delay_ms(10);
-    while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA, &bin);
-    }
-  //Buffer_store_new_data(page_buffer);
-  UART_putb(UART_GNSS, page_buffer, sizeof(page_buffer));
+  if(!Buffer_store_new_data(page_buffer)){
+    return false;
+  }
+  count_begin_marker = 0;
+  count_picture_data = 0;
+  count_end_marker = 0;
+  jpeg_adress += pagesize;
   }
   return true;
-}
-void set_compression(char compression){
-    LK_COMPRESSION[8] = compression;
-    LK_COMPRESSION_RE[5] = compression;
 }

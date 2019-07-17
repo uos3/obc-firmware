@@ -151,7 +151,7 @@ int main(void)
       sprintf(output8,"0x%02"PRIx8" ",resol_resp[i]);
       UART_puts(UART_GNSS,output8);
     }
-    //Delay_ms(100);
+    Delay_ms(100);
 
   //take picture command
     
@@ -221,7 +221,7 @@ int main(void)
   //send command and wait for the response
   uint64_t timestamp;
   uint8_t k = 0, z=0;
-  int x =10;
+  int x =5;
   //UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
     /*Delay_ms(25);
     while(UART_charsAvail(UART_CAMERA)){
@@ -274,7 +274,7 @@ int main(void)
   for(int i =0;i<dat2;i++){
     sprintf(output6, "0x%02"PRIx8" ",data_buffer[i]);
       UART_puts(UART_GNSS, output6);
-  }
+  }/*
   UART_puts(UART_GNSS,"\n\r");
   for(int i =0;i<5;i++){
     sprintf(output7, "0x%02"PRIx8" ",response_begin[i]);
@@ -284,123 +284,11 @@ int main(void)
   for(int i =0;i<6;i++){
     sprintf(output8, "0x%02"PRIx8" ",response_end[i]);
     UART_puts(UART_GNSS, output8);
-  }
+  }*/
   dat2=0;
   i+=0x68;
   k=0;
-  z=0;
 }
-  /*int x =2;
-  while(x--){
-  for(int k = 0; k<pagesize;k++){
-    data_buffer[k]=UART_getc(UART_CAMERA);
-  }*/
- /*
-  UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
-  dat2=0;
-  UART_puts(UART_GNSS,"\n\r");
-  while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&data_buffer[dat2]);
-      dat2++;
-  }
-  for(int i =0;i<dat2;i++){
-    sprintf(output7, "0x%02"PRIx8" ",data_buffer[i]);
-      UART_puts(UART_GNSS, output7);
-  }
-  UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
-  dat2=0;
-  UART_puts(UART_GNSS,"\n\r");
-  while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&data_buffer[dat2]);
-      dat2++;
-  }
-  for(int i =0;i<dat2;i++){
-    sprintf(output7, "0x%02"PRIx8" ",data_buffer[i]);
-      UART_puts(UART_GNSS, output7);
-  }
-  UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
-  dat2=0;
-  UART_puts(UART_GNSS,"\n\r");
-  while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&data_buffer[dat2]);
-      dat2++;
-  }
-  for(int i =0;i<dat2;i++){
-    sprintf(output7, "0x%02"PRIx8" ",data_buffer[i]);
-      UART_puts(UART_GNSS, output7);
-  }
-  UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
-  dat2=0;
-  UART_puts(UART_GNSS,"\n\r");
-  while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&data_buffer[dat2]);
-      dat2++;
-  }
-  for(int i =0;i<dat2;i++){
-    sprintf(output7, "0x%02"PRIx8" ",data_buffer[i]);
-      UART_puts(UART_GNSS, output7);
-  }
-  UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
-  dat2=0;
-  UART_puts(UART_GNSS,"\n\r");
-  while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&data_buffer[dat2]);
-      dat2++;
-  }
-  for(int i =0;i<dat2;i++){
-    sprintf(output7, "0x%02"PRIx8" ",data_buffer[i]);
-      UART_puts(UART_GNSS, output7);
-  }
-  UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
-  dat2=0;
-  UART_puts(UART_GNSS,"\n\r");
-  while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&data_buffer[dat2]);
-      dat2++;
-  }
-  for(int i =0;i<dat2;i++){
-    sprintf(output7, "0x%02"PRIx8" ",data_buffer[i]);
-      UART_puts(UART_GNSS, output7);
-  }
-    UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
-  dat2=0;
-  UART_puts(UART_GNSS,"\n\r");
-  while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&data_buffer[dat2]);
-      dat2++;
-  }
-  for(int i =0;i<dat2;i++){
-    sprintf(output7, "0x%02"PRIx8" ",data_buffer[i]);
-      UART_puts(UART_GNSS, output7);
-  }*/
-
-
-
-
-/* 
-    Delay_ms(10);
-    int i =0;
-    while(i<pagesize && !endflag){
-      data_buffer[i]=UART_getc(UART_CAMERA);
-      if((data_buffer[i-1]==0xFF)&&(data_buffer[i]==0xD9)){
-        endflag = true;
-      }
-      i++
-    }
-    UART_putb(UART_GNSS, data_buffer);
-
-    Delay_ms(10);
-    while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&read_resp2[dat2]);
-      if(read_resp2[dat2]==LK_READPICTURE_RE[index_readdata2]){
-        index_readdata2++;
-      }else{
-        index_readdata2 = 0;
-      }
-      dat2++;
-      if(index_readdata2==sizeof(LK_READPICTURE_RE)){break;}
-    }
-  }*/
     free(output9);
     free(output8);
     free(output2);

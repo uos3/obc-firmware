@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "firmware.h": "c",
-        "debug.h": "c"
-    }
+        "debug.h": "c",
+        "buffer.h": "c",
+        "uart.h": "c",
+        "rtc.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }
