@@ -840,7 +840,9 @@ int8_t ad_deploy_attempt(int8_t t){
   UART_puts(UART_INTERFACE, "[TASK] Attempting To Deploy Antenna...\r\n");
   //EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header)
   if(batt_volt >= BATTERY_THRESHOLD){
+    LED_on(LED_B);  //debugging only
     Antenna_deploy();
+    LED_off(LED_B); //debugging only
     ADM_status = 1;
     EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
     deploy_attempts++;

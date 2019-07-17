@@ -13,6 +13,7 @@
 #include "../delay.h"
 #include "../camera_new.h"
 
+
 //-------------------Camera commands-----------------------------
 //start/reset commands
 //static char LK_INIT_END[]={0x36, 0x32, 0x35, 0x0D, 0x0A, 0x49, 0x6E, 0x69, 0x74, 0x20, 0x65, 0x6E, 0x64, 0x0D, 0x0A};
@@ -55,6 +56,24 @@ static char LK_READPICTURE_RE[] = {0x76, 0x00, 0x32, 0x00, 0x00};
 static char JPEG_START[] = {0xFF, 0xD8};
 static char JPEG_END[] = {0xFF, 0xD9};
 
+
+void set_resolution(uint16_t resolution){
+    switch (resolution)
+    {
+    case 160:
+        LK_RESOLUTION[4] = 0x22;
+        break;
+    case 640:
+        LK_RESOLUTION[4] = 0x00;
+    case 1280:
+        LK_RESOLUTION[4] = 0x1B;
+    case 1600:
+        LK_RESOLUTION[4] = 0x21;
+    default:
+        LK_RESOLUTION[4] = 0x21;
+        break;
+    }
+}
 #define write_command(command) UART_putb(UART_CAMERA, command, sizeof(command));
 
 static bool command_match(char *string, uint32_t string_length){
@@ -132,25 +151,3 @@ while(!endflag){
 
 }
 
-void set_compression(char compression){
-    LK_COMPRESSION[8] = compression;
-    LK_COMPRESSION_RE[5] = compression;
-}
-
-void set_resolution(uint16_t resolution){
-    switch (resolution)
-    {
-    case 160:
-        LK_RESOLUTION[4] = 0x22;
-        break;
-    case 640:
-        LK_RESOLUTION[4] = 0x00;
-    case 1280:
-        LK_RESOLUTION[4] = 0x1B;
-    case 1600:
-        LK_RESOLUTION[4] = 0x21;
-    default:
-        LK_RESOLUTION[4] = 0x21;
-        break;
-    }
-}

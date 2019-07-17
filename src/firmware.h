@@ -72,7 +72,7 @@
 
 /* Test Interface */
 
-#define UART_INTERFACE UART_GNSS
+#define UART_INTERFACE UART_DEBUG_4
 //#define UART_INTERFACE UART_CAMERA
 
 
