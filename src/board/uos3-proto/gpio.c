@@ -161,13 +161,18 @@ uint32_t int_pin[] = {GPIO_INT_PIN_0, GPIO_INT_PIN_1, GPIO_INT_PIN_2, GPIO_INT_P
 /* Enable the pin as input and configure the interrupt */
 void gpio_interrupt_enable(uint8_t gpio_num, uint8_t interrupt_type, void (*intHandler)(void))
 {
-  GPIO_init(gpio_num, GPIO_MODE_INPUT);
+  if(gpio_num >= NUMBER_OF_GPIOS) return;
+  GPIO *gpio = &GPIO_gpios[gpio_num];
+
+  GPIO_init(gpio, GPIO_MODE_INPUT);
   GPIOIntTypeSet(gpio->port, gpio->pin, int_types[interrupt_type]);
   GPIOIntRegisterPin(gpio->port, gpio->pin, intHandler);
   GPIOIntEnable(gpio->port, int_pin[gpio->pin]);
 }
 /* Clear the interrupt of the specific type on the given pin*/
 void gpio_interrupt_clear(uint8_t gpio_num, uint8_t interrupt_type){
+  if(gpio_num >= NUMBER_OF_GPIOS) return;
+  GPIO *gpio = &GPIO_gpios[gpio_num];
   GPIOIntClear(gpio->port, int_types[interrupt_type]);
 }
 /**

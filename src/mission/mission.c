@@ -236,11 +236,11 @@ int8_t free_timers(){
     return 0;
 }
 
-//function which get the available timer and return its "id"
+//function which get the availablsave_eps_health_datad"
 int8_t get_available_timer(){
   int8_t id = -1;
   for (uint8_t i=0; i<6; i++){
-    if (timer_to_task[i] == -1) {
+    if (timer_to_task[i] == -1) {save_eps_health_data
       id = i;                                     //check all timers, break if found one which is  free
       break;
     }
@@ -260,45 +260,6 @@ void timer_init(){
   }
 ulPeriod = SysCtlClockGet();                                //get MCU clock rate - 1Hz update rate
 }
-
-//for the old solution for the timing, not needed of the wider timers work properly
-/*void Timer_Update(uint8_t Timer_id){
-    char Interrupt_string[50];
-    if(Timer_Properties.Timer_division[Timer_id] > 1){
-      if(Timer_Properties.Timer_count[Timer_id] == 0){
-        sprintf(Interrupt_string, "**timer%d_interrupt!**\r\n", Timer_id);
-        UART_puts(UART_INTERFACE, Interrupt_string);
-        // Schedule task
-        task_q[Timer_id] = Timer_id;
-        TimerDisable(ALL_TIMER_BASES[Timer_id], TIMER_A);
-        TimerLoadSet(ALL_TIMER_BASES[Timer_id], TIMER_A, 100*ulPeriod-1); // prime it (-1 is unnecessery but keep it just to avoid sysclock conflict?)
-        TimerIntRegister(ALL_TIMER_BASES[Timer_id], TIMER_A, timer_isr_map[Timer_id]); // this is for dynamic interrupt compilation
-        TimerEnable(ALL_TIMER_BASES[Timer_id], TIMER_A); 	 // start timer
-        Timer_Properties.Timer_count[Timer_id] = Timer_Properties.Initial_Timer_count[Timer_id];
-        no_of_tasks_queued++;
-        return;
-      } 
-      if (Timer_Properties.Timer_count[Timer_id] == 1){
-        TimerDisable(ALL_TIMER_BASES[Timer_id], TIMER_A);
-        TimerLoadSet(ALL_TIMER_BASES[Timer_id], TIMER_A, Timer_Properties.Timer_mod[Timer_id]*ulPeriod-1); // prime it (-1 is unnecessery but keep it just to avoid sysclock conflict?)
-        TimerIntRegister(ALL_TIMER_BASES[Timer_id], TIMER_A, timer_isr_map[Timer_id]); // this is for dynamic interrupt compilation
-        TimerEnable(ALL_TIMER_BASES[Timer_id], TIMER_A); 	 // start timer
-        Timer_Properties.Timer_count[Timer_id]--;
-        return;
-      }
-      if (Timer_Properties.Timer_count[Timer_id] > 1){
-        Timer_Properties.Timer_count[Timer_id]--;
-        return;
-      }
-    } 
-  else{
-  // Schedule task
-    sprintf(Interrupt_string, "**timer%d_interrupt!**\r\n", Timer_id);
-    UART_puts(UART_INTERFACE, Interrupt_string);
-    task_q[Timer_id] = Timer_id;
-    no_of_tasks_queued++;
-  }
-}*/
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -990,7 +951,7 @@ int8_t transmit_next_telemetry(int8_t t){
 		// TODO: add Matt's weird error detection & check code
 
 		// Set-up radio
-		EPS_setPowerRail(EPS_PWR_TX, 1);
+		EPS_setPowerRail(EPS_PWR_RADIO, 1);
 		radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
 		update_radio_parameters();
 
@@ -1004,7 +965,7 @@ int8_t transmit_next_telemetry(int8_t t){
 		// wait for the packet to send
 		while( cc1125_pollGPIO(GPIO0_RADIO_TX)) {} ;
 
-		EPS_setPowerRail(EPS_PWR_TX, 0);
+		EPS_setPowerRail(EPS_PWR_RADIO, 0);
     
 	  UART_puts(UART_INTERFACE, "[TASK] Finished transmit next telemetry\r\n");
 		return 0;

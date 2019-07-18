@@ -38,7 +38,6 @@ typedef struct eps_slave_packet_single_t {
 static eps_master_packet_t eps_master_packet;
 static eps_slave_packet_single_t eps_slave_packet_single;
 
-
 static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *data);
 static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value,
   eps_slave_packet_single_t *data);
@@ -84,10 +83,10 @@ bool EPS_togglePowerRail(uint8_t type){
 }
 
 uint8_t EPS_getPowerRail() {
-	if !(EPS_readRegister(EPS_REG_SW_ON, &eps_slave_packet_single)) {
+	if (!EPS_readRegister(EPS_REG_SW_ON, &eps_slave_packet_single)) {
 		return 0;
 	}
-	eps_slave_packet_single.value
+	return eps_slave_packet_single.value;
 }
 
 static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *data)

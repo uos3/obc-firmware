@@ -11,15 +11,6 @@ int main(){
     RTC_init();  
     UART_init(UART_INTERFACE, 9600);
     UART_puts(UART_INTERFACE, "\r\n");
-    int rows = 5;
-    for(int i = rows; i >= 1; --i)
-    {
-        for(int j = 1; j <= i; ++j)
-        {
-            UART_puts(UART_INTERFACE,"* ");
-        }
-        UART_puts(UART_INTERFACE, "\r\n");
-    }
     UART_puts(UART_INTERFACE, "Board and UART Interface Initialised\r\n");
     char output[50];
     uint64_t timestamp_before, timestamp_after;
@@ -44,7 +35,7 @@ int main(){
 
     Antenna_deploy_demo();      //call deploy function
 
-    LED_off(LED_B);
+    LED_off(LED_A);
     UART_puts(UART_INTERFACE, "\r\nBurn has finished\r\n");
     RTC_getTime_ms(&timestamp_after);
     sprintf(output, "\r\nSystem time after burning is %lu ms\r\n", timestamp_after);
