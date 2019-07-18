@@ -19,7 +19,7 @@
 
 #define EPS_REG_CONFIG			0x00
 #define EPS_REG_STATUS			0x01
-#define EPS_REG_SW_ON				0x02
+#define EPS_REG_SW_ON				0x02		//Setting a bit in SW_ON to one toggles the state of the corresponding rail, also used for getting the current state of the rails
 #define EPS_REG_POWER				0x03
 #define EPS_REG_BAT_V				0x04
 #define EPS_REG_BAT_I				0x05
@@ -34,7 +34,7 @@
 #define EPS_REG_SOLAR_W2_I	0x0E
 #define EPS_REG_SOLAR_T1_I	0x0F
 #define EPS_REG_SOLAR_T2_I	0x10
-#define EPS_REG_RESERVED 		0x11 // Maybe make known ID? ( https://github.com/uos3/eps-firmware/issues/1 )
+#define EPS_REG_SOLAR_1_V 		0x11 // Used to be reservered, referred to in comm spec
 #define EPS_REG_SOLAR_2_V		0x12
 #define EPS_REG_RAIL1_BOOT	0x13
 #define EPS_REG_RAIL1_FAIL	0x14
@@ -60,17 +60,19 @@
 #define EPS_REG_RAIL6_FAIL	0x28
 #define EPS_REG_RAIL6_V			0x29
 #define EPS_REG_RAIL6_I			0x2A
-#define EPS_REG_SUPPLY_3_V	0x2B
+#define EPS_REG_SUPPLY_3_V	0x2B		//System rails?
 #define EPS_REG_SUPPLY_3_I	0x2C
 #define EPS_REG_SUPPLY_5_V	0x2D
 #define EPS_REG_SUPPLY_5_I	0x2E
 #define EPS_REG_CHARGE_I		0x2F
 #define EPS_REG_MPPT_BUS_V	0x30
-#define EPS_REG_CRC_ER_CNT	0x31
+#define EPS_REG_CRC_ER_CNT	0x31		
 #define EPS_REG_DROP_CNT		0x32
+#define EPS_REG_SW_OFF		0x33
+#define EPS_KNOWN_VAL		0x34
 
-#define EPS_PWR_TX      0x01
-#define EPS_PWR_RX      0x02
+#define EPS_PWR_RADIO      0x01		//The bit positions corresponding with each rail in SW_ON
+#define EPS_PWR_BURADIO      0x02
 #define EPS_PWR_CAM     0x04
 #define EPS_PWR_MCU     0x08
 #define EPS_PWR_GPS     0x10

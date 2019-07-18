@@ -154,7 +154,22 @@ bool GPIO_read(uint8_t gpio_num)
 
   return GPIO_Pin_Read(gpio);
 }
-
+/*represent possible interrupt types and int_masks for different pins in tables to provide better access from other source files*/
+uint32_t int_types[] = {GPIO_FALLING_EDGE, GPIO_RISING_EDGE, GPIO_BOTH_EDGES, GPIO_LOW_LEVEL, GPIO_HIGH_LEVEL};
+uint32_t int_pin[] = {GPIO_INT_PIN_0, GPIO_INT_PIN_1, GPIO_INT_PIN_2, GPIO_INT_PIN_3, GPIO_INT_PIN_4,
+                      GPIO_INT_PIN_5, GPIO_INT_PIN_6, GPIO_INT_PIN_7};
+/* Enable the pin as input and configure the interrupt */
+void gpio_interrupt_enable(uint8_t gpio_num, uint8_t interrupt_type, void (*intHandler)(void))
+{
+  GPIO_init(gpio_num, GPIO_MODE_INPUT);
+  GPIOIntTypeSet(gpio->port, gpio->pin, int_types[interrupt_type]);
+  GPIOIntRegisterPin(gpio->port, gpio->pin, intHandler);
+  GPIOIntEnable(gpio->port, int_pin[gpio->pin]);
+}
+/* Clear the interrupt of the specific type on the given pin*/
+void gpio_interrupt_clear(uint8_t gpio_num, uint8_t interrupt_type){
+  GPIOIntClear(gpio->port, int_types[interrupt_type]);
+}
 /**
  * @}
  */

@@ -13,7 +13,9 @@
 #include "../rtc.h"
 #include "../delay.h"
 #include "../camera.h"
-//#include "../../buffer/buffer.h"
+#include "../../buffer/buffer.h"
+#include "../../configuration/configuration.h"
+#include "../../firmware.h"
 #include <inttypes.h>
 
 
@@ -147,7 +149,7 @@ static bool Camera_command(char *command, char *response)
 
 bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num,bool if_print)
 {
-  uint8_t pagesize = 104;//((uint8_t)(BUFFER_SLOT_SIZE/64))*8;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
+  uint8_t pagesize = ((uint8_t)(BUFFER_SLOT_SIZE/64))*8;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
   uint8_t begin_marker[5], end_marker[6];
   uint8_t count_begin_marker = 0, count_end_marker = 0, count_picture_data = 0;
   uint8_t page_buffer[pagesize];
@@ -192,11 +194,6 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_u
   sprintf(jp_output, "jpeg size is: %d\r\n", jpegsize); //output of the sprintf is the char buffer specified in first argument
   UART_puts(deb_uart_num, jp_output); //print this message about size of jpeg
  //-----------------------------------------------------------------------------------------------------
-  // offset in file start (0 here) - place where in the command is starting address
-  //LK_READPICTURE[6] = 0x00;
-  //LK_READPICTURE[7] = 0x00;
-  //LK_READPICTURE[8] = 0x00;
-  //LK_READPICTURE[9] = 0x00;
   // write length to obtain +8 bytes?
   LK_READPICTURE[13] = pagesize;    //number of bites we will be reading in each camera data packet
   // 0.1ms
@@ -234,7 +231,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_u
         }
       }
     }
-  //Buffer_store_new_data(page_buffer);
+  Buffer_store_new_data(page_buffer);
   if(if_print){ print_to_terminal(deb_uart_num, page_buffer, count_picture_data); }
   count_begin_marker = 0;
   count_picture_data = 0;
@@ -242,7 +239,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_u
   jpeg_adress += pagesize;
   }
   *picture_size = jpegsize;
-  *no_of_pages = jpegsize/pagesize +1;
+  *no_of_pages = ROUND_UP(jpegsize/pagesize ,1);
   return true;
 }
 void print_to_terminal(uint8_t uart_num,uint8_t* data, uint8_t count){

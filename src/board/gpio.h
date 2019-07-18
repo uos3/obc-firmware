@@ -60,4 +60,18 @@ void GPIO_write(uint8_t gpio_number, bool state);
  */
 bool GPIO_read(uint8_t gpio_number);
 
+/**
+ * @function
+ * @ingroup gpio
+ *
+ * initialise and enable the interrupt on selected gpio input pin
+ * second function is for clearing this interrupt
+ *
+ * @param gpio_number ID of the GPIO pin
+ * @param interrupt_type type of the interrupt to be selected from the int_types[] table - gpio.c file
+ * @param void (*intHandler)(void) function to be called when the interrupt occurs
+ */
+void gpio_interrupt_enable(uint8_t gpio_num, uint8_t interrupt_type, void (*intHandler)(void));
+void gpio_interrupt_clear(uint8_t gpio_num, uint8_t interrupt_type);
+
 #endif /*  __GPIO_H__ */

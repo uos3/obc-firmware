@@ -17,8 +17,8 @@
  #define BUFFER_SLOTS 1210
 #elif(FRAM_SIZE == 0x80000)
  #define BUFFER_SLOTS 4840
-#else
-  #error "FRAM Size not coded for."
+//#else
+//  #error "FRAM Size not coded for." //causing troubles with different demos
 #endif
 
 #define BUFFER_FRAM_SIZE_LAST_INDEX     sizeof(uint16_t)

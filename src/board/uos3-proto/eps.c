@@ -12,11 +12,10 @@
 #include "../rtc.h"
 #include "../eps.h"
 
-#define SW_ON 0x02
 
 // DEBUG_NOTES ( REMOVE LATER )
 #include "../../firmware.h"
-#define UART_INTERFACE UART_GNSS
+
 
 typedef struct eps_master_packet_t {
   bool write:1;
@@ -45,10 +44,19 @@ static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value,
   eps_slave_packet_single_t *data);
 static uint16_t EPS_crc(uint8_t *message, int32_t offset, int32_t length);
 
+void eps_interrupt_handler(void){
+	//clears the interrupt on the PD7 pin, 0 corresponds to falling egde interrupt
+	//look up the int_types table in the gpio.c file for definition
+	gpio_interrupt_clear(GPIO_PD7, 0);
+	//TODO: rest of the interrupt code starting from here
+}
 
 void EPS_init(void)
 {
   UART_init(UART_EPS, EPS_BAUDRATE);
+  //enabling the interrupt on GPIO_PD7 and setting it to falling edge
+  //0 corresponds to falling edge interrupt - for definition look up  the int_types table in gpio.c
+  gpio_interrupt_enable(GPIO_PD7, 0, eps_interrupt_handler);	
 }
 
 bool EPS_selfTest(void)
@@ -71,8 +79,15 @@ bool EPS_getBatteryInfo(uint16_t *output, uint8_t type)
 	return false;
 }
 
-bool EPS_setPowerRail(uint8_t type, bool on){
-  return EPS_writeRegister(SW_ON, type, &eps_slave_packet_single);
+bool EPS_togglePowerRail(uint8_t type){
+  return EPS_writeRegister(EPS_REG_SW_ON, type, &eps_slave_packet_single);
+}
+
+uint8_t EPS_getPowerRail() {
+	if !(EPS_readRegister(EPS_REG_SW_ON, &eps_slave_packet_single)) {
+		return 0;
+	}
+	eps_slave_packet_single.value
 }
 
 static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *data)
