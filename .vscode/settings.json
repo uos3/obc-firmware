@@ -4,7 +4,9 @@
         "debug.h": "c",
         "buffer.h": "c",
         "uart.h": "c",
-        "rtc.h": "c"
+        "rtc.h": "c",
+        "camera.h": "c",
+        "board.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

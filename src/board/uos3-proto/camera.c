@@ -13,7 +13,9 @@
 #include "../rtc.h"
 #include "../delay.h"
 #include "../camera.h"
-//#include "../buffer/buffer.h"
+//#include "../../buffer/buffer.h"
+#include <inttypes.h>
+
 
 static char LK_RESET[]     = {0x56, 0x00, 0x26, 0x00};
 static char LK_RESET_RE[]    = {0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};  //legit!
@@ -143,7 +145,7 @@ static bool Camera_command(char *command, char *response)
   }
 }*/
 
-bool Camera_capture()
+bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num,bool if_print)
 {
   uint8_t pagesize = 104;//((uint8_t)(BUFFER_SLOT_SIZE/64))*8;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
   uint8_t begin_marker[5], end_marker[6];
@@ -156,39 +158,39 @@ bool Camera_capture()
   // initialise camera
   if(!Camera_command(LK_RESET, sizeof(LK_RESET), LK_RESET_RE, sizeof(LK_RESET_RE)))
   {
-    UART_puts(UART_GNSS, "1");
+    UART_puts(deb_uart_num, "Reset Error \r\n");
     return false;
   }
   Delay_ms(3000); // 2-3 sec gap required by data sheet before camera ready
   // set resolution
   if(!Camera_command(LK_RESOLUTION_1600, sizeof(LK_RESOLUTION_1600),LK_RESOLUTION_RE, sizeof(LK_RESOLUTION_RE)))
   {
-    UART_puts(UART_GNSS, "3");
+    UART_puts(deb_uart_num, "Resolution Error \r\n");
     return false; 
   }
   // set compression 
   if(!Camera_command(LK_COMPRESSION, sizeof(LK_COMPRESSION), LK_COMPRESSION_RE, sizeof(LK_COMPRESSION_RE)))
   {
-    UART_puts(UART_GNSS, "4");
+    UART_puts(deb_uart_num, "Compression Error \r\n");
     return false;
   }
   // take picture
   if(!Camera_command(LK_PICTURE, sizeof(LK_PICTURE), LK_PICTURE_RE, sizeof(LK_PICTURE_RE)))
   {
-    UART_puts(UART_GNSS, "5");
+    UART_puts(deb_uart_num, "Take picture error \r\n");
     return false;
   }
   // read size
   if(!Camera_command(LK_JPEGSIZE, sizeof(LK_JPEGSIZE),LK_JPEGSIZE_RE, sizeof(LK_JPEGSIZE_RE)))
   {
-    UART_puts(UART_GNSS, "6");
+    UART_puts(deb_uart_num, "Pictrue size error \r\n");
     return false;
   }
   jpegsize = UART_getw4(UART_CAMERA);
  //unnecessary for the operation, just for the debugging, takes time to print----------------------------
   char jp_output[100];
   sprintf(jp_output, "jpeg size is: %d\r\n", jpegsize); //output of the sprintf is the char buffer specified in first argument
-  UART_puts(UART_GNSS, jp_output); //print this message about size of jpeg
+  UART_puts(deb_uart_num, jp_output); //print this message about size of jpeg
  //-----------------------------------------------------------------------------------------------------
   // offset in file start (0 here) - place where in the command is starting address
   //LK_READPICTURE[6] = 0x00;
@@ -232,13 +234,23 @@ bool Camera_capture()
         }
       }
     }
-  if(!Buffer_store_new_data(page_buffer)){
-    return false;
-  }
+  //Buffer_store_new_data(page_buffer);
+  if(if_print){ print_to_terminal(deb_uart_num, page_buffer, count_picture_data); }
   count_begin_marker = 0;
   count_picture_data = 0;
   count_end_marker = 0;
   jpeg_adress += pagesize;
   }
+  *picture_size = jpegsize;
+  *no_of_pages = jpegsize/pagesize +1;
   return true;
+}
+void print_to_terminal(uint8_t uart_num,uint8_t* data, uint8_t count){
+  char* output = malloc(20*sizeof(char));
+  for(int i =0;i<=count;i++){
+    sprintf(output, "0x%02"PRIx8" ",data[i]);
+      UART_puts(uart_num, output);
+  }
+  UART_puts(uart_num, "\r\n");
+  free(output);
 }

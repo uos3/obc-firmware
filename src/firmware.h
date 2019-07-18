@@ -43,7 +43,6 @@
 #include "board/watchdog_ext.h"
 #include "board/imu.h"
 #include "board/camera.h"
-#include "board/camera_new.h"
 #include "board/eps.h"
 #include "board/gnss.h"
 #include "board/uos3-proto/board.h"
@@ -73,9 +72,6 @@
 /* Test Interface */
 
 #define UART_INTERFACE UART_DEBUG_4
-//#define UART_INTERFACE UART_CAMERA
-
-
 
 /* ... */
 
