@@ -123,7 +123,7 @@ void set_resolution(bool resolution){
   }
 }
 //main driver function - uses above functions to set the camera, capture the image and store it in the FRAM memory
-bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num,bool if_print, bool resolution)
+bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num,enum print_to_debug if_print, image_acquisition_profile_t resolution)
 {
   uint8_t pagesize = ((uint8_t)(BUFFER_SLOT_SIZE/64))*8;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
   uint8_t begin_marker[5], end_marker[6];
@@ -180,7 +180,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_u
   while(!endflag)
   {
     LK_READPICTURE[8] = jpeg_adress / 256;  //should give the possibility to make 630 readings
-    LK_READPICTURE[9] = jpeg_adress % 256;  //but may need be extended to bytes 6 and 7
+    LK_READPICTURE[9] = jpeg_adress % 256;  //but may need be extended to bytes 6 and 7 if the smaller pagesize is required
     CAMWRITE(LK_READPICTURE);
     RTC_getTime_ms(&timestamp);
     while(!RTC_timerElapsed_ms(timestamp,100)){

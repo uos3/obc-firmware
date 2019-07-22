@@ -47,7 +47,16 @@ void eps_interrupt_handler(void){
 	//clears the interrupt on the PD7 pin, 0 corresponds to falling egde interrupt
 	//look up the int_types table in the gpio.c file for definition
 	gpio_interrupt_clear(GPIO_PD7, 0);
-	//TODO: rest of the interrupt code starting from here
+	uint16_t status;
+	EPS_getInfo(&status, EPS_REG_STATUS);
+	//TODO Decide what to do with status knowledge, e.g. resend packets/wait for component restart and reinitialize
+	uint8_t attempts = 0;		//Writing to register and retrying if failed
+	while (attempts < 3 && !EPS_writeRegister(EPS_REG_STATUS, status)) {
+		attempts++;
+	}
+	if (attempts > 2) {
+		EPS_COMMS_FAILS++;
+	}
 }
 
 void EPS_init(void)
@@ -61,29 +70,59 @@ void EPS_init(void)
 bool EPS_selfTest(void)
 {
 	/* Ref: https://github.com/uos3/eps-firmware/issues/1 */
-	//EPS_readRegister(EPS_REG_RESERVED, &eps_slave_packet_single);
-  //return (eps_slave_packet_single.value == EPS_ID);
-
-  return true;
-}
-
-bool EPS_getBatteryInfo(uint16_t *output, uint8_t type)
-{
-  UART_puts(UART_INTERFACE, "\r\nTrying to get battery info\r\n");
-	if(EPS_readRegister(type, &eps_slave_packet_single))
-	{
-		*output = eps_slave_packet_single.value;
-		return true;
+	uint8_t attempts = 0;		//Writing to register and retrying if failed
+	while (attempts < 3 && !EPS_readRegister(EPS_KNOWN_VAL, &eps_slave_packet_single)) {
+		attempts++;
 	}
-	return false;
+	if (attempts > 2) {
+		EPS_COMMS_FAILS++;
+	}
+	return (eps_slave_packet_single.value == EPS_ID);	//Should give a value of 42
+
+}
+ 
+bool EPS_getInfo(uint16_t *output, uint8_t regID)
+{
+  UART_puts(UART_INTERFACE, "\r\nTrying to get reg data\r\n");
+  uint8_t attempts = 0;		//Writing to register and retrying if failed
+  while (attempts < 3 && !EPS_readRegister(regID, &eps_slave_packet_single)) {
+	  attempts++;
+  }
+  if (attempts <3) {
+	  *output = eps_slave_packet_single.value;
+	  return true;
+  }
+  EPS_COMMS_FAILS++;
+  return false;
 }
 
-bool EPS_togglePowerRail(uint8_t type){
-  return EPS_writeRegister(EPS_REG_SW_ON, type, &eps_slave_packet_single);
+bool EPS_setPowerRail(uint8_t regVal) {		//Requires intended states for every rail
+	uint8_t state = EPS_getPowerRail();
+	state ^= regVal;		//Finding the difference between the current states and the targets 
+	return EPS_togglePowerRail(state);
+
+}
+
+bool EPS_togglePowerRail(uint8_t regVal)	{
+	//A 1 will toggle the state of the relevant rail in the input byte, rail bit positions specified in header
+	uint8_t attempts = 0;
+	while (attempts < 3 && !EPS_writeRegister(EPS_REG_SW_ON, regVal)) {
+		attempts++;
+	}
+	if (attempts > 2) {
+		EPS_COMMS_FAILS++;
+		return false;
+	}
+	return true;
 }
 
 uint8_t EPS_getPowerRail() {
-	if (!EPS_readRegister(EPS_REG_SW_ON, &eps_slave_packet_single)) {
+	uint8_t attempts = 0;
+	while (attempts < 3 && !EPS_readRegister(EPS_REG_SW_ON, &eps_slave_packet_single)) {
+		attempts++;
+	}
+	if (attempts > 2) {
+		EPS_COMMS_FAILS++;
 		return 0;
 	}
 	return eps_slave_packet_single.value;
@@ -105,9 +144,9 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	eps_master_packet.crc_h = (uint8_t)((crc >> 8) & 0xFF);
 
 	/* Send Master Read Packet */
-  UART_puts(UART_INTERFACE, "\r\nSending Master Read Packet\r\n");
+  	UART_puts(UART_INTERFACE, "\r\nSending Master Read Packet\r\n");
 	UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
-  UART_puts(UART_INTERFACE, "\r\nSend to EPS\r\n");
+  	UART_puts(UART_INTERFACE, "\r\nSend to EPS\r\n");
 
 	bytes_expected = 6;
 	bytes_received = 0;
@@ -141,12 +180,13 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	return true;
 }
 
-static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value, eps_slave_packet_single_t *data)
+static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value)
 {
 	char c;
 	uint16_t crc, bytes_expected, bytes_received;
 	uint32_t timeout, current_time;
-
+	eps_slave_packet_single_t data;
+	
 	/* Construct Master Read Packet */
 	eps_master_packet.write = true;
 	eps_master_packet.register_id = (uint8_t)(register_id & 0x7F);

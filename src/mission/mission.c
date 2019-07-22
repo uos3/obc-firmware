@@ -59,7 +59,7 @@ int8_t save_attitude (int8_t t);            //completed
 int8_t sm_reboot(int8_t t);                 //TODO: write a body of function
 int8_t process_gs_command(int8_t t);        //TODO: revise what is done
 int8_t poll_transmitter(int8_t t);          //TODO: revise what is done, what is missing
-int8_t take_picture(int8_t);                //TODO: include the function from camera driver 
+int8_t take_picture(int8_t);                //TODO: can the config resolution be extended? do we need picture length and no_of_pages?
 uint16_t perform_subsystem_check();         //TODO: write the body of function
 void update_radio_parameters();             //TODO: revise what need to be done 
 
@@ -71,6 +71,9 @@ static void cw_tone_off(void);
 void suspend_all_tasks();
 void mode_switch(uint8_t mode);
 void queue_task(int8_t task_id, uint64_t task_period);
+
+//debugging operation initialisation function
+
 
 //Mode initialisation functions
 bool fbu_init(void);
@@ -112,6 +115,11 @@ uint8_t place_data_in_packet(uint8_t position, uint8_t *data_bytes, uint8_t *dat
 //structures to organise modes, tasks and timers -> definition in header
 opmode_t modes[8];
 timer_properties_t Timer_Properties;
+
+//camera variables
+enum print_to_debug if_print = no;  //enum for specifying whether we want to print the picture data on the screen or not
+uint32_t picture_size;              //do we need to store them? are those informations useful?
+uint16_t no_of_pages;               
 
 // [ RUN-TIME ]
 // Total number of tasks that can be run concurrently (limited by number of avail. timers)
@@ -230,7 +238,7 @@ int8_t free_timers(){
     return 0;
 }
 
-//function which get the availablsave_eps_health_datad"
+//function which get the available timer
 int8_t get_available_timer(){
   int8_t id = -1;
   for (uint8_t i=0; i<6; i++){
@@ -623,7 +631,7 @@ uint16_t perform_subsystem_check(){
 
 int8_t save_eps_health_data(int8_t t){
   //Uncomment code when EPS board being used
-  /*/data packet for FRAM
+  /*//data packet for FRAM
   uint8_t data_packet_for_fram[BUFFER_SLOT_SIZE/8];
   uint8_t data_count = 0;
   uint32_t time_of_data_acquisition;
@@ -648,7 +656,7 @@ int8_t save_eps_health_data(int8_t t){
   //tx_temperature...
   data_split_16(get_temp(TEMP_TX), &data_byte16);
   data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
-``//pa_temperature...
+  //pa_temperature...
   data_split_16(get_temp(TEMP_PA), &data_byte16);
   data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
 
@@ -670,7 +678,7 @@ int8_t save_eps_health_data(int8_t t){
   // Get 45 EPS values (16-bit fields)
   for (i=0; i<45; i++){
     uint16_t eps_field;
-    EPS_getBatteryInfo(&eps_field, i);
+    EPS_getInfo(&eps_field, i);
     data_split_u16(eps_field, &data_byte16);
     data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
   }
@@ -683,12 +691,12 @@ int8_t save_eps_health_data(int8_t t){
 
   uint16_t batt_volt = 0;
   if(current_mode != SM){
-      if(EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*//*) > BATTERY_THRESHOLD){
+      if(EPS_getInfo(&batt_volt, EPS_REG_BAT_V) > BATTERY_THRESHOLD){
       mode_switch(LP);
     }
   }
   if(current_mode == LP){
-    if(EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*//*) > BATTERY_THRESHOLD){
+    if(EPS_getInfo(&batt_volt, EPS_REG_BAT_V) > BATTERY_THRESHOLD){
       mode_switch(NF);
     }
   }
@@ -731,20 +739,20 @@ int8_t save_gps_data(int8_t t){
     GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &week_num, &week_seconds);
     //GPS week number - save it only once in the beginning
     if(i == 0){
-      data_split_u16(week_num, data_byte16);                                              //split week no. data
+      data_split_u16(week_num, data_byte16);                                           //split week no. data
       data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);//place in the packet
     }
     //gps time - time since beginning of the current week from GPS
-    data_split_u32(week_seconds, data_byte32);                                            //split GPS_time sample
+    data_split_u32(week_seconds, data_byte32);                                         //split GPS_time sample
     data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);  //place sample in the packet
     //lattitude data
-    data_split_32(latitude, data_byte32);                                                 //split latitude sample
+    data_split_32(latitude, data_byte32);                                              //split latitude sample
     data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);  //place sample in the packet
     //longitude data
-    data_split_32(longitude, data_byte32);                                                //split longitude sample
+    data_split_32(longitude, data_byte32);                                             //split longitude sample
     data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);  //place in the packet
     //altitude data
-    data_split_32(altitude, data_byte32);                                                 //split altitude sample
+    data_split_32(altitude, data_byte32);                                              //split altitude sample
     data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);  //place sample in the packet
     //lat_sd data
     data_count = place_data_in_packet(data_count, lat_sd, data_packet_for_fram);
@@ -770,7 +778,7 @@ int8_t send_morse_telemetry (int8_t t){
   //char batt_str[20];
   //uint16_t batt_volt = 5;
   //**UNCOMMENT WHEN YOU HAVE ACCESS TO WORKING EPS BOARD
-  //EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header
+  //EPS_getInfo(&batt_volt, EPS_REG_BAT_V); //May need to change to 4, given in eps header
   //if(Antenna_read_deployment_switch()){
     //ADM_status = 'Y';
   //}
@@ -793,7 +801,7 @@ int8_t ad_deploy_attempt(int8_t t){
   //ATTEMPT TO DEPLOY ANTENNA
   uint16_t batt_volt = BATTERY_VOLTAGE;
   UART_puts(UART_INTERFACE, "[TASK] Attempting To Deploy Antenna...\r\n");
-  //EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header)
+  //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V); //May need to change to 4, given in eps header)
   if(batt_volt >= BATTERY_THRESHOLD){
     LED_on(LED_B);  //debugging only
     Antenna_deploy();
@@ -916,10 +924,8 @@ int8_t save_attitude(int8_t t){
 
 int8_t  save_image_data(void){
   UART_puts(UART_INTERFACE, "[TASK] Saving Image data...\r\n");
-  //switch to new driver function that stores data straight into buffer
-  //Camera_capture(5000, image_length_add); 
-  
-  return 0;
+  if(!Camera_capture(picture_size, no_of_pages, UART_INTERFACE, if_print, spacecraft_configuration.data.image_acquisition_profile )){ return false; }
+  return true;
 }
 
 void update_radio_parameters(){
@@ -945,7 +951,7 @@ int8_t transmit_next_telemetry(int8_t t){
 		// TODO: add Matt's weird error detection & check code
 
 		// Set-up radio
-		EPS_setPowerRail(EPS_PWR_RADIO, 1);
+		EPS_togglePowerRail(EPS_PWR_TX);
 		radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
 		update_radio_parameters();
 
@@ -959,7 +965,7 @@ int8_t transmit_next_telemetry(int8_t t){
 		// wait for the packet to send
 		while( cc1125_pollGPIO(GPIO0_RADIO_TX)) {} ;
 
-		EPS_setPowerRail(EPS_PWR_RADIO, 0);
+		EPS_togglePowerRail(EPS_PWR_TX);
     
 	  UART_puts(UART_INTERFACE, "[TASK] Finished transmit next telemetry\r\n");
 		return 0;
@@ -1042,7 +1048,7 @@ bool fbu_init(){
   UART_puts(UART_INTERFACE, adm_stat);
   //Exit fbu immediately if antenna is not already deployed, reset flag with reset_adm_flag.c
   if(ADM_status == 1){
-    //EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header)
+    //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V); //May need to change to 4, given in eps header)
     if(batt_volt>BATTERY_THRESHOLD){
       mode_switch(NF);
       return false;
@@ -1119,7 +1125,7 @@ bool pt_init(){
 
   //Take picture and write to FRAM buffer
 
-  save_image_data();  //need to be implemented  
+  if(!save_image_data());  //need to be implemented  
 
   //Return to previous mode
   if (previous_mode == DL){

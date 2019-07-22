@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 
-#define UART_INTERFACE UART_GNSS
-
 int main(void){
   Board_init();
 

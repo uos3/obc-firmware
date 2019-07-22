@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "../firmware.h"
 
-#define BURN_TIME 17140
+#define BURN_TIME 7140
 #define WAIT_TIME 10000
 
 void Antenna_deploy_demo(void);
@@ -50,7 +50,7 @@ int main(){
 
 void Antenna_deploy_demo(void)
 {
-  GPIO_set(GPIO_PB0);
+  GPIO_set(GPIO_PB5);
   Delay_ms(BURN_TIME);
-  GPIO_reset(GPIO_PB0);
+  GPIO_reset(GPIO_PB5);
 }
