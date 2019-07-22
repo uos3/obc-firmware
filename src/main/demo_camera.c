@@ -28,7 +28,7 @@ int main(void)
     UART_puts(UART_INTERFACE, "Taking the picture...\r\n");
     //last argument determine if the picture data will be printed in the terminal
     // 0 - dont print data; 1 - print data
-    if(!Camera_capture(&picture_size, &no_of_pages, UART_INTERFACE, 1)){
+    if(!Camera_capture(&picture_size, &no_of_pages, UART_INTERFACE, 1, 1)){
       UART_puts(UART_INTERFACE, "Error: Picture not taken!\r\n");
     }
     else{

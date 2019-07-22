@@ -18,23 +18,23 @@
 #include "../../firmware.h"
 #include <inttypes.h>
 
-
+//-------------------------------------CAMERA COMMANDS-----------------------------------------------
 static char LK_RESET[]     = {0x56, 0x00, 0x26, 0x00};
-static char LK_RESET_RE[]    = {0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};  //legit!
+static char LK_RESET_RE[]  = {0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};
 
-//commands for the camera baudrate settings -> datasheet
+//baudrate settings -> datasheet
 //static char LK_BAUDRATE_9600[] = {0x56, 0x00, 0x24, 0x03, 0x01, 0xAE};
 //static char LK_BAUDRATE_19200[]  = {0x56, 0x00, 0x24, 0x03, 0x01, 0x56, 0xe4};
 //static char LK_BAUDRATE_38400[]  = {0x56, 0x00, 0x24, 0x03, 0x01, 0x2a, 0xf2};
 //static char LK_BAUDRATE_115200[] = {0x56, 0x00, 0x24, 0x03, 0x01, 0x0D, 0xA6};
 //static char LK_BAUDRATE_RE[] = {0x76, 0x00, 0x24, 0x00, 0x00};
 
-//commands for the camera resolution settings -> datasheet
-//static char LK_RESOLUTION_VGA[] = {0x56, 0x00, 0x54, 0x01, 0x00};
-static char LK_RESOLUTION_160[] = {0x56, 0x00, 0x54, 0x01, 0x22};
-static char LK_RESOLUTION_800[] = {0x56, 0x00, 0x54, 0x01, 0x1D};
-static char LK_RESOLUTION_1280[] = {0x56, 0x00, 0x54, 0x01, 0x1B};
-static char LK_RESOLUTION_1600[] = {0x56, 0x00, 0x54, 0x01, 0x21};
+//resolution settings -> datasheet - value specific for each resolution in last byte!
+static char LK_RESOLUTION[] = {0x56, 0x00, 0x54, 0x01, 0x00};
+//static char LK_RESOLUTION_160[] = {0x56, 0x00, 0x54, 0x01, 0x22};
+//static char LK_RESOLUTION_800[] = {0x56, 0x00, 0x54, 0x01, 0x1D};
+//static char LK_RESOLUTION_1280[] = {0x56, 0x00, 0x54, 0x01, 0x1B};
+//static char LK_RESOLUTION_1600[] = {0x56, 0x00, 0x54, 0x01, 0x21};
 static char LK_RESOLUTION_RE[] = {0x76, 0x00, 0x54, 0x00, 0x00}; // v T; response from the camera after setting the resolution
 
 //setting compression rate -> value of compression in last HEX number
@@ -53,10 +53,11 @@ static char LK_PICTURE_TIME_dot1ms[]  = {0x00, 0x0a}; // 0.1 ms
 static char LK_READPICTURE_RE[]  = {0x76, 0x00, 0x32, 0x00, 0x00};
 static char JPEG_START[]     = {0xFF, 0xD8};
 static char JPEG_END[]   = {0xFF, 0xD9};
-
-#define CAMWRITE(a) UART_putb(UART_CAMERA,a,sizeof(a)); // send this message
-
-static bool UART_waitmatch(char *string, uint32_t string_length, uint32_t timeout)  ///use this legit!
+//function to write the command to the camera
+#define CAMWRITE(a) UART_putb(UART_CAMERA,a,sizeof(a));
+//function to check the actual response of the camera with the pattern
+//for the time specified by the timeout it is looking for the response characters in UART line and matching them with the patter; return true if the response is matched
+static bool UART_waitmatch(char *string, uint32_t string_length, uint32_t timeout)
 {
   char c;
   uint32_t index=0;
@@ -84,70 +85,45 @@ static bool UART_waitmatch(char *string, uint32_t string_length, uint32_t timeou
   }
   return false;
 }
-/*
-static bool UART_command_match(char *string, uint32_t string_length)
-{
-  char data_in;
-  uint8_t index = 0;
-  while(UART_charsAvail(UART_CAMERA))
-  {
-    if(UART_getc_nonblocking(UART_CAMERA, &data_in)){
-      if(data_in == string[index])
-      {
-        index++;
-      }
-      else
-      {
-        index = 0;
-      }
-    }
-  }
-  if(index == string_length){ return true;}
-  else{ return false;}
-}*/
-
+//function for getting the jpegsize, which is four bytes after the LK_JPEGSIZE_RE - so it reads four bytes
 static uint32_t UART_getw4(uint8_t serial)
 {
   char c1=UART_getc(serial),c2=UART_getc(serial),c3=UART_getc(serial),c4=UART_getc(serial);
   return (uint32_t)((c1 << 24) | (c2 << 16) | (c3 << 8) | (c4 << 0)); //shifting values of read char/hex numbers to create one 32bit number
 }
-
+//function for sending the command to the camera and checking if it was correctly send by matching the response with UART_waitmatch function
 static bool Camera_command(char *command, uint32_t command_length, char *response, uint32_t response_length)
 {
   uint32_t attempts = 1;
   UART_putb(UART_CAMERA,command,command_length);
   while(!UART_waitmatch(response, response_length, 3000))
   {
-    if(--attempts == 0)     //why --attempts; as attempts = 1; so ut will make if true, and funtion will return false
-    {                       //how it works - UART_waitmatch is looking for returning string matching the return command;
-      return false;         //if it is correct then this function return true adn command is successfully send; if return false (not matched for specified waiting time), this function is returning false, as we have only one try
+    if(--attempts == 0)     //if no. of attempts = 1 and the response will not be matched -> function return false
+    {                       //if no. of attempts > 1 -> the command will be send again
+      return false;         //if UART_waitmatch will give true then we will not enter while loop and return true
     }
     Delay_ms(1000);
     UART_putb(UART_CAMERA,command,command_length);
   } 
   return true;
 }
-/*
-static bool Camera_command(char *command, char *response)
-{
-  uint32_t attempts = 1;
-  CAMWRITE(command);
-  Delay_ms(25);
-  if(!UART_command_match(response, sizeof(response)))
+//function for setting the resolution of the image according to the chosen configuration
+void set_resolution(bool resolution){
+  switch (resolution)
   {
-    if(--attempts == 0)     //why --attempts; as attempts = 1; so ut will make if true, and funtion will return false
-    {                       //how it works - UART_waitmatch is looking for returning string matching the return command;
-      return false;         //if it is correct then this function return true adn command is successfully send; if return false (not matched for specified waiting time), this function is returning false, as we have only one try
-    }
-    Delay_ms(1000);
-    CAMWRITE(command);
-  }else
-  { 
-  return true;
+/* Set the resolution of the picture according to the configuration file */
+    case image_acquisition_profile_1600x1200:
+          LK_RESOLUTION[4] = 0x21;
+          break;
+    case image_acquisition_profile_800x600:
+          LK_RESOLUTION[4] = 0x1d;
+          break;
+    default:
+          LK_RESOLUTION[4] = 0x21;
   }
-}*/
-
-bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num,bool if_print)
+}
+//main driver function - uses above functions to set the camera, capture the image and store it in the FRAM memory
+bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num,bool if_print, bool resolution)
 {
   uint8_t pagesize = ((uint8_t)(BUFFER_SLOT_SIZE/64))*8;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
   uint8_t begin_marker[5], end_marker[6];
@@ -165,7 +141,8 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_u
   }
   Delay_ms(3000); // 2-3 sec gap required by data sheet before camera ready
   // set resolution
-  if(!Camera_command(LK_RESOLUTION_1600, sizeof(LK_RESOLUTION_1600),LK_RESOLUTION_RE, sizeof(LK_RESOLUTION_RE)))
+  set_resolution(resolution);
+  if(!Camera_command(LK_RESOLUTION, sizeof(LK_RESOLUTION),LK_RESOLUTION_RE, sizeof(LK_RESOLUTION_RE)))
   {
     UART_puts(deb_uart_num, "Resolution Error \r\n");
     return false; 

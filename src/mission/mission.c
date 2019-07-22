@@ -7,7 +7,8 @@
  * LIST ALL "TO DO" NEXT TO THE FUNCTION PROTOTYPE
  * OR HERE, ABOVE THE LIBRARIES, IF THEY DON'T MATCH ANY FUNCTION
  * 
- * ------for debugging, uncomment lines in the wdt.c with the WatchdogStallEnable
+ * TODO: check if more resolution options for the camera can be added - need to revised with the config TMTC if there is enough space for it
+ * for debugging, uncomment lines in the wdt.c with the WatchdogStallEnable
  * 
  * @{
  */
@@ -58,7 +59,7 @@ int8_t save_attitude (int8_t t);            //completed
 int8_t sm_reboot(int8_t t);                 //TODO: write a body of function
 int8_t process_gs_command(int8_t t);        //TODO: revise what is done
 int8_t poll_transmitter(int8_t t);          //TODO: revise what is done, what is missing
-int8_t take_picture(int8_t);
+int8_t take_picture(int8_t);                //TODO: include the function from camera driver 
 uint16_t perform_subsystem_check();         //TODO: write the body of function
 void update_radio_parameters();             //TODO: revise what need to be done 
 
@@ -203,13 +204,6 @@ typedef void (*isr_map)(void);
 isr_map timer_isr_map[MAX_TASKS] = {&timer0_isr, &timer1_isr, &timer2_isr,
                                     &timer3_isr, &timer4_isr, &timer5_isr};
 
-//timer_isr_map[0] = &timer0_isr;
-//timer_isr_map[1] = &timer1_isr;
-//timer_isr_map[2] = &timer2_isr;
-//timer_isr_map[3] = &timer3_isr;
-//timer_isr_map[4] = &timer4_isr;
-//timer_isr_map[5] = &timer5_isr;
-
 //funtion for assigning and setting the timer to task
 void set_timer_for_task(uint8_t id, uint8_t task_id, uint64_t period, void (*timer_isr)() ){
   //load the timer count register with the value corresponding to period; prime it (-1 is unnecessery but keep it just to avoid sysclock conflict?)
@@ -240,7 +234,7 @@ int8_t free_timers(){
 int8_t get_available_timer(){
   int8_t id = -1;
   for (uint8_t i=0; i<6; i++){
-    if (timer_to_task[i] == -1) {save_eps_health_data
+    if (timer_to_task[i] == -1) {
       id = i;                                     //check all timers, break if found one which is  free
       break;
     }
@@ -920,7 +914,7 @@ int8_t save_attitude(int8_t t){
   UART_puts(UART_INTERFACE, "[TASK] Finished saving IMU payload data.\r\n");
 }
 
-int8_t save_image_data(void){
+int8_t  save_image_data(void){
   UART_puts(UART_INTERFACE, "[TASK] Saving Image data...\r\n");
   //switch to new driver function that stores data straight into buffer
   //Camera_capture(5000, image_length_add); 

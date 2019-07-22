@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "../firmware.h"
 
-#define BURN_TIME 7140
-#define WAIT_TIME 30000
+#define BURN_TIME 17140
+#define WAIT_TIME 10000
 
 void Antenna_deploy_demo(void);
 
@@ -26,7 +26,7 @@ int main(){
       if(i%5==4) UART_puts(UART_INTERFACE, "\r\n");
     }
     //Delay_ms(WAIT_TIME);
-    LED_on(LED_A);
+    LED_on(LED_B);
     sprintf(output, "\r\nBurn of %d milliseconds has begun\r\n", BURN_TIME);
     UART_puts(UART_INTERFACE, output);
     RTC_getTime_ms(&timestamp_before);
@@ -35,7 +35,7 @@ int main(){
 
     Antenna_deploy_demo();      //call deploy function
 
-    LED_off(LED_A);
+    LED_off(LED_B);
     UART_puts(UART_INTERFACE, "\r\nBurn has finished\r\n");
     RTC_getTime_ms(&timestamp_after);
     sprintf(output, "\r\nSystem time after burning is %lu ms\r\n", timestamp_after);
@@ -50,7 +50,7 @@ int main(){
 
 void Antenna_deploy_demo(void)
 {
-  GPIO_set(GPIO_PB5);
+  GPIO_set(GPIO_PB0);
   Delay_ms(BURN_TIME);
-  GPIO_reset(GPIO_PB5);
+  GPIO_reset(GPIO_PB0);
 }

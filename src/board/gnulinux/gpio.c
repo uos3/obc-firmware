@@ -9,7 +9,7 @@
  */
 
 #include "../gpio.h"
-
+/*
 void GPIO_set(uint8_t gpio_num)
 {
   (void) gpio_num;
@@ -32,7 +32,7 @@ bool GPIO_read(uint8_t gpio_num)
 
   return false;
 }
-
+*/
 /**
  * @}
  */

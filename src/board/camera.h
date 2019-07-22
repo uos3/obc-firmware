@@ -26,6 +26,6 @@
  * @returns Whether or not the image capture was successful
  */
 
-bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num, bool if_print);
+bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num, bool if_print, bool resolution);
 
 #endif /*  __CAMERA_H__ */
