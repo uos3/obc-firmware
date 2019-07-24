@@ -39,8 +39,7 @@ static eps_master_packet_t eps_master_packet;
 static eps_slave_packet_single_t eps_slave_packet_single;
 
 static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *data);
-static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value,
-  eps_slave_packet_single_t *data);
+static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value);
 static uint16_t EPS_crc(uint8_t *message, int32_t offset, int32_t length);
 
 void eps_interrupt_handler(void){
@@ -96,13 +95,6 @@ bool EPS_getInfo(uint16_t *output, uint8_t regID)
   return false;
 }
 
-bool EPS_setPowerRail(uint8_t regVal) {		//Requires intended states for every rail
-	uint8_t state = EPS_getPowerRail();
-	state ^= regVal;		//Finding the difference between the current states and the targets 
-	return EPS_togglePowerRail(state);
-
-}
-
 bool EPS_togglePowerRail(uint8_t regVal)	{
 	//A 1 will toggle the state of the relevant rail in the input byte, rail bit positions specified in header
 	uint8_t attempts = 0;
@@ -114,6 +106,13 @@ bool EPS_togglePowerRail(uint8_t regVal)	{
 		return false;
 	}
 	return true;
+}
+
+bool EPS_setPowerRail(uint8_t regVal) {		//Requires intended states for every rail
+	uint8_t state = EPS_getPowerRail();
+	state ^= regVal;		//Finding the difference between the current states and the targets 
+	return EPS_togglePowerRail(state);
+
 }
 
 uint8_t EPS_getPowerRail() {
@@ -144,9 +143,9 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	eps_master_packet.crc_h = (uint8_t)((crc >> 8) & 0xFF);
 
 	/* Send Master Read Packet */
-  	UART_puts(UART_INTERFACE, "\r\nSending Master Read Packet\r\n");
+  	//UART_puts(UART_INTERFACE, "\r\nSending Master Read Packet\r\n");
 	UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
-  	UART_puts(UART_INTERFACE, "\r\nSend to EPS\r\n");
+  	//UART_puts(UART_INTERFACE, "\r\nSend to EPS\r\n");
 
 	bytes_expected = 6;
 	bytes_received = 0;
@@ -156,7 +155,7 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	{
 		if(UART_getc_nonblocking(UART_EPS, &c))
 		{
-      UART_puts(UART_INTERFACE, "\r\nHeard back from EPS.\r\n");
+      //UART_puts(UART_INTERFACE, "\r\nHeard back from EPS.\r\n");
 
 			((char *)(data))[bytes_received] = c;
 			if(++bytes_received == bytes_expected)
@@ -185,7 +184,7 @@ static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value)
 	char c;
 	uint16_t crc, bytes_expected, bytes_received;
 	uint32_t timeout, current_time;
-	eps_slave_packet_single_t data;
+	//eps_slave_packet_single_t *data;
 	
 	/* Construct Master Read Packet */
 	eps_master_packet.write = true;
@@ -207,7 +206,7 @@ static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value)
 	{
 		if(UART_getc_nonblocking(UART_EPS, &c))
 		{
-			((char *)(data))[bytes_received] = c;
+			((char *)(&eps_slave_packet_single))[bytes_received] = c;
 			if(++bytes_received == bytes_expected)
 			{
 				break;
@@ -220,8 +219,8 @@ static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value)
 		return false;
 	}
 
-	crc = EPS_crc((uint8_t *)data, 0, 4);
-	if(crc != data->crc)
+	crc = EPS_crc((uint8_t *)&eps_slave_packet_single, 0, 4);
+	if(crc != (&eps_slave_packet_single)->crc)
 	{
 		return false;
 	}

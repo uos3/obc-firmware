@@ -35,32 +35,32 @@ static WDT wdt = { GPIO_PF4 };
 //Timer0 interrupt handler
 void Timer0IntHandler(void)
 {	
-	//just for testing
+	/*//just for testing
 	UART_puts(UART_GNSS, "In watchdog interrupt\r\n");
-	char output [100];
+	char output [100];*/
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);		//clear the interrupt
 	RTC_getTime(&temporary_time);						//get the RTC time at this moment
 	if((temporary_time-missionloop_time)<120){			//compare it with the last time saved in the mission loop
 	GPIO_set(wdt.gpio);									//set the kick signal high
 	//just for testing
-	sprintf(output, "1 - In the IF, time is %u\r\n", temporary_time);
-	UART_puts(UART_GNSS, output);
+	/*sprintf(output, "1 - In the IF, time is %u\r\n", temporary_time);
+	UART_puts(UART_GNSS, output);*/
 	//-------------------
 	TimerEnable(TIMER1_BASE, TIMER_A);					//start timer1
 	LED_toggle(LED_B);
 	}
 	//for test only---------
-	else
+	/*else
 	{
 	sprintf(output, "Watchdog not kicked, difference to big, wdt time is %u\r\n", temporary_time);
 	UART_puts(UART_GNSS,output);
-	}
+	}*/
 	//---------------------
 }
 //Timer1 interrupt handler
 void Timer1IntHandler(void)
 {
-	UART_puts(UART_GNSS, "In second - lowering - interrupt\r\n");
+	//UART_puts(UART_GNSS, "In second - lowering - interrupt\r\n");
 	TimerIntClear(TIMER1_BASE,TIMER_TIMA_TIMEOUT);		//clear the interrupt
 	GPIO_reset(wdt.gpio);								//set the kick signal low
 	TimerDisable(TIMER1_BASE, TIMER_A);					//stop the Timer1
@@ -73,7 +73,7 @@ void setinterrupt_wdt_risingedge(void)
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);					//turn on WideTimer0
 	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0));			//wait for the timer to be ready
 	TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);	//set half-timer (32bit) to the periodically operation mode, this is wide timer, which consist of two 32-bit timers; we need to use only one 32-bit, so the half
-	ulPeriod = (SysCtlClockGet() / 10) * 19;						//divide the period corresponding to 1s by 10, to have value of timer corresponding to 0.1s; *19 to have a period for 1.9s
+	ulPeriod = (SysCtlClockGet() / 10) * 18;						//divide the period corresponding to 1s by 10, to have value of timer corresponding to 0.1s; *18 to have a period for 1.8s
 	TimerLoadSet(TIMER0_BASE,TIMER_A,ulPeriod-1);
 	TimerIntRegister(TIMER0_BASE, TIMER_A, Timer0IntHandler);		//for dynamic interrupt calculation
 	TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);				//enable interrupt

@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
+#include "../configuration/configuration.h"
 /**
  * @function
  * @ingroup camera
@@ -27,6 +27,6 @@
  */
 enum print_to_debug{no, yes};           //enum for estimation whether print the picture data to debug uart or not
 
-bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num, bool if_print, bool resolution);
+bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num,enum print_to_debug if_print, image_acquisition_profile_t resolution);
 
 #endif /*  __CAMERA_H__ */

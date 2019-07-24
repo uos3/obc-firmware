@@ -8,7 +8,9 @@ void Antenna_deploy_demo(void);
 
 int main(){
     Board_init();
-    RTC_init();  
+    RTC_init();
+    update_watchdog_timestamp();
+    enable_watchdog_kick();
     UART_init(UART_INTERFACE, 9600);
     UART_puts(UART_INTERFACE, "\r\n");
     UART_puts(UART_INTERFACE, "Board and UART Interface Initialised\r\n");
@@ -44,13 +46,16 @@ int main(){
     uint64_t difference = timestamp_after - timestamp_before;
     sprintf(output, "\r\nThe burning time was %lu ms total\r\n", difference);
     UART_puts(UART_INTERFACE, output);
-    return 0;
+    
+    while(1){
+      update_watchdog_timestamp();
+    }
 }
 
 
 void Antenna_deploy_demo(void)
 {
-  GPIO_set(GPIO_PB5);
+  GPIO_set(GPIO_PB0);
   Delay_ms(BURN_TIME);
-  GPIO_reset(GPIO_PB5);
+  GPIO_reset(GPIO_PB0);
 }

@@ -24,16 +24,16 @@
 #define EPS_REG_BAT_V			0x04		//16bit
 #define EPS_REG_BAT_I			0x05		//16bit
 #define EPS_REG_BAT_T			0x06		//16bit
-#define EPS_REG_SOLAR_N1_I		0x07		//16bit
-#define EPS_REG_SOLAR_N2_I		0x08		//16bit
-#define EPS_REG_SOLAR_S1_I		0x09		//16bit
-#define EPS_REG_SOLAR_S2_I		0x0A		//16bit
-#define EPS_REG_SOLAR_E1_I		0x0B		//16bit
-#define EPS_REG_SOLAR_E2_I		0x0C		//16bit
-#define EPS_REG_SOLAR_W1_I		0x0D		//16bit
-#define EPS_REG_SOLAR_W2_I		0x0E		//16bit
-#define EPS_REG_SOLAR_T1_I		0x0F		//16bit
-#define EPS_REG_SOLAR_T2_I		0x10		//16bit
+#define EPS_REG_SOLAR_POS_X1_I		0x07		//16bit     //using the convention that +X <-> north; -X <-> south
+#define EPS_REG_SOLAR_POS_X2_I		0x08		//16bit     //-Y <-> West and so on
+#define EPS_REG_SOLAR_NEG_X1_I		0x09		//16bit
+#define EPS_REG_SOLAR_NEG_X2_I		0x0A		//16bit
+#define EPS_REG_SOLAR_POS_Y1_I		0x0B		//16bit
+#define EPS_REG_SOLAR_POS_Y2_I		0x0C		//16bit
+#define EPS_REG_SOLAR_NEG_Y1_I		0x0D		//16bit
+#define EPS_REG_SOLAR_NEG_Y2_I		0x0E		//16bit
+#define EPS_REG_SOLAR_NEG_Z1_I		0x0F		//16bit
+#define EPS_REG_SOLAR_NEG_Z2_I		0x10		//16bit
 #define EPS_REG_SOLAR_1_V 		0x11		//16bit		 // Used to be reservered, referred to in comm spec
 #define EPS_REG_SOLAR_2_V		0x12		//16bit
 #define EPS_REG_RAIL1_BOOT		0x13		//16bit
@@ -98,7 +98,7 @@ void EPS_init(void);
  * Verify EPS Communication
  *
  * @returns bool True if communication is successful, False else.
- */`
+ */
 bool EPS_selfTest(void);
 
 /**

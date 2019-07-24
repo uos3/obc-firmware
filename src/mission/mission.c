@@ -43,7 +43,7 @@ void Mission_SEU(void);
 void Mode_init(int8_t type);
 
 //System tasks functions
-int8_t save_eps_health_data(int8_t t);      //TODO: revision of checked/saved parameters
+int8_t save_eps_health_data(int8_t t);      //TODO: revision of checked/saved parameters; in the end there is an if statement about switching to the low power mode, The sign of the comparasion might be wrong
 int8_t save_imu_data(int8_t t);             //no definition!!!
 int8_t save_gps_data(int8_t t);             //completed
 int8_t check_health_status(int8_t t);       //TODO: write body of this function
@@ -109,7 +109,9 @@ void data_split_u16(uint16_t data, uint8_t  *split);
 
 //FRAM packet creation function
 uint8_t place_data_in_packet(uint8_t position, uint8_t *data_bytes, uint8_t *data_packet);
-
+uint8_t tenbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
+uint8_t sixbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
+uint8_t sixteenbits_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
 //----------------------------------VARIABLES---------------------------------------------
 
 //structures to organise modes, tasks and timers -> definition in header
@@ -295,8 +297,8 @@ static void cw_tone_off(void)
 void Mission_init(void)
 {
   LED_on(LED_B);
-
   Board_init();
+  RTC_init(); //wasnt here before, I think needed
   update_watchdog_timestamp();
   enable_watchdog_kick();
   setup_internal_watchdogs();
@@ -635,11 +637,11 @@ int8_t save_eps_health_data(int8_t t){
   uint8_t data_packet_for_fram[BUFFER_SLOT_SIZE/8];
   uint8_t data_count = 0;
   uint32_t time_of_data_acquisition;
-  uint8_t i; // loop counter
 	uint32_t eeprom_read;
-  uint8_t data_byte32[4];
-  uint8_t data_byte16[2];
-
+  uint8_t data_byte32[4];   //temp variables for splitting operations
+  uint8_t data_byte16[2];   //temp variables for splitting operations
+  uint8_t storage_temp;     //temp variable to organise 10bits variables into memory
+  uint8_t last_tail = 0, reading_rest = 0;
   // TODO: Generate dataset id
 
   // TODO: Get timestamp
@@ -648,50 +650,82 @@ int8_t save_eps_health_data(int8_t t){
   data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);
   //Get TOBC values
   //obc_temperature - read, split and place in the packet
-  data_split_16(get_temp(TEMP_OBC), &data_byte16);
+  data_split_16(get_temp(TEMP_OBC), data_byte16);
   data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
   //rx_temperature - read, split and place in the packet
-  data_split_16(get_temp(TEMP_RX), &data_byte16);
+  data_split_16(get_temp(TEMP_RX), data_byte16);
   data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
   //tx_temperature...
-  data_split_16(get_temp(TEMP_TX), &data_byte16);
+  data_split_16(get_temp(TEMP_TX), data_byte16);
   data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
   //pa_temperature...
-  data_split_16(get_temp(TEMP_PA), &data_byte16);
+  data_split_16(get_temp(TEMP_PA), data_byte16);
   data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
-
   //read EEPROM for reboot_count
 	EEPROM_read(EEPROM_REBOOT_COUNT, &eeprom_read, 1);
 	data_count = place_data_in_packet(data_count, (uint8_t)eeprom_read, data_packet_for_fram);
   
   // [CLARIFY] data_packets_pending
-  data_split_u16(data_packets_pending, &data_byte16);
+  data_packets_pending = Buffer_count_occupied; //get the number of occupied slots in the fram buffer
+  data_split_u16(data_packets_pending, data_byte16);
 	data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
 
-  // [CLARIFY] rx_noisefloor
+  // [CLARIFY] rx_noisefloor - WHERE TO GET ITS VALUE
 	data_count = place_data_in_packet(data_count, rx_noisefloor, data_packet_for_fram);
   
 	// Flash and RAM errors in same byte
   data_count = place_data_in_packet(data_count, (flash_errors << 4) + ram_errors, data_packet_for_fram);
   //Buffer_store_new_data( (flash_errors << 4) + ram_errors);
 
-  // Get 45 EPS values (16-bit fields)
-  for (i=0; i<45; i++){
-    uint16_t eps_field;
-    EPS_getInfo(&eps_field, i);
-    data_split_u16(eps_field, &data_byte16);
-    data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+  //getting the data from the EPS board in the order stated in the TMTC file 
+  // starting with the first 15 registers
+  uint16_t eps_field; //variable to store the reading from the register
+  //table represensting firts 15 registers in the order they should be organised
+  uint16_t eps_data_order[] = {EPS_REG_BAT_V, EPS_REG_BAT_I, EPS_REG_BAT_T, EPS_REG_CHARGE_I, EPS_REG_MPPT_BUS_V,
+    EPS_REG_SOLAR_POS_X1_I, EPS_REG_SOLAR_POS_X2_I, EPS_REG_SOLAR_POS_Y1_I, EPS_REG_SOLAR_POS_Y2_I, EPS_REG_SOLAR_NEG_X1_I,
+    EPS_REG_SOLAR_NEG_X2_I, EPS_REG_SOLAR_NEG_Y1_I, EPS_REG_SOLAR_NEG_Y2_I, EPS_REG_SOLAR_NEG_Z1_I, EPS_REG_SOLAR_NEG_Z2_I};
+  // Get the values from those 15 registers - the data bits are first 10bits
+  for (uint8_t i=0; i<15; i++){
+    EPS_getInfo(&eps_field, eps_data_order[i]); //read the register
+    //call the tenbit_numbers function
+    //this function organise next ten bit readings and put them into the FRAM buffer keeping the remaining bits from the last number
+    data_count = tenbit_numbers(eps_field, data_count, &last_tail, &reading_rest, data_packet_for_fram);
   }
-	uint16_t subsystem_status = perform_subsystem_check();
-	// read antenna switch state (and ask where this can be attached)
-	subsystem_status |= (uint8_t)Antenna_read_deployment_switch() << 14;
+  //read rail switch status - 6 data bits in uint16_t. so we are using other function for sixbit_numbers, which follow the same reasoning
+  //save the data in uint16_t and then take the 6 data bits and place them in the buffer with the remaining bits from previous reading
+  EPS_getInfo(&eps_field, EPS_REG_SW_ON);
+  data_count = sixbit_numbers(eps_field, data_count, &last_tail, &reading_rest, data_packet_for_fram);
+  //read rail overcurrent status
+  EPS_getInfo(&eps_field, EPS_REG_STATUS);
+  data_count = sixbit_numbers(eps_field, data_count, &last_tail, &reading_rest, data_packet_for_fram);
+  //read the rails data - 16 and 10 data bits, so use the count variable to  specify that after two 16 data bits will be two 10 data bits and so on
+  uint8_t count = 0;
+  for (uint8_t i = 19; i<43; i++){
+    EPS_getInfo(&eps_field, i);
+    if(count<2){
+      data_count = sixteenbits_numbers(eps_field, data_count, &last_tail, &reading_rest, data_packet_for_fram);
+    }
+    else{
+      data_count = tenbit_numbers(eps_field, data_count, &last_tail, &reading_rest, data_packet_for_fram);
+    }
+    count++;
+    if(count == 4){ count = 0; }
+  }
+  //get the EPS data about the 3.3 and 5V lines - they are inly 10 bit data, so use only tenbit_numbers function
+  for( uint8_t i = 43, i<47; i++){
+    EPS_getInfo(&eps_field, i);
+    data_count = tenbit_numbers(eps_field, data_count, &last_tail, &reading_rest, data_packet_for_fram);
+  }
 
+	uint16_t subsystem_status = perform_subsystem_check();
+	//read antenna switch state (and ask where this can be attached)
+	subsystem_status |= (uint8_t)Antenna_read_deployment_switch() << 14;
   data_split_u16(subsystem_status, &data_byte16);
 	data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
 
   uint16_t batt_volt = 0;
   if(current_mode != SM){
-      if(EPS_getInfo(&batt_volt, EPS_REG_BAT_V) > BATTERY_THRESHOLD){
+      if(EPS_getInfo(&batt_volt, EPS_REG_BAT_V) > BATTERY_THRESHOLD){ //shouldnt be opposite?, EPS_get info is a bool type, the statement will not work
       mode_switch(LP);
     }
   }
@@ -1125,7 +1159,9 @@ bool pt_init(){
 
   //Take picture and write to FRAM buffer
 
-  if(!save_image_data());  //need to be implemented  
+  if(!save_image_data()){
+    return false;
+  }  //need to be implemented  
 
   //Return to previous mode
   if (previous_mode == DL){
@@ -1179,9 +1215,91 @@ uint8_t place_data_in_packet(/*int size,*/uint8_t position, uint8_t *data_bytes,
   }
   return position;
 }
+//functions for the use in the EPS health reading as the reading from the eps has sometimes 6 or 10 or 16 data bits, so we want to get rid off unnecessary bit
+//we start with the 10 bit data, so we take bit 9:2 from the number and store it in the memory, we need to keep two remaining bits 1:0 (in reading-rest variable) and put them into the memory
+//just after the previous part, therefore we construct 8bit number from remaining two bits and attach to it six top data bits from the next reading; now we need to keep four remaining bits and
+//put them into the memory in next operation; so  to those four bits we attach top four data bits from the next reading and etc...
+//the effect is that we keep the correct order of the data bits in the memory and keep the reading precision
+//because of the different lenghts of those readings three different functions were created
+uint8_t tenbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram)
+  {
+    uint8_t storage_temp;     //temp variable to organise 10bits variables into memory
+    switch (*last_tail)
+    {
+    case 0: storage_temp = (eps_field >> 2); //if there is no bits left from previous reading then take top 8bits of this reading
+            data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);  //and store it in the FRAM
+            *reading_rest = eps_field & 0b11; *last_tail = 2; //save the two remaining bits and save the information about their quantity
+      break;
+    case 2: storage_temp = ((*reading_rest << 6) | (eps_field >> 4));  //if there are two bits from the previous reading put them on the top, add six top bits from the next reading
+            data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+            *reading_rest = eps_field & 0b1111; *last_tail = 4; //save the four remaining bits from the previous reading and save the information about their quantity
+      break;
+    case 4: storage_temp = ((*reading_rest << 4) | (eps_field >> 6));  //if there are four bits from previous 
+            data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+            *reading_rest = eps_field & 0b111111; *last_tail = 6;  //save the six remaining bits from the previous reading and save the information about thei quantity
+      break;
+    case 6: storage_temp = ((*reading_rest << 2) | (eps_field >>8));   //if there are six bits from the previous reading, add two top bits from the next reading
+            data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+            storage_temp = (uint8_t)(eps_field);
+            data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+            *reading_rest = 0; *last_tail = 0;
+      break;
+    }
+    return data_count;
+  }
 
-// Utility
-
+uint8_t sixbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram)
+{
+    uint8_t storage_temp;     //temp variable to organise 10bits variables into memory
+    switch (*last_tail)
+    {
+    case 0: *reading_rest = eps_field; *last_tail = 6; //save the two remaining bits and save the information about their quantity
+      break;
+    case 2: storage_temp = ((*reading_rest << 6) | eps_field);  //if there are two bits from the previous reading put them on the top, add six top bits from the next reading
+            data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+            *reading_rest = 0; *last_tail = 0; //save the four remaining bits from the previous reading and save the information about their quantity
+      break;
+    case 4: storage_temp = ((*reading_rest << 4) | (eps_field >> 2));  //if there are four bits from previous 
+            data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+            *reading_rest = eps_field & 0b11; *last_tail = 2;  //save the six remaining bits from the previous reading and save the information about thei quantity
+      break;
+    case 6: storage_temp = ((*reading_rest << 2) | (eps_field >> 4));   //if there are six bits from the previous reading, add two top bits from the next reading
+            data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+            *reading_rest = eps_field & 0b1111; *last_tail = 4;
+      break;
+    }
+    return data_count;
+}
+uint8_t sixteenbits_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram)
+{
+  uint8_t data_bytes[2];
+  uint8_t storage_temp;
+  data_split_u16(eps_field, data_bytes);
+  switch (*last_tail)
+  {
+  case 0: data_count = place_data_in_packet(data_count, data_bytes, data_packet_for_fram);
+          *last_tail = 0; *reading_rest = 0;
+    break;
+  case 2: storage_temp = ((*reading_rest << 6) | (data_bytes[1] >> 2));
+          data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+          storage_temp = ((data_bytes[1] << 6) | (data_bytes[0] >> 2));
+          data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+          *reading_rest = data_bytes[0] & 0b11; *last_tail = 2;
+    break;
+  case 4: storage_temp = ((*reading_rest << 4) | (data_bytes[1] >> 4));
+          data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+          storage_temp = ((data_bytes[1] << 4) | (data_bytes[0] >> 4));
+          data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+          *reading_rest = data_bytes[0] & 0b1111; *last_tail = 4;
+    break;
+  case 6: storage_temp = ((*reading_rest << 2) | (data_bytes[1] >> 6));
+          data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+          storage_temp = ((data_bytes[1] << 2) | (data_bytes[0] >> 6));
+          data_count = place_data_in_packet(data_count, storage_temp, data_packet_for_fram);
+          *reading_rest = data_bytes[0] & 0b111111; *last_tail = 6;
+    break;
+  }
+}
 /**
  * @}
  */
