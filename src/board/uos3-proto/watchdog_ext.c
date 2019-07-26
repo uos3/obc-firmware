@@ -39,8 +39,8 @@ void Timer0IntHandler(void)
 	UART_puts(UART_GNSS, "In watchdog interrupt\r\n");
 	char output [100];*/
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);		//clear the interrupt
-	RTC_getTime(&temporary_time);						//get the RTC time at this moment
-	if((temporary_time-missionloop_time)<120){			//compare it with the last time saved in the mission loop
+	watchdog_update--;
+	if(watchdog_update){
 	GPIO_set(wdt.gpio);									//set the kick signal high
 	//just for testing
 	/*sprintf(output, "1 - In the IF, time is %u\r\n", temporary_time);

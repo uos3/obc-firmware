@@ -21,9 +21,6 @@ void Configuration_Init(void)
     Configuration_load_defaults();
     Configuration_save_to_eeprom();
   }
-
-
-
 }
 
 static void Configuration_save_to_eeprom(void)

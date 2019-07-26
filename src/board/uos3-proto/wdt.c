@@ -22,18 +22,14 @@
 #include "driverlib/watchdog.h"
 
 void internal_wdt_handler(void){
-    RTC_getTime(&temporary_time2);
-    //------------for test only
-    char output[100];
-    sprintf(output, "Watchdog time is %u\r\n",temporary_time2);
-    UART_puts(UART_GNSS,output);
-    //--------------------------
-    if((temporary_time2-missionloop_time)<120){     //clear interrupts only when the difference
+    watchdog_update--;
+    if(watchdog_update){
     WatchdogIntClear(WATCHDOG0_BASE);               //between the real time and last recorder mission time is smaller than 120s
     WatchdogIntClear(WATCHDOG1_BASE);
     UART_puts(UART_GNSS, "In the internal watchdog interrupt\r\n"); //only for test
-    }
+    }else{    
     UART_puts(UART_GNSS, "int Watchdog not kicked!\r\n"); //only for test
+    }
 }
 
 void setup_internal_watchdogs(void){
@@ -59,14 +55,12 @@ void setup_internal_watchdogs(void){
   while(!SysCtlPeripheralReady(SYSCTL_PERIPH_WDOG1));         //wait to be ready
   //WatchdogStallEnable(WATCHDOG1_BASE);                      //allows the wdt to stop counting when the processor is stopped by the debugger
 
-
   IntRegister(FAULT_NMI,internal_wdt_handler);                //set watchdogs interrupt as non-maskable
   IntEnable(FAULT_NMI);                                       //enable it
 
   while(!SysCtlPeripheralReady(SYSCTL_PERIPH_WDOG1));         //wait to be ready
   WatchdogIntEnable(WATCHDOG0_BASE);                          //enables wdt0 interrupt and start timer
   WatchdogIntEnable(WATCHDOG1_BASE);                          //enables wdt1 interrupt and start timer
-
 }
 
 

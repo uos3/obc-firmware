@@ -297,6 +297,7 @@ static void cw_tone_off(void)
 
 void Mission_init(void)
 {
+  watchdog_update = 0xFF;
   LED_on(LED_B);
   Board_init();
   RTC_init(); //wasnt here before, I think needed
@@ -368,7 +369,7 @@ void Mission_loop(void)
     UART_puts(UART_INTERFACE, "**executed!**\r\n");
     // reset timer for that tasks------------------------------------!!!!!
 
-    // pop
+    // pop the task
     if(!circ_isEmpty(&task_pq)) circ_pop(&task_pq);
   }
 
@@ -376,7 +377,7 @@ void Mission_loop(void)
   UART_puts(UART_INTERFACE, "sleeping...\r\n");
   LED_toggle(LED_B);
   Delay_ms(1000);   //why delay?
-  update_watchdog_timestamp();
+  watchdog_update=0xFF;
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -978,6 +979,7 @@ void update_radio_parameters(){
 OVER THE UOS3 GROUNDSTATION*/
 
 int8_t transmit_next_telemetry(int8_t t){
+  //TODO: preffered settings defined only in some demos, should it sta like that?
   /*
   uint8_t data_packet;
 

@@ -30,8 +30,7 @@
 
 #include "../firmware.h"
 //by md9u17
-volatile uint32_t missionloop_time;         //for storing the time from mission loop
-volatile uint32_t temporary_time;           //for storing time at the moment of watchdog interrupt
+volatile uint8_t watchdog_update;
 void Timer0IntHandler(void);                //interrupt routine for setting high wdt kick signal and start Timer1 to count 10us
 void Timer1IntHandler(void);                //interrupt routine for setting low wdt kick signal after required hold time 10us
 void setinterrupt_wdt_risingedge(void);     //setting Timer0 for the interrupt and period 1.9s
