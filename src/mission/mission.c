@@ -268,6 +268,7 @@ ulPeriod = SysCtlClockGet();                                //get MCU clock rate
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //-------------------------------------FUNCTIONS FOR THE MORSE TELEMTRY-----------------------------------------------
+/*
 static void cw_tone_on(void)
 {
   uint8_t pwr_reg;
@@ -289,7 +290,7 @@ static void cw_tone_off(void)
   radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
 
   LED_off(LED_B);
-}
+}*/
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //-----------------------------------MISSION INITIALISATION FUNCTION------------------------------------------
@@ -977,6 +978,7 @@ void update_radio_parameters(){
 OVER THE UOS3 GROUNDSTATION*/
 
 int8_t transmit_next_telemetry(int8_t t){
+  /*
   uint8_t data_packet;
 
   //TODO: only cycle through 'most recent data':
@@ -1002,6 +1004,7 @@ int8_t transmit_next_telemetry(int8_t t){
 		EPS_togglePowerRail(EPS_PWR_TX);
     
 	  UART_puts(UART_INTERFACE, "[TASK] Finished transmit next telemetry\r\n");
+    */
 		return 0;
 }
 

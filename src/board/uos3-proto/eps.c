@@ -42,28 +42,10 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value);
 static uint16_t EPS_crc(uint8_t *message, int32_t offset, int32_t length);
 
-void eps_interrupt_handler(void){
-	//clears the interrupt on the PD7 pin, 0 corresponds to falling egde interrupt
-	//look up the int_types table in the gpio.c file for definition
-	gpio_interrupt_clear(GPIO_PD7, 0);
-	uint16_t status;
-	EPS_getInfo(&status, EPS_REG_STATUS);
-	//TODO Decide what to do with status knowledge, e.g. resend packets/wait for component restart and reinitialize
-	uint8_t attempts = 0;		//Writing to register and retrying if failed
-	while (attempts < 3 && !EPS_writeRegister(EPS_REG_STATUS, status)) {
-		attempts++;
-	}
-	if (attempts > 2) {
-		EPS_COMMS_FAILS++;
-	}
-}
 
 void EPS_init(void)
 {
   UART_init(UART_EPS, EPS_BAUDRATE);
-  //enabling the interrupt on GPIO_PD7 and setting it to falling edge
-  //0 corresponds to falling edge interrupt - for definition look up  the int_types table in gpio.c
-  gpio_interrupt_enable(GPIO_PD7, 0, eps_interrupt_handler);	
 }
 
 bool EPS_selfTest(void)

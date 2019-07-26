@@ -1,5 +1,46 @@
+/**
+ * @defgroup radio
+ *
+ * @brief Radio Peripheral Driver
+ *
+ * @details Hardware Radio Peripheral Driver.
+ *
+ * @ingroup drivers
+ */
+
+#ifndef __RADIO_H__
+#define __RADIO_H__
+
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+typedef struct radio_config_t{
+	double frequency; // MHz
+	double power; // dBm
+}radio_config_t ;
+
+typedef enum {
+	RADIO_STATUS_OK,
+	RADIO_STATUS_BUSY,
+	RADIO_STATUS_WRONGPART
+} Radio_Status_t;
+
+Radio_Status_t Radio_tx_msk(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t data_length, void *end_of_tx_handler(void));
+
+Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t data_length, void *end_of_tx_handler(void));
+
+Radio_Status_t Radio_tx_morse(radio_config_t *radio_config, uint8_t *text_buffer, uint32_t text_length, void *end_of_tx_handler(void));
+
+Radio_Status_t Radio_tx_off(radio_config_t *radio_config);
+
+Radio_Status_t Radio_rx_receive(radio_config_t *radio_config, uint8_t *receive_buffer, uint32_t receive_length, void received_packet_handler(void));
+
+Radio_Status_t Radio_rx_off(radio_config_t *radio_config);
 
 
+#endif /*  __RADIO_H__ */
+/*
 static const registerSetting_t preferredSettings_fsk[]= 
 {
   {CC112X_IOCFG3,            0x59},
@@ -51,9 +92,9 @@ static const registerSetting_t preferredSettings_fsk[]=
 
 static const registerSetting_t preferredSettings_cw[]= 
 {
-   {CC112X_IOCFG3,         0x59},
-   {CC112X_IOCFG2,         0x13},
-   {CC112X_IOCFG1,         0xB0},
+   {CC112X_IOCFG3,            0x59},
+   {CC112X_IOCFG2,            0x13},
+   {CC112X_IOCFG1,            0xB0},
    {CC112X_IOCFG0,            0x06},
    {CC112X_SYNC_CFG1,         0x08},
    {CC112X_DEVIATION_M,       0xB4},
@@ -102,4 +143,4 @@ static const registerSetting_t preferredSettings_cw[]=
    {CC112X_XOSC1,             0x07},
    {CC112X_SERIAL_STATUS,     0x08},
 };
-
+*/

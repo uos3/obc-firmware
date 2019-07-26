@@ -29,7 +29,7 @@
  * @param cmd Command byte to be sent
  * @returns Status byte
  */
-uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd);
+uint8_t SPI_cmd(const uint8_t spi_num, const uint8_t cmd);
 
 /**
  * @function
@@ -42,7 +42,7 @@ uint8_t SPI_cmd(uint8_t spi_num, uint8_t cmd);
  * @param data Pointer to a byte for storage of the data retrieved
  * @returns Status byte
  */
-uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data);
+uint8_t SPI_read8(const uint8_t spi_num, const uint8_t addr, uint8_t *data);
 
 /**
  * @function
@@ -55,7 +55,7 @@ uint8_t SPI_read8(uint8_t spi_num, uint8_t addr, uint8_t *data);
  * @param data Pointer to a byte containing the data to be written
  * @returns Status byte
  */
-uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data);
+uint8_t SPI_write8(const uint8_t spi_num, const uint8_t addr, const uint8_t *data);
 
 /**
  * @function
@@ -69,7 +69,7 @@ uint8_t SPI_write8(uint8_t spi_num, uint8_t addr, uint8_t *data);
  * @param len Number of bytes to be read
  * @returns Status byte
  */
-uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len);
+uint8_t SPI_burstread8(const uint8_t spi_num, const uint8_t addr, uint8_t *data, uint32_t len);
 
 /**
  * @function
@@ -83,7 +83,7 @@ uint8_t SPI_burstread8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t le
  * @param len Number of bytes to be written
  * @returns Status byte
  */
-uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t len);
+uint8_t SPI_burstwrite8(const uint8_t spi_num, const uint8_t addr, uint8_t *data, uint32_t len);
 
 /**
  * @function
@@ -96,7 +96,7 @@ uint8_t SPI_burstwrite8(uint8_t spi_num, uint8_t addr, uint8_t *data, uint32_t l
  * @param data Pointer to a byte for storage of the data retrieved
  * @returns Status byte
  */
-uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data);
+uint8_t SPI_read16(const uint8_t spi_num, const uint16_t addr, uint8_t *data);
 
 /**
  * @function
@@ -109,7 +109,7 @@ uint8_t SPI_read16(uint8_t spi_num, uint16_t addr, uint8_t *data);
  * @param data Pointer to a byte containing the data to be written
  * @returns Status byte
  */
-uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data);
+uint8_t SPI_write16(const uint8_t spi_num, const uint16_t addr, const uint8_t *data);
 
 /**
  * @function
@@ -123,7 +123,7 @@ uint8_t SPI_write16(uint8_t spi_num, uint16_t addr, uint8_t *data);
  * @param len Number of bytes to be read
  * @returns Status byte
  */
-uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len);
+uint8_t SPI_burstread16(const uint8_t spi_num, const uint16_t addr, uint8_t *data, uint32_t len);
 
 /**
  * @function
@@ -137,7 +137,7 @@ uint8_t SPI_burstread16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t 
  * @param len Number of bytes to be written
  * @returns Status byte
  */
-uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t len);
+uint8_t SPI_burstwrite16(const uint8_t spi_num, const uint16_t addr, uint8_t *data, uint32_t len);
 
 /**
  * @function
@@ -150,7 +150,7 @@ uint8_t SPI_burstwrite16(uint8_t spi_num, uint16_t addr, uint8_t *data, uint32_t
  * @param data Pointer to a byte for storage of the data retrieved
  * @returns Status byte
  */
-uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data);
+uint8_t SPI_read32(const uint8_t spi_num, const uint32_t addr, uint8_t *data);
 
 /**
  * @function
@@ -163,7 +163,7 @@ uint8_t SPI_read32(uint8_t spi_num, uint32_t addr, uint8_t *data);
  * @param data Pointer to a byte containing the data to be written
  * @returns Status byte
  */
-uint8_t SPI_write32(uint8_t spi_num, uint32_t addr, uint8_t *data);
+uint8_t SPI_write32(const uint8_t spi_num, const uint32_t addr, const uint8_t *data);
 
 /**
  * @function
@@ -177,7 +177,7 @@ uint8_t SPI_write32(uint8_t spi_num, uint32_t addr, uint8_t *data);
  * @param len Number of bytes to be read
  * @returns Status byte
  */
-uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len);
+uint8_t SPI_burstread32(const uint8_t spi_num, const uint32_t addr, uint8_t *data, uint32_t len);
 
 /**
  * @function
@@ -191,6 +191,6 @@ uint8_t SPI_burstread32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t 
  * @param len Number of bytes to be written
  * @returns Status byte
  */
-uint8_t SPI_burstwrite32(uint8_t spi_num, uint32_t addr, uint8_t *data, uint32_t len);
+uint8_t SPI_burstwrite32(const uint8_t spi_num, const uint32_t addr, uint8_t *data, uint32_t len);
 
 #endif /*  __SPI_H__ */

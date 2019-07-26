@@ -13,7 +13,6 @@
 #include "../rtc.h"
 #include "../delay.h"
 #include "../camera.h"
-#include "../../buffer/buffer.h"
 #include "../../configuration/configuration.h"
 #include "../../firmware.h"
 #include <inttypes.h>
@@ -125,7 +124,7 @@ void set_resolution(bool resolution){
 //main driver function - uses above functions to set the camera, capture the image and store it in the FRAM memory
 bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num,enum print_to_debug if_print, image_acquisition_profile_t resolution)
 {
-  uint8_t pagesize = ((uint8_t)(BUFFER_SLOT_SIZE/64))*8;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
+  uint8_t pagesize = 104;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
   uint8_t begin_marker[5], end_marker[6];
   uint8_t count_begin_marker = 0, count_end_marker = 0, count_picture_data = 0;
   uint8_t page_buffer[pagesize];

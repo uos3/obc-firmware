@@ -444,8 +444,8 @@ void rx_packets_option(void){
    while(1){
       
       //wait for packet
-      while(cc1125_pollGPIO(GPIO0_RADIO_RX) == 0){};
-		while(cc1125_pollGPIO(GPIO0_RADIO_RX) > 0){};
+      while(cc1125_pollGPIO(GPIO0_RADIO_RX) == 0) {};
+		while(cc1125_pollGPIO(GPIO0_RADIO_RX) > 0) {}; // PKT_SYNC_RXTX
            
            
       //move to the cc1125 file      

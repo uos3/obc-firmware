@@ -6,7 +6,8 @@
         "uart.h": "c",
         "rtc.h": "c",
         "camera.h": "c",
-        "board.h": "c"
+        "board.h": "c",
+        "eeprom.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

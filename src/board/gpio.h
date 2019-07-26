@@ -64,14 +64,22 @@ bool GPIO_read(uint8_t gpio_number);
  * @function
  * @ingroup gpio
  *
- * initialise and enable the interrupt on selected gpio input pin
- * second function is for clearing this interrupt
+ * Sets up a rising-edge interrupt on the specified GPIO pin
  *
  * @param gpio_number ID of the GPIO pin
- * @param interrupt_type type of the interrupt to be selected from the int_types[] table - gpio.c file
- * @param void (*intHandler)(void) function to be called when the interrupt occurs
+ * @param pointer to the function to be called in the interrupt
+ * @returns true on success, false on failure
  */
-void gpio_interrupt_enable(uint8_t gpio_num, uint8_t interrupt_type, void (*intHandler)(void));
-void gpio_interrupt_clear(uint8_t gpio_num, uint8_t interrupt_type);
+bool GPIO_set_risingInterrupt(uint8_t gpio_number, void *interrupt_callback(void));
+
+/**
+ * @function
+ * @ingroup gpio
+ *
+ * Removes an interrupt on the specified GPIO pin
+ *
+ * @param gpio_number ID of the GPIO pin
+ */
+void GPIO_reset_interrupt(uint8_t gpio_number);
 
 #endif /*  __GPIO_H__ */

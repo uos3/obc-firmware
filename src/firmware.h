@@ -21,7 +21,9 @@
 
 /* Utilities */
 #include "utility/circ_queue.h"
-
+#include "utility/crc.h"
+#include "utility/pn9.h"
+#include "utility/shake.h"
 /* Generic Board Module header files */
 #include "board/antenna.h"
 #include "board/board.h"
@@ -51,14 +53,12 @@
 //#include "mission/mission.h"
 
 /* radio stuff */
-#include "cc1125/cc112x_spi.h"
-#include "cc1125/cc1125.h"
+#include "board/radio.h"
+#include "cc112x/cc112x_spi.h"
+#include "cc112x/cc112x.h"
 
 /* Packet */
 #include "packet/packet.h"
-#include "packet/shake.h"
-#include "packet/crc16.h"
-#include "packet/pn9.h"
 #include "packet/interleave.h"
 #include "packet/telemetry.h"
 #include "packet/cw.h"
@@ -68,6 +68,9 @@
 
 /* Configuration */
 #include "configuration/configuration.h"
+
+/* Mission */
+#include "mission/mission.h"
 
 /* Test Interface */
 

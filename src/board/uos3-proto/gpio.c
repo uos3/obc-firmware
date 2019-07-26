@@ -16,68 +16,127 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 
-/* LED description struct */
+#include <stddef.h>
+
 typedef struct GPIO {
   uint32_t peripheral;  // TI Driver Peripheral Reference
   uint32_t port;        // TI Driver Port Reference
   uint8_t  pin;         // TI Driver Pin Reference
-  bool initialised;
-  GPIO_mode mode;
+  uint8_t  int_pin;     // TI Driver Pin Interrupt Reference
 } GPIO;
 
-static GPIO GPIO_gpios[48] =
-  { { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_0, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_1, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_2, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_3, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_4, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_5, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_6, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_7, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_0, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_1, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_2, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_3, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_4, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_5, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_6, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_7, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_0, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_1, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_2, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_3, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_4, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_5, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_6, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_7, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_0, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_1, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_2, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_3, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_4, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_5, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_6, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_7, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_0, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_1, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_2, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_3, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_4, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_5, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_6, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_7, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_0, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_1, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_2, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_3, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_4, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_5, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_6, false, GPIO_MODE_INPUT }
-  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_7, false, GPIO_MODE_INPUT }
+typedef struct GPIO_State {
+  bool initialised;
+  GPIO_mode mode;
+  void (*int_function)(void);
+} GPIO_State;
+
+static const GPIO GPIO_gpios[] = 
+  { { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_0, GPIO_INT_PIN_0 }
+  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_1, GPIO_INT_PIN_1 }
+  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_2, GPIO_INT_PIN_2 }
+  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_3, GPIO_INT_PIN_3 }
+  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_4, GPIO_INT_PIN_4 }
+  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_5, GPIO_INT_PIN_5 }
+  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_6, GPIO_INT_PIN_6 }
+  , { SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_7, GPIO_INT_PIN_7 }
+  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_INT_PIN_0 }
+  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_INT_PIN_1 }
+  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_2, GPIO_INT_PIN_2 }
+  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_INT_PIN_3 }
+  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_4, GPIO_INT_PIN_4 }
+  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_5, GPIO_INT_PIN_5 }
+  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_6, GPIO_INT_PIN_6 }
+  , { SYSCTL_PERIPH_GPIOB, GPIO_PORTB_BASE, GPIO_PIN_7, GPIO_INT_PIN_7 }
+  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_0, GPIO_INT_PIN_0 }
+  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_1, GPIO_INT_PIN_1 }
+  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_2, GPIO_INT_PIN_2 }
+  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_3, GPIO_INT_PIN_3 }
+  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_INT_PIN_4 }
+  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_5, GPIO_INT_PIN_5 }
+  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_6, GPIO_INT_PIN_6 }
+  , { SYSCTL_PERIPH_GPIOC, GPIO_PORTC_BASE, GPIO_PIN_7, GPIO_INT_PIN_7 }
+  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_INT_PIN_0 }
+  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_INT_PIN_1 }
+  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_INT_PIN_2 }
+  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_INT_PIN_3 }
+  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_4, GPIO_INT_PIN_4 }
+  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_5, GPIO_INT_PIN_5 }
+  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_6, GPIO_INT_PIN_6 }
+  , { SYSCTL_PERIPH_GPIOD, GPIO_PORTD_BASE, GPIO_PIN_7, GPIO_INT_PIN_7 }
+  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_0, GPIO_INT_PIN_0 }
+  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_INT_PIN_1 }
+  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_2, GPIO_INT_PIN_2 }
+  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_3, GPIO_INT_PIN_3 }
+  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_4, GPIO_INT_PIN_4 }
+  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_5, GPIO_INT_PIN_5 }
+  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_6, GPIO_INT_PIN_6 }
+  , { SYSCTL_PERIPH_GPIOE, GPIO_PORTE_BASE, GPIO_PIN_7, GPIO_INT_PIN_7 }
+  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_INT_PIN_0 }
+  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_INT_PIN_1 }
+  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_INT_PIN_2 }
+  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_INT_PIN_3 }
+  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_INT_PIN_4 }
+  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_5, GPIO_INT_PIN_5 }
+  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_6, GPIO_INT_PIN_6 }
+  , { SYSCTL_PERIPH_GPIOF, GPIO_PORTF_BASE, GPIO_PIN_7, GPIO_INT_PIN_7 }
   };
+
+static GPIO_State GPIO_states[] = 
+  { { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  , { false, GPIO_MODE_INPUT, NULL }
+  };
+
 #define NUMBER_OF_GPIOS  ( sizeof(GPIO_gpios) / sizeof(GPIO) )
 
-static void GPIO_mode_init(GPIO *gpio, GPIO_mode mode)
+
+static void GPIO_mode_init(const GPIO *gpio, GPIO_State *gpio_state, GPIO_mode mode)
 {
   switch(mode)
   {
@@ -93,12 +152,12 @@ static void GPIO_mode_init(GPIO *gpio, GPIO_mode mode)
       break;
   }
 
-  gpio->mode = mode;
+  gpio_state->mode = mode;
 }
 
-static void GPIO_init(GPIO *gpio, GPIO_mode mode)
+static void GPIO_init(const GPIO *gpio, GPIO_State *gpio_state, GPIO_mode mode)
 {
-  if(!gpio->initialised)
+  if(!gpio_state->initialised)
   {
     /* Initialise Peripheral if not already initialised */
     if(!SysCtlPeripheralReady(gpio->peripheral))
@@ -107,13 +166,13 @@ static void GPIO_init(GPIO *gpio, GPIO_mode mode)
       while(!SysCtlPeripheralReady(gpio->peripheral)) { };
     }
 
-    GPIO_mode_init(gpio, mode);
+    GPIO_mode_init(gpio, gpio_state, mode);
 
-    gpio->initialised = true;
+    gpio_state->initialised = true;
   }
-  else if(mode != gpio->mode)
+  else if(mode != gpio_state->mode)
   {
-    GPIO_mode_init(gpio, mode);
+    GPIO_mode_init(gpio, gpio_state, mode);
   }
 }
 
@@ -134,9 +193,10 @@ void GPIO_write(uint8_t gpio_num, bool state)
 {
   if(gpio_num >= NUMBER_OF_GPIOS)
     return;
-  GPIO *gpio = &GPIO_gpios[gpio_num];
+  const GPIO *gpio = &GPIO_gpios[gpio_num];
+  GPIO_State *gpio_state = &GPIO_states[gpio_num];
 
-  GPIO_init(gpio, GPIO_MODE_OUTPUT);
+  GPIO_init(gpio, gpio_state, GPIO_MODE_OUTPUT);
 
   GPIO_Pin_Write(gpio, state);
 }
@@ -148,33 +208,89 @@ bool GPIO_read(uint8_t gpio_num)
 {
   if(gpio_num >= NUMBER_OF_GPIOS)
     return false;
-  GPIO *gpio = &GPIO_gpios[gpio_num];
+  const GPIO *gpio = &GPIO_gpios[gpio_num];
+  GPIO_State *gpio_state = &GPIO_states[gpio_num];
 
-  GPIO_init(gpio, GPIO_MODE_INPUT);
+  GPIO_init(gpio, gpio_state, GPIO_MODE_INPUT);
 
   return GPIO_Pin_Read(gpio);
 }
-/*represent possible interrupt types and int_masks for different pins in tables to provide better access from other source files*/
-uint32_t int_types[] = {GPIO_FALLING_EDGE, GPIO_RISING_EDGE, GPIO_BOTH_EDGES, GPIO_LOW_LEVEL, GPIO_HIGH_LEVEL};
-uint32_t int_pin[] = {GPIO_INT_PIN_0, GPIO_INT_PIN_1, GPIO_INT_PIN_2, GPIO_INT_PIN_3, GPIO_INT_PIN_4,
-                      GPIO_INT_PIN_5, GPIO_INT_PIN_6, GPIO_INT_PIN_7};
-/* Enable the pin as input and configure the interrupt */
-void gpio_interrupt_enable(uint8_t gpio_num, uint8_t interrupt_type, void (*intHandler)(void))
-{
-  if(gpio_num >= NUMBER_OF_GPIOS) return;
-  GPIO *gpio = &GPIO_gpios[gpio_num];
 
-  GPIO_init(gpio, GPIO_MODE_INPUT);
-  GPIOIntTypeSet(gpio->port, gpio->pin, int_types[interrupt_type]);
-  GPIOIntRegisterPin(gpio->port, gpio->pin, intHandler);
-  GPIOIntEnable(gpio->port, int_pin[gpio->pin]);
+static inline void GPIO_InterruptHandler_GPIO(uint32_t _status, uint8_t _gpio_number)
+{
+  if((_status & GPIO_gpios[_gpio_number].int_pin) && (GPIO_states[_gpio_number].int_function != NULL))
+  {
+    (*GPIO_states[_gpio_number].int_function)();
+  }
 }
-/* Clear the interrupt of the specific type on the given pin*/
-void gpio_interrupt_clear(uint8_t gpio_num, uint8_t interrupt_type){
-  if(gpio_num >= NUMBER_OF_GPIOS) return;
-  GPIO *gpio = &GPIO_gpios[gpio_num];
-  GPIOIntClear(gpio->port, int_types[interrupt_type]);
+
+static void GPIO_PortA_InterruptHandler(void)
+{
+  uint32_t status;
+
+  /* Retrieve GPIO Port Interrupt Status word */
+  status = GPIOIntStatus(GPIO_PORTA_BASE,true);
+
+  if(status)
+  {
+    /* Clear GPIO Port Interrupt Status */
+    GPIOIntClear(GPIO_PORTA_BASE, status);
+
+    /* Check each GPIO */
+    GPIO_InterruptHandler_GPIO(status, GPIO_PA0);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PA1);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PA2);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PA3);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PA4);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PA5);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PA6);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PA7);
+  }
 }
+
+bool GPIO_set_risingInterrupt(uint8_t gpio_number, void *interrupt_callback(void))
+{
+  if(gpio_number >= NUMBER_OF_GPIOS)
+    return false;
+  const GPIO *gpio = &GPIO_gpios[gpio_number];
+  GPIO_State *gpio_state = &GPIO_states[gpio_number];
+
+  GPIO_init(gpio, gpio_state, GPIO_MODE_INPUT);
+
+  GPIOIntTypeSet(gpio->port, gpio->pin, GPIO_RISING_EDGE);
+
+  #warning "Phil isn't sure about this:"
+  gpio_state->int_function = &interrupt_callback;
+
+  if(gpio->port == GPIO_PORTA_BASE)
+  {
+    GPIOIntRegister(gpio->port, GPIO_PortA_InterruptHandler);
+  }
+  else
+  {
+    return false;
+  }
+  // TODO - Implement other ports
+
+  GPIOIntEnable(gpio->port, gpio->int_pin);
+
+  return true;
+}
+
+void GPIO_reset_interrupt(uint8_t gpio_number)
+{
+  if(gpio_number >= NUMBER_OF_GPIOS)
+    return;
+  const GPIO *gpio = &GPIO_gpios[gpio_number];
+  GPIO_State *gpio_state = &GPIO_states[gpio_number];
+
+  GPIOIntDisable(gpio->port, gpio->int_pin);
+
+  GPIOIntUnregister(gpio->port);
+
+  gpio_state->int_function = NULL;
+}
+
 /**
  * @}
  */

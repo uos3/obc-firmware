@@ -57,7 +57,7 @@ static const registerSetting_t preferredSettings_cw[]=
    {CC112X_SERIAL_STATUS,     0x08},
 };
 
-#define UART_INTERFACE UART_GNSS
+#define UART_INTERFACE UART_CAMERA
 
 static double freq = 145.5;
 static double pwr = 10.0;
@@ -67,15 +67,7 @@ static uint32_t buffer_length = 16;
 
 static void cw_tone_on(void)
 {
-  uint8_t pwr_reg;
-
-  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-  manualCalibration(SPI_RADIO_TX);
-
-  radio_set_freq_f(SPI_RADIO_TX, &freq);
-
-  radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
-
+  /* Enable TX */
   SPI_cmd(SPI_RADIO_TX, CC112X_STX);
 
   LED_on(LED_B);
@@ -83,32 +75,43 @@ static void cw_tone_on(void)
 
 static void cw_tone_off(void)
 {
-  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+  /* Enable and calibrate frequency synthesizer */
+  SPI_cmd(SPI_RADIO_TX, CC112X_SFSTXON);
 
   LED_off(LED_B);
 }
 
 int main(void)
 {
+  uint8_t pwr_reg;
   char output[100];
 
   Board_init();
-  WDT_kick();
 
   UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\nCW Radio Demo\r\n");
-  GPIO_write(0x00000008, false);
+
   sprintf(output,"Freq: %.3fMHz, Power: %+.1fdBmW\r\n", freq, pwr);
   UART_puts(UART_INTERFACE, output);
+
+  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+  manualCalibration(SPI_RADIO_TX);
+
+  radio_set_freq_f(SPI_RADIO_TX, &freq);
+
+  radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
+  
+  /* Enable and calibrate frequency synthesizer */
+  SPI_cmd(SPI_RADIO_TX, CC112X_SFSTXON);
 
   while(1)
   {
     sprintf(output,"Sending Beacon :\"%s\"\r\n", buffer);
     UART_puts(UART_INTERFACE, output);
+
     Packet_cw_transmit_buffer(buffer, buffer_length, cw_tone_on, cw_tone_off);
     UART_puts(UART_INTERFACE, "Sent.\r\n");
 
-    Delay_ms(500);
-    WDT_kick();
+    Delay_ms(3000);
   }
 }

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "../firmware.h"
 
-#define BURN_TIME 7140
+#define BURN_TIME 2140
 #define WAIT_TIME 10000
 
 void Antenna_deploy_demo(void);

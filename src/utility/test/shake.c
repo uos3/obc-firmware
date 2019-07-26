@@ -1,11 +1,9 @@
 #include "../../firmware.h"
 #include "../../test.h"
 
-#define BITS_128  16 // 128-bit = 16-byte
+uint8_t util_shake_test_buffer[16];
 
-uint8_t buffer_test[BITS_128];
-
-uint8_t pattern_1600bit[200] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 
+uint8_t util_shake_test_pattern_1600bit[200] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 
                                   0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,
                                   0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 
                                   0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,
@@ -28,16 +26,16 @@ uint8_t pattern_1600bit[200] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,
 
 /* 128-bit result from NIST Test Vectors (SHAKE-128, 0-bit Input Message Length)
   [ https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHAKE128_Msg0.pdf ] */
-uint8_t pattern_0bit_output[16] = { 0x7F, 0x9C, 0x2B, 0xA4, 0xE8, 0x8F, 0x82, 0x7D,
+uint8_t util_shake_test_pattern_0bit_output[16] = { 0x7F, 0x9C, 0x2B, 0xA4, 0xE8, 0x8F, 0x82, 0x7D,
                                     0x61, 0x60, 0x45, 0x50, 0x76, 0x05, 0x85, 0x3E };
 
 /* 128-bit result from NIST Test Vectors (SHAKE-128, 1600-bit Input Message Length)
   [ https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHAKE128_Msg1600.pdf ] */
-uint8_t pattern_1600bit_output[16] = { 0x13, 0x1A, 0xB8, 0xD2, 0xB5, 0x94, 0x94, 0x6B,
+uint8_t util_shake_test_pattern_1600bit_output[16] = { 0x13, 0x1A, 0xB8, 0xD2, 0xB5, 0x94, 0x94, 0x6B,
                                         0x9C, 0x81, 0x33, 0x3F, 0x9B, 0xB6, 0xE0, 0xCE };
 
 /* Sample 1024-bit Packet & 128-bit Key */
-uint8_t pattern_packet[256] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 
+uint8_t util_shake_test_pattern_packet[256] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 
                                 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,
                                 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 
                                 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3,
@@ -63,59 +61,43 @@ uint8_t pattern_packet[256] = { 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 
                                 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 
                                 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 
                                 0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3 };
-uint8_t pattern_packet_key[16] = { 0x45, 0xDA, 0x82, 0x92, 0xF7, 0x44, 0xD4, 0xEB,
+uint8_t util_shake_test_pattern_packet_key[16] = { 0x45, 0xDA, 0x82, 0x92, 0xF7, 0x44, 0xD4, 0xEB,
                                     0x6C, 0x81, 0x33, 0x3F, 0x9B, 0xB6, 0xE0, 0xCE };
-uint8_t pattern_packet_output[16] = { 0x87, 0x7e, 0x5a, 0xb8, 0x8f, 0xd1, 0x46, 0x6d,
+uint8_t util_shake_test_pattern_packet_output[16] = { 0x87, 0x7e, 0x5a, 0xb8, 0x8f, 0xd1, 0x46, 0x6d,
                                        0x9a, 0x3d, 0x0b, 0x07, 0x25, 0x85, 0xdd, 0x23 };
 
 bool test_shake(void)
 {
-  sha3_ctx_t sha3;
+  util_shake_ctx_t shake_ctx;
 
   /* 0-bit Message Test */
-  shake128_init(&sha3);
-  shake_xof(&sha3);
-  shake_out(&sha3, buffer_test, BITS_128);
+  Util_shake_init(&shake_ctx, 16);
+  Util_shake_out(&shake_ctx, util_shake_test_buffer);
 
   if(TEST_VERBOSE)
   {
     Debug_print("0-bit SHAKE-128 Output:\r\n");
-    buffer_print_hex(buffer_test, BITS_128);
+    buffer_print_hex(util_shake_test_buffer, 16);
   }
 
-  if(memcmp(buffer_test, pattern_0bit_output, BITS_128) != 0)
+  if(memcmp(util_shake_test_buffer, util_shake_test_pattern_0bit_output, 16) != 0)
   {
     return false;
   }
 
   /* 1600-bit Message Test */
-  shake128_init(&sha3);
-  shake_update(&sha3, pattern_1600bit, 200);
+  Util_shake_init(&shake_ctx, 16);
+  Util_shake_update(&shake_ctx, util_shake_test_pattern_1600bit, 200);
 
-  shake_xof(&sha3);
-  shake_out(&sha3, buffer_test, BITS_128);
+  Util_shake_out(&shake_ctx, util_shake_test_buffer);
 
   if(TEST_VERBOSE)
   {
     Debug_print("1600-bit SHAKE-128 Output:\r\n");
-    buffer_print_hex(buffer_test, BITS_128);
+    buffer_print_hex(util_shake_test_buffer, 16);
   }
 
-  if(memcmp(buffer_test, pattern_1600bit_output, BITS_128) != 0)
-  {
-    return false;
-  }
-
-  /* Sample Packet Signing Test */
-  Packet_sign_shake128(pattern_packet, 256, pattern_packet_key, 16, buffer_test);
-
-  if(TEST_VERBOSE)
-  {
-    Debug_print("Sample Packet Signing Output:\r\n");
-    buffer_print_hex(buffer_test, BITS_128);
-  }
-
-  if(memcmp(buffer_test, pattern_packet_output, BITS_128) != 0)
+  if(memcmp(util_shake_test_buffer, util_shake_test_pattern_1600bit_output, 16) != 0)
   {
     return false;
   }
