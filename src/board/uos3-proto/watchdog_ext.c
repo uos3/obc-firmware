@@ -103,6 +103,6 @@ void enable_watchdog_kick(void)
 //watchdog interrupt handler is comparing how much the timestamp from the mission loop
 //differ from the time at the interrupt moment; if the difference is bigger than 120sec
 //software is found to be hang up and the watchdog kick will not occur leading to RESET
-void update_watchdog_timestamp(){
+/*void update_watchdog_timestamp(){
       RTC_getTime(&missionloop_time);
-}
+}*/
