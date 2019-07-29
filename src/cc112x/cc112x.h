@@ -17,11 +17,10 @@ void cc112x_manualCalibration(uint8_t spi_device_id);
 
 /*** Configuration ***/
 
-typedef struct cc112x_reg_t
-{
+typedef struct registerSetting_t{
   uint16_t  addr;
   uint8_t   data;
-} cc112x_reg_t;
+} registerSetting_t;
 
 typedef enum {
   CC112x_BANDSEL_OPTION_136M = 11,
@@ -125,6 +124,6 @@ typedef enum {
 
 void cc112x_cfg_ook_params(uint8_t spi_device_id, cc112x_ook_symbolrate_t ook_symbolrate);
 
-void cc112x_set_config(uint8_t spi_device_id, const cc112x_reg_t *cfg, uint16_t len);
+void cc112x_set_config(uint8_t spi_device_id, const registerSetting_t *cfg, uint16_t len);
 
 #endif /* __CC112x_H__ */

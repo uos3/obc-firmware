@@ -7,7 +7,10 @@
         "rtc.h": "c",
         "camera.h": "c",
         "board.h": "c",
-        "eeprom.h": "c"
+        "eeprom.h": "c",
+        "watchdog_ext.h": "c",
+        "sysctl.h": "c",
+        "hw_ints.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

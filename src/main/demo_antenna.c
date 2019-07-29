@@ -7,10 +7,10 @@
 void Antenna_deploy_demo(void);
 
 int main(){
+    watchdog_update=0xFF;
     Board_init();
-    RTC_init();
-    update_watchdog_timestamp();
     enable_watchdog_kick();
+    RTC_init();
     UART_init(UART_INTERFACE, 9600);
     UART_puts(UART_INTERFACE, "\r\n");
     UART_puts(UART_INTERFACE, "Board and UART Interface Initialised\r\n");
@@ -48,7 +48,7 @@ int main(){
     UART_puts(UART_INTERFACE, output);
     
     while(1){
-      update_watchdog_timestamp();
+      watchdog_update=0xFF;
     }
 }
 

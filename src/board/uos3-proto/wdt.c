@@ -62,8 +62,6 @@ void setup_internal_watchdogs(void){
   WatchdogIntEnable(WATCHDOG0_BASE);                          //enables wdt0 interrupt and start timer
   WatchdogIntEnable(WATCHDOG1_BASE);                          //enables wdt1 interrupt and start timer
 }
-
-
 /**
  * @}
  */

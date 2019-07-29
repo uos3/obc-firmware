@@ -214,7 +214,7 @@ void cc112x_cfg_ook_params(uint8_t spi_device_id, cc112x_ook_symbolrate_t ook_sy
 }
 
 
-void cc112x_set_config(uint8_t spi_device_id, const cc112x_reg_t *cfg, uint16_t len)
+void cc112x_set_config(uint8_t spi_device_id, const registerSetting_t *cfg, uint16_t len)
 {	
   uint16_t i;
 

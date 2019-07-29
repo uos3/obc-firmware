@@ -13,12 +13,6 @@
 #define CONFIG_1
 #include "cc1120_rx_sniff_mode_reg_config.h"
 
-
-
-
-
-
-
 //! A very simple example that blinks the on-board LED.
 
 uint32_t pui32DataTx[10];

@@ -117,6 +117,21 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
 
   return RADIO_STATUS_OK;
 }
+//Function to set the cw_tone ON for Morse transmission
+//!problems with the preferredSettings_cw table!!! - cannot write the settings beacuse the table elements undefined while they should be
+//preferred settings table causing multiple problems with their initialisation
+void cw_tone_on(radio_config_t *radio_config){
+  //cc112x_set_config(Radio_transmitter.spi_device, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+  cc112x_manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
+  cc112x_cfg_frequency(Radio_transmitter.spi_device, _CC112X_BANDSEL, radio_config->frequency); //set frequency according to the config file passed as argument
+  cc112x_cfg_power(Radio_transmitter.spi_device, radio_config->power);  //set power according to the config file passed as argument
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_STX);  //enable TX operation
+  LED_on(LED_B);
+}
+void cw_tone_off(){
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SIDLE); //exit RX/TX, turn off freq. synthesizer; no reseting and writing basic config. because it is done in cw_tone_on function
+  LED_off(LED_B);
+}
 
 Radio_Status_t Radio_tx_morse(radio_config_t *radio_config, uint8_t *text_buffer, uint32_t text_length, void *end_of_tx_handler(void))
 {
@@ -134,6 +149,7 @@ Radio_Status_t Radio_tx_morse(radio_config_t *radio_config, uint8_t *text_buffer
   }
 
   /* Configure Radio */
+  Packet_cw_transmit_buffer(text_buffer, text_length, radio_config, cw_tone_on, cw_tone_off);
 
   GPIO_set_risingInterrupt(GPIO0_RADIO_TX, end_of_tx_handler);
 

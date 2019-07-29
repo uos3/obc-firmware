@@ -134,7 +134,7 @@ static const uint16_t Packet_cw_lookup[59][2] =
 	{ 4, GCC_BINARY(0b11110101) } // − − · · 
 };
 
-void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, void _cw_on(void), void _cw_off(void))
+void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_config_t *Radio_config, void _cw_on(radio_config_t *), void _cw_off(void))
 {
 	uint32_t i, j;
 	uint8_t c;
@@ -173,12 +173,12 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, void _cw_
 					break;
 				case GCC_BINARY(0b01):
 					/* Dit */
-					_cw_on();
+					_cw_on(Radio_config);
 					Delay_ms(CW_PERIOD_MS);
 					break;
 				case GCC_BINARY(0b11):
 					/* Dah */
-					_cw_on();
+					_cw_on(Radio_config);
 					Delay_ms(CW_PERIOD_MS);
 					Delay_ms(CW_PERIOD_MS);
 					Delay_ms(CW_PERIOD_MS);

@@ -58,7 +58,7 @@ bool EPS_selfTest(void)
 	if (attempts > 2) {
 		EPS_COMMS_FAILS++;
 	}
-	return (eps_slave_packet_single.value == EPS_ID);	//Should give a value of 42
+	return (eps_slave_packet_single.value == EPS_ID);	//Should give a value of 0x42
 
 }
  

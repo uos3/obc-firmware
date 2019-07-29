@@ -9,7 +9,6 @@
  * @{
  */
 
-
 //#include "../firmware.h"
 #include "board.h"
 #include "../watchdog_ext.h"
