@@ -12,10 +12,8 @@
 #include "../rtc.h"
 #include "../eps.h"
 
-
 // DEBUG_NOTES ( REMOVE LATER )
 #include "../../firmware.h"
-
 
 typedef struct eps_master_packet_t {
   bool write:1;
@@ -114,10 +112,10 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	char c;
 	uint16_t crc, bytes_expected, bytes_received;
 	uint32_t timeout, current_time;
-
+	
 	/* Construct Master Read Packet */
 	eps_master_packet.write = false;
-	eps_master_packet.register_id = (uint8_t)(register_id & 0x7F); // filters first 7 bits
+	eps_master_packet.register_id = (register_id & 0x7F); // filters first 7 bits
 	eps_master_packet.value_l = 1; // no. of registers to read
 	eps_master_packet.value_h = 0;
 	crc = EPS_crc((uint8_t *)&eps_master_packet, 0, 3);
@@ -126,6 +124,11 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 
 	/* Send Master Read Packet */
   	//UART_puts(UART_INTERFACE, "\r\nSending Master Read Packet\r\n");
+	//UART_putc(UART_EPS, 0x50);
+	//UART_putc(UART_EPS, 0x59);
+	//UART_putc(UART_EPS, 0x39);
+	//UART_putc(UART_EPS, 0x65);
+	//UART_putc(UART_EPS, 0x78);
 	UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
   	//UART_puts(UART_INTERFACE, "\r\nSend to EPS\r\n");
 

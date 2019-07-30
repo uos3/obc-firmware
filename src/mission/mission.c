@@ -58,7 +58,7 @@ int8_t sm_reboot(int8_t t);                 //TODO: write a body of function
 int8_t process_gs_command(int8_t t);        //TODO: revise what is done
 int8_t poll_transmitter(int8_t t);          //TODO: revise what is done, what is missing
 int8_t take_picture(int8_t);                //TODO: can the config resolution be extended? do we need picture length and no_of_pages?
-uint16_t perform_subsystem_check();         //TODO: write the body of function
+uint16_t perform_subsystem_check();         //TODO: write the IMUselftest function, detiermine where is decimal point in battery voltage and temperature readings, as well as temp readings from the sensors; finish function with this knowledge
 void update_radio_parameters();             //TODO: revise what need to be done 
 
 //creating Morse signals
@@ -625,7 +625,8 @@ void Mission_SEU(void)
 }
 
 uint16_t perform_subsystem_check(){
-  uint16_t status = 0;
+  uint16_t status = 0, temporary = 0;
+  int16_t temperature;
   // 1) check EEPROM
   status = (uint16_t)EEPROM_selfTest;
   // 2) check FRAM
@@ -637,17 +638,27 @@ uint16_t perform_subsystem_check(){
   // 5) check IMU
   status = (status<<1) + (uint16_t)IMU_selftest;    //IMU selftest is really poor state
   // 6) check transmitter
-
+  //TODO: think aboout the way to show correct or uncorrect operation
   // 7) check receiver
 
 	// 8) check eps subsystem
   status = (status<<1) + (uint16_t)EPS_selfTest;
   // 9) check battery subsystem
+  EPS_getInfo(&temporary, EPS_REG_BAT_V); //read battery voltage to the temporary
+  //TODO: compare it with the VOLTAGE_TRESHOLD and set status to 1 if the BATT_V is higher, to 0 otherwise; need to establish where is the decimal point of the voltage reading
   // 10) check obc tempsensor
+  temperature = get_temp(TEMP_OBC);
+  status = (status<<1) + ((temperature>(-45) && temperature<65) ? 1 : 0); //if temperature is in the range of -45 to 65 deg - write 1 to status, 0 otherwise
   // 11) check pa tempsensor
-  // 12) check rx tempsensor
-  // 13) check tx tempsensor
-  // 14) check battery tempsensor
+  temperature = get_temp(TEMP_PA);
+  status = (status<<1) + ((temperature>(-45) && temperature<65) ? 1 : 0); //if temperature is in the range of -45 to 65 deg - write 1 to status, 0 otherwise
+  // 12) check rx tempsensor - cannot be obtained: pin F0 is not an input to ADC - set default to 1
+  status = (status<<1) + 1;
+  // 13) check tx tempsensor - cannot be obtained: pin F0 is not an input to ADC - set default to 1
+  status = (status<<1) + 1;
+  // 14) check battery tempsensor: heater of the battery operates at 1deg and stoped at 6.5deg
+  EPS_getInfo(&temporary, EPS_REG_BAT_T); //read battery temperature
+  //TODO: compare it with the 1deg treshold - see the comment above - and set corresponding status bit to 1 if higher, 0 otherwise
 	return status;
 }
 
@@ -739,8 +750,6 @@ int8_t save_eps_health_data(int8_t t){
   }
 
 	uint16_t subsystem_status = perform_subsystem_check();
-	//read antenna switch state (and ask where this can be attached)
-	subsystem_status |= (uint8_t)Antenna_read_deployment_switch() << 14;
   data_split_u16(subsystem_status, &data_byte16);
 	data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
 

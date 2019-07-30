@@ -141,4 +141,4 @@ static const registerSetting_t preferredSettings_cw[]=
    {CC112X_XOSC3,             0xC7},
    {CC112X_XOSC1,             0x07},
    {CC112X_SERIAL_STATUS,     0x08},
-};
+};*/
