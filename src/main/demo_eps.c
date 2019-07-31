@@ -40,16 +40,16 @@ int main(void){
 
     batt_v = 0;
     batt_i = 0;
-    EPS_getInfo(&batt_v, EPS_REG_BAT_V);
+    EPS_getInfo(&batt_v, 0x50);
     UART_puts(UART_INTERFACE, "\r\nSuccessfuly read voltage\r\n");
     sprintf(output,"Voltage: %+06d\r\n", batt_v);
     UART_puts(UART_INTERFACE, output);
-    //
+    Delay_ms(5000);/*
     EPS_getInfo(&batt_i, EPS_REG_BAT_I);
     UART_puts(UART_INTERFACE, "\r\nSuccessfuly read current\r\n");
     sprintf(output,"Current: %+06d\r\n", batt_i);
     UART_puts(UART_INTERFACE, output);
-    //
-     Delay_ms(5000);
+    //*/
+     //Delay_ms(5000);
    }
 }

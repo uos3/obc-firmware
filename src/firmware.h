@@ -39,6 +39,7 @@
 #include "board/random.h"
 #include "board/ldpc.h"
 #include "board/memory_map.h"
+#include "board/i2c.h"
 /* Hardware Drivers */
 #include "board/fram.h"
 #include "board/temperature_sensors.h"

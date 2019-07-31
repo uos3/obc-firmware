@@ -64,7 +64,7 @@ bool EPS_getInfo(uint16_t *output, uint8_t regID)
 {
   UART_puts(UART_INTERFACE, "\r\nTrying to get reg data\r\n");
   uint8_t attempts = 0;		//Writing to register and retrying if failed
-  while (attempts < 3 && !EPS_readRegister(regID, &eps_slave_packet_single)) {
+  /*while (attempts < 3 && !EPS_readRegister(regID, &eps_slave_packet_single)) {
 	  attempts++;
   }
   if (attempts <3) {
@@ -72,7 +72,11 @@ bool EPS_getInfo(uint16_t *output, uint8_t regID)
 	  return true;
   }
   EPS_COMMS_FAILS++;
-  return false;
+  return false;*/
+  if(!EPS_readRegister(regID, &eps_slave_packet_single)){
+	  *output = eps_slave_packet_single.value;
+	  return true;
+  }
 }
 
 bool EPS_togglePowerRail(uint8_t regVal)	{
@@ -110,6 +114,7 @@ uint8_t EPS_getPowerRail() {
 static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *data)
 {
 	char c;
+	uint8_t temp;
 	uint16_t crc, bytes_expected, bytes_received;
 	uint32_t timeout, current_time;
 	
@@ -122,15 +127,15 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	eps_master_packet.crc_l = (uint8_t)crc & 0xFF;
 	eps_master_packet.crc_h = (uint8_t)((crc >> 8) & 0xFF);
 
+	temp = (eps_master_packet.write<<7) | (eps_master_packet.register_id);
 	/* Send Master Read Packet */
-  	//UART_puts(UART_INTERFACE, "\r\nSending Master Read Packet\r\n");
-	//UART_putc(UART_EPS, 0x50);
-	//UART_putc(UART_EPS, 0x59);
-	//UART_putc(UART_EPS, 0x39);
-	//UART_putc(UART_EPS, 0x65);
-	//UART_putc(UART_EPS, 0x78);
-	UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
-  	//UART_puts(UART_INTERFACE, "\r\nSend to EPS\r\n");
+	//UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
+	UART_putc(UART_EPS, (char)temp);	//print each part of the message separately to avoid complicated casting
+	//UART_putb(UART_EPS, ((char *)&eps_master_packet+1), 5); //use this eventually to start from the value_l variable
+	UART_putc(UART_EPS, (char)eps_master_packet.value_l);
+	UART_putc(UART_EPS, (char)eps_master_packet.value_h);
+	UART_putc(UART_EPS, (char)eps_master_packet.crc_l);
+	UART_putc(UART_EPS, (char)eps_master_packet.crc_h);
 
 	bytes_expected = 6;
 	bytes_received = 0;

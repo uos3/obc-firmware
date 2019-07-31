@@ -26,12 +26,9 @@
 #include "../board/memory_map.h"
 #include "../board/radio.h"
 
-//#define UART_INTERFACE UART_GNSS
-
+//#define DEBUG_PRINT       //deifne keyword debug to enable every printing commands in this file
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
-
 #define BATTERY_VOLTAGE 6 //COMMENT WHEN USING EPS!!!
-
 #define BATTERY_THRESHOLD 7.5
 //--------------------------------PROTOTYPES OF FUNCTIONS---------------------------------
 //Main functions
@@ -70,9 +67,6 @@ void suspend_all_tasks();
 void mode_switch(uint8_t mode);
 void queue_task(int8_t task_id, uint64_t task_period);
 
-//debugging operation initialisation function
-
-
 //Mode initialisation functions
 bool fbu_init(void);
 bool ad_init(void);
@@ -106,7 +100,7 @@ void data_split_16(int16_t data, uint8_t  *split);
 void data_split_u16(uint16_t data, uint8_t  *split);
 
 //FRAM packet creation function
-uint8_t place_data_in_packet(uint8_t position, uint8_t *data_bytes, uint8_t *data_packet);
+uint8_t place_data_in_packet(uint8_t position, int size, uint8_t *data_bytes, uint8_t *data_packet);
 uint8_t tenbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
 uint8_t sixbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
 uint8_t sixteenbits_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
@@ -297,43 +291,48 @@ static void cw_tone_off(void)
 
 void Mission_init(void)
 {
-  watchdog_update = 0xFF;
-  LED_on(LED_B);
-  Board_init();
-  enable_watchdog_kick();
-  RTC_init(); //wasnt here before, I think needed
-  setup_internal_watchdogs();
-  EEPROM_init();
-  I2C_init(0);
-  UART_init(UART_INTERFACE, 9600);
-  GNSS_Init();
-  Buffer_init();
-  Configuration_Init();
-  timer_init();
+  //initialisation of the board, drivers and all peripherals
+  watchdog_update = 0xFF;           //set the watchdog control variable 
+  Board_init();                     //init the board clock
+  enable_watchdog_kick();           //init the external watchdog kick
+  RTC_init();                       //init real-time-clock
+  setup_internal_watchdogs();       //init and setup the internal watchdogs
+  EEPROM_init();                    //init EEPROM memory
+  I2C_init(0);                      //init port 0 I2C
+  #ifdef DEBUG_PRINT
+  UART_init(UART_INTERFACE, 9600);  //if DEBUG_PRINT macro is defined, Initialise debug UART4
+  #endif
+  GNSS_Init();                      //init GNSS module
+  Buffer_init();                    //init Buffer functionality
+  Configuration_Init();             //load default configuration settings
+  timer_init();                     //set up and init all the timers used for the mission
   //radio_config.frequency 
-  
   //Radio_rx_receive(radio_config_t *radio_config, void *process_gs_command);
   
-  int16_t temp = Temperature_read_tmp100();
-  UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVER INITIALISED**\r\n");
+  #ifdef DEBUG_PRINT
+  UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVERS INITIALISED**\r\n");
+  #endif
+
 //Initialise the task queue as empty
   for (uint8_t i=0; i<MAX_TASKS; i++){
     task_q[i] = -1;
     timer_to_task[i] = -1;
     }
+//set some global variables to initial values
   no_of_tasks_queued = 0;
   image_trigger = false;
   camera_result = true;
   gps_result = true;
+  #ifdef DEBUG_PRINT
   //PRINTS ULPERIOD - TO REMOVE
   char output3[100];
   sprintf(output3,"ULPERIOD: %" PRIu32 "\r\n", ulPeriod);
 	UART_puts(UART_INTERFACE, output3);
-  //Delay_ms(5000);
-  EEPROM_read(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
-  EEPROM_read(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
+  #endif
+  EEPROM_read(EEPROM_DEPLOY_STATUS, &ADM_status, 4);              //read antenna deploy status
+  EEPROM_read(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);   //read deploy attempts
   // third will miss sometimes if processor busy
-  mode_switch(FBU);
+  mode_switch(FBU); //go to First-Boot-Up mode
 }
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -357,13 +356,13 @@ void Mission_loop(void)
   if (!circ_isEmpty(&task_pq)){
     // peek
     uint8_t todo_task_index = circ_peek(&task_pq);
+    #ifdef DEBUG_PRINT
     char output[100];
     sprintf(output,"%+06d\r\n", todo_task_index);
     UART_puts(UART_INTERFACE, output);
-
     // execute
     UART_puts(UART_INTERFACE, "**executing**\r\n");
-
+    #endif
     current_tasks[todo_task_index].TickFct(NULL);
 
     UART_puts(UART_INTERFACE, "**executed!**\r\n");
@@ -372,12 +371,13 @@ void Mission_loop(void)
     // pop the task
     if(!circ_isEmpty(&task_pq)) circ_pop(&task_pq);
   }
-
+  #ifdef DEBUG_PRINT
   // Sleep
   UART_puts(UART_INTERFACE, "sleeping...\r\n");
+  #endif
   LED_toggle(LED_B);
   Delay_ms(1000);   //why delay?
-  watchdog_update=0xFF;
+  watchdog_update=0xFF;   //update the watchdog control variable
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -392,10 +392,11 @@ void queue_task(int8_t task_id, uint64_t task_period){
   //no_of_tasks_queued++;
 
   int8_t timer_id = get_available_timer();
-
+  #ifdef DEBUG_PRINT
   char output[100];
   sprintf(output,"set timer: : %+06d\r\n", timer_id);
   UART_puts(UART_INTERFACE, output);
+  #endif
   set_timer_for_task(timer_id, task_id, ulPeriod*current_tasks[task_id].period, timer_isr_map[task_id]);
 }
 
@@ -581,7 +582,7 @@ void Mode_init(int8_t type){
       tasks_DL[DL_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_DL[DL_SAVE_GPS_POSITION].period = spacecraft_configuration.data.gps_acquisition_interval; //300
-      tasks_DL[DL_SAVE_GPS_POSITION].TickFct = save_gps_data;
+      tasks_DL[DL_SAVE_GPS_POSITION].TickFct = &save_gps_data;
 
 			tasks_DL[DL_SAVE_ATTITUDE].period = spacecraft_configuration.data.imu_acquisition_interval;
 			tasks_DL[DL_SAVE_ATTITUDE].TickFct = &save_attitude;
@@ -648,18 +649,19 @@ uint16_t perform_subsystem_check(){
   //TODO: compare it with the VOLTAGE_TRESHOLD and set status to 1 if the BATT_V is higher, to 0 otherwise; need to establish where is the decimal point of the voltage reading
   // 10) check obc tempsensor
   temperature = get_temp(TEMP_OBC);
-  status = (status<<1) + ((temperature>(-45) && temperature<65) ? 1 : 0); //if temperature is in the range of -45 to 65 deg - write 1 to status, 0 otherwise
+  status = (status<<1) + ((temperature<spacecraft_configuration.data.obc_overtemp) ? 1 : 0); //if temperature is smaller than the overtemp treshold - write 1 to status, 0 otherwise
   // 11) check pa tempsensor
   temperature = get_temp(TEMP_PA);
-  status = (status<<1) + ((temperature>(-45) && temperature<65) ? 1 : 0); //if temperature is in the range of -45 to 65 deg - write 1 to status, 0 otherwise
+  status = (status<<1) + ((temperature<spacecraft_configuration.data.pa_overtemp) ? 1 : 0); //if temperature is smaller than the overtemp treshold - write 1 to status, 0 otherwise
   // 12) check rx tempsensor - cannot be obtained: pin F0 is not an input to ADC - set default to 1
   status = (status<<1) + 1;
   // 13) check tx tempsensor - cannot be obtained: pin F0 is not an input to ADC - set default to 1
   status = (status<<1) + 1;
   // 14) check battery tempsensor: heater of the battery operates at 1deg and stoped at 6.5deg
   EPS_getInfo(&temporary, EPS_REG_BAT_T); //read battery temperature
-  //TODO: compare it with the 1deg treshold - see the comment above - and set corresponding status bit to 1 if higher, 0 otherwise
-	return status;
+  status = (status<<1) + ((temporary<spacecraft_configuration.data.batt_overtemp) ? 1 : 0); //if temperature is smaller than the overtemp treshold write 1, otherwise 0
+	
+  return status;
 }
 
 int8_t save_eps_health_data(int8_t t){
@@ -671,47 +673,47 @@ int8_t save_eps_health_data(int8_t t){
 	uint32_t eeprom_read;
   uint8_t data_byte32[4];   //temp variables for splitting operations
   uint8_t data_byte16[2];   //temp variables for splitting operations
-  uint8_t storage_temp;     //temp variable to organise 10bits variables into memory
+  uint8_t storage_temp[1];     //temp variable to organise 10bits variables into memory
   uint8_t last_tail = 0, reading_rest = 0;
   // TODO: Generate dataset id
 
   // TODO: Get timestamp
   RTC_getTime(&time_of_data_acquisition);
   data_split_u32(time_of_data_acquisition, data_byte32);
-  data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);
+  data_count = place_data_in_packet(data_count, 4, data_byte32, data_packet_for_fram);
   //Get TOBC values
   //obc_temperature - read, split and place in the packet
   data_split_16(get_temp(TEMP_OBC), data_byte16);
-  data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+  data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
   //rx_temperature - read, split and place in the packet
   data_split_16(get_temp(TEMP_RX), data_byte16);
-  data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+  data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
   //tx_temperature...
   data_split_16(get_temp(TEMP_TX), data_byte16);
-  data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+  data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
   //pa_temperature...
   data_split_16(get_temp(TEMP_PA), data_byte16);
-  data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+  data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
   //read EEPROM for reboot_count
 	EEPROM_read(EEPROM_REBOOT_COUNT, &eeprom_read, 1);
-	data_count = place_data_in_packet(data_count, &((uint8_t)eeprom_read), data_packet_for_fram);
+  storage_temp = (uint8_t)eeprom_read;
+	data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
   
   // [CLARIFY] data_packets_pending
-  data_packets_pending = Buffer_count_occupied; //get the number of occupied slots in the fram buffer
+  data_packets_pending = Buffer_count_occupied(); //get the number of occupied slots in the fram buffer
   data_split_u16(data_packets_pending, data_byte16);
-	data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+	data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
 
   // [CLARIFY] rx_noisefloor - WHERE TO GET ITS VALUE
-	data_count = place_data_in_packet(data_count, &rx_noisefloor, data_packet_for_fram);
+	data_count = place_data_in_packet(data_count, 1, &rx_noisefloor, data_packet_for_fram);
   
 	// Flash and RAM errors in same byte
   storage_temp = (flash_errors << 4) + ram_errors;
-  data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
-  //Buffer_store_new_data( (flash_errors << 4) + ram_errors);
+  data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
 
-  //getting the data from the EPS board in the order stated in the TMTC file 
-  // starting with the first 15 registers
-  uint16_t eps_field; //variable to store the reading from the register
+  //getting the data from the EPS board in the order stated in the TMTC file -- starting with the first 15 registers
+  uint16_t eps_field;                   //variable to store the reading from the register
+
   //table represensting firts 15 registers in the order they should be organised
   uint16_t eps_data_order[] = {EPS_REG_BAT_V, EPS_REG_BAT_I, EPS_REG_BAT_T, EPS_REG_CHARGE_I, EPS_REG_MPPT_BUS_V,
     EPS_REG_SOLAR_POS_X1_I, EPS_REG_SOLAR_POS_X2_I, EPS_REG_SOLAR_POS_Y1_I, EPS_REG_SOLAR_POS_Y2_I, EPS_REG_SOLAR_NEG_X1_I,
@@ -748,10 +750,15 @@ int8_t save_eps_health_data(int8_t t){
     EPS_getInfo(&eps_field, i);
     data_count = tenbit_numbers(eps_field, data_count, &last_tail, &reading_rest, data_packet_for_fram);
   }
-
-	uint16_t subsystem_status = perform_subsystem_check();
-  data_split_u16(subsystem_status, &data_byte16);
-	data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+  //do subsystem check
+	uint16_t subsystem_status = perform_subsystem_check();          //only 14 bottom bits have meaningful data
+  storage_temp = (reading_rest << 6) | (subsystem_status>>8);     //add remaining two bits of data from previous readings to the top six bits of the subsystem_status
+  data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
+  storage_temp = (uint8_t)subsystem_status;                       //take only 8 lowest bits from the number
+  data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
+  //if everything would operate correctly at this point every bit of data will be added to the packet and the number of bits will be multiple of 8, therefore no bits will be left
+  //store obtained information in the fram buffer
+  Buffer_store_new_data(data_packet_for_fram);
 
   uint16_t batt_volt = 0;
   if(current_mode != SM){
@@ -764,15 +771,18 @@ int8_t save_eps_health_data(int8_t t){
       mode_switch(NF);
     }
   }
-
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished saving EPS health data.\r\n");
+  #endif
 */
   return 0;
 }
 
 int8_t save_gps_data(int8_t t){
   //Driver needs to be updated
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Saving GPS payload data...\r\n");
+  #endif
   // TODO: Generate dataset id  - ID is an index from FRAM! need to add it to the data packet in downlink
 	// Take multiple samples
     uint8_t data_packet_for_fram[BUFFER_SLOT_SIZE/8]; //for storing data packet
@@ -790,11 +800,10 @@ int8_t save_gps_data(int8_t t){
     uint8_t data_byte32[4];                            //temporary variables for splitting operations
     uint8_t data_byte16[2];                            //temporary variables for splitting operations
     uint8_t data_byte8[3];                             //temporary variable for saving 8bit datas
-
   RTC_getTime(&time_of_data_acquisition);              //get the time of measurement, just before GPS function
   //placing time of data acquisition in the packet
   data_split_u32(time_of_data_acquisition, data_byte32);                                //split the time data
-  data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);  //place in the packet
+  data_count = place_data_in_packet(data_count, 4, data_byte32, data_packet_for_fram);  //place in the packet
 
   //getting gnss data and placing it in the packet
   //better to place immediately in the packet to save memory
@@ -804,32 +813,34 @@ int8_t save_gps_data(int8_t t){
     //GPS week number - save it only once in the beginning
     if(i == 0){
       data_split_u16(week_num, data_byte16);                                           //split week no. data
-      data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);//place in the packet
+      data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);//place in the packet
     }
     //gps time - time since beginning of the current week from GPS
     data_split_u32(week_seconds, data_byte32);                                         //split GPS_time sample
-    data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);  //place sample in the packet
+    data_count = place_data_in_packet(data_count, 4, data_byte32, data_packet_for_fram);  //place sample in the packet
     //lattitude data
     data_split_32(latitude, data_byte32);                                              //split latitude sample
-    data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);  //place sample in the packet
+    data_count = place_data_in_packet(data_count, 4, data_byte32, data_packet_for_fram);  //place sample in the packet
     //longitude data
     data_split_32(longitude, data_byte32);                                             //split longitude sample
-    data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);  //place in the packet
+    data_count = place_data_in_packet(data_count, 4, data_byte32, data_packet_for_fram);  //place in the packet
     //altitude data
     data_split_32(altitude, data_byte32);                                              //split altitude sample
-    data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);  //place sample in the packet
+    data_count = place_data_in_packet(data_count, 4, data_byte32, data_packet_for_fram);  //place sample in the packet
     //lat_sd data
-    data_count = place_data_in_packet(data_count, &lat_sd, data_packet_for_fram);
+    data_count = place_data_in_packet(data_count, 1, &lat_sd, data_packet_for_fram);
     //long_sd data
-    data_count = place_data_in_packet(data_count, &long_sd, data_packet_for_fram);
+    data_count = place_data_in_packet(data_count, 1, &long_sd, data_packet_for_fram);
     //alt_sd data
-    data_count = place_data_in_packet(data_count, &alt_sd, data_packet_for_fram);
+    data_count = place_data_in_packet(data_count, 1, &alt_sd, data_packet_for_fram);
 
     Delay_ms(spacecraft_configuration.data.gps_sample_interval*1000);//delay for the GPS to be ready for next measurement
 	}
 
   Buffer_store_new_data(data_packet_for_fram);  //store the packet in FRAM
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] GPS payload data saved.\r\n");
+  #endif
   return 0;
 }
 
@@ -850,13 +861,17 @@ int8_t transmit_morse_telemetry (int8_t t){
 
   //sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId16 "  K\0", batt_volt, ADM_status, deploy_attempts);
   //Packet_cw_transmit_buffer(morse_string, strlen(morse_string), cw_tone_on, cw_tone_off); ***UNCOMMENT WHEN TX IS WORKING
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Morse telemetry sent\r\n");
+  #endif
   return 0;
 
 }
 
 int8_t exit_fbu(int8_t t){
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Wait Period Finished... Entering ADM Mode.\r\n");
+  #endif
   mode_switch(AD);
   return 0;
 }
@@ -864,7 +879,9 @@ int8_t exit_fbu(int8_t t){
 int8_t ad_deploy_attempt(int8_t t){
   //ATTEMPT TO DEPLOY ANTENNA
   uint16_t batt_volt = BATTERY_VOLTAGE;
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Attempting To Deploy Antenna...\r\n");
+  #endif
   //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V); //May need to change to 4, given in eps header)
   if(batt_volt >= BATTERY_THRESHOLD){
     LED_on(LED_B);  //debugging only
@@ -875,10 +892,14 @@ int8_t ad_deploy_attempt(int8_t t){
     deploy_attempts++;
     EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
     mode_switch(NF);  //This is temporary, when radio driver is complete you only exit adm via telecommand (to LP or NF depending on batt status)
+    #ifdef DEBUG_PRINT
     UART_puts(UART_INTERFACE, "[TASK] Antenna Deployed, Switched to NF Mode.\r\n");
+    #endif
   }
   else{
+    #ifdef DEBUG_PRINT
     UART_puts(UART_INTERFACE, "[TASK] Insufficient Battery Voltage, Waiting.\r\n");
+    #endif
     deploy_attempts++;
     EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
 
@@ -888,7 +909,9 @@ int8_t ad_deploy_attempt(int8_t t){
 
 int8_t save_morse_telemetry(int8_t t){
   //SAVE MORSE TELEMETRY
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Saving Morse Telemetry...\r\n");
+  #endif
   char morse_string[30];
   
   //char batt_str[20];
@@ -905,24 +928,32 @@ int8_t save_morse_telemetry(int8_t t){
 
   sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId32 "  K\0", batt_volt, ADM_char, deploy_attempts);
   Buffer_store_new_data(&morse_string);
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Morse Telemetry Saved.\r\n");
+  #endif
   return 0;
 }
 
 int8_t exit_ad(int8_t t){
   //EXIT AD MODE
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[AD][TASK] Exit AD mode\r\n");
+  #endif
   mode_switch(NF);
   return 0;
 }
 
 int8_t sm_reboot(int8_t t){
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[SM][TASK?] No contact from ground, rebooting...\r\n");
+  #endif
   return 0;
 }
 
 int8_t save_attitude(int8_t t){
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Saving IMU payload data...\r\n");
+  #endif
   //variables for creating the FRAM data packet
   // TODO: Generate dataset id - dataset ID is the index fo the slot from FRAM memory; need to be read in the downlinking mode
   uint8_t data_packet_for_fram[BUFFER_SLOT_SIZE/8];   //for storing data packet
@@ -942,11 +973,11 @@ int8_t save_attitude(int8_t t){
   
   RTC_getTime(&time_of_data_acquisition);                                             //get time of acquisition
   data_split_u32(time_of_data_acquisition, data_byte32);                              //split it
-  data_count = place_data_in_packet(data_count, data_byte32, data_packet_for_fram);//place in the FRAM packet
+  data_count = place_data_in_packet(data_count, 4, data_byte32, data_packet_for_fram);//place in the FRAM packet
 	// Get IMU temperature based on Ed's driver
   IMU_read_temp(&mems_temp);
   data_split_16(mems_temp, &data_byte16);                                              //split it
-  data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);//place in the FRAM packet
+  data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);//place in the FRAM packet
 	
   // Take multiple samples
 	for (uint8_t i=0; i<spacecraft_configuration.data.imu_sample_count; i++){
@@ -956,32 +987,36 @@ int8_t save_attitude(int8_t t){
     //placing measurements in the packet
     //mag_x measurement - splitting and placing in the FRAM packet 
     data_split_16(mag_x, data_byte16);
-    data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+    data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
     //mag_y measurement - splitting and placing in the FRAM packet
     data_split_16(mag_y, data_byte16);
-    data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+    data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
     //mag_z measurement - ...
     data_split_16(mag_z, data_byte16);
-    data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+    data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
     //gyro_x measurement - ...
     data_split_16(gyro_x, data_byte16);
-    data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+    data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
     //gyro_y measurement - ...
     data_split_16(gyro_y, data_byte16);
-    data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+    data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
     //gyro_z measurement - ...
     data_split_16(gyro_z, data_byte16);
-    data_count = place_data_in_packet(data_count, data_byte16, data_packet_for_fram);
+    data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
     
 		Delay_ms(spacecraft_configuration.data.imu_sample_interval*1000); // TODO: update time once it has been determined
 	}
   
   Buffer_store_new_data(data_packet_for_fram);
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished saving IMU payload data.\r\n");
+  #endif
 }
 
 int8_t  save_image_data(void){
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Saving Image data...\r\n");
+  #endif
   camera_result = Camera_capture(picture_size, no_of_pages, UART_INTERFACE, if_print, spacecraft_configuration.data.image_acquisition_profile);
   if(!camera_result){ return false; }
   return true;
@@ -1040,19 +1075,24 @@ int8_t check_health_status(int8_t t){
 	// Get current voltage of battery from EPS board
 
 	// Calculate checksums for all payload
-
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished checking health\r\n");
+  #endif
   return 0;
 }
 
 int8_t poll_transmitter(int8_t t){
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished polling transmitter\r\n");
+  #endif
   return 0;
 }
 
 int8_t take_picture(int8_t t){
   if(image_trigger == true){
+    #ifdef DEBUG_PRINT
     UART_puts(UART_INTERFACE, "[TASK] Taking picture\r\n");
+    #endif
     mode_switch(PT);
     image_trigger = false;
   }
@@ -1072,7 +1112,9 @@ int8_t process_gs_command(int8_t t){
       Timer_Properties.Timer_period[5] = modes[DL].opmode_tasks[5].period;
       queue_task(5, modes[DL].opmode_tasks[5].period);
     }
+    #ifdef DEBUG_PRINT
     UART_puts(UART_INTERFACE, "[TASK] Image Scheduled.\r\n");
+    #endif
 		break;
 		case ACK_REC_PACKETS:
 		// update entries for packets in meta-table stored in FRAM
@@ -1083,19 +1125,25 @@ int8_t process_gs_command(int8_t t){
 		break;
 		case UPDATE_CONFIG:
       mode_switch(CFU);
+      #ifdef DEBUG_PRINT
       UART_puts(UART_INTERFACE, "[TASK] Switched to config update mode.\r\n");
+      #endif
 		//generate config bytes and save to EEPROM
 		// in two separate locations
 		break;
 		case ENTER_SAFE_MODE:
       mode_switch(SM);
+      #ifdef DEBUG_PRINT
       UART_puts(UART_INTERFACE, "[TASK] Switched to safe mode.\r\n");
+      #endif
 		break;
 		case MANUAL_OVERRIDE:
 		//reboot or switch-off subsystem
 		break;
 	}
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished processing gs command.\r\n");
+  #endif
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1104,10 +1152,12 @@ int8_t process_gs_command(int8_t t){
 
 bool fbu_init(){
   uint16_t batt_volt = BATTERY_VOLTAGE;
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] FBU INITIALISED\r\n");
   char adm_stat[30];
   sprintf(adm_stat, "ADM status: %d\r\n", ADM_status);
   UART_puts(UART_INTERFACE, adm_stat);
+  #endif
   //Exit fbu immediately if antenna is not already deployed, reset flag with reset_adm_flag.c
   if(ADM_status == 1){
     //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V); //May need to change to 4, given in eps header)
@@ -1127,13 +1177,17 @@ bool fbu_init(){
 
 bool ad_init(){
   //Not (yet?) needed
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] AD INITIALISED\r\n");
+  #endif
   return true;
 }
 
 bool nf_init(){
   //Not (yet?) needed
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] NF INITIALISED\r\n");
+  #endif
   return true;
 }
 
@@ -1146,8 +1200,9 @@ bool lp_init(){
   /*EPS_setPowerRail(EPS_PWR_CAM, 0);
   EPS_setPowerRail(EPS_PWR_GPS, 0);
   EPS_setPowerRail(EPS_PWR_GPSLNA, 0);*/
-
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] LP INITIALISED\r\n");
+  #endif
   return true;
 }
 
@@ -1160,8 +1215,9 @@ bool sm_init(){
   /*EPS_setPowerRail(EPS_PWR_CAM, 0);
   EPS_setPowerRail(EPS_PWR_GPS, 0);
   EPS_setPowerRail(EPS_PWR_GPSLNA, 0);*/
-
+  #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[Task] SM INITIALISED\r\n");
+  #endif
   return true;
 }
 
@@ -1235,10 +1291,9 @@ void data_split_16(int16_t data, uint8_t  *split){
   split[1] = ((uint16_t) data & 0x0000ff00) >> 8;
 }
 //--------------------------------------FUNCTION FOR PLACING SEPARATE DATA IN ONE FRAM PACKET
-uint8_t place_data_in_packet(uint8_t position, uint8_t *data_bytes, uint8_t *data_packet){
-  int size = sizeof(data_bytes);  //can i replace with this first argument?
+uint8_t place_data_in_packet(uint8_t position, int size ,uint8_t *data_bytes, uint8_t *data_packet){
   for(int i=0; i<size; i++){
-    data_packet[position] = *(data_bytes+i);
+    data_packet[position] = *(data_bytes + i);
     position++;
   }
   return position;
@@ -1255,21 +1310,21 @@ uint8_t tenbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tai
     switch (*last_tail)
     {
     case 0: storage_temp = (eps_field >> 2); //if there is no bits left from previous reading then take top 8bits of this reading
-            data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);  //and store it in the FRAM
+            data_count = place_data_in_packet(data_count, 1 ,&storage_temp, data_packet_for_fram);  //and store it in the FRAM
             *reading_rest = eps_field & 0b11; *last_tail = 2; //save the two remaining bits and save the information about their quantity
       break;
     case 2: storage_temp = ((*reading_rest << 6) | (eps_field >> 4));  //if there are two bits from the previous reading put them on the top, add six top bits from the next reading
-            data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+            data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
             *reading_rest = eps_field & 0b1111; *last_tail = 4; //save the four remaining bits from the previous reading and save the information about their quantity
       break;
     case 4: storage_temp = ((*reading_rest << 4) | (eps_field >> 6));  //if there are four bits from previous 
-            data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+            data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
             *reading_rest = eps_field & 0b111111; *last_tail = 6;  //save the six remaining bits from the previous reading and save the information about thei quantity
       break;
     case 6: storage_temp = ((*reading_rest << 2) | (eps_field >>8));   //if there are six bits from the previous reading, add two top bits from the next reading
-            data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+            data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
             storage_temp = (uint8_t)(eps_field);
-            data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+            data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
             *reading_rest = 0; *last_tail = 0;
       break;
     }
@@ -1284,15 +1339,15 @@ uint8_t sixbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tai
     case 0: *reading_rest = eps_field; *last_tail = 6; //save the two remaining bits and save the information about their quantity
       break;
     case 2: storage_temp = ((*reading_rest << 6) | eps_field);  //if there are two bits from the previous reading put them on the top, add six top bits from the next reading
-            data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+            data_count = place_data_in_packet(data_count, 1 ,&storage_temp, data_packet_for_fram);
             *reading_rest = 0; *last_tail = 0; //save the four remaining bits from the previous reading and save the information about their quantity
       break;
     case 4: storage_temp = ((*reading_rest << 4) | (eps_field >> 2));  //if there are four bits from previous 
-            data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+            data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
             *reading_rest = eps_field & 0b11; *last_tail = 2;  //save the six remaining bits from the previous reading and save the information about thei quantity
       break;
     case 6: storage_temp = ((*reading_rest << 2) | (eps_field >> 4));   //if there are six bits from the previous reading, add two top bits from the next reading
-            data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+            data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
             *reading_rest = eps_field & 0b1111; *last_tail = 4;
       break;
     }
@@ -1305,25 +1360,25 @@ uint8_t sixteenbits_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *las
   data_split_u16(eps_field, data_bytes);
   switch (*last_tail)
   {
-  case 0: data_count = place_data_in_packet(data_count, data_bytes, data_packet_for_fram);
+  case 0: data_count = place_data_in_packet(data_count, 2, data_bytes, data_packet_for_fram);
           *last_tail = 0; *reading_rest = 0;
     break;
   case 2: storage_temp = ((*reading_rest << 6) | (data_bytes[1] >> 2));
-          data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+          data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
           storage_temp = ((data_bytes[1] << 6) | (data_bytes[0] >> 2));
-          data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+          data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
           *reading_rest = data_bytes[0] & 0b11; *last_tail = 2;
     break;
   case 4: storage_temp = ((*reading_rest << 4) | (data_bytes[1] >> 4));
-          data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+          data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
           storage_temp = ((data_bytes[1] << 4) | (data_bytes[0] >> 4));
-          data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+          data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
           *reading_rest = data_bytes[0] & 0b1111; *last_tail = 4;
     break;
   case 6: storage_temp = ((*reading_rest << 2) | (data_bytes[1] >> 6));
-          data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+          data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
           storage_temp = ((data_bytes[1] << 2) | (data_bytes[0] >> 6));
-          data_count = place_data_in_packet(data_count, &storage_temp, data_packet_for_fram);
+          data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
           *reading_rest = data_bytes[0] & 0b111111; *last_tail = 6;
     break;
   }
