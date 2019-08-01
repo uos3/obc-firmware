@@ -26,7 +26,6 @@
 #include "../board/memory_map.h"
 #include "../board/radio.h"
 
-//#define DEBUG_PRINT       //deifne keyword debug to enable every printing commands in this file
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
 #define BATTERY_VOLTAGE 6 //COMMENT WHEN USING EPS!!!
 #define BATTERY_THRESHOLD 7.5
@@ -54,7 +53,7 @@ int8_t save_attitude (int8_t t);            //completed - saves the IMU data
 int8_t sm_reboot(int8_t t);                 //TODO: write a body of function
 int8_t process_gs_command(int8_t t);        //TODO: revise what is done
 int8_t poll_transmitter(int8_t t);          //TODO: revise what is done, what is missing
-int8_t take_picture(int8_t);                //TODO: can the config resolution be extended? do we need picture length and no_of_pages?
+int8_t take_picture(int8_t);                //completed
 uint16_t perform_subsystem_check();         //TODO: write the IMUselftest function, detiermine where is decimal point in battery voltage and temperature readings, as well as temp readings from the sensors; finish function with this knowledge
 void update_radio_parameters();             //TODO: revise what need to be done 
 
@@ -354,22 +353,20 @@ void Mission_loop(void)
 
   // If there is a task to execute
   if (!circ_isEmpty(&task_pq)){
-    // peek
-    uint8_t todo_task_index = circ_peek(&task_pq);
+    uint8_t todo_task_index = circ_peek(&task_pq);    // peek the task
     #ifdef DEBUG_PRINT
     char output[100];
     sprintf(output,"%+06d\r\n", todo_task_index);
     UART_puts(UART_INTERFACE, output);
-    // execute
     UART_puts(UART_INTERFACE, "**executing**\r\n");
     #endif
-    current_tasks[todo_task_index].TickFct(NULL);
-
+    current_tasks[todo_task_index].TickFct(NULL);     // execute the function assigned to that task
+    #ifdef DEBUG_PRINT
     UART_puts(UART_INTERFACE, "**executed!**\r\n");
-    // reset timer for that tasks------------------------------------!!!!!
-
-    // pop the task
-    if(!circ_isEmpty(&task_pq)) circ_pop(&task_pq);
+    #endif
+    // reset timer for that tasks------------------------------------!!!!! - for sure? then the timer for the task will need to be set again
+    
+    if(!circ_isEmpty(&task_pq)) circ_pop(&task_pq);    // pop the task from the queue
   }
   #ifdef DEBUG_PRINT
   // Sleep
@@ -1290,7 +1287,7 @@ void data_split_16(int16_t data, uint8_t  *split){
   split[0] = ((uint16_t) data & 0x000000ff);
   split[1] = ((uint16_t) data & 0x0000ff00) >> 8;
 }
-//--------------------------------------FUNCTION FOR PLACING SEPARATE DATA IN ONE FRAM PACKET
+//--------------------------------------FUNCTION FOR PLACING SEPARATE DATA BYTES IN ONE FRAM PACKET----------------------------------------
 uint8_t place_data_in_packet(uint8_t position, int size ,uint8_t *data_bytes, uint8_t *data_packet){
   for(int i=0; i<size; i++){
     data_packet[position] = *(data_bytes + i);
@@ -1298,6 +1295,9 @@ uint8_t place_data_in_packet(uint8_t position, int size ,uint8_t *data_bytes, ui
   }
   return position;
 }
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+//----------------------------------------EPS PACKET FUCNTIONS - TO ORGANISE THE EPS DATA INTO THE FRAM PACKET------------------------------
 //functions for the use in the EPS health reading as the reading from the eps has sometimes 6 or 10 or 16 data bits, so we want to get rid off unnecessary bit
 //we start with the 10 bit data, so we take bit 9:2 from the number and store it in the memory, we need to keep two remaining bits 1:0 (in reading-rest variable) and put them into the memory
 //just after the previous part, therefore we construct 8bit number from remaining two bits and attach to it six top data bits from the next reading; now we need to keep four remaining bits and

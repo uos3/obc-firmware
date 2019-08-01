@@ -15,7 +15,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define EPS_BAUDRATE		9600
+#define EPS_BAUDRATE		    56000
 
 #define EPS_REG_CONFIG			0x00		//8bit
 #define EPS_REG_STATUS			0x01		//8bit

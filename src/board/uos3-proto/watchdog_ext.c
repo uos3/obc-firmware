@@ -9,7 +9,6 @@
  * @{
  */
 
-//#include "../firmware.h"
 #include "board.h"
 #include "../watchdog_ext.h"
 
@@ -18,7 +17,6 @@
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
-#include "driverlib/gpio.h"
 #include "driverlib/timer.h"
 #include "../led.h"
 
@@ -34,27 +32,29 @@ static WDT wdt = { GPIO_PF4 };
 //Timer0 interrupt handler
 void Timer0IntHandler(void)
 {	
-	/*//just for testing
-	UART_puts(UART_GNSS, "In watchdog interrupt\r\n");
-	char output [100];*/
-	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);		//clear the interrupt
+	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);		//clear the interrupt mask
 	watchdog_update--;
-	if(watchdog_update){
+	#ifdef DEBUG_PRINT
+	UART_puts(UART_INTERFACE, "\r\n### External Watchdog interrupt Handler");
+	#endif
+	if(watchdog_update>0){
 	GPIO_set(wdt.gpio);									//set the kick signal high
-	//just for testing
-	/*sprintf(output, "1 - In the IF, time is %u\r\n", temporary_time);
-	UART_puts(UART_GNSS, output);*/
-	//-------------------
+	#ifdef DEBUG_PRINT
+	char output_buffer[50];
+	sprintf(output_buffer, "\r\n### External watchdog kicked - \"watchdog_update\" is:	%d - greater than zero", watchdog_update);
+	UART_puts(UART_INTERFACE, output_buffer);
+	LED_on(LED_B);
+	#endif
 	TimerEnable(TIMER1_BASE, TIMER_A);					//start timer1
-	LED_toggle(LED_B);
 	}
-	//for test only---------
-	/*else
+	#ifdef DEBUG_PRINT
+	else
 	{
-	sprintf(output, "Watchdog not kicked, difference to big, wdt time is %u\r\n", temporary_time);
-	UART_puts(UART_GNSS,output);
-	}*/
-	//---------------------
+	char output_buffer2[100];
+	sprintf(output_buffer2, "\r\n### External watchdog not kicked!!! - \"watchdog_update\" is:	%d - smaller or equal to 0\r\n### MCU WILL REBOOT!!!", watchdog_update);
+	UART_puts(UART_INTERFACE, output_buffer);
+	}
+	#endif
 }
 //Timer1 interrupt handler
 void Timer1IntHandler(void)
@@ -98,10 +98,3 @@ void enable_watchdog_kick(void)
 	setinterrupt_wdt_risingedge();
 	setinterrupt_wdt_fallingedge();
 }
-//function to update the timestamp in the mission loop;
-//watchdog interrupt handler is comparing how much the timestamp from the mission loop
-//differ from the time at the interrupt moment; if the difference is bigger than 120sec
-//software is found to be hang up and the watchdog kick will not occur leading to RESET
-/*void update_watchdog_timestamp(){
-      RTC_getTime(&missionloop_time);
-}*/

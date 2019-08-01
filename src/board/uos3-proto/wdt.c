@@ -23,13 +23,22 @@
 
 void internal_wdt_handler(void){
     watchdog_update--;
-    if(watchdog_update){
-    WatchdogIntClear(WATCHDOG0_BASE);               //between the real time and last recorder mission time is smaller than 120s
+    if(watchdog_update>0){
+    WatchdogIntClear(WATCHDOG0_BASE);               
     WatchdogIntClear(WATCHDOG1_BASE);
-    UART_puts(UART_GNSS, "In the internal watchdog interrupt\r\n"); //only for test
-    }else{    
-    UART_puts(UART_GNSS, "int Watchdog not kicked!\r\n"); //only for test
+    #ifdef DEBUG_PRINT
+    char output_buffer[100];
+    sprintf(output_buffer, "\r\n$$$ Internal Watchdog cleared - \"watchdog_update\" is: %d - greater than zero", watchdog_update);
+    UART_puts(UART_INTERFACE, output_buffer);
+    #endif
     }
+    #ifdef DEBUG_PRINT
+    else{   
+    char output_buffer2[100]; 
+    sprintf(output_buffer2, "\r\n$$$ Internal Watchdog not cleared - \"watchdog_update\" is: %d - smaller or equal to 0\r\n$$$ MCU will reboot", watchdog_update); //only for test
+    UART_puts(UART_INTERFACE, output_buffer2);
+    }
+    #endif
 }
 
 void setup_internal_watchdogs(void){

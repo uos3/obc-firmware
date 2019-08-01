@@ -10,6 +10,9 @@
 #include <inttypes.h>
 #include <limits.h>
 
+/* Uncomment when debugging - enables all the print statements to be compiled */
+//#define DEBUG_PRINT       //define keyword debug to enable every printing commands in this file
+
 /* Round up N to the next multiple of S */
 #define ROUND_UP(N, S) ((((N) + (S) - 1) / (S)) * (S))
 
@@ -74,7 +77,6 @@
 #include "mission/mission.h"
 
 /* Test Interface */
-
 #define UART_INTERFACE UART_DEBUG_4
 
 /* ... */

@@ -1,7 +1,12 @@
+/**
+ * File purpose:        Antenna deployment demo
+ * Last modification:   27/07/2019
+ * Status:              Functional
+ */
 #include <stdio.h>
 #include "../firmware.h"
 
-#define BURN_TIME 2140
+#define BURN_TIME 7140
 #define WAIT_TIME 10000
 
 void Antenna_deploy_demo(void);

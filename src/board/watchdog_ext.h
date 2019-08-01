@@ -6,7 +6,7 @@
 * @details Driver for controlling and kicking external watchdog
 *
 * @ingroup drivers
-*/
+*/  
 
 // this is development code to aid in implementing watchdog kicking on interrupt
 
@@ -30,11 +30,22 @@
 
 #include "../firmware.h"
 //by md9u17
+/**
+ * @variable
+ * @ingroup watchdog_ext
+ * 
+ * Stores the integer value responsible for the watchdog reset,
+ * variable  is set in the mission loop to the value 0xFF,
+ * and decremented by 1 in each watchdog interrupt handler,
+ * if the mission loop will stuck, the variable will not be set back to 0XFF
+ * and in result will be 0 or smaller after some time, when this happened, watchdog is not kicked and MCU will reboot
+ */
 volatile uint8_t watchdog_update;
-void Timer0IntHandler(void);                //interrupt routine for setting high wdt kick signal and start Timer1 to count 10us
-void Timer1IntHandler(void);                //interrupt routine for setting low wdt kick signal after required hold time 10us
-void setinterrupt_wdt_risingedge(void);     //setting Timer0 for the interrupt and period 1.9s
-void setinterrupt_wdt_fallingedge(void);    //setting Timer1 for the interrupt and period 10us; Timer1 is started by Timer0IntHandler
-void enable_watchdog_kick(void);            //function to set the Timers 0 and 1 and therefore set watchdog kick
-void update_watchdog_timestamp(void);       //for getting current time in mission loop
+/**
+ * @function
+ * @ingroup watchdog_ext
+ * 
+ * Enables the external watchdog kick with the timers responsible for that operation
+ */
+void enable_watchdog_kick(void);
 #endif

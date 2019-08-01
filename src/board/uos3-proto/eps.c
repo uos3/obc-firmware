@@ -171,7 +171,8 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 
 static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value)
 {
-	char c;
+	char c;	
+	uint8_t temp;
 	uint16_t crc, bytes_expected, bytes_received;
 	uint32_t timeout, current_time;
 	//eps_slave_packet_single_t *data;
@@ -186,8 +187,15 @@ static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value)
 	eps_master_packet.crc_h = (uint8_t)((crc >> 8) & 0xFF);
 
 	/* Send Master Read Packet */
-	UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
-
+	temp = (eps_master_packet.write<<7) | (eps_master_packet.register_id);
+	//UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
+	UART_putc(UART_EPS, (char)temp);	//print each part of the message separately to avoid complicated casting
+	//UART_putb(UART_EPS, ((char *)&eps_master_packet+1), 5); //use this eventually to start from the value_l variable
+	UART_putc(UART_EPS, (char)eps_master_packet.value_l);
+	UART_putc(UART_EPS, (char)eps_master_packet.value_h);
+	UART_putc(UART_EPS, (char)eps_master_packet.crc_l);
+	UART_putc(UART_EPS, (char)eps_master_packet.crc_h);
+	
 	bytes_expected = 6;
 	bytes_received = 0;
 	RTC_getTime(&current_time);
