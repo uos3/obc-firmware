@@ -12,7 +12,7 @@ int main(void)
   uint16_t no_of_pages;
   Board_init();
   RTC_init();
-
+  
   UART_init(UART_INTERFACE,115200);
   UART_puts(UART_INTERFACE, "\r\nCamera Demo\r\nSTART\r\n");
 

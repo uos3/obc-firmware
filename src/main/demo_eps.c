@@ -40,16 +40,21 @@ int main(void){
 
     batt_v = 0;
     batt_i = 0;
-    EPS_getInfo(&batt_v, 0x50);
-    UART_puts(UART_INTERFACE, "\r\nSuccessfuly read voltage\r\n");
-    sprintf(output,"Voltage: %+06d\r\n", batt_v);
+    batt_t = 0;
+    if(!EPS_getInfo(&batt_v, EPS_REG_BAT_V)){UART_puts(UART_INTERFACE, "\r\nCRC incorrect");}
+    UART_puts(UART_INTERFACE, "\r\nSuccessfuly read voltage");
+    sprintf(output,"  Voltage: %d\r\n", batt_v);
     UART_puts(UART_INTERFACE, output);
-    Delay_ms(5000);/*
-    EPS_getInfo(&batt_i, EPS_REG_BAT_I);
-    UART_puts(UART_INTERFACE, "\r\nSuccessfuly read current\r\n");
-    sprintf(output,"Current: %+06d\r\n", batt_i);
+    if(!EPS_getInfo(&batt_i, EPS_REG_SW_ON)){UART_puts(UART_INTERFACE, "\r\nCRC not matched");}
+    UART_puts(UART_INTERFACE, "\r\nSuccessfuly read rails before setting");
+    sprintf(output,"Current: %x\r\n", batt_i);
+    UART_puts(UART_INTERFACE, output);
+    if(!EPS_setPowerRail(0x24)){UART_puts(UART_INTERFACE, "\r\nUnsuccessful");}
+    if(!EPS_getInfo(&batt_t, EPS_REG_SW_ON)){UART_puts(UART_INTERFACE, "\r\nCRC not matched");}
+    UART_puts(UART_INTERFACE, "\r\nSuccessfuly read rails after setting");
+    sprintf(output,"Current: %x\r\n", batt_t);
     UART_puts(UART_INTERFACE, output);
     //*/
-     //Delay_ms(5000);
+    Delay_ms(3000);
    }
 }

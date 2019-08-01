@@ -16,8 +16,8 @@
 #include "../../firmware.h"
 
 typedef struct eps_master_packet_t {
-  bool write:1;
   uint8_t register_id:7;
+  bool write:1;
   uint8_t value_l;
   uint8_t value_h;
   uint8_t crc_l;
@@ -73,9 +73,11 @@ bool EPS_getInfo(uint16_t *output, uint8_t regID)
   }
   EPS_COMMS_FAILS++;
   return false;*/
-  if(!EPS_readRegister(regID, &eps_slave_packet_single)){
+  if(EPS_readRegister(regID, &eps_slave_packet_single)){
 	  *output = eps_slave_packet_single.value;
 	  return true;
+  }else{
+	  return false;
   }
 }
 
@@ -91,7 +93,7 @@ bool EPS_togglePowerRail(uint8_t regVal)	{
 	}
 	return true;
 }
-
+//when received the command to turn off the MCU rail, the EPS turns it off and after 5ss turns it back ON - this operation was confirmed!
 bool EPS_setPowerRail(uint8_t regVal) {		//Requires intended states for every rail
 	uint8_t state = EPS_getPowerRail();
 	state ^= regVal;		//Finding the difference between the current states and the targets 
@@ -127,15 +129,8 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	eps_master_packet.crc_l = (uint8_t)crc & 0xFF;
 	eps_master_packet.crc_h = (uint8_t)((crc >> 8) & 0xFF);
 
-	temp = (eps_master_packet.write<<7) | (eps_master_packet.register_id);
 	/* Send Master Read Packet */
-	//UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
-	UART_putc(UART_EPS, (char)temp);	//print each part of the message separately to avoid complicated casting
-	//UART_putb(UART_EPS, ((char *)&eps_master_packet+1), 5); //use this eventually to start from the value_l variable
-	UART_putc(UART_EPS, (char)eps_master_packet.value_l);
-	UART_putc(UART_EPS, (char)eps_master_packet.value_h);
-	UART_putc(UART_EPS, (char)eps_master_packet.crc_l);
-	UART_putc(UART_EPS, (char)eps_master_packet.crc_h);
+	UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
 
 	bytes_expected = 6;
 	bytes_received = 0;

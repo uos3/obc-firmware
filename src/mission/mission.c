@@ -39,18 +39,18 @@ void Mission_SEU(void);
 void Mode_init(int8_t type);
 
 //System tasks functions
-int8_t save_eps_health_data(int8_t t);      //TODO: revision of checked/saved parameters; in the end there is an if statement about switching to the low power mode, The sign of the comparasion might be wrong
+int8_t save_eps_health_data(int8_t t);      //TODO: test
 int8_t save_gps_data(int8_t t);             //completed
 int8_t check_health_status(int8_t t);       //TODO: write body of this function
-int8_t save_image_data(void);               //TODO: finish camera driver
+int8_t save_image_data(void);               //completed
 int8_t ad_deploy_attempt(int8_t t);         
 int8_t save_morse_telemetry(int8_t t);      //TODO: revise the information/data we want to inlude here
 int8_t transmit_morse_telemetry(int8_t t);  //TODO: write the body of the function
 int8_t transmit_next_telemetry(int8_t t);   //TODO: revise what is written and complete the body
 int8_t exit_fbu (int8_t t);                 //completed
-int8_t exit_ad (int8_t t);                  //TODO: why any argument?
+int8_t exit_ad (int8_t t);                  //completed
 int8_t save_attitude (int8_t t);            //completed - saves the IMU data
-int8_t sm_reboot(int8_t t);                 //TODO: write a body of function
+int8_t sm_reboot(int8_t t);                 //completed
 int8_t process_gs_command(int8_t t);        //TODO: revise what is done
 int8_t poll_transmitter(int8_t t);          //TODO: revise what is done, what is missing
 int8_t take_picture(int8_t);                //completed
@@ -535,7 +535,7 @@ void Mode_init(int8_t type){
 			tasks_SM[SM_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
       tasks_SM[REBOOT_CHECK].period = 5;
-			tasks_SM[REBOOT_CHECK].TickFct = &sm_reboot;  //this funtion is just the print statement, should there be anything more?
+			tasks_SM[REBOOT_CHECK].TickFct = &sm_reboot;
 
 
       current_mode = SM;
@@ -758,13 +758,14 @@ int8_t save_eps_health_data(int8_t t){
   Buffer_store_new_data(data_packet_for_fram);
 
   uint16_t batt_volt = 0;
+  EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
   if(current_mode != SM){
-      if(EPS_getInfo(&batt_volt, EPS_REG_BAT_V) > BATTERY_THRESHOLD){ //shouldnt be opposite?, EPS_get info is a bool type, the statement will not work
+      if(batt_volt < spacecraft_configuration.data.low_voltage_threshold){ //shouldnt be opposite?, EPS_get info is a bool type, the statement will not work
       mode_switch(LP);
     }
   }
   if(current_mode == LP){
-    if(EPS_getInfo(&batt_volt, EPS_REG_BAT_V) > BATTERY_THRESHOLD){
+    if(batt_volt > spacecraft_configuration.data.low_voltage_recovery){
       mode_switch(NF);
     }
   }
@@ -873,8 +874,7 @@ int8_t exit_fbu(int8_t t){
   return 0;
 }
 
-int8_t ad_deploy_attempt(int8_t t){
-  //ATTEMPT TO DEPLOY ANTENNA
+int8_t ad_deploy_attempt(int8_t t){       //ATTEMPT TO DEPLOY THE ANTENNA
   uint16_t batt_volt = BATTERY_VOLTAGE;
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Attempting To Deploy Antenna...\r\n");
@@ -944,6 +944,7 @@ int8_t sm_reboot(int8_t t){
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[SM][TASK?] No contact from ground, rebooting...\r\n");
   #endif
+  SysCtlReset();                //call the software reset function and reboot the microcontroller with all tje peripherals
   return 0;
 }
 
@@ -968,13 +969,13 @@ int8_t save_attitude(int8_t t){
   uint8_t data_byte32[4];
   uint8_t data_byte16[2];
   
-  RTC_getTime(&time_of_data_acquisition);                                             //get time of acquisition
-  data_split_u32(time_of_data_acquisition, data_byte32);                              //split it
-  data_count = place_data_in_packet(data_count, 4, data_byte32, data_packet_for_fram);//place in the FRAM packet
+  RTC_getTime(&time_of_data_acquisition);                                               //get time of acquisition
+  data_split_u32(time_of_data_acquisition, data_byte32);                                //split it
+  data_count = place_data_in_packet(data_count, 4, data_byte32, data_packet_for_fram);  //place in the FRAM packet
 	// Get IMU temperature based on Ed's driver
   IMU_read_temp(&mems_temp);
-  data_split_16(mems_temp, &data_byte16);                                              //split it
-  data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);//place in the FRAM packet
+  data_split_16(mems_temp, &data_byte16);                                               //split it
+  data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);  //place in the FRAM packet
 	
   // Take multiple samples
 	for (uint8_t i=0; i<spacecraft_configuration.data.imu_sample_count; i++){
