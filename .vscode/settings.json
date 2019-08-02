@@ -10,7 +10,8 @@
         "eeprom.h": "c",
         "watchdog_ext.h": "c",
         "sysctl.h": "c",
-        "hw_ints.h": "c"
+        "hw_ints.h": "c",
+        "interrupt.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

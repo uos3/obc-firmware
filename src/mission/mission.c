@@ -131,6 +131,7 @@ uint8_t previous_mode;              //for returning to previous mode from certai
 bool FBU_exit_switch = false;
 
 //specific for ADM 
+#define BURN_TIME 7000
 uint32_t ADM_status;
 char ADM_char;
 uint32_t deploy_attempts;
@@ -882,7 +883,7 @@ int8_t ad_deploy_attempt(int8_t t){       //ATTEMPT TO DEPLOY THE ANTENNA
   //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V); //May need to change to 4, given in eps header)
   if(batt_volt >= BATTERY_THRESHOLD){
     LED_on(LED_B);  //debugging only
-    Antenna_deploy();
+    Antenna_deploy(BURN_TIME);
     LED_off(LED_B); //debugging only
     ADM_status = 1;
     EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status, 4);

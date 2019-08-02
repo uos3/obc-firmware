@@ -117,6 +117,7 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
 
   return RADIO_STATUS_OK;
 }
+
 //Function to set the cw_tone ON for Morse transmission
 //!problems with the preferredSettings_cw table!!! - cannot write the settings beacuse the table elements undefined while they should be
 //preferred settings table causing multiple problems with their initialisation

@@ -14,10 +14,10 @@
 
 #include "../antenna.h"
 
-void Antenna_deploy(void)
+void Antenna_deploy(uint16_t burn_time)
 {
   GPIO_set(GPIO_PB5);
-  Delay_ms(5000);
+  Delay_ms(burn_time);
   GPIO_reset(GPIO_PB5);
 }
 

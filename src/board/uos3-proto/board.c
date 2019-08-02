@@ -1,4 +1,4 @@
-/**
+ /**
  * @ingroup uos3-proto
  * @ingroup board
  *
@@ -21,15 +21,6 @@ void Board_init(void)
     //SysCtlClockSet(SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_SYSDIV_5 | SYSCTL_XTAL_8MHZ);
     SysCtlClockSet(SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_SYSDIV_5 | SYSCTL_XTAL_8MHZ);
 }
-
-//Dont forget to set last_WDT in each demo/mission code/driver this is used. Try to avoid using in drivers
-void WDT_wait_to_kick(uint64_t *last_WDT){
-    uint64_t timeout = 100;
-    while(!RTC_timerElapsed_ms(last_WDT, timeout));
-    WDT_kick();
-    RTC_getTime_ms(&last_WDT);
-}
-
 
 /**
  * @}

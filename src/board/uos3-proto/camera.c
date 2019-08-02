@@ -14,7 +14,7 @@
 #include "../delay.h"
 #include "../camera.h"
 #include "../../configuration/configuration.h"
-#include "../../firmware.h"
+//#include "../../firmware.h"
 #include <inttypes.h>
 
 //-------------------------------------CAMERA COMMANDS-----------------------------------------------
@@ -107,7 +107,7 @@ static bool Camera_command(char *command, uint32_t command_length, char *respons
   return true;
 }
 //function for setting the resolution of the image according to the chosen configuration
-void set_resolution(bool resolution){
+void set_resolution(image_acquisition_profile_t resolution){
   switch (resolution)
   {
 /* Set the resolution of the picture according to the configuration file */

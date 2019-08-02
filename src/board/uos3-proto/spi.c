@@ -80,7 +80,7 @@ static SPI_t SPI_spis[3] =
     },
     { 
       &SPI_ports[0],
-      GPIO_PC5,
+      GPIO_PD6,
       false
     }
   };

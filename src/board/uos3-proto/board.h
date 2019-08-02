@@ -72,8 +72,8 @@
 #define UART_DEBUG_6        0x3
 #define UART_DEBUG_4        0x4
 
-#define SPI_RADIO_RX	0x0
-#define SPI_RADIO_TX	0x1
+#define SPI_RADIO_RX	    0x0
+#define SPI_RADIO_TX	    0x1
 #define SPI_FRAM			0x2
 
 
