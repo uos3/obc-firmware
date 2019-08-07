@@ -61,9 +61,10 @@ static const registerSetting_t preferredSettings_cw[]=
 
 static double freq = 145.5;
 static double pwr = 10.0;
-
+static struct radio_config_t radio_freq_power;
 static uint8_t buffer[17] = "UOS3 UOS3 UOS3 k\0";
 static uint32_t buffer_length = 16;
+
 
 static void cw_tone_on(void)
 {
@@ -85,6 +86,8 @@ int main(void)
 {
   uint8_t pwr_reg;
   char output[100];
+  radio_freq_power.frequency = freq;
+  radio_freq_power.power = pwr;
 
   Board_init();
 
@@ -109,7 +112,7 @@ int main(void)
     sprintf(output,"Sending Beacon :\"%s\"\r\n", buffer);
     UART_puts(UART_INTERFACE, output);
 
-    Packet_cw_transmit_buffer(buffer, buffer_length, cw_tone_on, cw_tone_off);
+    Packet_cw_transmit_buffer(buffer, buffer_length, &radio_freq_power, cw_tone_on, cw_tone_off);
     UART_puts(UART_INTERFACE, "Sent.\r\n");
 
     Delay_ms(3000);
