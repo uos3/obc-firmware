@@ -43,8 +43,10 @@ static uint16_t EPS_crc(uint8_t *message, int32_t offset, int32_t length);
 
 void EPS_init(void)
 {
-  UART_init(UART_EPS, EPS_BAUDRATE);
+  	UART_init(UART_EPS, EPS_BAUDRATE);
 }
+
+
 
 bool EPS_selfTest(void)
 {
@@ -101,6 +103,14 @@ bool EPS_setPowerRail(uint8_t regVal) {		//Requires intended states for every ra
 
 }
 
+bool EPS_resetPowerRail(uint8_t regVal)	{
+	if (EPS_togglePowerRail(regVal))	{
+		Delay_ms(2000);
+		return EPS_togglePowerRail(regVal);
+	}
+	return false
+}
+
 uint8_t EPS_getPowerRail() {
 	uint8_t attempts = 0;
 	while (attempts < 3 && !EPS_readRegister(EPS_REG_SW_ON, &eps_slave_packet_single)) {
@@ -112,6 +122,7 @@ uint8_t EPS_getPowerRail() {
 	}
 	return eps_slave_packet_single.value;
 }
+
 
 static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *data)
 {

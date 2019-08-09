@@ -13,8 +13,12 @@ int main(void){
 
   UART_puts(UART_INTERFACE, "\r\n** INIT COMPLETE **\r\n");
 
+  if (testGet) {
+    EPS_setPowerRail(0b111111);
+  }
   char output[100];
   uint16_t batt_v, batt_i, batt_t, data;
+
 
   //
   // EPS_getBatteryInfo(&batt_i, EPS_REG_BAT_I);

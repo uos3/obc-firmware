@@ -20,8 +20,8 @@
 #define EPS_REG_CONFIG			0x00		//8bit
 #define EPS_REG_STATUS			0x01		//8bit
 #define EPS_REG_SW_ON			0x02		//6bit		//Setting a bit in SW_ON to one toggles the state of the corresponding rail, also used for getting the current state of the rails
-#define EPS_REG_POWER			0x03		//6bit
-#define EPS_REG_BAT_V			0x04		//16bit
+#define EPS_REG_RESET			0x03		//6bit      //Resets (PUC) the EPS via forcing watchdog timeout
+#define EPS_REG_BAT_V			0x04		//16bit     //Can reset the battery if set to
 #define EPS_REG_BAT_I			0x05		//16bit
 #define EPS_REG_BAT_T			0x06		//16bit
 #define EPS_REG_SOLAR_POS_X1_I		0x07		//16bit     //using the convention that +X <-> north; -X <-> south
@@ -115,6 +115,9 @@ bool EPS_getInfo(uint16_t *voltage, uint8_t type);
 
 uint8_t EPS_getPowerRail();
 
+//Sets all power rails to the states indicated in regVal
 bool EPS_setPowerRail(uint8_t regVal);
+//Resets all power rails corresponding with a 1 in regVal
+void EPS_resetPowerRail(uint8_t regVal);
 
 #endif /* __EPS_H__ */
