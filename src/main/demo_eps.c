@@ -18,7 +18,8 @@ int main(void){
   }
   char output[100];
   uint16_t batt_v, batt_i, batt_t, data;
-
+  uint8_t railNo = 0;
+  uint16_t loopCount = 0;
 
   //
   // EPS_getBatteryInfo(&batt_i, EPS_REG_BAT_I);
@@ -38,6 +39,8 @@ int main(void){
 		UART_puts(UART_INTERFACE, output);
     Delay_ms(1000);
     }*/
+    loopCount++;
+
     if (batTest)  {
       batt_v = 0;
       batt_i = 0;
@@ -59,23 +62,38 @@ int main(void){
 
 
     if (testGet) {
+      //Sets 1 rail to off at a time, for an interval of 500ms excluding the TOBC rail
+      EPS_setPowerRail((0x63&~(1<<railNo))|EPS_PWR_MCU);
+      railNo++;
+      if (railNo>5) {
+        railNo = 0;
+      }
+      Delay_ms(500);
+      if (railNo==0) {
+        EPS_wri
+      }
+      //Checking the UART is still connected and both devices switched on
       if (EPS_selfTest()) {
         UART_puts(UART_INTERFACE, "SelfTest success");
       } else {
         UART_puts(UART_INTERFACE, "SelfTest fail");
       }
 
+      EPS_testWrongCRC();
+      EPS_testPartialPacket();
       uint8_t i;
-        for (i=2, i<35, i++)  {
-          if(!EPS_getInfo(&data, i))  {
-            sprintf(output,"Register %x unsuccessful\r\n", i);
-            UART_puts(UART_INTERFACE, output);
-            }
-          sprintf(output,"Register: %x Data: %x\r\n", i, data);
+      for (i=2, i<35, i++)  {
+        if(!EPS_getInfo(&data, i))  {
+          sprintf(output,"Register %x unsuccessful\r\n", i);
           UART_puts(UART_INTERFACE, output);
-        }
-    }
-  Delay_ms(5000);
+          }
+        sprintf(output,"Register: %x Data: %x\r\n", i, data);
+        UART_puts(UART_INTERFACE, output);
+      }
+      
+      EPS_setPowerRail(0x63);
+    } 
+  Delay_ms(500);
 
   }
 }

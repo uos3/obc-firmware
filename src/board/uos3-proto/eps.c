@@ -95,14 +95,16 @@ bool EPS_togglePowerRail(uint8_t regVal)	{
 	}
 	return true;
 }
-//when received the command to turn off the MCU rail, the EPS turns it off and after 5ss turns it back ON - this operation was confirmed!
+/*when received the command to turn off the MCU rail, the EPS turns it off and after 5s turns it back ON
+- this operation was confirmed!
+*/
 bool EPS_setPowerRail(uint8_t regVal) {		//Requires intended states for every rail
 	uint8_t state = EPS_getPowerRail();
 	state ^= regVal;		//Finding the difference between the current states and the targets 
 	return EPS_togglePowerRail(state);
-
 }
 
+//Toggles state of a power rail, waits 2 secs then toggles it again
 bool EPS_resetPowerRail(uint8_t regVal)	{
 	if (EPS_togglePowerRail(regVal))	{
 		Delay_ms(2000);
@@ -121,6 +123,108 @@ uint8_t EPS_getPowerRail() {
 		return 0;
 	}
 	return eps_slave_packet_single.value;
+}
+
+static bool EPS_testPartialPacket(uint8_t register_id)
+{
+	char c;
+	uint8_t temp;
+	uint16_t crc, bytes_expected, bytes_received;
+	uint32_t timeout, current_time;
+	eps_slave_packet_single_t *data;
+	/* Construct Master Read Packet */
+	eps_master_packet.write = false;
+	eps_master_packet.register_id = (register_id & 0x7F); // filters first 7 bits
+	eps_master_packet.value_l = 1; // no. of registers to read
+	eps_master_packet.value_h = 0;
+	crc = EPS_crc((uint8_t *)&eps_master_packet, 0, 3);
+	eps_master_packet.crc_l = (uint8_t)crc & 0xFF;
+	eps_master_packet.crc_h = (uint8_t)((crc >> 8) & 0xFF);
+
+	/* Send Master Read Packet */
+	UART_putb(UART_EPS, (char *)&eps_master_packet, 3);
+
+	bytes_expected = 6;
+	bytes_received = 0;
+	RTC_getTime(&current_time);
+	timeout = current_time;
+	while(0)
+	{
+		if(UART_getc_nonblocking(UART_EPS, &c))
+		{
+      //UART_puts(UART_INTERFACE, "\r\nHeard back from EPS.\r\n");
+
+			((char *)(data))[bytes_received] = c;
+			if(++bytes_received == bytes_expected)
+			{
+				break;
+			}
+		}
+		RTC_getTime(&current_time);
+	}
+	if(bytes_received != bytes_expected)
+	{
+		return false;
+	}
+
+	crc = EPS_crc((uint8_t *)data, 0, 4);
+	if(crc != data->crc)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+static bool EPS_testWrongCRC(uint8_t register_id)
+{
+	char c;
+	uint8_t temp;
+	uint16_t crc, bytes_expected, bytes_received;
+	uint32_t timeout, current_time;
+	eps_slave_packet_single_t *data;
+	/* Construct Master Read Packet */
+	eps_master_packet.write = false;
+	eps_master_packet.register_id = (register_id & 0x7F); // filters first 7 bits
+	eps_master_packet.value_l = 1; // no. of registers to read
+	eps_master_packet.value_h = 0;
+	crc = EPS_crc((uint8_t *)&eps_master_packet, 0, 3);
+	eps_master_packet.crc_l = 0x4;
+	eps_master_packet.crc_h = 0x4;
+
+	/* Send Master Read Packet */
+	UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
+
+	bytes_expected = 6;
+	bytes_received = 0;
+	RTC_getTime(&current_time);
+	timeout = current_time;
+	while(0)
+	{
+		if(UART_getc_nonblocking(UART_EPS, &c))
+		{
+      //UART_puts(UART_INTERFACE, "\r\nHeard back from EPS.\r\n");
+
+			((char *)(data))[bytes_received] = c;
+			if(++bytes_received == bytes_expected)
+			{
+				break;
+			}
+		}
+		RTC_getTime(&current_time);
+	}
+	if(bytes_received != bytes_expected)
+	{
+		return false;
+	}
+
+	crc = EPS_crc((uint8_t *)data, 0, 4);
+	if(crc != data->crc)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 

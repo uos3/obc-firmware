@@ -20,7 +20,7 @@
 #define EPS_REG_CONFIG			0x00		//8bit
 #define EPS_REG_STATUS			0x01		//8bit
 #define EPS_REG_SW_ON			0x02		//6bit		//Setting a bit in SW_ON to one toggles the state of the corresponding rail, also used for getting the current state of the rails
-#define EPS_REG_RESET			0x03		//6bit      //Resets (PUC) the EPS via forcing watchdog timeout
+#define EPS_REG_RESET			0x03		//0bit (set only)      //Resets (PUC) the EPS via forcing watchdog timeout
 #define EPS_REG_BAT_V			0x04		//16bit     //Can reset the battery if set to
 #define EPS_REG_BAT_I			0x05		//16bit
 #define EPS_REG_BAT_T			0x06		//16bit
@@ -65,11 +65,11 @@
 #define EPS_REG_SUPPLY_5_V		0x2D		//16bit
 #define EPS_REG_SUPPLY_5_I		0x2E		//16bit
 #define EPS_REG_CHARGE_I		0x2F		//16bit
-#define EPS_REG_MPPT_BUS_V		0x30		//16bit
+#define EPS_REG_MPPT_BUS_V		0x30		//16bit //Battery charge voltage
 #define EPS_REG_CRC_ER_CNT		0x31		//16bit	
 #define EPS_REG_DROP_CNT		0x32		//16bit
 #define EPS_REG_SW_OFF			0x33		//6bit
-#define EPS_KNOWN_VAL			0x34
+#define EPS_KNOWN_VAL			0x34        //6bit       //For self testing holds 42
 
 #define EPS_ID			0x42	//The value held by EPS_KNOWN_VAL
 
@@ -101,19 +101,21 @@ void EPS_init(void);
  */
 bool EPS_selfTest(void);
 
-/**
- * @function
- * @ingroup eps
- *
- * Read Battery Voltage
- *
- * @parameter uint16_t* Pointer to store result.
- * @returns bool True if transaction is successful, False else.
- */
 
-bool EPS_getInfo(uint16_t *voltage, uint8_t type);
 
+//Used for external access of data from EPS, returns true if successful
+bool EPS_getInfo(uint16_t *output, uint8_t regID);
+
+//Gets the current state of the power rails
 uint8_t EPS_getPowerRail();
+
+
+//Sends a packet with an incorrect CRC value
+static bool EPS_testWrongCRC(uint8_t register_id);
+
+//Sends a 4 byte (incomplete) packet to the EPS
+static bool EPS_testPartialPacket(uint8_t register_id);
+
 
 //Sets all power rails to the states indicated in regVal
 bool EPS_setPowerRail(uint8_t regVal);
