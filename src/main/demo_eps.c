@@ -62,6 +62,21 @@ int main(void){
 
 
     if (testGet) {
+
+      //When 20 loops have completed, approx 30s
+      if  (loopCount%20 == 0) {
+        //Switch off all rails
+        EPS_writeRegister(0x33, 0);
+        Delay_ms(2000);
+        //Switch on all rails
+        EPS_setPowerRail(0x63);
+        //Reset battery
+        EPS_writeRegister(0x04, 0);
+        Delay_ms(2000);
+        //Reset EPS
+        EPS_writeRegister(0x03, 0);
+      }
+      
       //Sets 1 rail to off at a time, for an interval of 500ms excluding the TOBC rail
       EPS_setPowerRail((0x63&~(1<<railNo))|EPS_PWR_MCU);
       railNo++;
@@ -93,7 +108,7 @@ int main(void){
       
       EPS_setPowerRail(0x63);
     } 
-  Delay_ms(500);
+  Delay_ms(1000);
 
   }
 }
