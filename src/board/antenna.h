@@ -22,7 +22,7 @@
  * switching on the MOSFET for a short period.
  * @arguments burn_time (ms) - burning time of the resistor
  */
-void Antenna_deploy(burn_time);
+void Antenna_deploy(uint16_t burn_time);
 
 /**
  * @function

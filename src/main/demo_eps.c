@@ -2,9 +2,10 @@
 #include "../firmware.h"
 
 #include <stdio.h>
-#define testGet 0
+#define testGet 1
 #define batTest 0
 int main(void){
+  
   Board_init();
   EPS_init();
   RTC_init();
@@ -40,6 +41,7 @@ int main(void){
     Delay_ms(1000);
     }*/
     loopCount++;
+    UART_puts(UART_INTERFACE, "Looping");
 
     if (batTest)  {
       batt_v = 0;
@@ -65,6 +67,8 @@ int main(void){
 
       //When 20 loops have completed, approx 30s
       if  (loopCount%20 == 0) {
+        UART_puts(UART_INTERFACE, "Loop 20, testing resetting");
+
         //Switch off all rails
         EPS_writeRegister(0x33, 0);
         Delay_ms(2000);
@@ -84,9 +88,7 @@ int main(void){
         railNo = 0;
       }
       Delay_ms(500);
-      if (railNo==0) {
-        EPS_wri
-      }
+
       //Checking the UART is still connected and both devices switched on
       if (EPS_selfTest()) {
         UART_puts(UART_INTERFACE, "SelfTest success");
@@ -94,10 +96,10 @@ int main(void){
         UART_puts(UART_INTERFACE, "SelfTest fail");
       }
 
-      EPS_testWrongCRC();
-      EPS_testPartialPacket();
+      EPS_testWrongCRC(0x04);
+      EPS_testPartialPacket(0x04);
       uint8_t i;
-      for (i=2, i<35, i++)  {
+      for (i=2; i<35; i++)  {
         if(!EPS_getInfo(&data, i))  {
           sprintf(output,"Register %x unsuccessful\r\n", i);
           UART_puts(UART_INTERFACE, output);

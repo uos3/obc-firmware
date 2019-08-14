@@ -37,7 +37,7 @@ static eps_master_packet_t eps_master_packet;
 static eps_slave_packet_single_t eps_slave_packet_single;
 
 static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *data);
-static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value);
+//static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value);
 static uint16_t EPS_crc(uint8_t *message, int32_t offset, int32_t length);
 
 
@@ -110,7 +110,7 @@ bool EPS_resetPowerRail(uint8_t regVal)	{
 		Delay_ms(2000);
 		return EPS_togglePowerRail(regVal);
 	}
-	return false
+	return false;
 }
 
 uint8_t EPS_getPowerRail() {
@@ -125,7 +125,7 @@ uint8_t EPS_getPowerRail() {
 	return eps_slave_packet_single.value;
 }
 
-static bool EPS_testPartialPacket(uint8_t register_id)
+bool EPS_testPartialPacket(uint8_t register_id)
 {
 	char c;
 	uint8_t temp;
@@ -176,7 +176,7 @@ static bool EPS_testPartialPacket(uint8_t register_id)
 	return true;
 }
 
-static bool EPS_testWrongCRC(uint8_t register_id)
+bool EPS_testWrongCRC(uint8_t register_id)
 {
 	char c;
 	uint8_t temp;
@@ -279,7 +279,7 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	return true;
 }
 
-static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value)
+bool EPS_writeRegister(uint8_t register_id, uint8_t register_value)
 {
 	char c;	
 	uint8_t temp;

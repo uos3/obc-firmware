@@ -111,17 +111,17 @@ uint8_t EPS_getPowerRail();
 
 
 //Sends a packet with an incorrect CRC value
-static bool EPS_testWrongCRC(uint8_t register_id);
+bool EPS_testWrongCRC(uint8_t register_id);
 
 //Sends a 4 byte (incomplete) packet to the EPS
-static bool EPS_testPartialPacket(uint8_t register_id);
+bool EPS_testPartialPacket(uint8_t register_id);
 
 
 //Sets all power rails to the states indicated in regVal
 bool EPS_setPowerRail(uint8_t regVal);
 //Resets all power rails corresponding with a 1 in regVal
-void EPS_resetPowerRail(uint8_t regVal);
+bool EPS_resetPowerRail(uint8_t regVal);
 
-static bool EPS_writeRegister(uint8_t register_id, uint8_t register_value);
+bool EPS_writeRegister(uint8_t register_id, uint8_t register_value);
 
 #endif /* __EPS_H__ */
