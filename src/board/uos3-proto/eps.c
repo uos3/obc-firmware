@@ -113,7 +113,7 @@ bool EPS_resetPowerRail(uint8_t regVal)	{
 	return false;
 }
 
-uint8_t EPS_getPowerRail() {
+uint8_t EPS_getPowerRail(void) {
 	uint8_t attempts = 0;
 	while (attempts < 3 && !EPS_readRegister(EPS_REG_SW_ON, &eps_slave_packet_single)) {
 		attempts++;

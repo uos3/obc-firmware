@@ -40,6 +40,10 @@
 
 //#include "../firmware.h"
 
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+
 typedef uint8_t rfStatus_t;
 
 /******************************************************************************

@@ -1,6 +1,6 @@
 /* This file contains all header files */
 
-#ifndef __FIRMWARE_H__
+#ifndef __FIRMWARE_H__  //Wanna try getting rid of these
 #define __FIRMWARE_H__
 
 #include <string.h>

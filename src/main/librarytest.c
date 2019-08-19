@@ -1,9 +1,3 @@
-#include <string.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <inttypes.h>
-#include <limits.h>
 
 //To isolate a libraries error messages
 //comment firmware.h out of it

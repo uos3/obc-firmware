@@ -24,7 +24,7 @@
 #include "inc/hw_memmap.h"
  
 #include "../board/memory_map.h"
-#include "../board/radio.h"
+// #include "../board/radio.h"
 
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
 #define BATTERY_VOLTAGE 6 //COMMENT WHEN USING EPS!!!
@@ -57,9 +57,9 @@ int8_t take_picture(int8_t);                //completed
 uint16_t perform_subsystem_check();         //TODO: write the IMUselftest function, detiermine where is decimal point in battery voltage and temperature readings, as well as temp readings from the sensors; finish function with this knowledge
 void update_radio_parameters();             //TODO: revise what need to be done 
 
-//creating Morse signals
-static void cw_tone_on(void);
-static void cw_tone_off(void);
+//creating Morse signals now in radio.h
+// static void cw_tone_on(void);
+// static void cw_tone_off(void);
 
 //queue implementation and transition functions
 void suspend_all_tasks();
@@ -261,6 +261,7 @@ ulPeriod = SysCtlClockGet();                                //get MCU clock rate
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //-------------------------------------FUNCTIONS FOR THE MORSE TELEMTRY-----------------------------------------------
+
 //MOVED TO THE RADIO.C file
 /*
 static void cw_tone_on(void)

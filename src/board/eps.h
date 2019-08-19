@@ -107,7 +107,7 @@ bool EPS_selfTest(void);
 bool EPS_getInfo(uint16_t *output, uint8_t regID);
 
 //Gets the current state of the power rails
-uint8_t EPS_getPowerRail();
+uint8_t EPS_getPowerRail(void);
 
 
 //Sends a packet with an incorrect CRC value

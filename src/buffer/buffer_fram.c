@@ -5,7 +5,8 @@
  *
  * @{
  */
-
+#ifndef __BUFFER_FRAM_H__
+#define __BUFFER_FRAM_H__
 #include "../firmware.h"
 
 /*** Read ***/
@@ -63,6 +64,7 @@ void Buffer_FRAM_write_data(uint16_t slot, uint8_t *data)
   FRAM_write((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE);
 }
 
+#endif
 /**
  * @}
  */

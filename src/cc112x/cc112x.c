@@ -7,9 +7,9 @@
 #include <inttypes.h>
 #include <limits.h>
 
-#include "spi.h"
+#include "../board/spi.h"
 #include "cc112x.h"
-
+#include "cc112x_spi.h"
 #if CC_XO_FREQ != 38400000
   #error CC112X Lib is currently hardcoded for CC_XO_FREQ of 38.4MHz
 #endif

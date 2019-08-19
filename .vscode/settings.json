@@ -12,7 +12,11 @@
         "sysctl.h": "c",
         "hw_ints.h": "c",
         "interrupt.h": "c",
-        "limits.h": "c"
+        "limits.h": "c",
+        "cc112x_spi.h": "c",
+        "packet.h": "c",
+        "string.h": "c",
+        "configuration.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

@@ -138,10 +138,13 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_con
 {
 	uint32_t i, j;
 	uint8_t c;
+  	char output[100];
 
 	for(i=0; i<cw_length; i++)
 	{
 		c = cw_buffer[i];
+		sprintf(output,"Sending Character :\"%c\"\r\n", c);
+    	UART_puts(UART_INTERFACE, output);
 
 		/* Move lower case to upper case */
 		if((c >= 97) && (c <= 122))
@@ -152,6 +155,7 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_con
 		/* Bounds check - move to next character if invalid */
 		if((c < 32) || (c > 91))
 		{
+			UART_puts(UART_INTERFACE, "Bounds check failed");
 			continue;
 		}
 
@@ -174,19 +178,25 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_con
 				case GCC_BINARY(0b01):
 					/* Dit */
 					_cw_on(Radio_config);
+					LED_on(LED_B);
 					Delay_ms(CW_PERIOD_MS);
 					break;
 				case GCC_BINARY(0b11):
 					/* Dah */
 					_cw_on(Radio_config);
+					LED_on(LED_B);
 					Delay_ms(CW_PERIOD_MS);
 					Delay_ms(CW_PERIOD_MS);
 					Delay_ms(CW_PERIOD_MS);
 					break;
 				default:
+					UART_puts(UART_INTERFACE, "Lookup failed");
 					break;
 			}
 			_cw_off();
+			LED_off(LED_B);
+			UART_puts(UART_INTERFACE, "Char sent");
+
 			/* Inter pulse pause */
 			Delay_ms(CW_PERIOD_MS);
 			if(j==0)

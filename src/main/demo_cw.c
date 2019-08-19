@@ -98,13 +98,14 @@ int main(void)
   char output[100];
 
   Board_init();
-
+  RTC_init();
+  //enable_watchdog_kick();
   UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\nCW Radio Demo\r\n");
 
   sprintf(output,"Freq: %.3fMHz, Power: %+.1fdBmW\r\n", radio_transmitter.frequency, radio_transmitter.power);
   UART_puts(UART_INTERFACE, output);
-
+  
   while(1)
   {
     sprintf(output,"Sending Beacon :\"%s\"\r\n", buffer);

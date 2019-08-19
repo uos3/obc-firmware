@@ -1,6 +1,7 @@
 #include "cc112x_spi.h"
+#include "../board/spi.h"
 
-#include "../firmware.h"
+//#include "../firmware.h"
 
 rfStatus_t cc112xSpiReadReg(uint8_t spi_device, uint16_t addr, uint8_t *data)
 {
