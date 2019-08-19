@@ -38,7 +38,7 @@
 #ifndef CC112x_SPI_H
 #define CC112x_SPI_H
 
-//#include "../firmware.h"
+#include "../firmware.h"
 
 typedef uint8_t rfStatus_t;
 
@@ -266,6 +266,8 @@ typedef uint8_t rfStatus_t;
 #define CC112X_STATE_SETTLING           0x50
 #define CC112X_STATE_RXFIFO_ERROR       0x60
 #define CC112X_STATE_TXFIFO_ERROR       0x70
+
+
 
 
 

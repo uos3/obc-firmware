@@ -69,6 +69,7 @@ extern "C" {
 // TX power = 15
 // Deviation = 20.019531
 // Rf settings for CC1120
+
 static const registerSetting_t preferredSettings[] = {
     {CC112X_IOCFG3,         0x59},
     {CC112X_IOCFG2,         0x13},

@@ -11,9 +11,13 @@
 #ifndef __RADIO_H__
 #define __RADIO_H__
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
+// #include <stddef.h>
+// #include <stdint.h>
+// #include <stdbool.h>
+// #include "../cc112x/cc112x.h"
+// #include "../cc112x/cc112x_spi.h"
+#include "../firmware.h"
+
 
 typedef struct radio_config_t{
 	double frequency; // MHz
@@ -38,10 +42,12 @@ Radio_Status_t Radio_rx_receive(radio_config_t *radio_config, uint8_t *receive_b
 
 Radio_Status_t Radio_rx_off(radio_config_t *radio_config);
 
+void cw_tone_on(radio_config_t *radio_config);
+void cw_tone_off();
 
 #endif /*  __RADIO_H__ */
-/*
-static const registerSetting_t preferredSettings_fsk[]= 
+
+const registerSetting_t preferredSettings_fsk[]= 
 {
   {CC112X_IOCFG3,            0x59},
   {CC112X_IOCFG2,            0x13},
@@ -89,7 +95,7 @@ static const registerSetting_t preferredSettings_fsk[]=
   {CC112X_XOSC3,             0xC7},
   {CC112X_XOSC1,             0x07},
 };
-static const registerSetting_t preferredSettings_cw[]= 
+const registerSetting_t preferredSettings_cw[]= 
 {
    {CC112X_IOCFG3,            0x59},
    {CC112X_IOCFG2,            0x13},
@@ -141,4 +147,4 @@ static const registerSetting_t preferredSettings_cw[]=
    {CC112X_XOSC3,             0xC7},
    {CC112X_XOSC1,             0x07},
    {CC112X_SERIAL_STATUS,     0x08},
-};*/
+};

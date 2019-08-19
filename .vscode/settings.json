@@ -11,7 +11,8 @@
         "watchdog_ext.h": "c",
         "sysctl.h": "c",
         "hw_ints.h": "c",
-        "interrupt.h": "c"
+        "interrupt.h": "c",
+        "limits.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

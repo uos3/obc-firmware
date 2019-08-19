@@ -1,7 +1,11 @@
 #ifndef __CC112x_H__
 #define __CC112x_H__
 
-#include "../firmware.h"
+//#include "../firmware.h"
+
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
 
 #define CC_XO_FREQ 38400000
 
