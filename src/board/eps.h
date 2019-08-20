@@ -21,7 +21,7 @@
 #define EPS_REG_STATUS			0x01		//8bit
 #define EPS_REG_SW_ON			0x02		//6bit		//Setting a bit in SW_ON to one toggles the state of the corresponding rail, also used for getting the current state of the rails
 #define EPS_REG_RESET			0x03		//0bit (set only)      //Resets (PUC) the EPS by forcing watchdog timeout
-#define EPS_REG_BAT_V			0x04		//16bit     //Can reset the battery if set to
+#define EPS_REG_BAT_V			0x04		//16bit     //Can reset the battery if written to
 #define EPS_REG_BAT_I			0x05		//16bit
 #define EPS_REG_BAT_T			0x06		//16bit
 #define EPS_REG_SOLAR_POS_X1_I		0x07		//16bit     //using the convention that +X <-> north; -X <-> south

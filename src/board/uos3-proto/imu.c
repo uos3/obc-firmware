@@ -33,16 +33,16 @@
 #define MPU_WHO_AM_I 117
 #define MPU_INT_BYPASS_ENABLE 55
 
-
+#define MAG_WIA 0	//contains device ID
+#define MAG_STA1 2 	//read only gives flags at 1 for DRDY and 2 for DOR (data ready and overload), used in read cycle
 #define MAG_HXL 3
 #define MAG_HYL 5
-#define MAG_HZL 7 // offsets in magnetometer, note little endian, so need to be read opposite way round
-#define MAG_ST2 0x09
+#define MAG_HZL 7 	//offsets in magnetometer, note little endian, so need to be read opposite way round
+#define MAG_ST2 9
 #define MAG_CNTL1 10 // Magnetometer control register
-#define MAG_STA1 2 // read only gives flags at 1 for DRDY and 2 for DOR (data ready and overload), used in read cycle
-#define MAG_ASAX 10
-#define MAG_ASAY 11
-#define MAG_ASAZ 12
+#define MAG_ASAX 16
+#define MAG_ASAY 17
+#define MAG_ASAZ 18
 
 
 void IMU_Init(void)
@@ -168,9 +168,13 @@ void IMU_set_gyro_bandwidth(imu_bandwidth_t imu_gyro_bandwidth)
 
 bool IMU_selftest(void)
 {
-	//uint8_t mag_id=I2CReceive(I2C_IMU, MAG_PASS_THROUGH_I2C_ADDR,0); // magnetometer ID (hopefully)
-
+	uint8_t mpu_id = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_WHO_AM_I);	//read devices IDs to at some point indicate their functionality
+	uint8_t mag_id = I2CReceive(I2C_IMU, MAG_I2C_ADDR, MAG_WIA);
+	if(mpu_id == 0x71 && mag_id == 0x48)
+	{
 	return true;
+	}
+	return false;
 }
 
 void IMU_read_accel(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z)

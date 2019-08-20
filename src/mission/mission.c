@@ -54,7 +54,7 @@ int8_t sm_reboot(int8_t t);                 //completed
 int8_t process_gs_command(int8_t t);        //TODO: revise what is done
 int8_t poll_transmitter(int8_t t);          //TODO: revise what is done, what is missing
 int8_t take_picture(int8_t);                //completed
-uint16_t perform_subsystem_check();         //TODO: write the IMUselftest function, detiermine where is decimal point in battery voltage and temperature readings, as well as temp readings from the sensors; finish function with this knowledge
+uint16_t perform_subsystem_check();         //TODO: voltage is read in centivolts!, as well as temp readings from the sensors; finish function with this knowledge
 void update_radio_parameters();             //TODO: revise what need to be done 
 
 //creating Morse signals now in radio.h
@@ -636,7 +636,7 @@ uint16_t perform_subsystem_check(){
   // 4) check GNSS
   status = (status<<1) + (uint16_t)gps_result;
   // 5) check IMU
-  status = (status<<1) + (uint16_t)IMU_selftest;    //IMU selftest is really poor state
+  status = (status<<1) + (uint16_t)IMU_selftest;    //IMU selftest is really poor state - extended, now IMU test is reading devices IDs and checking it
   // 6) check transmitter
   //TODO: think aboout the way to show correct or uncorrect operation
   // 7) check receiver
@@ -645,7 +645,7 @@ uint16_t perform_subsystem_check(){
   status = (status<<1) + (uint16_t)EPS_selfTest;
   // 9) check battery subsystem
   EPS_getInfo(&temporary, EPS_REG_BAT_V); //read battery voltage to the temporary
-  //TODO: compare it with the VOLTAGE_TRESHOLD and set status to 1 if the BATT_V is higher, to 0 otherwise; need to establish where is the decimal point of the voltage reading
+  status = (status<<1) + ((temporary>spacecraft_configuration.data.low_voltage_threshold * 100) ? 1 : 0); //voltage is read in "centivolts" - two last digits are after the decimal point, so that is why multiply by 100
   // 10) check obc tempsensor
   temperature = get_temp(TEMP_OBC);
   status = (status<<1) + ((temperature<spacecraft_configuration.data.obc_overtemp) ? 1 : 0); //if temperature is smaller than the overtemp treshold - write 1 to status, 0 otherwise
