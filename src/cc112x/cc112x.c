@@ -1,15 +1,15 @@
 //#include "../firmware.h"
 
-#include <string.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <inttypes.h>
-#include <limits.h>
-
-#include "../board/spi.h"
-#include "cc112x.h"
-#include "cc112x_spi.h"
+// #include <string.h>
+// #include <stdint.h>
+// #include <stdbool.h>
+// #include <stddef.h>
+// #include <inttypes.h>
+// #include <limits.h>
+#include "../firmware.h"
+// #include "../board/spi.h"
+// #include "cc112x.h"
+// #include "cc112x_spi.h"
 #if CC_XO_FREQ != 38400000
   #error CC112X Lib is currently hardcoded for CC_XO_FREQ of 38.4MHz
 #endif
@@ -258,6 +258,7 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
   uint8_t calResults_for_vcdac_start_mid[3];
   uint8_t marcstate;
   uint8_t writeByte;
+  char output[100];
 
   // 1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
   writeByte = 0x00;
@@ -270,13 +271,18 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
 
   // 3) Calibrate and wait for calibration to be done
   //   (radio back in IDLE state)
-  SPI_cmd(spi_device_id, CC112X_SCAL);
+  UART_puts(UART_INTERFACE, "Starting calibration\r\n");
 
+  SPI_cmd(spi_device_id, CC112X_SCAL);
+  
   do
   {
     SPI_read8(spi_device_id, (uint8_t)(CC112X_MARCSTATE | 0x80), &marcstate);
+    sprintf(output,"marcstate: %x\r\n", marcstate);
+    UART_puts(UART_INTERFACE, output);
   }
   while (marcstate != 0x41);
+  UART_puts(UART_INTERFACE, "marcstate checked\r\n");
 
   // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
   //    high VCDAC_START value

@@ -16,7 +16,8 @@
         "cc112x_spi.h": "c",
         "packet.h": "c",
         "string.h": "c",
-        "configuration.h": "c"
+        "configuration.h": "c",
+        "inttypes.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

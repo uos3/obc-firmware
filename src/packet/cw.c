@@ -6,6 +6,7 @@
  * @{
  */
 
+
 #include "../firmware.h"
 
 #define CW_PERIOD_MS	100
@@ -134,6 +135,7 @@ static const uint16_t Packet_cw_lookup[59][2] =
 	{ 4, GCC_BINARY(0b11110101) } // − − · · 
 };
 
+
 void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_config_t *Radio_config, void _cw_on(radio_config_t *), void _cw_off(void))
 {
 	uint32_t i, j;
@@ -163,46 +165,49 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_con
 		c = (uint8_t)(c - 32);
 
 		for(
-			j = (uint32_t)(2 * (Packet_cw_lookup[c][0] - 1));
-			true; 
+			j = (uint32_t)(2 * (Packet_cw_lookup[c][0]));
+			j>0; 
 			j -= 2
 		)
 		{
-			switch((Packet_cw_lookup[c][1] >> j) & GCC_BINARY(0b11))
+
+			switch((Packet_cw_lookup[c][1] >> (j-2)) & GCC_BINARY(0b11))
 			{
 				case GCC_BINARY(0b00):
+					UART_puts(UART_INTERFACE, "Space\r\n");
 					/* Pause (only used for space character) */
 					_cw_off();
 					Delay_ms(CW_PERIOD_MS);
 					break;
 				case GCC_BINARY(0b01):
+					UART_puts(UART_INTERFACE, "Dit\r\n");
 					/* Dit */
 					_cw_on(Radio_config);
-					LED_on(LED_B);
 					Delay_ms(CW_PERIOD_MS);
 					break;
 				case GCC_BINARY(0b11):
 					/* Dah */
+					UART_puts(UART_INTERFACE, "Dah\r\n");
 					_cw_on(Radio_config);
-					LED_on(LED_B);
 					Delay_ms(CW_PERIOD_MS);
 					Delay_ms(CW_PERIOD_MS);
 					Delay_ms(CW_PERIOD_MS);
 					break;
 				default:
-					UART_puts(UART_INTERFACE, "Lookup failed");
+					UART_puts(UART_INTERFACE, "Lookup failed\r\n");
 					break;
 			}
+			UART_puts(UART_INTERFACE, "Switch Complete\r\n");
+
 			_cw_off();
-			LED_off(LED_B);
-			UART_puts(UART_INTERFACE, "Char sent");
+			UART_puts(UART_INTERFACE, "Dot/dash sent\r\n");
 
 			/* Inter pulse pause */
 			Delay_ms(CW_PERIOD_MS);
-			if(j==0)
-			{
-				break;
-			}
+			// if(j==0)
+			// {
+			// 	break;
+			// }
 		}
 		/* Additional inter letter pause */
 		Delay_ms(CW_PERIOD_MS);
