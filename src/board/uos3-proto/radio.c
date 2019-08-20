@@ -7,11 +7,11 @@
  *
  * @{
  */
-
-#include "board.h"
-#include "../spi.h"
-#include "../gpio.h"
-#include "../radio.h"
+#include "../../firmware.h"
+// #include "board.h"
+// #include "../spi.h"
+// #include "../gpio.h"
+// #include "../radio.h"
 
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
@@ -220,12 +220,15 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
   return RADIO_STATUS_OK;
 }
 
-//Function to set the cw_tone ON for Morse transmission
 void cw_tone_on(radio_config_t *radio_config)   {
+  UART_puts(UART_INTERFACE, "On start\r\n");
   cc112x_set_config(Radio_transmitter.spi_device, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-  cc112x_manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
+  UART_puts(UART_INTERFACE, "Config done\r\n");
+  //cc112x_manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
+  UART_puts(UART_INTERFACE, "Manual calibration\r\n");
   cc112x_cfg_frequency(Radio_transmitter.spi_device, _CC112X_BANDSEL, radio_config->frequency); //set frequency according to the config file passed as argument
   cc112x_cfg_power(Radio_transmitter.spi_device, radio_config->power);  //set power according to the config file passed as argument
+  UART_puts(UART_INTERFACE, "Set freq and power\r\n");
   SPI_cmd(Radio_transmitter.spi_device, CC112X_STX);  //enable TX operation
   LED_on(LED_B);
 }

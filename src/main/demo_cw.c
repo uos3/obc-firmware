@@ -66,7 +66,7 @@ static uint8_t buffer[17] = "UOS3 UOS3 UOS3 k\0";
 static uint32_t buffer_length = 16;
 static radio_config_t radio_transmitter = 
 {
-  .frequency = 145.5,
+  .frequency = 128, //145.5,
   .power = 10,
 };
 
@@ -96,22 +96,29 @@ static radio_config_t radio_transmitter =
 int main(void)
 {
   char output[100];
-
+  LED_set(LED_B, true);
   Board_init();
-  RTC_init();
-  //enable_watchdog_kick();
+  watchdog_update = 0xFF;           //set the watchdog control variable 
+  enable_watchdog_kick();
+  //RTC_init();
+
   UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\nCW Radio Demo\r\n");
+
+  //GPIO_reset(GPIO_PD0);             //Power amp not working
+
 
   sprintf(output,"Freq: %.3fMHz, Power: %+.1fdBmW\r\n", radio_transmitter.frequency, radio_transmitter.power);
   UART_puts(UART_INTERFACE, output);
   
   while(1)
   {
+    watchdog_update = 0xFF;           //set the watchdog control variable 
     sprintf(output,"Sending Beacon :\"%s\"\r\n", buffer);
     UART_puts(UART_INTERFACE, output);
-
+    //GPIO_set(GPIO_PD0);
     Packet_cw_transmit_buffer(buffer, buffer_length, &radio_transmitter, cw_tone_on, cw_tone_off);
+    //GPIO_reset(GPIO_PD0);
     UART_puts(UART_INTERFACE, "Sent.\r\n");
 
     Delay_ms(3000);
