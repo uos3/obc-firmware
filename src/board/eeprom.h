@@ -31,7 +31,7 @@
  * Initialise EEPROM Device
  *
  */
-void EEPROM_init(void);
+bool EEPROM_init(void);
 
 /**
  * @function

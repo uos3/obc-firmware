@@ -13,11 +13,12 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/eeprom.h"
 
-void EEPROM_init(void)
+bool EEPROM_init(void)
 {
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_EEPROM0);
 
-  EEPROMInit();
+	if(EEPROMInit() == EEPROM_INIT_ERROR){return false}
+	return true;
 }
 
 bool EEPROM_selfTest(void)

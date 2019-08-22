@@ -1,3 +1,9 @@
+/**
+ * File purpose:        FRAM functionality demo v2
+ * Last modification:   22/08/2019
+ * Status:              Not known - the only difference is using snprintf instea of for loop
+ */
+
 /* firmware.h contains all relevant headers */
 #include "../firmware.h"
 
@@ -25,8 +31,9 @@ int main(void)
 {
   uint32_t i;
   char output[PRINT_BUFFER_LENGTH];
-
+  watchdog_update = 0xFF;
   Board_init();
+  enable_watchdog_kick();
 
   UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\nFRAM Memory Demo\r\n");
@@ -115,7 +122,7 @@ int main(void)
     
     UART_puts(UART_INTERFACE, "---------------\r\n");
     LED_off(LED_B);
-    
+    watchdog_update = 0xFF;
     Delay_ms(5000);
   }
 }

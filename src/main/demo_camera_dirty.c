@@ -1,3 +1,9 @@
+/**
+ * File purpose:        Old camera demo
+ * Last modification:   27/07/2019
+ * Status:              For backup and reference
+ */
+
 /* firmware.h contains all relevant headers */
 #include "../firmware.h"
 

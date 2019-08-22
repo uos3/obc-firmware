@@ -1,6 +1,7 @@
 *~
 *.swp
 builds/
+.vscode/
 *.d
 *.o
 *.a

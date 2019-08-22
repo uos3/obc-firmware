@@ -1,3 +1,8 @@
+/**
+ * File purpose:        Antenna deployment demo
+ * Last modification:   22/08/2019
+ * Status:              Redundant
+ */
 #include <stdio.h>
 #include "../firmware.h"
 

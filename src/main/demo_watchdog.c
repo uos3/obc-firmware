@@ -13,7 +13,7 @@ int main(void)
   Board_init();
   enable_watchdog_kick();
   #ifndef USE_ONLY_EXTERNAL_WDT
-  setup_internal_watchdogs();
+  //setup_internal_watchdogs();
   #endif
   RTC_init();
   //some variables for the test use

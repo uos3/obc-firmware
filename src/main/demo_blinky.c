@@ -1,16 +1,15 @@
-/** @file blinky.c
- *
- * LED Blink Example Application
- *
- * @ingroup mains
- * @{
+/**
+ * File purpose:        Simple LED blinky demo 
+ * Last modification:   22/08/2019
+ * Status:              Functional
  */
 #include "../firmware.h"
 
 int main(void)
 {
   Board_init();
-  WDT_kick();
+  watchdog_update = 0xFF;
+  enable_watchdog_kick();
 
   while(1)
   {
@@ -23,11 +22,8 @@ int main(void)
     LED_off(LED_B);
 
     /* Off period */
+    watchdog_update = 0xFF;
     Delay_ms(5000);
     WDT_kick();
   }
 }
-
-/**
- * @}
- */

@@ -10,6 +10,9 @@
 #include <inttypes.h>
 #include <limits.h>
 
+/* Test Interface */
+#define UART_INTERFACE UART_DEBUG_4
+
 /* Uncomment when debugging - enables all the print statements to be compiled */
 //#define DEBUG_PRINT       //define keyword debug to enable every printing commands in this file
 
@@ -75,9 +78,6 @@
 
 /* Mission */
 #include "mission/mission.h"
-
-/* Test Interface */
-#define UART_INTERFACE UART_DEBUG_4
 
 /* ... */
 

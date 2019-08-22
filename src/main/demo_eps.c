@@ -22,15 +22,6 @@ int main(void){
   uint8_t railNo = 0;
   uint16_t loopCount = 0;
 
-  //
-  // EPS_getBatteryInfo(&batt_i, EPS_REG_BAT_I);
-  // sprintf(output,"Current: %+06d\r\n", batt_i);
-  // UART_puts(UART_INTERFACE, output);
-  
-  /* EPS_getBatteryInfo(&batt_t, EP`S_REG_BAT_T);
-   sprintf(output,"Batt Temperature: %+06d\r\n", batt_t);
-   UART_puts(UART_INTERFACE, output);*/
-
    while(1){/*
      LED_toggle(LED_B);
 	 uint8_t i;

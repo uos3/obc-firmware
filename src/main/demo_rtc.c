@@ -1,9 +1,13 @@
+/**
+ * File purpose:        RTC functionality demo
+ * Last modification:   22/08/2019
+ * Status:              Ready for the test
+ */
+
 /* firmware.h contains all relevant headers */
 #include "../firmware.h"
 
 #include <stdio.h>
-
-#define UART_INTERFACE UART_CAMERA
 
 int main(void)
 {
@@ -13,19 +17,19 @@ int main(void)
   char output[100];
 
   Board_init();
-
+  watchdog_update = 0xFF;
+  enable_watchdog_kick();
+  UART_init(UART_INTERFACE, 9600);
   LED_on(LED_B);
 
-  UART_init(UART_INTERFACE, 9600);
   UART_puts(UART_INTERFACE, "\r\nRTC Demo\r\n");
-
   RTC_init();
 
   uint8_t i=0;
   while(1)
   {
     LED_on(LED_B);
-
+    /* For first ten loops just read and print the time, for 10th loop test manual time setting */
     if(i<10)
     {
       i++;
@@ -33,13 +37,13 @@ int main(void)
     else if(i==10)
     {
       i = 20;
-      
+      /* When i == 10 set the time Manually to the value of setclock */
       sprintf(output,"Manually setting clock to: %+011ld\r\n", setclock);
       UART_puts(UART_INTERFACE, output);
 
       RTC_setTime(&setclock);
     }
-
+    /* Check the time values */
     RTC_getTime(&clock);
     RTC_getTime_ms(&clock_ms);
 
@@ -49,7 +53,7 @@ int main(void)
     UART_puts(UART_INTERFACE, output);
 
     LED_off(LED_B);
-
+    watchdog_update = 0xFF;
     Delay_ms(1000);
   }
 }
