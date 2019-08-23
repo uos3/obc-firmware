@@ -9,8 +9,6 @@
 
 #include <stdio.h>
 
-#define UART_INTERFACE UART_GNSS
-
 int main(void)
 {
   int16_t x, y, z;

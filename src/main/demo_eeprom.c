@@ -11,6 +11,8 @@
 int main(void)
 {
   uint32_t written1, read1, written23, read23;
+  written1 = 1;
+  written23 = 23;
   char output1[100];
   char output2[100];
   Board_init();                     //init board clock
@@ -40,7 +42,6 @@ int main(void)
   {
     LED_on(LED_B);
     /* Write a number to EEPROM */
-    written1 = 1;
     EEPROM_write(0x0000, &written1, 4);
 
     sprintf(output1,">>> Written1: %d\r\n", written1);
@@ -51,17 +52,17 @@ int main(void)
     sprintf(output1,">>> Read1: %d\r\n", read1);
     UART_puts(UART_INTERFACE, output1);
     /* Write another number to EEPROM */
-    written23 = 23;
-    EEPROM_write(0x00000001, &written2, 4);
+    EEPROM_write(0x00000001, &written23, 4);
 
-    sprintf(output2,">>> Written23: %d\r\n", written2);
+    sprintf(output2,">>> Written23: %d\r\n", written23);
     UART_puts(UART_INTERFACE, output2);
     /* And Read it */
-    EEPROM_read(0x00000001, &read2, 4);
+    EEPROM_read(0x00000001, &read23, 4);
 
-    sprintf(output2,">>> Read23: %d\r\n\r\n", read2);
+    sprintf(output2,">>> Read23: %d\r\n\r\n", read23);
     UART_puts(UART_INTERFACE, output2);
 
+    written1+=3; written23+=2;
     LED_off(LED_B);
 
     watchdog_update = 0xFF;

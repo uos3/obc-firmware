@@ -1,7 +1,7 @@
 /**
  * File purpose:        Timers operation demo
- * Last modification:   22/08/2019
- * Status:              Ready for the test
+ * Last modification:   23/08/2019
+ * Status:              Functional
  */
 
 /* firmware.h contains all relevant headers */

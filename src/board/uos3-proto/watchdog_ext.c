@@ -52,7 +52,7 @@ void Timer0IntHandler(void)
 	{
 	char output_buffer2[100];
 	sprintf(output_buffer2, "\r\n### External watchdog not kicked!!! - \"watchdog_update\" is:	%d - smaller or equal to 0\r\n### MCU WILL REBOOT!!!", watchdog_update);
-	UART_puts(UART_INTERFACE, output_buffer);
+	UART_puts(UART_INTERFACE, output_buffer2);
 	}
 	#endif
 }
@@ -72,7 +72,7 @@ void setinterrupt_wdt_risingedge(void)
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);					//turn on WideTimer0
 	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0));			//wait for the timer to be ready
 	TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);	//set half-timer (32bit) to the periodically operation mode, this is wide timer, which consist of two 32-bit timers; we need to use only one 32-bit, so the half
-	ulPeriod = (SysCtlClockGet() / 10) * 18;						//divide the period corresponding to 1s by 10, to have value of timer corresponding to 0.1s; *18 to have a period for 1.8s
+	ulPeriod = ((SysCtlClockGet() / 10) * 18);						//divide the period corresponding to 1s by 10, to have value of timer corresponding to 0.1s; *18 to have a period for 1.8s
 	TimerLoadSet(TIMER0_BASE,TIMER_A,ulPeriod-1);
 	TimerIntRegister(TIMER0_BASE, TIMER_A, Timer0IntHandler);		//for dynamic interrupt calculation
 	TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);				//enable interrupt

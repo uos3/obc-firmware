@@ -17,7 +17,7 @@ bool EEPROM_init(void)
 {
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_EEPROM0);
 
-	if(EEPROMInit() == EEPROM_INIT_ERROR){return false}
+	if(EEPROMInit() == EEPROM_INIT_ERROR){return false;}
 	return true;
 }
 

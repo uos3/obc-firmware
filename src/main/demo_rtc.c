@@ -1,7 +1,7 @@
 /**
  * File purpose:        RTC functionality demo
  * Last modification:   22/08/2019
- * Status:              Ready for the test
+ * Status:              Functional
  */
 
 /* firmware.h contains all relevant headers */

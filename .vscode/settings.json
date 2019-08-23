@@ -17,7 +17,8 @@
         "packet.h": "c",
         "string.h": "c",
         "configuration.h": "c",
-        "inttypes.h": "c"
+        "inttypes.h": "c",
+        "stdio.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
