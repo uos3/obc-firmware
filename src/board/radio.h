@@ -4,13 +4,26 @@
 
 #define __RADIO_H__
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include "../cc112x/cc112x.h"
-#include "../cc112x/cc112x_spi.h"
-//#include "../firmware.h"
+// #include <stddef.h>
+// #include <stdint.h>
+// #include <stdbool.h>
+// #include "../cc112x/cc112x.h"
+// #include "../cc112x/cc112x_spi.h"
+#include "../firmware.h"
+//#include "../cc1125/cc1125.h"
 
+
+/*
+Giles' Notes
+http://www.ti.com/lit/ug/swru295e/swru295e.pdf
+38.4MHz XOSC
+38.4kHz RC osc
+To sniff use eWOR with PQT or CS termination (prob PQT)
+Only set freq registers in idle mode
+*/
+
+//And indicator in dBm of the received signal power from -128 to 128, -128 indicates invalid value
+double RSSI;
 
 typedef struct radio_config_t{
 	double frequency; // MHz

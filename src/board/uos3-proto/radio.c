@@ -12,6 +12,8 @@
 // #include "../spi.h"
 // #include "../gpio.h"
 // #include "../radio.h"
+// #include "../../cc112x/cc112x.h"
+//#include "../../cc1125/cc1125.h"
 
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
@@ -23,7 +25,6 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 
-#include "../../cc112x/cc112x.h"
 
 const registerSetting_t preferredSettings_fsk[]= 
 {
@@ -47,7 +48,7 @@ const registerSetting_t preferredSettings_fsk[]=
   {CC112X_AGC_CFG1,          0xA0},
   {CC112X_AGC_CFG0,          0xCF},
   {CC112X_FIFO_CFG,          0x00},
-  {CC112X_SETTLING_CFG,      0x03},
+  {CC112X_SETTLING_CFG,      0x13},//0x03}, //Added autocalibration
   {CC112X_FS_CFG,            0x1B},
   {CC112X_PKT_CFG0,          0x20},
   {CC112X_PKT_CFG1,          0x05},
@@ -97,7 +98,7 @@ const registerSetting_t preferredSettings_cw[]=
    {CC112X_AGC_CFG1,          0xA9},
    {CC112X_AGC_CFG0,          0xCF},
    {CC112X_FIFO_CFG,          0x00},
-   {CC112X_SETTLING_CFG,      0x03},
+   {CC112X_SETTLING_CFG,      0x13},//0x03},//Added autocalibration
    {CC112X_FS_CFG,            0x1B},
    {CC112X_PKT_CFG2,          0x05},
    {CC112X_PKT_CFG1,          0x00},
@@ -159,7 +160,7 @@ static Radio_device Radio_receiver =
   #endif
   #define CC112X_FS_CFG_VAL   (0x10 | _CC112X_BANDSEL)
 
-  #define _CC112X_XO_FREQ   38400000 // Hz
+   #define _CC112X_XO_FREQ   38400000 // Hz
   #define _CC112X_FREQ_IVAL (((65536LL * RADIO_TX_FREQUENCY) / _CC112X_XO_FREQ) * _CC112X_FREQ_DIV)
 
 static inline uint8_t Radio_query_partnumber(Radio_device *radio)
@@ -186,7 +187,7 @@ Radio_Status_t Radio_tx_msk(radio_config_t *radio_config, uint8_t *data_buffer, 
   }
 
   /* Reset Radio */
-  cc112x_reset(Radio_transmitter.spi_device);
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
   
   if(Radio_query_partnumber(&Radio_transmitter) != Radio_transmitter.device_id)
   {
@@ -207,7 +208,7 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
   }
 
   /* Reset Radio */
-  cc112x_reset(Radio_transmitter.spi_device);
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
   
   if(Radio_query_partnumber(&Radio_transmitter) != Radio_transmitter.device_id)
   {
@@ -220,13 +221,19 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
   return RADIO_STATUS_OK;
 }
 
+
+
+#define cc112xlib
+
+#ifdef cc112xlib
+//Currently setting freq, power and manual calibration don't work
 void cw_tone_on(radio_config_t *radio_config)   {
   UART_puts(UART_INTERFACE, "On start\r\n");
   cc112x_set_config(Radio_transmitter.spi_device, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
   UART_puts(UART_INTERFACE, "Config done\r\n");
   //cc112x_manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
   UART_puts(UART_INTERFACE, "Manual calibration\r\n");
-  cc112x_cfg_frequency(Radio_transmitter.spi_device, _CC112X_BANDSEL, radio_config->frequency); //set frequency according to the config file passed as argument
+  cc112x_cfg_frequency(Radio_transmitter.spi_device, radio_config->frequency); //set frequency according to the config file passed as argument
   cc112x_cfg_power(Radio_transmitter.spi_device, radio_config->power);  //set power according to the config file passed as argument
   UART_puts(UART_INTERFACE, "Set freq and power\r\n");
   SPI_cmd(Radio_transmitter.spi_device, CC112X_STX);  //enable TX operation
@@ -237,6 +244,34 @@ void cw_tone_off(void)  {
   LED_off(LED_B);
 }
 
+
+
+
+#else
+//uses cc1125 library instead
+void cw_tone_on(radio_config_t *radio_config)   {
+  UART_puts(UART_INTERFACE, "On start\r\n");
+  radio_reset_config(Radio_transmitter.spi_device, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
+  UART_puts(UART_INTERFACE, "Config done\r\n");
+  //manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
+  UART_puts(UART_INTERFACE, "Manual calibration\r\n");
+  radio_set_freq_f(Radio_transmitter.spi_device, &(radio_config->frequency)); //set frequency according to the config file passed as argument
+  bool success;
+  double power = radio_config->power;
+  radio_set_pwr_f(Radio_transmitter.spi_device, &power, &success);  //set power according to the config file passed as argument
+  UART_puts(UART_INTERFACE, "Set freq and power  actual power set:\r\n");
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_STX);  //enable TX operation
+  LED_on(LED_B);
+}
+void cw_tone_off(void)  {
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SIDLE); //exit RX/TX, turn off freq. synthesizer; no reseting and writing basic config. because it is done in cw_tone_on function
+  LED_off(LED_B);
+}
+#endif
+
+
+
+
 Radio_Status_t Radio_tx_morse(radio_config_t *radio_config, uint8_t *text_buffer, uint32_t text_length, void *end_of_tx_handler(void))
 {
   if(Radio_transmitter.busy)
@@ -245,7 +280,7 @@ Radio_Status_t Radio_tx_morse(radio_config_t *radio_config, uint8_t *text_buffer
   }
 
   /* Reset Radio */
-  cc112x_reset(Radio_transmitter.spi_device);
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
   
   if(Radio_query_partnumber(&Radio_transmitter) != Radio_transmitter.device_id)
   {
@@ -265,7 +300,7 @@ Radio_Status_t Radio_tx_off(radio_config_t *radio_config)
   (void)radio_config;
 
   /* Reset Radio */
-  cc112x_reset(Radio_transmitter.spi_device);
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
 
   Radio_transmitter.busy = false;
   

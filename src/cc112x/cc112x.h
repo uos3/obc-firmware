@@ -31,7 +31,7 @@ typedef enum {
   CC112x_BANDSEL_OPTION_410M = 4,
 } cc112x_bandsel_option_t;
 
-void cc112x_cfg_frequency(uint8_t spi_device_id, cc112x_bandsel_option_t bandsel_option, uint32_t _frequency_word);
+void cc112x_cfg_frequency(uint8_t spi_device_id, float freq); //cc112x_bandsel_option_t bandsel_option, uint32_t _frequency_word);
 
 void cc112x_cfg_power(uint8_t spi_device_id, int8_t power_dbm);
 

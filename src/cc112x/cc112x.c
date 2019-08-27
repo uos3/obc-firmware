@@ -31,18 +31,54 @@ uint8_t cc112x_query_partnumber(uint8_t spi_device_id)
   return result;
 }
 
-void cc112x_cfg_frequency(uint8_t spi_device_id, cc112x_bandsel_option_t bandsel_option, uint32_t _frequency_word)
+void cc112x_cfg_frequency(uint8_t spi_device_id, float freq) // cc112x_bandsel_option_t bandsel_option, uint32_t _frequency_word)
 {
+
+  uint8_t divisor, bandsel;
+  if ((freq >= 136.7) && (freq <= 160)){
+    divisor = 24;
+    bandsel = 11; }
+  else if ((freq >= 164) && (freq <= 192)){
+    divisor = 20;
+    bandsel = 10; }
+  else if ((freq >= 205) && (freq <= 240)){
+    divisor = 16;
+    bandsel = 8; }
+  else if ((freq >= 273.3) && (freq <= 320)){
+    divisor = 12;
+    bandsel = 6; }
+  else if ((freq >= 410) && (freq <= 480)){
+    divisor = 8;
+    bandsel = 4; }
+  else if ((freq >= 820) && (freq <= 960)){
+    divisor = 4;
+    bandsel = 2; }
+
+  double f;
+  f = divisor * ((freq)*1000000) * 65536 / CC_XO_FREQ;
+  uint32_t freq_reg = (uint32_t)f;
+   
+   // work back to calculate the actual freq
+   f = (double)freq_reg*CC_XO_FREQ;
+   f = f / divisor;
+   f = f / 65536;
+   
+   f = f/1000000;
+  char output[100];
+  sprintf(output,"bandsel: %d,     div: %d    freq returned: %d     freq in: %d", bandsel, divisor, f, freq);
+  UART_puts(UART_INTERFACE, output);
+
+
   uint8_t val;
 
-  val = (0x10 | (uint8_t)bandsel_option);
+  val = (0x10 | (uint8_t)bandsel);
   SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_CFG & 0x7F), &val);
 
-  val = (uint8_t)(_frequency_word & 0xFF);
+  val = (uint8_t)(freq_reg & 0xFF);
   SPI_write16(spi_device_id, (CC112X_FREQ0 & 0x7FFF), &val);
-  val = (uint8_t)((_frequency_word >> 8) & 0xFF);
+  val = (uint8_t)((freq_reg >> 8) & 0xFF);
   SPI_write16(spi_device_id, (CC112X_FREQ1 & 0x7FFF), &val);
-  val = (uint8_t)((_frequency_word >> 16) & 0xFF);
+  val = (uint8_t)((freq_reg >> 16) & 0xFF);
   SPI_write16(spi_device_id, (CC112X_FREQ2 & 0x7FFF), &val);
 }
 

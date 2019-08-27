@@ -1,14 +1,14 @@
 #ifndef __CC1125_H__
 #define __CC1125_H__
 
-//#include "../firmware.h"
-#include "../cc112x/cc112x.h"
-#include "../cc112x/cc112x_spi.h"
-// static typedef struct
-// {
-//   uint16_t  addr;
-//   uint8_t   data;
-// }registerSetting_t;
+#include "../firmware.h"
+//#include "../cc112x/cc112x.h"
+//#include "../cc112x/cc112x_spi.h"
+typedef struct
+{
+  uint16_t  addr;
+  uint8_t   data;
+}registerSetting_t;
 
 bool cc1125_pollGPIO(uint8_t gpio_pin);
 void manualCalibration(uint8_t radio_id);
