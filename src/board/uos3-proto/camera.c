@@ -14,7 +14,7 @@
 #include "../delay.h"
 #include "../camera.h"
 #include "../../configuration/configuration.h"
-//#include "../../firmware.h"
+#include "../../firmware.h"
 #include <inttypes.h>
 
 //-------------------------------------CAMERA COMMANDS-----------------------------------------------
@@ -118,7 +118,7 @@ void set_resolution(image_acquisition_profile_t resolution){
           LK_RESOLUTION[4] = 0x1d;
           break;
     default:
-          LK_RESOLUTION[4] = 0x21;
+          LK_RESOLUTION[4] = 0x22;
   }
 }
 //main driver function - uses above functions to set the camera, capture the image and store it in the FRAM memory
