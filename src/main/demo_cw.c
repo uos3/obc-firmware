@@ -8,15 +8,19 @@
 //#include <stdio.h>
 
 
-
 #define UART_INTERFACE UART_DEBUG_4
 static uint8_t buffer[17] = "UOS3 UOS3 UOS3 k\0";
 static uint32_t buffer_length = 16;
 static radio_config_t radio_transmitter = 
 {
   .frequency = 145.5,
-  .power = 10.0,
+  .power = 10.0,    //From -11 to 15
 };
+//210.5 gives 189.5
+//145.5 gives 126.5
+//180 gives 155.5
+//Appears only dependant on band and not freq word
+
 
 // static void cw_tone_on(void)
 // {
@@ -65,7 +69,7 @@ int main(void)
     sprintf(output,"Sending Beacon :\"%s\"\r\n", buffer);
     UART_puts(UART_INTERFACE, output);
     //GPIO_set(GPIO_PD0);
-    Packet_cw_transmit_buffer(buffer, buffer_length, &radio_transmitter, cw_tone_on, cw_tone_off);
+    Packet_cw_transmit_buffer(buffer, buffer_length, &radio_transmitter, &cw_tone_on, &cw_tone_off);
     //GPIO_reset(GPIO_PD0);
     UART_puts(UART_INTERFACE, "Sent.\r\n");
 

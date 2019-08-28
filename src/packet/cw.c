@@ -136,7 +136,7 @@ static const uint16_t Packet_cw_lookup[59][2] =
 };
 
 
-void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_config_t *Radio_config, void _cw_on(radio_config_t *), void _cw_off(void))
+void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_config_t *Radio_config, void (*_cw_on)(radio_config_t *), void (*_cw_off)(void))//, void _cw_on(radio_config_t *), void _cw_off(void))
 {
 	uint32_t i, j;
 	uint8_t c;

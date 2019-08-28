@@ -63,7 +63,7 @@
 #include "board/radio.h"
 #include "cc112x/cc112x_spi.h"
 #include "cc112x/cc112x.h"
-#include "cc1125/cc1125.h"
+//#include "cc1125/cc1125.h"
 /* Packet */
 #include "packet/packet.h"
 #include "packet/interleave.h"

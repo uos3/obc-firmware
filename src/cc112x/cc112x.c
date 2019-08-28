@@ -8,7 +8,7 @@
 // #include <limits.h>
 #include "../firmware.h"
 // #include "../board/spi.h"
-// #include "cc112x.h"
+#include "cc112x.h"
 // #include "cc112x_spi.h"
 #if CC_XO_FREQ != 38400000
   #error CC112X Lib is currently hardcoded for CC_XO_FREQ of 38.4MHz
@@ -54,32 +54,50 @@ void cc112x_cfg_frequency(uint8_t spi_device_id, float freq) // cc112x_bandsel_o
     divisor = 4;
     bandsel = 2; }
 
-  double f;
+  float f;
   f = divisor * ((freq)*1000000) * 65536 / CC_XO_FREQ;
   uint32_t freq_reg = (uint32_t)f;
    
    // work back to calculate the actual freq
-   f = (double)freq_reg*CC_XO_FREQ;
+   f = (float)freq_reg*CC_XO_FREQ;
    f = f / divisor;
    f = f / 65536;
-   
    f = f/1000000;
+
   char output[100];
-  sprintf(output,"bandsel: %d,     div: %d    freq returned: %d     freq in: %d", bandsel, divisor, f, freq);
+  sprintf(output,"bandsel: %d,     div: %d    freq returned: %f     freq reg: %d\r\n", bandsel, divisor, f, freq_reg);
   UART_puts(UART_INTERFACE, output);
 
 
   uint8_t val;
 
+  SPI_cmd(spi_device_id, CC112X_SIDLE);   //Set to idle
+
+  val = 0;
+  //Uses extended address space so cmd required before address (this is indicated by the 2f in the address which has to be removed)
+  // note that this is a write as the first bit of spi cmd is 0
+  SPI_cmd(spi_device_id, 0x2F);
+  SPI_write8(spi_device_id, (uint8_t)(0xFF & CC112X_FREQOFF_CFG), &val);
+
   val = (0x10 | (uint8_t)bandsel);
   SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_CFG & 0x7F), &val);
 
   val = (uint8_t)(freq_reg & 0xFF);
-  SPI_write16(spi_device_id, (CC112X_FREQ0 & 0x7FFF), &val);
+  SPI_cmd(spi_device_id, 0x2F);
+  SPI_write8(spi_device_id, (CC112X_FREQ0 & 0xFF), &val);
+  //SPI_write16(spi_device_id, (CC112X_FREQ0 & 0x7FFF), &val);
+
+  SPI_cmd(spi_device_id, 0x2F);
+  SPI_write8(spi_device_id, (CC112X_FREQ1 & 0xFF), &val);
   val = (uint8_t)((freq_reg >> 8) & 0xFF);
-  SPI_write16(spi_device_id, (CC112X_FREQ1 & 0x7FFF), &val);
+  //SPI_write16(spi_device_id, (CC112X_FREQ1 & 0x7FFF), &val);
+
   val = (uint8_t)((freq_reg >> 16) & 0xFF);
-  SPI_write16(spi_device_id, (CC112X_FREQ2 & 0x7FFF), &val);
+  SPI_cmd(spi_device_id, 0x2F);
+  SPI_write8(spi_device_id, (CC112X_FREQ2 & 0xFF), &val);
+  //SPI_write16(spi_device_id, (CC112X_FREQ2 & 0x7FFF), &val);
+
+  //SPI_read16()
 }
 
 void cc112x_cfg_power(uint8_t spi_device_id, int8_t power_dbm)
@@ -341,6 +359,7 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
 
   do
   {
+    //0x80 indicates it is a read command
     SPI_read8(spi_device_id, (uint8_t)(CC112X_MARCSTATE | 0x80), &marcstate);
   }
   while (marcstate != 0x41);
