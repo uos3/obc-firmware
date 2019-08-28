@@ -137,6 +137,7 @@ uint8_t has_dwell_time_passed;      //store the information if the 45 mins dwell
 //specific for ADM 
 #define BURN_TIME 7000
 uint32_t ADM_status;
+uint32_t deploy_attempts;
 char ADM_char;
 
 //specific for Camera
