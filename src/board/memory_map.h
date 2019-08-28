@@ -1,7 +1,8 @@
 // EEPROM
-#define EEPROM_REBOOT_COUNT   0x00000000
-#define EEPROM_DEPLOY_STATUS 0x00000004
-#define EEPROM_ADM_DEPLOY_ATTEMPTS 0x00000008
+#define EEPROM_REBOOT_COUNT   0x00000000            //variable to store the number of reboots
+#define EEPROM_DEPLOY_STATUS 0x00000004             //variable to store the information if the antenna was deployed
+#define EEPROM_DWELL_TIME_PASSED 0x00000008         //variable to store the information if the 45 mins dwell time has been completed
+#define EEPROM_WAS_LAST_MODE_SAFE 0x0000000C        //variable to store the information if the last mode was safe mode
 #define EEPROM_CONFIGURATION_DATA_ADDRESS 0x0100
 
 // FRAM

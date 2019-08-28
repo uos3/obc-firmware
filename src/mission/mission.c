@@ -9,6 +9,8 @@
  * 
  * TODO: check if more resolution options for the camera can be added - need to revised with the config TMTC if there is enough space for it
  * for debugging, uncomment lines in the wdt.c with the WatchdogStallEnable
+ * TODO: update antenna deployment code for the usage of deployment switch
+ * TODO: update the code to the CONOPS
  * 
  * @{
  */
@@ -39,7 +41,7 @@ void Mission_SEU(void);
 void Mode_init(int8_t type);
 
 //System tasks functions
-int8_t save_eps_health_data(int8_t t);      //TODO: test
+int8_t save_eps_health_data(int8_t t);      //TODO: test, update with new TMTC structure
 int8_t save_gps_data(int8_t t);             //completed
 int8_t check_health_status(int8_t t);       //TODO: write body of this function
 int8_t save_image_data(void);               //completed
@@ -129,12 +131,13 @@ uint8_t previous_mode;              //for returning to previous mode from certai
 
 //specific for FBU
 bool FBU_exit_switch = false;
+uint8_t was_last_mode_safe;         //store the information if the last mode was safe mode
+uint8_t has_dwell_time_passed;      //store the information if the 45 mins dwell time passed
 
 //specific for ADM 
 #define BURN_TIME 7000
 uint32_t ADM_status;
 char ADM_char;
-uint32_t deploy_attempts;
 
 //specific for Camera
 bool image_trigger;
@@ -307,8 +310,6 @@ void Mission_init(void)
   Buffer_init();                    //init Buffer functionality
   Configuration_Init();             //load default configuration settings
   timer_init();                     //set up and init all the timers used for the mission
-  //radio_config.frequency 
-  //Radio_rx_receive(radio_config_t *radio_config, void *process_gs_command);
   
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVERS INITIALISED**\r\n");
@@ -330,8 +331,10 @@ void Mission_init(void)
   sprintf(output3,"ULPERIOD: %" PRIu32 "\r\n", ulPeriod);
 	UART_puts(UART_INTERFACE, output3);
   #endif
-  EEPROM_read(EEPROM_DEPLOY_STATUS, &ADM_status, 4);              //read antenna deploy status
-  EEPROM_read(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);   //read deploy attempts
+
+  EEPROM_read(EEPROM_DEPLOY_STATUS, &ADM_status, 4);                  //read antenna deploy status
+  EEPROM_read(EEPROM_DWELL_TIME_PASSED, &has_dwell_time_passed, 4);   //read information about completing dwell time
+  EEPROM_read(EEPROM_WAS_LAST_MODE_SAFE, &was_last_mode_safe, 4);     //read information if the last mode was safe
   // third will miss sometimes if processor busy
   mode_switch(FBU); //go to First-Boot-Up mode
 }
@@ -432,7 +435,7 @@ void Mode_init(int8_t type){
       tasks_FBU[SAVE_MORSE_TELEMETRY].period = 300;     //save morse telemetry with 300s period
       tasks_FBU[SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
 
-      tasks_FBU[EXIT_FBU].period = 1800;                //30min * 60s = 2700s, wait 30min to enter AD mode
+      tasks_FBU[EXIT_FBU].period = 2700;                //30min * 60s = 2700s, wait 30min to enter AD mode
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
 
       current_mode = FBU;
@@ -809,7 +812,7 @@ int8_t save_gps_data(int8_t t){
   //better to place immediately in the packet to save memory
 	for (uint8_t i=0; i<spacecraft_configuration.data.gps_sample_count; i++){
     //get GNSS data
-    gps_result = ~GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &week_num, &week_seconds);
+    gps_result = !GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &week_num, &week_seconds);
     //GPS week number - save it only once in the beginning
     if(i == 0){
       data_split_u16(week_num, data_byte16);                                           //split week no. data
@@ -1152,26 +1155,33 @@ int8_t process_gs_command(int8_t t){
 
 bool fbu_init(){
   uint16_t batt_volt = BATTERY_VOLTAGE;
+  //EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] FBU INITIALISED\r\n");
   char adm_stat[30];
   sprintf(adm_stat, "ADM status: %d\r\n", ADM_status);
   UART_puts(UART_INTERFACE, adm_stat);
   #endif
-  //Exit fbu immediately if antenna is not already deployed, reset flag with reset_adm_flag.c
-  if(ADM_status == 1){
-    //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V); //May need to change to 4, given in eps header)
-    if(batt_volt>BATTERY_THRESHOLD){
-      mode_switch(NF);
-      return false;
-    }
-    else{
-      mode_switch(LP);
-      return false;
-    }
+  //Exit fbu immediately if the 45 dwell time has passed -> go to AD mode if the antenna wasn't deployed;
+  //if the last mode before reboot was LP go there; go to NF or LP otherwise according to the voltage;
+  if(!has_dwell_time_passed){         //if the 45 mins dwell time hasn't passed - init FBU mode with the 45 min timer
+    return true;
+  }
+  if(!ADM_status){                    //if the antenna was not deployed (but the dwell time has passed), exit to AD mode immediately
+    mode_switch(AD);
+    return false;
+  }
+  if(was_last_mode_safe){             //if the antenna was deployed and last mode before reboot was safe - go to safe mode
+    mode_switch(SM);
+    return false;
+  }
+  if(batt_volt>BATTERY_THRESHOLD){    //if all above is not met go to LP or NF mode according to the current voltage
+        mode_switch(NF);
+        return false;
   }
   else{
-    return true;
+        mode_switch(LP);
+        return false;
   }
 }
 

@@ -31,6 +31,9 @@ static char LK_READPICTURE[] = {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A,  0x00, 0x00,
 static char LK_PICTURE_TIME_dot1ms[]  = {0x00, 0x0a}; // 0.1 ms
 static char LK_READPICTURE_RE[]  = {0x76, 0x00, 0x32, 0x00, 0x00};
 static char LK_RESOLUTION_160[] = {0x56, 0x00, 0x54, 0x01, 0x22};
+static char LK_RESOLUTION_320[] = {0x56, 0x00, 0x54, 0x01, 0x11};
+static char LK_RESOLUTION_640[] = {0x56, 0x00, 0x54, 0x01, 0x00};
+static char LK_RESOLUTION_800[] = {0x56, 0x00, 0x54, 0x01, 0x1D};
 static uint32_t UART_getw4(uint8_t serial)
 {
   char c1=UART_getc(serial),c2=UART_getc(serial),c3=UART_getc(serial),c4=UART_getc(serial);
@@ -43,6 +46,8 @@ int main(void)
   /char time[100];
   uint64_t timestamp;*/
   Board_init();
+  watchdog_update = 0xFF;
+  enable_watchdog_kick();
   RTC_init();
 
   UART_init(UART_GNSS,115200);
@@ -79,6 +84,7 @@ int main(void)
     }
     stop--;*/
     //variables
+    watchdog_update = 0xFF;
     int index_rst=0, index_res=0, index_takepic=0, index_readsize=0,index_readdata=0, index_readdata2 =0, index_resolution = 0;;
     int rst = 0, res = 0, pic = 0, size=0, dat =0, dat2 = 0, dat3=0, resol=0;
     char reset_resp[20], res_resp[20]={0}, pic_res[20], size_resp[20]={0}, read_resp[20]={0}, read_resp2[20], resol_resp[20]={0};
@@ -129,6 +135,7 @@ int main(void)
       }
       rst++;
     }*/
+    watchdog_update = 0xFF;
     if(index_rst == sizeof(LK_RESET_RE)){UART_puts(UART_GNSS, "\r\nReset response matched\r\n");}
       else{UART_puts(UART_GNSS, "\r\nReset response not matched\r\n");}
     UART_putb(UART_GNSS, reset_resp, sizeof(LK_RESET_RE));
@@ -138,7 +145,7 @@ int main(void)
     }
     Delay_ms(3000);
   //change resolution
-    UART_putb(UART_CAMERA,LK_RESOLUTION_1600, sizeof(LK_RESOLUTION_1600));
+    UART_putb(UART_CAMERA,LK_RESOLUTION_160, sizeof(LK_RESOLUTION_160));
     Delay_ms(25);
     while(UART_charsAvail(UART_CAMERA)){
       UART_getc_nonblocking(UART_CAMERA, &resol_resp[resol]);
@@ -227,7 +234,7 @@ int main(void)
   //send command and wait for the response
   uint64_t timestamp;
   uint8_t k = 0, z=0;
-  int x =5;
+  //int x =5;
   //UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
     /*Delay_ms(25);
     while(UART_charsAvail(UART_CAMERA)){
@@ -248,8 +255,8 @@ int main(void)
       sprintf(output5, "0x%02"PRIx8" ",read_resp[i]);
       UART_puts(UART_GNSS, output5);
     }*/
-//while(!endflag){
-  while(x--){
+while(!endflag){
+  //while(x--){
   LK_READPICTURE[8]=i/0x100;
   LK_READPICTURE[9]=i%0x100;
   UART_puts(UART_GNSS,"\n\r");
@@ -265,6 +272,7 @@ int main(void)
         UART_getc_nonblocking(UART_CAMERA,&data_buffer[dat2]);
         if((data_buffer[dat2-1]==0xff && data_buffer[dat2]==0xd9)){
             endflag = true;
+            dat2++;
         }
         else
         {
