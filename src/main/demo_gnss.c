@@ -35,12 +35,12 @@ int main(void){
 
         UART_puts(UART_INTERFACE, "\n\r>>> Taking measurement\n\r");
         GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &week, &seconds);
-        UART_puts(UART_CAMERA, ">>> Measurement collection complete\r\n");
+        UART_puts(UART_INTERFACE, ">>> Measurement collection complete\r\n");
         sprintf(message, "\n\rLongitude: %" PRId32 "\n\rLatitude: %" PRId32 "\n\rAltitude: %" PRId32 "\n\rLatitude s_d: %" PRId8 
         "\n\rLongitude s_d: %" PRId8 "\n\rAltitude s_d: %" PRId8 "\n\rWeek Number: %" PRId16 "\n\rWeek Seconds: %" PRId32 "\n\r",
         longitude, latitude, altitude, long_sd, lat_sd, alt_sd, week, seconds);
-        UART_puts(UART_CAMERA, message);
-        UART_puts(UART_CAMERA, ">>> Waiting for next collection...\n\r");
+        UART_puts(UART_INTERFACE, message);
+        UART_puts(UART_INTERFACE, ">>> Waiting for next collection...\n\r");
         
         LED_off(LED_B);
 

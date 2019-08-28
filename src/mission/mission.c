@@ -69,7 +69,7 @@ void mode_switch(uint8_t mode);
 void queue_task(int8_t task_id, uint64_t task_period);
 
 //Mode initialisation functions
-bool fbu_init(void);
+bool fbu_init(void);                        //completed
 bool ad_init(void);
 bool nf_init(void);
 bool lp_init(void);
@@ -436,7 +436,7 @@ void Mode_init(int8_t type){
       tasks_FBU[SAVE_MORSE_TELEMETRY].period = 300;     //save morse telemetry with 300s period
       tasks_FBU[SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
 
-      tasks_FBU[EXIT_FBU].period = 2700;                //30min * 60s = 2700s, wait 30min to enter AD mode
+      tasks_FBU[EXIT_FBU].period = 2700;                //45min * 60s = 2700s, wait 45min to enter AD mode
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
 
       current_mode = FBU;
@@ -581,7 +581,7 @@ void Mode_init(int8_t type){
       modes[DL].opmode_tasks = tasks_DL;
       modes[DL].num_tasks = 6;
 
-      tasks_DL[DL_SAVE_EPS_HEALTH].period =20; //300
+      tasks_DL[DL_SAVE_EPS_HEALTH].period = 300;
       tasks_DL[DL_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_DL[DL_SAVE_GPS_POSITION].period = spacecraft_configuration.data.gps_acquisition_interval; //300
@@ -656,11 +656,7 @@ uint16_t perform_subsystem_check(){
   // 11) check pa tempsensor
   temperature = get_temp(TEMP_PA);
   status = (status<<1) + ((temperature<spacecraft_configuration.data.pa_overtemp) ? 1 : 0); //if temperature is smaller than the overtemp treshold - write 1 to status, 0 otherwise
-  // 12) check rx tempsensor - cannot be obtained: pin F0 is not an input to ADC - set default to 1
-  status = (status<<1) + 1;
-  // 13) check tx tempsensor - cannot be obtained: pin F0 is not an input to ADC - set default to 1
-  status = (status<<1) + 1;
-  // 14) check battery tempsensor: heater of the battery operates at 1deg and stoped at 6.5deg
+  // 12) check battery tempsensor: heater of the battery operates at 1deg and stoped at 6.5deg
   EPS_getInfo(&temporary, EPS_REG_BAT_T); //read battery temperature
   status = (status<<1) + ((temporary<spacecraft_configuration.data.batt_overtemp) ? 1 : 0); //if temperature is smaller than the overtemp treshold write 1, otherwise 0
 	
@@ -669,14 +665,14 @@ uint16_t perform_subsystem_check(){
 
 int8_t save_eps_health_data(int8_t t){
   //Uncomment code when EPS board being used
-  /*//data packet for FRAM
+  //data packet for FRAM
   uint8_t data_packet_for_fram[BUFFER_SLOT_SIZE/8];
   uint8_t data_count = 0;
   uint32_t time_of_data_acquisition;
 	uint32_t eeprom_read;
   uint8_t data_byte32[4];   //temp variables for splitting operations
   uint8_t data_byte16[2];   //temp variables for splitting operations
-  uint8_t storage_temp[1];     //temp variable to organise 10bits variables into memory
+  uint8_t storage_temp;     //temp variable to organise 10bits variables into memory
   uint8_t last_tail = 0, reading_rest = 0;
   // TODO: Generate dataset id
 
@@ -688,12 +684,6 @@ int8_t save_eps_health_data(int8_t t){
   //obc_temperature - read, split and place in the packet
   data_split_16(get_temp(TEMP_OBC), data_byte16);
   data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
-  //rx_temperature - read, split and place in the packet
-  data_split_16(get_temp(TEMP_RX), data_byte16);
-  data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
-  //tx_temperature...
-  data_split_16(get_temp(TEMP_TX), data_byte16);
-  data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
   //pa_temperature...
   data_split_16(get_temp(TEMP_PA), data_byte16);
   data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
@@ -701,8 +691,24 @@ int8_t save_eps_health_data(int8_t t){
 	EEPROM_read(EEPROM_REBOOT_COUNT, &eeprom_read, 1);
   storage_temp = (uint8_t)eeprom_read;
 	data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
-  
-  // [CLARIFY] data_packets_pending
+  //read EEPROM reboot count for particular modes
+  //NF mode
+  EEPROM_read(EEPROM_REBOOT_COUNT_NF, &eeprom_read, 1);
+  storage_temp = (uint8_t) eeprom_read;
+  //DL mode
+  EEPROM_read(EEPROM_REBOOT_COUNT_DL, &eeprom_read, 1);
+  eeprom_read = eeprom_read & 0x0F;           //clear bits 7-4
+  storage_temp = (storage_temp << 4) + (uint8_t) eeprom_read;
+  data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
+  //LP mode
+  EEPROM_read(EEPROM_REBOOT_COUNT_LP, &eeprom_read, 1);
+  storage_temp = (uint8_t) eeprom_read;
+  //SM mode
+  EEPROM_read(EEPROM_REBOOT_COUNT_SM, &eeprom_read, 1);
+  eeprom_read = eeprom_read & 0x0F;           //clear bits 7-4
+  storage_temp = (storage_temp << 4) + (uint8_t) eeprom_read;
+  data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
+  //data_packets_pending
   data_packets_pending = Buffer_count_occupied(); //get the number of occupied slots in the fram buffer
   data_split_u16(data_packets_pending, data_byte16);
 	data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
@@ -754,7 +760,7 @@ int8_t save_eps_health_data(int8_t t){
     data_count = tenbit_numbers(eps_field, data_count, &last_tail, &reading_rest, data_packet_for_fram);
   }
   //do subsystem check
-	uint16_t subsystem_status = perform_subsystem_check();          //only 14 bottom bits have meaningful data
+	uint16_t subsystem_status = perform_subsystem_check();          //only 12 bottom bits have meaningful data
   storage_temp = (reading_rest << 6) | (subsystem_status>>8);     //add remaining two bits of data from previous readings to the top six bits of the subsystem_status
   data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
   storage_temp = (uint8_t)subsystem_status;                       //take only 8 lowest bits from the number
@@ -879,13 +885,13 @@ int8_t exit_fbu(int8_t t){
   mode_switch(AD);
   return 0;
 }
-
-int8_t ad_deploy_attempt(int8_t t){       //ATTEMPT TO DEPLOY THE ANTENNA
+/* Attempt to deploy antenna */
+int8_t ad_deploy_attempt(int8_t t){
   uint16_t batt_volt = BATTERY_VOLTAGE;
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Attempting To Deploy Antenna...\r\n");
   #endif
-  //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V); //May need to change to 4, given in eps header)
+  //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V);
   if(batt_volt >= BATTERY_THRESHOLD){
     LED_on(LED_B);  //debugging only
     Antenna_deploy(BURN_TIME);
@@ -905,7 +911,6 @@ int8_t ad_deploy_attempt(int8_t t){       //ATTEMPT TO DEPLOY THE ANTENNA
     #endif
     deploy_attempts++;
     EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
-
   }
   return 0;
 }
@@ -938,7 +943,6 @@ int8_t save_morse_telemetry(int8_t t){
 }
 
 int8_t exit_ad(int8_t t){
-  //EXIT AD MODE
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[AD][TASK] Exit AD mode\r\n");
   #endif
@@ -1218,10 +1222,8 @@ bool lp_init(){
 }
 
 bool sm_init(){
-
   //Suspend all activities in queue from previous mode
   suspend_all_tasks();
-
   //UNCOMMENT WHEN WORKING EPS BOARD AVAILABLE
   /*EPS_setPowerRail(EPS_PWR_CAM, 0);
   EPS_setPowerRail(EPS_PWR_GPS, 0);

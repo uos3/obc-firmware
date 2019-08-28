@@ -1,9 +1,14 @@
 // EEPROM
-#define EEPROM_REBOOT_COUNT   0x00000000            //variable to store the number of reboots
-#define EEPROM_DEPLOY_STATUS 0x00000004             //variable to store the information if the antenna was deployed
-#define EEPROM_DWELL_TIME_PASSED 0x00000008         //variable to store the information if the 45 mins dwell time has been completed
-#define EEPROM_WAS_LAST_MODE_SAFE 0x0000000C        //variable to store the information if the last mode was safe mode
-#define EEPROM_ADM_DEPLOY_ATTEMPTS 0x00000010       //variable to store the information about the number of deploy attempts
+#define EEPROM_DEPLOY_STATUS                0x00000000      //variable to store the information if the antenna was deployed
+#define EEPROM_DWELL_TIME_PASSED            0x00000004      //variable to store the information if the 45 mins dwell time has been completed
+#define EEPROM_WAS_LAST_MODE_SAFE           0x00000008      //variable to store the information if the last mode was safe mode
+#define EEPROM_ADM_DEPLOY_ATTEMPTS          0x0000000C      //variable to store the information about the number of deploy attempts
+#define EEPROM_REBOOT_COUNT                 0x00000010      //variable to store the number of reboots
+#define EEPROM_LAST_REBOOT_MODE             0x00000014      //variable to store the information about in what mode the last reboot happened
+#define EEPROM_REBOOT_COUNT_NF              0x00000018      //variable to store the information about the number of reboots in NF mode
+#define EEPROM_REBOOT_COUNT_DL              0x0000001C      //variable to store the information about the number of reboots in DL mode
+#define EEPROM_REBOOT_COUNT_LP              0x00000020      //variable to store the information about the number of reboots in LP mode
+#define EEPROM_REBOOT_COUNT_SM              0x00000024      //variable to store the information about the number of reboots in SM mode
 #define EEPROM_CONFIGURATION_DATA_ADDRESS 0x0100
 
 // FRAM
