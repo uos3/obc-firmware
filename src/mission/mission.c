@@ -665,7 +665,7 @@ uint16_t perform_subsystem_check(){
 
 int8_t save_eps_health_data(int8_t t){
   //Uncomment code when EPS board being used
-  //data packet for FRAM
+  /*//data packet for FRAM
   uint8_t data_packet_for_fram[BUFFER_SLOT_SIZE/8];
   uint8_t data_count = 0;
   uint32_t time_of_data_acquisition;
@@ -718,7 +718,7 @@ int8_t save_eps_health_data(int8_t t){
   
 	// Flash and RAM errors in same byte
   storage_temp = (flash_errors << 4) + ram_errors;
-  data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
+  data_count = place_data_in_packet(data_count, us1, &storage_temp, data_packet_for_fram);
 
   //getting the data from the EPS board in the order stated in the TMTC file -- starting with the first 15 registers
   uint16_t eps_field;                   //variable to store the reading from the register
