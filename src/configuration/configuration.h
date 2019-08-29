@@ -45,16 +45,6 @@ typedef enum {
 } tx_power_t;
 
 typedef enum {
-	image_acquisition_profile_1600x1200,
-	//image_acquisition_profile_1280x960,
-	//image_acquisition_profile_1024x768,
-	image_acquisition_profile_800x600,
-	//image_acquisition_profile_640x480,
-	//image_acquisition_profile_320x240,
-	//image_acquisition_profile_160x120
-} image_acquisition_profile_t;
-
-typedef enum {
 	operational_mode_deployment,
 	operational_mode_nominal,
 	operational_mode_safe
@@ -67,13 +57,10 @@ typedef struct configuration_data_t {
 
 	unsigned tx_interval : 8;
 	tx_interval_downlink_t tx_interval_downlink : 8;
-
 	tx_datarate_t tx_datarate : 4;
 	tx_power_t tx_power : 4;
 
 	// Upper temperature limits before entering low-power mode
-	unsigned tx_overtemp : 8;
-	unsigned rx_overtemp : 8;
 	unsigned batt_overtemp : 8;
 	unsigned obc_overtemp : 8;
 	unsigned pa_overtemp : 8;
@@ -84,7 +71,6 @@ typedef struct configuration_data_t {
 
 	// Time intervals for sampling and saving
 	unsigned health_acquisition_interval : 16;
-	unsigned configuration_acquisition_interval : 16;
 
 	// Inertial Measurement paramters
 	unsigned imu_acquisition_interval : 16;
@@ -133,13 +119,12 @@ typedef struct configuration_data_t {
 
 } configuration_data_t;
 
-typedef struct configuration_t {
+typedef struct configuration_t {			//configuration data structure
 	configuration_data_t data;
 	uint16_t checksum;
 } configuration_t;
 
-
-configuration_t spacecraft_configuration;
+configuration_t spacecraft_configuration;	//create an instance of configuration_t structure
 
 void Configuration_Init(void);
 

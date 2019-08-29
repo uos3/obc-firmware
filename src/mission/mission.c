@@ -9,9 +9,13 @@
  * 
  * TODO: check if more resolution options for the camera can be added - need to revised with the config TMTC if there is enough space for it
  * for debugging, uncomment lines in the wdt.c with the WatchdogStallEnable
- * TODO: update antenna deployment code for the usage of deployment switch
  * TODO: update the code to the CONOPS
- * 
+ * TODO: is in AD save_morse_telemetry needed? morse telemetry is really small and it could be saved in the transmit_morse_telemetry function
+ * TODO: add save_eps_health_data in the AD mode
+ * TODO: moved save_morse_telemetry to the transmit_morse_telemetry, replaced save_morse_telemetry with save_eps_health_data in AD mode
+ * TODO: what is check_health_status function for?
+ * TODO: determine of we need to delete transmit morse telemetry from timers and just added at the and of antenna deploy as in CONOPS
+ *
  * @{
  */
 
@@ -126,12 +130,13 @@ volatile uint8_t no_of_tasks_queued;
 
 // Properties
 task_t* current_tasks;              //current task structure
-uint8_t current_mode;               //for deciding which enums to use -> enums declaration in header
-uint8_t previous_mode;              //for returning to previous mode from certain modes such as PT
+mode_n current_mode;               //for deciding which enums to use -> enums declaration in header
+mode_n previous_mode;              //for returning to previous mode from certain modes such as PT
+mode_n last_mode_before_reboot;    //for storing that information for the purpose of telemetry broadcast
 
 //specific for FBU
 bool FBU_exit_switch = false;
-uint8_t was_last_mode_safe;         //store the information if the last mode was safe mode
+bool was_last_mode_safe;         //store the information if the last mode was safe mode
 uint8_t has_dwell_time_passed;      //store the information if the 45 mins dwell time passed
 
 //specific for ADM 
@@ -316,12 +321,12 @@ void Mission_init(void)
   UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVERS INITIALISED**\r\n");
   #endif
 
-//Initialise the task queue as empty
+/* Initialise the task queue as empty */
   for (uint8_t i=0; i<MAX_TASKS; i++){
     task_q[i] = -1;
     timer_to_task[i] = -1;
     }
-//set some global variables to initial values
+/* set some global variables to initial values */
   no_of_tasks_queued = 0;
   image_trigger = false;
   camera_result = true;
@@ -332,11 +337,41 @@ void Mission_init(void)
   sprintf(output3,"ULPERIOD: %" PRIu32 "\r\n", ulPeriod);
 	UART_puts(UART_INTERFACE, output3);
   #endif
-
+  /* Read the variables from the EEPROM memory */
   EEPROM_read(EEPROM_DEPLOY_STATUS, &ADM_status, 4);                  //read antenna deploy status
   EEPROM_read(EEPROM_DWELL_TIME_PASSED, &has_dwell_time_passed, 4);   //read information about completing dwell time
-  EEPROM_read(EEPROM_WAS_LAST_MODE_SAFE, &was_last_mode_safe, 4);     //read information if the last mode was safe
-  // third will miss sometimes if processor busy
+   /* Read the information about the last mode before reboot and update count value */
+  EEPROM_read(EEPROM_CURRENT_MODE, &current_mode, 4);
+  last_mode_before_reboot = current_mode;     //save the information about the "mode" of last reboot for the purpose of telemetry beacon
+  uint8_t count = 0;
+  was_last_mode_safe = false;                 //save the information that last mode before reboot wasn't safe, this will be chenged to true if it was SM -> line357
+  /* Increment reboot counts for those specific modes*/
+  switch (current_mode){
+  case NF:
+    EEPROM_read(EEPROM_REBOOT_COUNT_NF, &count, 4);
+    count+=1;
+    EEPROM_write(EEPROM_REBOOT_COUNT_NF, &count, 4);
+    break;
+  case LP:
+    EEPROM_read(EEPROM_REBOOT_COUNT_LP, &count, 4);
+    count+=1;
+    EEPROM_write(EEPROM_REBOOT_COUNT_LP, &count, 4);
+    break;
+  case SM:
+    was_last_mode_safe = true;
+    EEPROM_read(EEPROM_REBOOT_COUNT_SM, &count, 4);
+    count+=1;
+    EEPROM_write(EEPROM_REBOOT_COUNT_SM, &count, 4);
+    break;
+  case DL:
+    EEPROM_read(EEPROM_REBOOT_COUNT_DL, &count, 4);
+    count+=1;
+    EEPROM_write(EEPROM_REBOOT_COUNT_DL, &count, 4);
+    break;
+  default:
+    break;
+  }
+
   mode_switch(FBU); //go to First-Boot-Up mode
 }
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -393,7 +428,7 @@ void queue_task(int8_t task_id, uint64_t task_period){
   //If uncommented tasks fire as soon as mode initialised
   //task_q[no_of_tasks_queued] = task_id;
   //no_of_tasks_queued++;
-
+  if(task_period > 0){      //don't qeue the task if the period is zero - for the tasks which are commanded by the commands like picture taking, sm_reboot
   int8_t timer_id = get_available_timer();
   #ifdef DEBUG_PRINT
   char output[100];
@@ -401,6 +436,7 @@ void queue_task(int8_t task_id, uint64_t task_period){
   UART_puts(UART_INTERFACE, output);
   #endif
   set_timer_for_task(timer_id, task_id, ulPeriod*current_tasks[task_id].period, timer_isr_map[task_id]);
+  }
 }
 
 //Function for suspending all the queued tasks
@@ -433,10 +469,10 @@ void Mode_init(int8_t type){
       modes[FBU].num_tasks = 2;
 
 
-      tasks_FBU[SAVE_MORSE_TELEMETRY].period = 300;     //save morse telemetry with 300s period
-      tasks_FBU[SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
+      tasks_FBU[FBU_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;   //save eps health with 300s period
+      tasks_FBU[FBU_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_FBU[EXIT_FBU].period = 2700;                //45min * 60s = 2700s, wait 45min to enter AD mode
+      tasks_FBU[EXIT_FBU].period = 2700;             //45min * 60s = 2700s, wait 45min to enter AD mode
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
 
       current_mode = FBU;
@@ -450,14 +486,13 @@ void Mode_init(int8_t type){
       modes[AD].opmode_tasks = tasks_AD;
       modes[AD].num_tasks = 3;
 
-      //must have shorter period than transmit morse to give higher priority
-      tasks_AD[AD_SAVE_MORSE_TELEMETRY].period = 30;
-      tasks_AD[AD_SAVE_MORSE_TELEMETRY].TickFct = &save_morse_telemetry;
+      tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;       //5min period
+      tasks_AD[AD_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].period = 60;
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].TickFct = &transmit_morse_telemetry;
 
-      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 70;
+      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;   //10min period so 60*10=600
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
 
 
@@ -474,7 +509,7 @@ void Mode_init(int8_t type){
       modes[NF].num_tasks = 5;  //Don't want image to be captured until after a command is sent
 
 
-      tasks_NF[NF_SAVE_EPS_HEALTH].period =30; 
+      tasks_NF[NF_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval; 
       tasks_NF[NF_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_NF[NF_SAVE_GPS_POS].period = spacecraft_configuration.data.gps_acquisition_interval;
@@ -486,16 +521,14 @@ void Mode_init(int8_t type){
       tasks_NF[NF_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
       tasks_NF[NF_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-			tasks_NF[NF_CHECK_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
+			tasks_NF[NF_CHECK_HEALTH].period = 0; //no value
 			tasks_NF[NF_CHECK_HEALTH].TickFct = &check_health_status;
 
       tasks_NF[NF_TAKE_PICTURE].period = spacecraft_configuration.data.image_acquisition_time;
 			tasks_NF[NF_TAKE_PICTURE].TickFct = &take_picture; 
       
-
       current_mode = NF;
       current_tasks = tasks_NF;
-
 
       if(image_trigger == true){
         //queue_task(NF_TAKE_PICTURE);
@@ -511,10 +544,10 @@ void Mode_init(int8_t type){
       modes[LP].num_tasks = 3;
 
 
-      tasks_LP[LP_SAVE_EPS_HEALTH].period =30; //300
+      tasks_LP[LP_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
       tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_LP[LP_CHECK_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval; //300
+      tasks_LP[LP_CHECK_HEALTH].period = 0; //no value
       tasks_LP[LP_CHECK_HEALTH].TickFct = &check_health_status;
 
 			tasks_LP[LP_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
@@ -531,16 +564,16 @@ void Mode_init(int8_t type){
       modes[SM].opmode_tasks = tasks_SM;
       modes[SM].num_tasks = 4;
 
-      tasks_SM[SM_SAVE_EPS_HEALTH].period =30; //300
+      tasks_SM[SM_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
       tasks_SM[SM_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_SM[SM_CHECK_HEALTH].period = 30; //300
+      tasks_SM[SM_CHECK_HEALTH].period = 0; //no value
       tasks_SM[SM_CHECK_HEALTH].TickFct = check_health_status;
 
-			tasks_SM[SM_TRANSMIT_TELEMETRY].period = 60;
+			tasks_SM[SM_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
 			tasks_SM[SM_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-      tasks_SM[REBOOT_CHECK].period = 5;
+      tasks_SM[REBOOT_CHECK].period = 0;  //init with the period 0, so it won't be started automatically
 			tasks_SM[REBOOT_CHECK].TickFct = &sm_reboot;
 
 
@@ -581,7 +614,7 @@ void Mode_init(int8_t type){
       modes[DL].opmode_tasks = tasks_DL;
       modes[DL].num_tasks = 6;
 
-      tasks_DL[DL_SAVE_EPS_HEALTH].period = 300;
+      tasks_DL[DL_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
       tasks_DL[DL_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_DL[DL_SAVE_GPS_POSITION].period = spacecraft_configuration.data.gps_acquisition_interval; //300
@@ -596,7 +629,7 @@ void Mode_init(int8_t type){
       tasks_DL[DL_POLL_TRANSMITTER].period = 1; //Should be 1ms but 1s should be sufficient?
 			tasks_DL[DL_POLL_TRANSMITTER].TickFct = &poll_transmitter; //To get 1ms a lot has to be changed in the code
 
-      tasks_DL[DL_CHECK_HEALTH].period = 5;
+      tasks_DL[DL_CHECK_HEALTH].period = 0;
 			tasks_DL[DL_CHECK_HEALTH].TickFct = &check_health_status;
 
       current_mode = DL;
@@ -640,7 +673,7 @@ uint16_t perform_subsystem_check(){
   // 4) check GNSS
   status = (status<<1) + (uint16_t)gps_result;
   // 5) check IMU
-  status = (status<<1) + (uint16_t)IMU_selftest;    //IMU selftest is really poor state - extended, now IMU test is reading devices IDs and checking it
+  status = (status<<1) + (uint16_t)IMU_selftest;
   // 6) check transmitter
   //TODO: think aboout the way to show correct or uncorrect operation
   // 7) check receiver
@@ -659,7 +692,6 @@ uint16_t perform_subsystem_check(){
   // 12) check battery tempsensor: heater of the battery operates at 1deg and stoped at 6.5deg
   EPS_getInfo(&temporary, EPS_REG_BAT_T); //read battery temperature
   status = (status<<1) + ((temporary<spacecraft_configuration.data.batt_overtemp) ? 1 : 0); //if temperature is smaller than the overtemp treshold write 1, otherwise 0
-	
   return status;
 }
 
@@ -725,8 +757,8 @@ int8_t save_eps_health_data(int8_t t){
 
   //table represensting firts 15 registers in the order they should be organised
   uint16_t eps_data_order[] = {EPS_REG_BAT_V, EPS_REG_BAT_I, EPS_REG_BAT_T, EPS_REG_CHARGE_I, EPS_REG_MPPT_BUS_V,
-    EPS_REG_SOLAR_POS_X1_I, EPS_REG_SOLAR_POS_X2_I, EPS_REG_SOLAR_POS_Y1_I, EPS_REG_SOLAR_POS_Y2_I, EPS_REG_SOLAR_NEG_X1_I,
-    EPS_REG_SOLAR_NEG_X2_I, EPS_REG_SOLAR_NEG_Y1_I, EPS_REG_SOLAR_NEG_Y2_I, EPS_REG_SOLAR_NEG_Z1_I, EPS_REG_SOLAR_NEG_Z2_I};
+    EPS_REG_SOLAR_POS_X1_I, EPS_REG_SOLAR_POS_X2_I, EPS_REG_SOLAR_NEG_X1_I, EPS_REG_SOLAR_NEG_X2_I, EPS_REG_SOLAR_POS_Y1_I, 
+    EPS_REG_SOLAR_POS_Y2_I, EPS_REG_SOLAR_NEG_Y1_I, EPS_REG_SOLAR_NEG_Y2_I, EPS_REG_SOLAR_NEG_Z1_I, EPS_REG_SOLAR_NEG_Z2_I};
   // Get the values from those 15 registers - the data bits are first 10bits
   for (uint8_t i=0; i<15; i++){
     EPS_getInfo(&eps_field, eps_data_order[i]); //read the register
@@ -755,12 +787,13 @@ int8_t save_eps_health_data(int8_t t){
     if(count == 4){ count = 0; }
   }
   //get the EPS data about the 3.3 and 5V lines - they are inly 10 bit data, so use only tenbit_numbers function
-  for( uint8_t i = 43, i<47; i++){
+  for( uint8_t i = 43; i<47; i++){
     EPS_getInfo(&eps_field, i);
     data_count = tenbit_numbers(eps_field, data_count, &last_tail, &reading_rest, data_packet_for_fram);
   }
   //do subsystem check
 	uint16_t subsystem_status = perform_subsystem_check();          //only 12 bottom bits have meaningful data
+  subsystem_status = (subsystem_status << 2);                     //shift data by two positions to the left so we have 14bits of data (two lowest bits are meaningless) to fullfil the multiples of 8
   storage_temp = (reading_rest << 6) | (subsystem_status>>8);     //add remaining two bits of data from previous readings to the top six bits of the subsystem_status
   data_count = place_data_in_packet(data_count, 1, &storage_temp, data_packet_for_fram);
   storage_temp = (uint8_t)subsystem_status;                       //take only 8 lowest bits from the number
@@ -772,7 +805,7 @@ int8_t save_eps_health_data(int8_t t){
   uint16_t batt_volt = 0;
   EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
   if(current_mode != SM){
-      if(batt_volt < spacecraft_configuration.data.low_voltage_threshold){ //shouldnt be opposite?, EPS_get info is a bool type, the statement will not work
+      if(batt_volt < spacecraft_configuration.data.low_voltage_threshold){
       mode_switch(LP);
     }
   }
@@ -855,6 +888,7 @@ int8_t save_gps_data(int8_t t){
 }
 
 int8_t transmit_morse_telemetry (int8_t t){
+  save_morse_telemetry();
   //TODO: test and change string to fully match TMTC specification
   //char morse_string[30];
 
@@ -893,10 +927,14 @@ int8_t ad_deploy_attempt(int8_t t){
   #endif
   //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V);
   if(batt_volt >= BATTERY_THRESHOLD){
+    #ifdef DEBUG_PRINT
     LED_on(LED_B);  //debugging only
-    Antenna_deploy(BURN_TIME);
+    #endif
+    Antenna_deploy(BURN_TIME);  //deploy the antenna for the value of BURN_TIME
+    #ifdef
     LED_off(LED_B); //debugging only
-    ADM_status = 1;
+    #endif
+    ADM_status = 1; //temporary, because the antenna deployment will be confirmed by receiving the telecommand
     EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
     deploy_attempts++;
     EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
@@ -1159,8 +1197,12 @@ int8_t process_gs_command(int8_t t){
 //-------------------------------------MODE INITIALISATION FUNCTIONS------------------------------
 
 bool fbu_init(){
+  /* Save the information about the current mode */
+  EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
+  /* When used with the EPS board uncomment EPS_getInfo line and delete assignment of BATTERY_VOLTAGE to batt_volt */
   uint16_t batt_volt = BATTERY_VOLTAGE;
   //EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
+  /* Pring the information about the ADM status for debugging functionality */
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] FBU INITIALISED\r\n");
   char adm_stat[30];
@@ -1191,7 +1233,8 @@ bool fbu_init(){
 }
 
 bool ad_init(){
-  //Not (yet?) needed
+/* Update current mode variable and EEPROM memory */
+  EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] AD INITIALISED\r\n");
   #endif
@@ -1199,7 +1242,8 @@ bool ad_init(){
 }
 
 bool nf_init(){
-  //Not (yet?) needed
+/* Update current mode variable and EEPROM memory */
+  EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] NF INITIALISED\r\n");
   #endif
@@ -1207,8 +1251,9 @@ bool nf_init(){
 }
 
 bool lp_init(){
-
-  //Suspend all activities in queue from previous mode
+/* Update current mode variable and EEPROM memory */
+  EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
+/* Suspend all activities in queue from previous mode */
   suspend_all_tasks();
 
   //UNCOMMENT WHEN WORKING EPS BOARD AVAILABLE
@@ -1222,7 +1267,9 @@ bool lp_init(){
 }
 
 bool sm_init(){
-  //Suspend all activities in queue from previous mode
+/* Update current mode variable and EEPROM memory */
+  EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
+/* Suspend all activities in queue from previous mode */
   suspend_all_tasks();
   //UNCOMMENT WHEN WORKING EPS BOARD AVAILABLE
   /*EPS_setPowerRail(EPS_PWR_CAM, 0);
@@ -1235,7 +1282,9 @@ bool sm_init(){
 }
 
 bool cfu_init(){
-  //suspend data gathering, picture taking and downlinking
+/* Update current mode variable and EEPROM memory */
+  EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
+/* Suspend all activities in queue from previous mode */
   suspend_all_tasks();
   //Open recieved file and verify values (assuming the data has already been stored
   //in the spacecraft_configuration struct from the data uplink)
@@ -1253,25 +1302,29 @@ bool cfu_init(){
 }
 
 bool pt_init(){
+/* Update current mode variable and EEPROM memory */
+  EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
 
-  //Take picture and write to FRAM buffer
-
+/* Take picture and write to FRAM buffer */
   if(!save_image_data()){
     return false;
-  }  //need to be implemented  
+  }
 
-  //Return to previous mode
+/* Return to previous mode */
   if (previous_mode == DL){
     mode_switch(DL);
   }
   else{
     mode_switch(NF);
   }
-  return true;
+  return true; 
 }
 
 bool dl_init(){
-  //Transfer packets to cc1125 buffer
+/* Update current mode variable and EEPROM memory */
+  EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
+
+/* Transfer packets to cc1125 buffer */
   return true;
 }
 

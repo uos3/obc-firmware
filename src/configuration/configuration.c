@@ -60,8 +60,9 @@ static void Configuration_load_defaults(void)
   spacecraft_configuration.data.gps_sample_count = 6;
   spacecraft_configuration.data.gps_sample_interval = 1;
 
-  spacecraft_configuration.data.health_acquisition_interval = 120;
-  spacecraft_configuration.data.image_acquisition_time = 360;
+  spacecraft_configuration.data.health_acquisition_interval = 300;    //300s period
+  spacecraft_configuration.data.image_acquisition_time = 0;           //no initial period for picture taking
+  spacecraft_configuration.data.image_acquisition_profile = 1;        //initial resolution 800x640
   spacecraft_configuration.data.tx_interval = 20;
 
   Configuration_update_checksum();

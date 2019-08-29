@@ -80,12 +80,12 @@ typedef enum mode_n {
 //Can be assigned to general tasks in mission code, each task doesn't have to be mode specfic
 
 typedef enum FBU_task{
-	SAVE_MORSE_TELEMETRY,
+	FBU_SAVE_EPS_HEALTH,
 	EXIT_FBU
 } FBU_task;
 
 typedef enum AD_task{
-	AD_SAVE_MORSE_TELEMETRY,
+	AD_SAVE_EPS_HEALTH,
 	TRANSMIT_MORSE_TELEMETRY,
 	ANTENNA_DEPLOY_ATTEMPT, //may be able to remove and do in either of previous tasks
 } AD_task;

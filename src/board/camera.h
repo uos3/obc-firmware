@@ -14,6 +14,17 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "../configuration/configuration.h"
+
+typedef enum {
+	image_acquisition_profile_1600x1200,
+	//image_acquisition_profile_1280x960,
+	//image_acquisition_profile_1024x768,
+	image_acquisition_profile_800x600,
+	//image_acquisition_profile_640x480,
+	//image_acquisition_profile_320x240,
+	//image_acquisition_profile_160x120
+} image_acquisition_profile_t;
+
 /**
  * @function
  * @ingroup camera
