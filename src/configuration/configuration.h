@@ -17,31 +17,31 @@
 /* TODO: Move these below into the relevant modules */
 
 typedef enum {
-	tx_interval_downlink_0ms,
-	tx_interval_downlink_500ms,
-	tx_interval_downlink_600ms,
-	tx_interval_downlink_700ms,
-	tx_interval_downlink_800ms,
-	tx_interval_downlink_900ms,
-	tx_interval_downlink_1000ms,
-	tx_interval_downlink_1500ms,
-	tx_interval_downlink_2000ms
+	tx_interval_downlink_0ms = 0,
+	tx_interval_downlink_500ms = 50,
+	tx_interval_downlink_600ms = 60,
+	tx_interval_downlink_700ms = 70,
+	tx_interval_downlink_800ms = 80,
+	tx_interval_downlink_900ms = 90,
+	tx_interval_downlink_1000ms = 100,
+	tx_interval_downlink_1500ms = 150,
+	tx_interval_downlink_2000ms = 200
 } tx_interval_downlink_t;
 
 typedef enum {
-	tx_datarate_0_25kbps,
-	tx_datarate_0_5kbps,
-	tx_datarate_1_kbps,
-	tx_datarate_3_kbps,
-	tx_datarate_6_kbps
+	tx_datarate_0_25kbps = 0,
+	tx_datarate_0_5kbps = 3,
+	tx_datarate_1_kbps = 6,
+	tx_datarate_3_kbps = 9,
+	tx_datarate_6_kbps = 12
 } tx_datarate_t;
 
 typedef enum {
-	tx_power_10mw,
-	tx_power_50mw,
-	tx_power_100mw,
-	tx_power_200mw,
-	tx_power_300mw
+	tx_power_10mw = 0,
+	tx_power_50mw = 3,
+	tx_power_100mw = 6,
+	tx_power_200mw = 9,
+	tx_power_300mw = 12
 } tx_power_t;
 
 typedef enum {
@@ -70,7 +70,8 @@ typedef struct configuration_data_t {
 	unsigned low_voltage_recovery : 8;
 
 	// Time intervals for sampling and saving
-	unsigned health_acquisition_interval : 16;
+	unsigned eps_health_acquisition_interval : 16;
+	unsigned check_health_acquisition_interval : 16;
 
 	// Inertial Measurement paramters
 	unsigned imu_acquisition_interval : 16;
@@ -83,29 +84,13 @@ typedef struct configuration_data_t {
 	unsigned gps_sample_interval : 8;
 
 	// Camera settings
-	unsigned image_acquisition_time : 32;
 	image_acquisition_profile_t image_acquisition_profile : 1;
-
-	unsigned time : 32; //unix epoch
-
-	// Transfer between modes
-	operational_mode_t operational_mode : 2;
-	unsigned self_test : 1;
 
 	// Manually power on all rails apart form 4 which is the on-board computer
 	unsigned power_rail_1 : 1;
-	unsigned power_rail_2 : 1;
 	unsigned power_rail_3 : 1;
 	unsigned power_rail_5 : 1;
 	unsigned power_rail_6 : 1;
-
-	// Setting to True resets one of these power rails
-	unsigned reset_power_rail_1 : 1;
-	unsigned reset_power_rail_2 : 1;
-	unsigned reset_power_rail_3 : 1;
-	unsigned reset_power_rail_4 : 1;
-	unsigned reset_power_rail_5 : 1;
-	unsigned reset_power_rail_6 : 1;
 
 	// -- Previous/need revisiting
 	// Seperate control for telecom board components in case of error
@@ -113,9 +98,9 @@ typedef struct configuration_data_t {
 	bool imu_gyro_enabled:1;
 	bool imu_magno_enabled:1;
 
-	tx_power_t tx_overtemp_power:4; // adjustable low-power for safe-mode?
+	//tx_power_t tx_overtemp_power:4; // adjustable low-power for safe-mode?
 
-	uint16_t greetings_message_transmission_interval; // packets
+	//uint16_t greetings_message_transmission_interval; // packets
 
 } configuration_data_t;
 

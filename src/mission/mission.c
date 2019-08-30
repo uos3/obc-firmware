@@ -129,14 +129,14 @@ Node*           task_pq;            // Task priority queue constructed from prev
 volatile uint8_t no_of_tasks_queued;
 
 // Properties
-task_t* current_tasks;              //current task structure
+task_t* current_tasks;             //current task structure
 mode_n current_mode;               //for deciding which enums to use -> enums declaration in header
 mode_n previous_mode;              //for returning to previous mode from certain modes such as PT
 mode_n last_mode_before_reboot;    //for storing that information for the purpose of telemetry broadcast
 
 //specific for FBU
 bool FBU_exit_switch = false;
-bool was_last_mode_safe;         //store the information if the last mode was safe mode
+bool was_last_mode_safe;            //store the information if the last mode was safe mode
 uint8_t has_dwell_time_passed;      //store the information if the 45 mins dwell time passed
 
 //specific for ADM 
@@ -148,7 +148,7 @@ char ADM_char;
 //specific for Camera
 bool image_trigger;
 bool camera_result;
-uint32_t picture_wait_period =1;
+uint32_t image_acquisition_time = 0;  //time after which the picture will be taken, default to 0 as it will be commanded by the ground telecommand
 
 //specific for GNSS
 bool gps_result;
@@ -489,10 +489,10 @@ void Mode_init(int8_t type){
       tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;       //5min period
       tasks_AD[AD_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_AD[TRANSMIT_MORSE_TELEMETRY].period = 60;
+      tasks_AD[TRANSMIT_MORSE_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].TickFct = &transmit_morse_telemetry;
 
-      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;   //10min period so 60*10=600
+      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;       //10min period so 60*10=600
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
 
 
@@ -521,10 +521,10 @@ void Mode_init(int8_t type){
       tasks_NF[NF_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
       tasks_NF[NF_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-			tasks_NF[NF_CHECK_HEALTH].period = 0; //no value
+			tasks_NF[NF_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval; //no value
 			tasks_NF[NF_CHECK_HEALTH].TickFct = &check_health_status;
 
-      tasks_NF[NF_TAKE_PICTURE].period = spacecraft_configuration.data.image_acquisition_time;
+      tasks_NF[NF_TAKE_PICTURE].period = 0;               //init as 0 so it won't be queued automatically
 			tasks_NF[NF_TAKE_PICTURE].TickFct = &take_picture; 
       
       current_mode = NF;
@@ -547,7 +547,7 @@ void Mode_init(int8_t type){
       tasks_LP[LP_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
       tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_LP[LP_CHECK_HEALTH].period = 0; //no value
+      tasks_LP[LP_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval; //no value
       tasks_LP[LP_CHECK_HEALTH].TickFct = &check_health_status;
 
 			tasks_LP[LP_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
@@ -567,7 +567,7 @@ void Mode_init(int8_t type){
       tasks_SM[SM_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
       tasks_SM[SM_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_SM[SM_CHECK_HEALTH].period = 0; //no value
+      tasks_SM[SM_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval; //no value
       tasks_SM[SM_CHECK_HEALTH].TickFct = check_health_status;
 
 			tasks_SM[SM_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
@@ -617,19 +617,19 @@ void Mode_init(int8_t type){
       tasks_DL[DL_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
       tasks_DL[DL_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_DL[DL_SAVE_GPS_POSITION].period = spacecraft_configuration.data.gps_acquisition_interval; //300
+      tasks_DL[DL_SAVE_GPS_POSITION].period = spacecraft_configuration.data.gps_acquisition_interval;
       tasks_DL[DL_SAVE_GPS_POSITION].TickFct = &save_gps_data;
 
 			tasks_DL[DL_SAVE_ATTITUDE].period = spacecraft_configuration.data.imu_acquisition_interval;
 			tasks_DL[DL_SAVE_ATTITUDE].TickFct = &save_attitude;
 
-      tasks_DL[DL_TAKE_PICTURE].period = spacecraft_configuration.data.image_acquisition_time;
+      tasks_DL[DL_TAKE_PICTURE].period = 0;
 			tasks_DL[DL_TAKE_PICTURE].TickFct = &take_picture;
 
       tasks_DL[DL_POLL_TRANSMITTER].period = 1; //Should be 1ms but 1s should be sufficient?
 			tasks_DL[DL_POLL_TRANSMITTER].TickFct = &poll_transmitter; //To get 1ms a lot has to be changed in the code
 
-      tasks_DL[DL_CHECK_HEALTH].period = 0;
+      tasks_DL[DL_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval;
 			tasks_DL[DL_CHECK_HEALTH].TickFct = &check_health_status;
 
       current_mode = DL;
@@ -877,7 +877,7 @@ int8_t save_gps_data(int8_t t){
     //alt_sd data
     data_count = place_data_in_packet(data_count, 1, &alt_sd, data_packet_for_fram);
 
-    Delay_ms(spacecraft_configuration.data.gps_sample_interval*1000);//delay for the GPS to be ready for next measurement
+    Delay_ms(spacecraft_configuration.data.gps_sample_interval);
 	}
 
   Buffer_store_new_data(data_packet_for_fram);  //store the packet in FRAM
@@ -1050,13 +1050,14 @@ int8_t save_attitude(int8_t t){
     data_split_16(gyro_z, data_byte16);
     data_count = place_data_in_packet(data_count, 2, data_byte16, data_packet_for_fram);
     
-		Delay_ms(spacecraft_configuration.data.imu_sample_interval*1000); // TODO: update time once it has been determined
+		Delay_ms(spacecraft_configuration.data.imu_sample_interval);
 	}
   
   Buffer_store_new_data(data_packet_for_fram);
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished saving IMU payload data.\r\n");
   #endif
+  return 0;
 }
 
 int8_t  save_image_data(void){

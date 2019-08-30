@@ -65,16 +65,15 @@ typedef struct task_t {
 } task_t;
 //task opmode_tasks[]; // you put in opmode_tasks[<mode whose tasks I want>] and you get a pointer to that array of tasks
 
-// #DEFINE < ENUM because automatic numbering in latter (obv)
 typedef enum mode_n {
-   FBU,//first boot-up
-   AD, //antenna-deployment
-   NF, //nominal-functionality
-   LP, //low-power
-   SM, //safe-mode
-   CFU,//configuration file update
-   PT, //picture taking
-   DL  //data downlinking
+   FBU,				//first boot-up
+   AD, 				//antenna-deployment
+   NF, 				//nominal-functionality
+   LP, 				//low-power
+   SM, 				//safe-mode
+   CFU,				//configuration file update
+   PT, 				//picture taking
+   DL  				//data downlinking
 } mode_n;
 
 //Can be assigned to general tasks in mission code, each task doesn't have to be mode specfic
