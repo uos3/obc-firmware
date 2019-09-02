@@ -145,7 +145,7 @@ int main(void)
     }
     Delay_ms(3000);
   //change resolution
-    UART_putb(UART_CAMERA,LK_RESOLUTION_160, sizeof(LK_RESOLUTION_160));
+    UART_putb(UART_CAMERA,LK_RESOLUTION_800, sizeof(LK_RESOLUTION_800));
     Delay_ms(25);
     while(UART_charsAvail(UART_CAMERA)){
       UART_getc_nonblocking(UART_CAMERA, &resol_resp[resol]);
@@ -218,18 +218,19 @@ int main(void)
 
   UART_puts(UART_GNSS,"Before reading picture data");
   //reading the picture
-  uint8_t pagesize =  104;
+  uint16_t pagesize = 0x820;
   bool endflag = false;
   uint32_t i = 0x0000;
   uint8_t response_begin[5]={0},response_end[6]={0};
-  uint8_t data_buffer[104] = {0}; //some space for beginning characters and ending characters
+  uint8_t data_buffer[2080] = {0}; //some space for beginning characters and ending characters
   //LK_READPICTURE[10] = (char)((jpegsize >> 24) & 0xFF);
   //LK_READPICTURE[11] = (char)((jpegsize >> 16) & 0xFF);
   //LK_READPICTURE[12] = (char)((jpegsize >> 8) & 0xFF);
   //LK_READPICTURE[13] = (char)(jpegsize & 0xFF);
-  LK_READPICTURE[13]= 104;
+  LK_READPICTURE[12]= 0x08;
+  LK_READPICTURE[13]= 0x20;
   LK_READPICTURE[14]= 0x00;
-  LK_READPICTURE[15]=0x0a;
+  LK_READPICTURE[15]= 0x0a;
   //while(!endflag){
   //send command and wait for the response
   uint64_t timestamp;
@@ -262,7 +263,7 @@ while(!endflag){
   UART_puts(UART_GNSS,"\n\r");
   UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
   RTC_getTime_ms(&timestamp);
-  while(!RTC_timerElapsed_ms(timestamp,100)){
+  while(!RTC_timerElapsed_ms(timestamp,2000)){
     if(UART_charsAvail(UART_CAMERA)){
       if(k<5){
         UART_getc_nonblocking(UART_CAMERA,&response_begin[k]);
@@ -300,9 +301,10 @@ while(!endflag){
     UART_puts(UART_GNSS, output8);
   }*/
   dat2=0;
-  i+=0x68;
+  i+=0x820;
   k=0;
 }
+UART_puts(UART_GNSS, "\r\nkupa");
     free(output9);
     free(output8);
     free(output2);
@@ -313,7 +315,7 @@ while(!endflag){
     free(output6);
     free(output7);
     LED_off(LED_B);
-    Delay_ms(1000);
+    Delay_ms(2000);
   }
 }
 /* 
