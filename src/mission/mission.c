@@ -15,7 +15,8 @@
  * TODO: moved save_morse_telemetry to the transmit_morse_telemetry, replaced save_morse_telemetry with save_eps_health_data in AD mode
  * TODO: what is check_health_status function for?
  * TODO: determine of we need to delete transmit morse telemetry from timers and just added at the and of antenna deploy as in CONOPS
- *
+ * TODO: 
+ * 
  * @{
  */
 
@@ -469,7 +470,7 @@ void Mode_init(int8_t type){
       modes[FBU].num_tasks = 2;
 
 
-      tasks_FBU[FBU_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;   //save eps health with 300s period
+      tasks_FBU[FBU_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;   //save eps health with 300s period
       tasks_FBU[FBU_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_FBU[EXIT_FBU].period = 2700;             //45min * 60s = 2700s, wait 45min to enter AD mode
@@ -486,7 +487,7 @@ void Mode_init(int8_t type){
       modes[AD].opmode_tasks = tasks_AD;
       modes[AD].num_tasks = 3;
 
-      tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;       //5min period
+      tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;       //5min period
       tasks_AD[AD_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
@@ -509,7 +510,7 @@ void Mode_init(int8_t type){
       modes[NF].num_tasks = 5;  //Don't want image to be captured until after a command is sent
 
 
-      tasks_NF[NF_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval; 
+      tasks_NF[NF_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval; 
       tasks_NF[NF_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_NF[NF_SAVE_GPS_POS].period = spacecraft_configuration.data.gps_acquisition_interval;
@@ -528,11 +529,7 @@ void Mode_init(int8_t type){
 			tasks_NF[NF_TAKE_PICTURE].TickFct = &take_picture; 
       
       current_mode = NF;
-      current_tasks = tasks_NF;
-
-      if(image_trigger == true){
-        //queue_task(NF_TAKE_PICTURE);
-      } 
+      current_tasks = tasks_NF; 
       
     } break;
     case LP:{
@@ -544,10 +541,10 @@ void Mode_init(int8_t type){
       modes[LP].num_tasks = 3;
 
 
-      tasks_LP[LP_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
+      tasks_LP[LP_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
       tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_LP[LP_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval; //no value
+      tasks_LP[LP_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval;
       tasks_LP[LP_CHECK_HEALTH].TickFct = &check_health_status;
 
 			tasks_LP[LP_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
@@ -564,10 +561,10 @@ void Mode_init(int8_t type){
       modes[SM].opmode_tasks = tasks_SM;
       modes[SM].num_tasks = 4;
 
-      tasks_SM[SM_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
+      tasks_SM[SM_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
       tasks_SM[SM_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
-      tasks_SM[SM_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval; //no value
+      tasks_SM[SM_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval;
       tasks_SM[SM_CHECK_HEALTH].TickFct = check_health_status;
 
 			tasks_SM[SM_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
@@ -600,7 +597,6 @@ void Mode_init(int8_t type){
       modes[PT].opmode_tasks = tasks_PT;
       modes[PT].num_tasks = 1;
 
-
       //NO ACTUAL RECURRING TASKS, CAN THE TASKS JUST BE LEFT AS EMPTY?
       //ALL TIMING OCCURS IN NF MODE
       current_mode = PT;
@@ -614,7 +610,7 @@ void Mode_init(int8_t type){
       modes[DL].opmode_tasks = tasks_DL;
       modes[DL].num_tasks = 6;
 
-      tasks_DL[DL_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.health_acquisition_interval;
+      tasks_DL[DL_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
       tasks_DL[DL_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_DL[DL_SAVE_GPS_POSITION].period = spacecraft_configuration.data.gps_acquisition_interval;
@@ -888,7 +884,7 @@ int8_t save_gps_data(int8_t t){
 }
 
 int8_t transmit_morse_telemetry (int8_t t){
-  save_morse_telemetry();
+  save_morse_telemetry(t);
   //TODO: test and change string to fully match TMTC specification
   //char morse_string[30];
 
@@ -931,7 +927,7 @@ int8_t ad_deploy_attempt(int8_t t){
     LED_on(LED_B);  //debugging only
     #endif
     Antenna_deploy(BURN_TIME);  //deploy the antenna for the value of BURN_TIME
-    #ifdef
+    #ifdef DEBUG_PRINT
     LED_off(LED_B); //debugging only
     #endif
     ADM_status = 1; //temporary, because the antenna deployment will be confirmed by receiving the telecommand
@@ -987,12 +983,12 @@ int8_t exit_ad(int8_t t){
   mode_switch(NF);
   return 0;
 }
-
+/* Function for rebooting the MCU */
 int8_t sm_reboot(int8_t t){
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[SM][TASK?] No contact from ground, rebooting...\r\n");
   #endif
-  SysCtlReset();                //call the software reset function and reboot the microcontroller with all tje peripherals
+  SysCtlReset();                //call the software reset function and reboot the microcontroller with all the peripherals
   return 0;
 }
 
@@ -1116,12 +1112,17 @@ int8_t transmit_next_telemetry(int8_t t){
 }
 
 int8_t check_health_status(int8_t t){
+  bool check_result;
+	// TODO: Calculate checksums for all payload
+  check_result = Configuration_verify_checksum();
 
-	// load allowed voltage of battery
-
-	// Get current voltage of battery from EPS board
-
-	// Calculate checksums for all payload
+  /* Read the battery voltage from the EPS board */
+  uint16_t batt_volt;
+  EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
+  /* If the battery voltage is lower than the configured treshold - go to Low Power mode */
+  if(batt_volt < spacecraft_configuration.data.low_voltage_threshold){
+    mode_switch(LP);
+  }
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished checking health\r\n");
   #endif
