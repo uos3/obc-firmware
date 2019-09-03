@@ -122,9 +122,9 @@ void set_resolution(image_acquisition_profile_t resolution){
   }
 }
 //main driver function - uses above functions to set the camera, capture the image and store it in the FRAM memory
-bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_uart_num,enum print_to_debug if_print, image_acquisition_profile_t resolution)
+bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisition_profile_t resolution)
 {
-  uint8_t pagesize = 104;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
+  uint16_t pagesize = 2080;   //because it must be multiple of 8, size of the page - correspond to size of the FRAM slot
   uint8_t begin_marker[5], end_marker[6];
   uint8_t count_begin_marker = 0, count_end_marker = 0, count_picture_data = 0;
   uint8_t page_buffer[pagesize];
@@ -135,7 +135,9 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_u
   // initialise camera
   if(!Camera_command(LK_RESET, sizeof(LK_RESET), LK_RESET_RE, sizeof(LK_RESET_RE)))
   {
-    UART_puts(deb_uart_num, "Reset Error \r\n");
+    #ifdef DEBUG_PRINT
+    UART_puts(UART_INTERFACE, "Reset Error \r\n");
+    #endif
     return false;
   }
   Delay_ms(3000); // 2-3 sec gap required by data sheet before camera ready
@@ -143,35 +145,46 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_u
   set_resolution(resolution);
   if(!Camera_command(LK_RESOLUTION, sizeof(LK_RESOLUTION),LK_RESOLUTION_RE, sizeof(LK_RESOLUTION_RE)))
   {
-    UART_puts(deb_uart_num, "Resolution Error \r\n");
+    #ifdef DEBUG_PRINT
+    UART_puts(UART_INTERFACE, "Resolution Error \r\n");
+    #endif
     return false; 
   }
   // set compression 
   if(!Camera_command(LK_COMPRESSION, sizeof(LK_COMPRESSION), LK_COMPRESSION_RE, sizeof(LK_COMPRESSION_RE)))
   {
-    UART_puts(deb_uart_num, "Compression Error \r\n");
+    #ifdef DEBUG_PRINT
+    UART_puts(UART_INTERFACE, "Compression Error \r\n");
+    #endif
     return false;
   }
   // take picture
   if(!Camera_command(LK_PICTURE, sizeof(LK_PICTURE), LK_PICTURE_RE, sizeof(LK_PICTURE_RE)))
   {
-    UART_puts(deb_uart_num, "Take picture error \r\n");
+    #ifdef DEBUG_PRINT
+    UART_puts(UART_INTERFACE, "Take picture error \r\n");
+    #endif
     return false;
   }
   // read size
   if(!Camera_command(LK_JPEGSIZE, sizeof(LK_JPEGSIZE),LK_JPEGSIZE_RE, sizeof(LK_JPEGSIZE_RE)))
-  {
-    UART_puts(deb_uart_num, "Pictrue size error \r\n");
+  { 
+    #ifdef DEBUG_PRINT
+    UART_puts(UART_INTERFACE, "Pictrue size error \r\n");
+    #endif
     return false;
   }
   jpegsize = UART_getw4(UART_CAMERA);
  //unnecessary for the operation, just for the debugging, takes time to print----------------------------
+  #ifdef DEBUG_PRINT
   char jp_output[100];
   sprintf(jp_output, "jpeg size is: %d\r\n", jpegsize); //output of the sprintf is the char buffer specified in first argument
-  UART_puts(deb_uart_num, jp_output); //print this message about size of jpeg
+  UART_puts(UART_INTERFACE, jp_output); //print this message about size of jpeg
+  #endif
  //-----------------------------------------------------------------------------------------------------
   // write length to obtain +8 bytes?
-  LK_READPICTURE[13] = pagesize;    //number of bites we will be reading in each camera data packet
+  LK_READPICTURE[12] = pagesize >> 2;
+  LK_READPICTURE[13] = pagesize && 0x00FF;    //number of bites we will be reading in each camera data packet
   // 0.1ms
   LK_READPICTURE[14] = LK_PICTURE_TIME_dot1ms[0];
   LK_READPICTURE[15] = LK_PICTURE_TIME_dot1ms[1];
@@ -182,7 +195,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_u
     LK_READPICTURE[9] = jpeg_adress % 256;  //but may need be extended to bytes 6 and 7 if the smaller pagesize is required
     CAMWRITE(LK_READPICTURE);
     RTC_getTime_ms(&timestamp);
-    while(!RTC_timerElapsed_ms(timestamp,100)){
+    while(!RTC_timerElapsed_ms(timestamp,2000)){
       if(UART_charsAvail(UART_CAMERA)){
         if(count_begin_marker<5){                                  //read first five characters which are response markers
             UART_getc_nonblocking(UART_CAMERA, &begin_marker[count_begin_marker]);
@@ -207,23 +220,37 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, uint8_t deb_u
         }
       }
     }
-  Buffer_store_new_data(page_buffer);
-  if(if_print){ print_to_terminal(deb_uart_num, page_buffer, count_picture_data); }
+  /* Need to divide the 2080 characters into the portions of 104 characters to match the size of FRAM_buffer slot */
+  uint8_t j = 0;                                //variable to support operation
+  uint8_t storage_buffer[104];                  //buffer which will be sent directly to the FRAM
+  for(int i = 0; i<pagesize; i++){              //run the for loop through all the elements of the data read from the camera
+    storage_buffer[j] = page_buffer[i];         //copy the data to the storage_buffer
+    j++;                                        
+    if(j == 104){                               //if j match the size of the BUFFER slot size, send the storage_buffer to the FRAM and reset j to 0 for the next portion
+      j = 0;
+      Buffer_store_new_data(storage_buffer);
+    }                                           //repeat that until all the page data is portioned and stored in FRAM
+  }
+  #ifdef DEBUG_PRINT
+  print_to_terminal(page_buffer, count_picture_data); }
+  #endif
+
   count_begin_marker = 0;
   count_picture_data = 0;
   count_end_marker = 0;
   jpeg_adress += pagesize;
   }
+
   *picture_size = jpegsize;
   *no_of_pages = ROUND_UP(jpegsize/pagesize ,1);
   return true;
 }
-void print_to_terminal(uint8_t uart_num,uint8_t* data, uint8_t count){
+void print_to_terminal(uint8_t* data, uint8_t count){
   char* output = malloc(20*sizeof(char));
   for(int i =0;i<=count;i++){
     sprintf(output, "0x%02"PRIx8" ",data[i]);
-      UART_puts(uart_num, output);
+      UART_puts(UART_INTERFACE, output);
   }
-  UART_puts(uart_num, "\r\n");
+  UART_puts(UART_INTERFACE, "\r\n");
   free(output);
 }

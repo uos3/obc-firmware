@@ -10,12 +10,7 @@
  * TODO: check if more resolution options for the camera can be added - need to revised with the config TMTC if there is enough space for it
  * for debugging, uncomment lines in the wdt.c with the WatchdogStallEnable
  * TODO: update the code to the CONOPS
- * TODO: is in AD save_morse_telemetry needed? morse telemetry is really small and it could be saved in the transmit_morse_telemetry function
- * TODO: add save_eps_health_data in the AD mode
- * TODO: moved save_morse_telemetry to the transmit_morse_telemetry, replaced save_morse_telemetry with save_eps_health_data in AD mode
  * TODO: what is check_health_status function for?
- * TODO: determine of we need to delete transmit morse telemetry from timers and just added at the and of antenna deploy as in CONOPS
- * TODO: 
  * 
  * @{
  */
@@ -31,7 +26,6 @@
 #include "inc/hw_memmap.h"
  
 #include "../board/memory_map.h"
-// #include "../board/radio.h"
 
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
 #define BATTERY_VOLTAGE 6 //COMMENT WHEN USING EPS!!!
@@ -51,8 +45,7 @@ int8_t save_gps_data(int8_t t);             //completed
 int8_t check_health_status(int8_t t);       //TODO: write body of this function
 int8_t save_image_data(void);               //completed
 int8_t ad_deploy_attempt(int8_t t);         
-int8_t save_morse_telemetry(int8_t t);      //TODO: revise the information/data we want to inlude here
-int8_t transmit_morse_telemetry(int8_t t);  //TODO: write the body of the function
+int8_t transmit_morse_telemetry(int8_t t);  //TODO: test
 int8_t transmit_next_telemetry(int8_t t);   //TODO: revise what is written and complete the body
 int8_t exit_fbu (int8_t t);                 //completed
 int8_t exit_ad (int8_t t);                  //completed
@@ -117,7 +110,6 @@ opmode_t modes[8];
 timer_properties_t Timer_Properties;
 
 //camera variables
-enum print_to_debug if_print = no;  //enum for specifying whether we want to print the picture data on the screen or not
 uint32_t picture_size;              //do we need to store them? are those informations useful?
 uint16_t no_of_pages;               
 
@@ -144,12 +136,10 @@ uint8_t has_dwell_time_passed;      //store the information if the 45 mins dwell
 #define BURN_TIME 7000
 uint32_t ADM_status;
 uint32_t deploy_attempts;
-char ADM_char;
 
 //specific for Camera
 bool image_trigger;
 bool camera_result;
-uint32_t image_acquisition_time = 0;  //time after which the picture will be taken, default to 0 as it will be commanded by the ground telecommand
 
 //specific for GNSS
 bool gps_result;
@@ -470,7 +460,7 @@ void Mode_init(int8_t type){
       modes[FBU].num_tasks = 2;
 
 
-      tasks_FBU[FBU_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;   //save eps health with 300s period
+      tasks_FBU[FBU_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;   //300s period
       tasks_FBU[FBU_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_FBU[EXIT_FBU].period = 2700;             //45min * 60s = 2700s, wait 45min to enter AD mode
@@ -487,13 +477,13 @@ void Mode_init(int8_t type){
       modes[AD].opmode_tasks = tasks_AD;
       modes[AD].num_tasks = 3;
 
-      tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;       //5min period
+      tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;       //300s period
       tasks_AD[AD_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].TickFct = &transmit_morse_telemetry;
 
-      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;       //10min period so 60*10=600
+      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;       //10min period so 60s*10=600s
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
 
 
@@ -884,23 +874,28 @@ int8_t save_gps_data(int8_t t){
 }
 
 int8_t transmit_morse_telemetry (int8_t t){
-  save_morse_telemetry(t);
   //TODO: test and change string to fully match TMTC specification
-  //char morse_string[30];
-
-  //UART_puts(UART_INTERFACE, "[FBU][TASK] Sending morse telemetry...\r\n");
-  
-  //char batt_str[20];
-  //uint16_t batt_volt = 5;
-  //**UNCOMMENT WHEN YOU HAVE ACCESS TO WORKING EPS BOARD
-  //EPS_getInfo(&batt_volt, EPS_REG_BAT_V); //May need to change to 4, given in eps header
-  //if(Antenna_read_deployment_switch()){
-    //ADM_status = 'Y';
-  //}
-  //sprintf(batt_str, "%" PRId16, batt_volt);
-
-  //sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId16 "  K\0", batt_volt, ADM_status, deploy_attempts);
-  //Packet_cw_transmit_buffer(morse_string, strlen(morse_string), cw_tone_on, cw_tone_off); ***UNCOMMENT WHEN TX IS WORKING
+  #ifdef DEBUG_PRINT
+  UART_puts(UART_INTERFACE, "[FBU][TASK] Sending morse telemetry...\r\n");
+  #endif
+  char morse_string[30];
+  uint8_t batt_volt;
+  char ADM_char;
+  /* Read the battery voltage from EPS */
+  EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
+  /* Give information about the antenna deployment */
+  if(ADM_status == 1){
+    ADM_char = 'Y';
+  }
+  else{
+    ADM_char = 'N';
+  }
+  /* Prepare Morse string */
+  sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId16 "  K\0", batt_volt, ADM_char, deploy_attempts);
+  /* Store that string in FRAM memory */
+  Buffer_store_new_data(&morse_string);
+  /* Transmit Morse packet */
+  Packet_cw_transmit_buffer(morse_string, strlen(morse_string), cw_tone_on, cw_tone_off);
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Morse telemetry sent\r\n");
   #endif
@@ -946,33 +941,6 @@ int8_t ad_deploy_attempt(int8_t t){
     deploy_attempts++;
     EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
   }
-  return 0;
-}
-
-int8_t save_morse_telemetry(int8_t t){
-  //SAVE MORSE TELEMETRY
-  #ifdef DEBUG_PRINT
-  UART_puts(UART_INTERFACE, "[TASK] Saving Morse Telemetry...\r\n");
-  #endif
-  char morse_string[30];
-  
-  //char batt_str[20];
-  uint16_t batt_volt = 5;
-  //**UNCOMMENT WHEN YOU HAVE ACCESS TO WORKING EPS BOARD
-  //EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header
-  if(ADM_status == 1){
-    ADM_char = 'Y';
-  }
-  else{
-    ADM_char = 'N';
-  }
-  //sprintf(batt_str, "%" PRId16, batt_volt);
-
-  sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId32 "  K\0", batt_volt, ADM_char, deploy_attempts);
-  Buffer_store_new_data(&morse_string);
-  #ifdef DEBUG_PRINT
-  UART_puts(UART_INTERFACE, "[TASK] Morse Telemetry Saved.\r\n");
-  #endif
   return 0;
 }
 
@@ -1060,7 +1028,7 @@ int8_t  save_image_data(void){
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Saving Image data...\r\n");
   #endif
-  camera_result = Camera_capture(picture_size, no_of_pages, UART_INTERFACE, if_print, spacecraft_configuration.data.image_acquisition_profile);
+  camera_result = Camera_capture(picture_size, no_of_pages, spacecraft_configuration.data.image_acquisition_profile);
   if(!camera_result){ return false; }
   return true;
 }
