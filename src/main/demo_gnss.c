@@ -44,7 +44,7 @@ int main(void){
         
         LED_off(LED_B);
 
-        Delay_ms(20000);
+        Delay_ms(10000);
         watchdog_update = 0xFF;
     }
     return 0;
