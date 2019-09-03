@@ -68,12 +68,12 @@ int main(void)
     watchdog_update = 0xFF;           //set the watchdog control variable 
     sprintf(output,"Sending Beacon :\"%s\"\r\n", buffer);
     UART_puts(UART_INTERFACE, output);
-    //GPIO_set(GPIO_PD0);
+    //GPIO_set(GPIO_PD0); This was useful when the board had 2 different PA's on it now the watchdog managing chip switches on the PA
     Packet_cw_transmit_buffer(buffer, buffer_length, &radio_transmitter, &cw_tone_on, &cw_tone_off);
     //GPIO_reset(GPIO_PD0);
+    Delay_ms(3000);
     UART_puts(UART_INTERFACE, "Sent.\r\n");
 
-    Delay_ms(3000);
   }
 }
 

@@ -165,13 +165,13 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_con
 		c = (uint8_t)(c - 32);
 
 		for(
-			j = (uint32_t)(2 * (Packet_cw_lookup[c][0]));
+			j = (uint32_t)(2 * (Packet_cw_lookup[c][0]-1));
 			j>0; 
 			j -= 2
 		)
 		{
 
-			switch((Packet_cw_lookup[c][1] >> (j-2)) & GCC_BINARY(0b11))
+			switch((Packet_cw_lookup[c][1] >> (j)) & GCC_BINARY(0b11))
 			{
 				case GCC_BINARY(0b00):
 					UART_puts(UART_INTERFACE, "Space\r\n");

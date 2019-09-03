@@ -14,6 +14,13 @@
   #error CC112X Lib is currently hardcoded for CC_XO_FREQ of 38.4MHz
 #endif
 
+/* Pins: GPIO0_RADIO_RX / GPIO0_RADIO_TX */
+bool cc1125_pollGPIO(uint8_t gpio_pin)
+{
+  return GPIO_read(gpio_pin);
+}
+
+
 void cc112x_reset(uint8_t spi_device_id)
 {
   SPI_cmd(spi_device_id, CC112X_SRES);
@@ -27,7 +34,7 @@ void cc112x_powerdown(uint8_t spi_device_id)
 uint8_t cc112x_query_partnumber(uint8_t spi_device_id)
 {
   uint8_t result;
-  SPI_read16(spi_device_id, (CC112X_PARTNUMBER | 0x8000), &result);
+  cc112xSpiReadReg(spi_device_id, (CC112X_PARTNUMBER), &result);
   return result;
 }
 
@@ -64,40 +71,44 @@ void cc112x_cfg_frequency(uint8_t spi_device_id, float freq) // cc112x_bandsel_o
    f = f / 65536;
    f = f/1000000;
 
-  char output[100];
-  sprintf(output,"bandsel: %d,     div: %d    freq returned: %f     freq reg: %d\r\n", bandsel, divisor, f, freq_reg);
-  UART_puts(UART_INTERFACE, output);
 
 
   uint8_t val;
 
-  SPI_cmd(spi_device_id, CC112X_SIDLE);   //Set to idle
-
-  val = 0;
-  //Uses extended address space so cmd required before address (this is indicated by the 2f in the address which has to be removed)
-  // note that this is a write as the first bit of spi cmd is 0
-  SPI_cmd(spi_device_id, 0x2F);
-  SPI_write8(spi_device_id, (uint8_t)(0xFF & CC112X_FREQOFF_CFG), &val);
+  //SPI_cmd(spi_device_id, CC112X_SIDLE);   //Set to idle
 
   val = (0x10 | (uint8_t)bandsel);
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_CFG & 0x7F), &val);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_CFG), &val);
 
   val = (uint8_t)(freq_reg & 0xFF);
-  SPI_cmd(spi_device_id, 0x2F);
-  SPI_write8(spi_device_id, (CC112X_FREQ0 & 0xFF), &val);
-  //SPI_write16(spi_device_id, (CC112X_FREQ0 & 0x7FFF), &val);
+  // SPI_cmd(spi_device_id, 0x2F);
+  // SPI_write8(spi_device_id, (CC112X_FREQ0 & 0xFF), &val);
+  cc112xSpiWriteReg(spi_device_id, (CC112X_FREQ0), &val);
 
-  SPI_cmd(spi_device_id, 0x2F);
-  SPI_write8(spi_device_id, (CC112X_FREQ1 & 0xFF), &val);
+  // SPI_cmd(spi_device_id, 0x2F);
+  // SPI_write8(spi_device_id, (CC112X_FREQ1 & 0xFF), &val);
   val = (uint8_t)((freq_reg >> 8) & 0xFF);
-  //SPI_write16(spi_device_id, (CC112X_FREQ1 & 0x7FFF), &val);
+  cc112xSpiWriteReg(spi_device_id, (CC112X_FREQ1), &val);
 
   val = (uint8_t)((freq_reg >> 16) & 0xFF);
-  SPI_cmd(spi_device_id, 0x2F);
-  SPI_write8(spi_device_id, (CC112X_FREQ2 & 0xFF), &val);
-  //SPI_write16(spi_device_id, (CC112X_FREQ2 & 0x7FFF), &val);
+  // SPI_cmd(spi_device_id, 0x2F);
+  // SPI_write8(spi_device_id, (CC112X_FREQ2 & 0xFF), &val);
+  cc112xSpiWriteReg(spi_device_id, (CC112X_FREQ2), &val);
 
-  //SPI_read16()
+  uint32_t freqRead = 0;
+  cc112xSpiReadReg(spi_device_id, (CC112X_FREQ0 & 0x7FFF), &val);
+  freqRead |= val;
+  cc112xSpiReadReg(spi_device_id, (CC112X_FREQ1 & 0x7FFF), &val);
+  freqRead |= val<<8;
+  cc112xSpiReadReg(spi_device_id, (CC112X_FREQ2 & 0x7FFF), &val);
+  freqRead |= val<<16;
+
+  char output[100];
+
+  sprintf(output,"bandsel: %d,     div: %d    freq returned: %f     freq reg: %d\r\n", bandsel, divisor, f, freq_reg);
+  UART_puts(UART_INTERFACE, output);
+  sprintf(output,"Freq reg read  %d\r\n", freqRead);
+  UART_puts(UART_INTERFACE, output);
 }
 
 void cc112x_cfg_power(uint8_t spi_device_id, int8_t power_dbm)
@@ -107,7 +118,7 @@ void cc112x_cfg_power(uint8_t spi_device_id, int8_t power_dbm)
   if(power_dbm >= -11 && power_dbm <= 15)
   {
     val = (uint8_t)(((2*(power_dbm+18))-1) & 0x3F);
-    SPI_write8(spi_device_id, (uint8_t)(CC112X_PA_CFG2 & 0x7F), &val);
+    cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_PA_CFG2 & 0x7F), &val);
   }
 }
 
@@ -247,16 +258,16 @@ void cc112x_cfg_fsk_params(uint8_t spi_device_id, cc112x_fsk_symbolrate_t fsk_sy
 
   /* Write Symbol rate */
   val = (uint8_t)(symbolrate_mantissa & 0xFF);
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_SYMBOL_RATE0 & 0x7F), &val);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_SYMBOL_RATE0), &val);
   val = (uint8_t)((symbolrate_mantissa >> 8) & 0xFF);
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_SYMBOL_RATE1 & 0x7F), &val);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_SYMBOL_RATE1), &val);
   val = (uint8_t)(((symbolrate_mantissa >> 16) & 0x0F) | ((symbolrate_exponent << 4) & 0xF0));
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_SYMBOL_RATE2 & 0x7F), &val);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_SYMBOL_RATE2), &val);
 
   /* Write Deviation */
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_DEVIATION_M & 0x7F), &deviation_mantissa);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_DEVIATION_M), &deviation_mantissa);
   val = (uint8_t)((deviation_exponent & 0x07) | (0 << 3) |  (0<<6));  // (0<<3) - FSK mode
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_MODCFG_DEV_E & 0x7F), &val);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_MODCFG_DEV_E), &val);
 }
 
 void cc112x_cfg_ook_params(uint8_t spi_device_id, cc112x_ook_symbolrate_t ook_symbolrate)
@@ -280,14 +291,16 @@ void cc112x_cfg_ook_params(uint8_t spi_device_id, cc112x_ook_symbolrate_t ook_sy
 
 void cc112x_set_config(uint8_t spi_device_id, const registerSetting_t *cfg, uint16_t len)
 {	
-  uint16_t i;
+  char output[100];
+  uint8_t marcstate;
 
   SPI_cmd(spi_device_id, CC112X_SRES);
-
-	for(i = 0; i < len; i++)
-  {
-        SPI_write8(spi_device_id, (uint8_t)(cfg[i].addr & 0x7F), &(cfg[i].data));
+	uint8_t writeByte;
+	for(uint16_t i = 0; i < len; i++) {
+        writeByte = cfg[i].data;
+        cc112xSpiWriteReg(spi_device_id, cfg[i].addr, &writeByte);
     }
+    
 }
 
 
@@ -316,12 +329,12 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
 
   // 1) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
   writeByte = 0x00;
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_VCO2 & 0x7F), &writeByte);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_VCO2), &writeByte);
 
   // 2) Start with high VCDAC (original VCDAC_START + 2):
-  SPI_read8(spi_device_id, (uint8_t)(CC112X_FS_CAL2 | 0x80), &original_fs_cal2);
+  cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_CAL2), &original_fs_cal2);
   writeByte = (uint8_t)(original_fs_cal2 + VCDAC_START_OFFSET);
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_CAL2 & 0x7F), &writeByte);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_CAL2), &writeByte);
 
   // 3) Calibrate and wait for calibration to be done
   //   (radio back in IDLE state)
@@ -331,8 +344,8 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
   
   do
   {
-    SPI_read8(spi_device_id, (uint8_t)(CC112X_MARCSTATE | 0x80), &marcstate);
-    sprintf(output,"marcstate: %x\r\n", marcstate);
+    cc112xSpiReadReg(spi_device_id, CC112X_MARCSTATE, &marcstate);
+    sprintf(output,"Marcstate: %x\r\n", marcstate);
     UART_puts(UART_INTERFACE, output);
   }
   while (marcstate != 0x41);
@@ -340,17 +353,17 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
 
   // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
   //    high VCDAC_START value
-  SPI_read8(spi_device_id, (uint8_t)(CC112X_FS_VCO2 | 0x80), &calResults_for_vcdac_start_high[FS_VCO2_INDEX]);
-  SPI_read8(spi_device_id, (uint8_t)(CC112X_FS_VCO4 | 0x80), &calResults_for_vcdac_start_high[FS_VCO4_INDEX]);
-  SPI_read8(spi_device_id, (uint8_t)(CC112X_FS_CHP | 0x80), &calResults_for_vcdac_start_high[FS_CHP_INDEX]);
+  cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_VCO2), &calResults_for_vcdac_start_high[FS_VCO2_INDEX]);
+  cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_VCO4), &calResults_for_vcdac_start_high[FS_VCO4_INDEX]);
+  cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_CHP), &calResults_for_vcdac_start_high[FS_CHP_INDEX]);
 
   // 5) Set VCO cap-array to 0 (FS_VCO2 = 0x00)
   writeByte = 0x00;
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_VCO2 & 0x7F), &writeByte);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_VCO2), &writeByte);
 
   // 6) Continue with mid VCDAC (original VCDAC_START):
   writeByte = original_fs_cal2;
-  SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_CAL2 & 0x7F), &writeByte);
+  cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_CAL2), &writeByte);
 
   // 7) Calibrate and wait for calibration to be done
   //   (radio back in IDLE state)
@@ -359,37 +372,36 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
 
   do
   {
-    //0x80 indicates it is a read command
-    SPI_read8(spi_device_id, (uint8_t)(CC112X_MARCSTATE | 0x80), &marcstate);
+    cc112xSpiReadReg(spi_device_id, CC112X_MARCSTATE, &marcstate);
   }
   while (marcstate != 0x41);
 
   // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained 
   //    with mid VCDAC_START value
-  SPI_read8(spi_device_id, (uint8_t)(CC112X_FS_VCO2 | 0x80), &calResults_for_vcdac_start_mid[FS_VCO2_INDEX]);
-  SPI_read8(spi_device_id, (uint8_t)(CC112X_FS_VCO4 | 0x80), &calResults_for_vcdac_start_mid[FS_VCO4_INDEX]);
-  SPI_read8(spi_device_id, (uint8_t)(CC112X_FS_CHP | 0x80), &calResults_for_vcdac_start_mid[FS_CHP_INDEX]);
+  cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_VCO2), &calResults_for_vcdac_start_mid[FS_VCO2_INDEX]);
+  cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_VCO4), &calResults_for_vcdac_start_mid[FS_VCO4_INDEX]);
+  cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_CHP), &calResults_for_vcdac_start_mid[FS_CHP_INDEX]);
 
   // 9) Write back highest FS_VCO2 and corresponding FS_VCO
   //    and FS_CHP result
 
   if (calResults_for_vcdac_start_high[FS_VCO2_INDEX] >
-    calResults_for_vcdac_start_mid[FS_VCO2_INDEX])
+      calResults_for_vcdac_start_mid[FS_VCO2_INDEX])
   {
     writeByte = calResults_for_vcdac_start_high[FS_VCO2_INDEX];
-    SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_VCO2 & 0x7F), &writeByte);
+    cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_VCO2), &writeByte);
     writeByte = calResults_for_vcdac_start_high[FS_VCO4_INDEX];
-    SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_VCO4 & 0x7F), &writeByte);
+    cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_VCO4), &writeByte);
     writeByte = calResults_for_vcdac_start_high[FS_CHP_INDEX];
-    SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_CHP & 0x7F), &writeByte);
+    cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_CHP), &writeByte);
   }
   else
   {
     writeByte = calResults_for_vcdac_start_mid[FS_VCO2_INDEX];
-    SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_VCO2 & 0x7F), &writeByte);
+    cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_VCO2), &writeByte);
     writeByte = calResults_for_vcdac_start_mid[FS_VCO4_INDEX];
-    SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_VCO4 & 0x7F), &writeByte);
+    cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_VCO4), &writeByte);
     writeByte = calResults_for_vcdac_start_mid[FS_CHP_INDEX];
-    SPI_write8(spi_device_id, (uint8_t)(CC112X_FS_CHP & 0x7F), &writeByte);
+    cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_FS_CHP), &writeByte);
   }
 }
