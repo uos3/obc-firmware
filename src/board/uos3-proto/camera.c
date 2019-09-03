@@ -31,6 +31,7 @@ static char LK_RESET_RE[]  = {0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x
 //resolution settings -> datasheet - value specific for each resolution in last byte!
 static char LK_RESOLUTION[] = {0x56, 0x00, 0x54, 0x01, 0x00};
 //static char LK_RESOLUTION_160[] = {0x56, 0x00, 0x54, 0x01, 0x22};
+//static char LK_RESOLUTION_640[] = {0x56, 0x00, 0x54, 0x01, 0x00};
 //static char LK_RESOLUTION_800[] = {0x56, 0x00, 0x54, 0x01, 0x1D};
 //static char LK_RESOLUTION_1280[] = {0x56, 0x00, 0x54, 0x01, 0x1B};
 //static char LK_RESOLUTION_1600[] = {0x56, 0x00, 0x54, 0x01, 0x21};
@@ -114,11 +115,17 @@ void set_resolution(image_acquisition_profile_t resolution){
     case image_acquisition_profile_1600x1200:
           LK_RESOLUTION[4] = 0x21;
           break;
+    case image_acquisition_profile_1280x960:
+          LK_RESOLUTION[4] = 0x1B;
+          break;
     case image_acquisition_profile_800x600:
           LK_RESOLUTION[4] = 0x1d;
           break;
+    case image_acquisition_profile_640x480:
+          LK_RESOLUTION[4] = 0x00;
+          break;
     default:
-          LK_RESOLUTION[4] = 0x22;
+          LK_RESOLUTION[4] = 0x00;
   }
 }
 //main driver function - uses above functions to set the camera, capture the image and store it in the FRAM memory
