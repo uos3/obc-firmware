@@ -163,18 +163,16 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_con
 
 		/* Prepare for table lookup */
 		c = (uint8_t)(c - 32);
+		j = (uint32_t)(2 * (Packet_cw_lookup[c][0]));
 
-		for(
-			j = (uint32_t)(2 * (Packet_cw_lookup[c][0]-1));
-			j>0; 
-			j -= 2
-		)
+		while (j>0)
 		{
+			j -= 2;
 
 			switch((Packet_cw_lookup[c][1] >> (j)) & GCC_BINARY(0b11))
 			{
 				case GCC_BINARY(0b00):
-					UART_puts(UART_INTERFACE, "Space\r\n");
+					UART_puts(UART_INTERFACE, "Pause\r\n");
 					/* Pause (only used for space character) */
 					_cw_off();
 					Delay_ms(CW_PERIOD_MS);
@@ -197,10 +195,8 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_con
 					UART_puts(UART_INTERFACE, "Lookup failed\r\n");
 					break;
 			}
-			UART_puts(UART_INTERFACE, "Switch Complete\r\n");
-
 			_cw_off();
-			UART_puts(UART_INTERFACE, "Dot/dash sent\r\n");
+			UART_puts(UART_INTERFACE, "Dot/dash/pause sent\r\n");
 
 			/* Inter pulse pause */
 			Delay_ms(CW_PERIOD_MS);

@@ -26,7 +26,7 @@ Only set freq registers in idle mode
 double RSSI;
 
 typedef struct radio_config_t{
-	double frequency; // MHz
+	const double frequency; // MHz
 	double power; // dBm
 }radio_config_t ;
 

@@ -5,13 +5,13 @@
 #define testGet 1
 #define batTest 0
 int main(void){
-  
   Board_init();
+  watchdog_update = 0xFF;
+  enable_watchdog_kick();
   EPS_init();
   RTC_init();
   UART_init(UART_INTERFACE, 9600);
   Delay_ms(1); // delay for initialisation to finish for UART
-
   UART_puts(UART_INTERFACE, "\r\n** INIT COMPLETE **\r\n");
 
   if (testGet) {
@@ -22,7 +22,9 @@ int main(void){
   uint8_t railNo = 0;
   uint16_t loopCount = 0;
 
-   while(1){/*
+   while(1){
+   watchdog_update = 0xFF;
+/*
      LED_toggle(LED_B);
 	 uint8_t i;
 	 for (i = 2; i < 0x35; i++) {
