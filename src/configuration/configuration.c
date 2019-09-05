@@ -75,7 +75,7 @@ static void Configuration_load_defaults(void)
   spacecraft_configuration.data.gps_sample_count = 4;                     //max 4 samples possible to fit in telemetry beacon
   spacecraft_configuration.data.gps_sample_interval = 500;                //500ms            
 
-  spacecraft_configuration.data.image_acquisition_profile = 1;            //initial resolution 800x640
+  spacecraft_configuration.data.image_acquisition_profile = 3;            //initial resolution 800x640
 
   spacecraft_configuration.data.power_rail_1 = 1;     //default ON (Radio TX)
   spacecraft_configuration.data.power_rail_3 = 1;     //default ON (Camera)

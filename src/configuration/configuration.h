@@ -16,16 +16,6 @@
 
 /* TODO: Move these below into the relevant modules */
 typedef enum {
-	image_acquisition_profile_1600x1200,
-	//image_acquisition_profile_1280x960,
-	//image_acquisition_profile_1024x768,
-	image_acquisition_profile_800x600,
-	//image_acquisition_profile_640x480,
-	//image_acquisition_profile_320x240,
-	//image_acquisition_profile_160x120
-} image_acquisition_profile_t;
-
-typedef enum {
 	tx_interval_downlink_0ms = 0,
 	tx_interval_downlink_500ms = 50,
 	tx_interval_downlink_600ms = 60,
@@ -93,7 +83,7 @@ typedef struct configuration_data_t {
 	unsigned gps_sample_interval : 8;
 
 	// Camera settings
-	image_acquisition_profile_t image_acquisition_profile : 1;
+	image_acquisition_profile_t image_acquisition_profile : 2;
 
 	// Manually power on all rails apart form 4 which is the on-board computer
 	unsigned power_rail_1 : 1;

@@ -7,15 +7,8 @@
  * LIST ALL "TO DO" NEXT TO THE FUNCTION PROTOTYPE
  * OR HERE, ABOVE THE LIBRARIES, IF THEY DON'T MATCH ANY FUNCTION
  * 
- * TODO: check if more resolution options for the camera can be added - need to revised with the config TMTC if there is enough space for it
- * for debugging, uncomment lines in the wdt.c with the WatchdogStallEnable
  * TODO: update the code to the CONOPS
- * TODO: is in AD save_morse_telemetry needed? morse telemetry is really small and it could be saved in the transmit_morse_telemetry function
- * TODO: add save_eps_health_data in the AD mode
- * TODO: moved save_morse_telemetry to the transmit_morse_telemetry, replaced save_morse_telemetry with save_eps_health_data in AD mode
  * TODO: what is check_health_status function for?
- * TODO: determine of we need to delete transmit morse telemetry from timers and just added at the and of antenna deploy as in CONOPS
- * TODO: 
  * 
  * @{
  */
@@ -31,7 +24,6 @@
 #include "inc/hw_memmap.h"
  
 #include "../board/memory_map.h"
-// #include "../board/radio.h"
 
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
 #define BATTERY_VOLTAGE 6 //COMMENT WHEN USING EPS!!!
@@ -51,8 +43,7 @@ int8_t save_gps_data(int8_t t);             //completed
 int8_t check_health_status(int8_t t);       //TODO: write body of this function
 int8_t save_image_data(void);               //completed
 int8_t ad_deploy_attempt(int8_t t);         
-int8_t save_morse_telemetry(int8_t t);      //TODO: revise the information/data we want to inlude here
-int8_t transmit_morse_telemetry(int8_t t);  //TODO: write the body of the function
+int8_t transmit_morse_telemetry(int8_t t);  //TODO: test
 int8_t transmit_next_telemetry(int8_t t);   //TODO: revise what is written and complete the body
 int8_t exit_fbu (int8_t t);                 //completed
 int8_t exit_ad (int8_t t);                  //completed
@@ -117,7 +108,6 @@ opmode_t modes[8];
 timer_properties_t Timer_Properties;
 
 //camera variables
-enum print_to_debug if_print = no;  //enum for specifying whether we want to print the picture data on the screen or not
 uint32_t picture_size;              //do we need to store them? are those informations useful?
 uint16_t no_of_pages;               
 
@@ -144,12 +134,10 @@ uint8_t has_dwell_time_passed;      //store the information if the 45 mins dwell
 #define BURN_TIME 7000
 uint32_t ADM_status;
 uint32_t deploy_attempts;
-char ADM_char;
 
 //specific for Camera
 bool image_trigger;
 bool camera_result;
-uint32_t image_acquisition_time = 0;  //time after which the picture will be taken, default to 0 as it will be commanded by the ground telecommand
 
 //specific for GNSS
 bool gps_result;
@@ -163,7 +151,7 @@ uint16_t data_packets_pending;
 uint8_t rx_noisefloor;
 
 //------------------------------TRANSMITTER SETTINGS------------------------------------------------
-radio_config_t radio_config = {145.5, 10.0};
+radio_config_t radio_config = { .frequency = 145.5, .power = 0};
 //this gives: frequency = 145.5; power = 10.0;
 //------------------------------TIMERS VARIABLES AND FUNCTIONS---------------------------------------
 //can be moved (except variables) to separate source file, but lot of them are operating on the this file variables
@@ -332,6 +320,8 @@ void Mission_init(void)
   image_trigger = false;
   camera_result = true;
   gps_result = true;
+  radio_config.power = spacecraft_configuration.data.tx_power;  //read initial power setting for the radio transmitter
+  
   #ifdef DEBUG_PRINT
   //PRINTS ULPERIOD - TO REMOVE
   char output3[100];
@@ -415,7 +405,7 @@ void Mission_loop(void)
   UART_puts(UART_INTERFACE, "sleeping...\r\n");
   #endif
   LED_toggle(LED_B);
-  Delay_ms(1000);   //why delay?
+  Delay_ms(1000);
   watchdog_update=0xFF;   //update the watchdog control variable
 }
 
@@ -429,7 +419,6 @@ void queue_task(int8_t task_id, uint64_t task_period){
   //If uncommented tasks fire as soon as mode initialised
   //task_q[no_of_tasks_queued] = task_id;
   //no_of_tasks_queued++;
-  if(task_period > 0){      //don't qeue the task if the period is zero - for the tasks which are commanded by the commands like picture taking, sm_reboot
   int8_t timer_id = get_available_timer();
   #ifdef DEBUG_PRINT
   char output[100];
@@ -437,7 +426,6 @@ void queue_task(int8_t task_id, uint64_t task_period){
   UART_puts(UART_INTERFACE, output);
   #endif
   set_timer_for_task(timer_id, task_id, ulPeriod*current_tasks[task_id].period, timer_isr_map[task_id]);
-  }
 }
 
 //Function for suspending all the queued tasks
@@ -456,7 +444,6 @@ void mode_switch(uint8_t mode){
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //-------------------------------------MODES DECLARATIONS AND DESCRIPTIONS----------------------------------
-
 void Mode_init(int8_t type){
 
   //TODO: alter all times to correct times for mission and for test
@@ -470,10 +457,13 @@ void Mode_init(int8_t type){
       modes[FBU].num_tasks = 2;
 
 
-      tasks_FBU[FBU_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;   //save eps health with 300s period
+      tasks_FBU[FBU_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;   //300s period
       tasks_FBU[FBU_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_FBU[EXIT_FBU].period = 2700;             //45min * 60s = 2700s, wait 45min to enter AD mode
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_FBU[EXIT_FBU].period = 300;              //if simplified test of the mission code is defined, wait only 5min instead of 45
+      #endif
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
 
       current_mode = FBU;
@@ -487,15 +477,20 @@ void Mode_init(int8_t type){
       modes[AD].opmode_tasks = tasks_AD;
       modes[AD].num_tasks = 3;
 
-      tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;       //5min period
+      tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval; //300s period
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_AD[AD_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
+      #endif
       tasks_AD[AD_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].TickFct = &transmit_morse_telemetry;
 
-      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;       //10min period so 60*10=600
+      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;    //10min period so 60s*10=600s
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 300;    //if simplified test of the mission code is defined, add deploy Attempt each 5min, not 10
+      #endif
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
-
 
       current_mode = AD;
       current_tasks = tasks_AD;
@@ -510,22 +505,31 @@ void Mode_init(int8_t type){
       modes[NF].num_tasks = 5;  //Don't want image to be captured until after a command is sent
 
 
-      tasks_NF[NF_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval; 
+      tasks_NF[NF_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_NF[NF_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
+      #endif  
       tasks_NF[NF_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_NF[NF_SAVE_GPS_POS].period = spacecraft_configuration.data.gps_acquisition_interval;
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_NF[NF_SAVE_GPS_POS].period = 200; //if simplified test of the mission code is defined, save gps each 200s
+      #endif
       tasks_NF[NF_SAVE_GPS_POS].TickFct = &save_gps_data;
 
 			tasks_NF[NF_SAVE_ATTITUDE].period = spacecraft_configuration.data.imu_acquisition_interval;
+      #ifdef SIMPLIFIED_MISSION_CODE
+			tasks_NF[NF_SAVE_ATTITUDE].period = 200;  //if simplified test of the mission code is defined, save altitude each 200s
+      #endif
 			tasks_NF[NF_SAVE_ATTITUDE].TickFct = &save_attitude;
 
       tasks_NF[NF_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
       tasks_NF[NF_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-			tasks_NF[NF_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval; //no value
+			tasks_NF[NF_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval; //30s
 			tasks_NF[NF_CHECK_HEALTH].TickFct = &check_health_status;
 
-      tasks_NF[NF_TAKE_PICTURE].period = 0;               //init as 0 so it won't be queued automatically
+      tasks_NF[NF_TAKE_PICTURE].period = 0;
 			tasks_NF[NF_TAKE_PICTURE].TickFct = &take_picture; 
       
       current_mode = NF;
@@ -542,6 +546,9 @@ void Mode_init(int8_t type){
 
 
       tasks_LP[LP_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_LP[LP_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
+      #endif
       tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_LP[LP_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval;
@@ -559,9 +566,12 @@ void Mode_init(int8_t type){
 
       modes[SM].Mode_startup = &sm_init;
       modes[SM].opmode_tasks = tasks_SM;
-      modes[SM].num_tasks = 4;
+      modes[SM].num_tasks = 3;  //Don't want reset to be started until after a command is sent
 
       tasks_SM[SM_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_SM[SM_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
+      #endif
       tasks_SM[SM_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_SM[SM_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval;
@@ -608,25 +618,34 @@ void Mode_init(int8_t type){
 
       modes[DL].Mode_startup = &dl_init;
       modes[DL].opmode_tasks = tasks_DL;
-      modes[DL].num_tasks = 6;
+      modes[DL].num_tasks = 5;  //Don't want image to be captured until after a command is sent
 
       tasks_DL[DL_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_DL[DL_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
+      #endif
       tasks_DL[DL_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_DL[DL_SAVE_GPS_POSITION].period = spacecraft_configuration.data.gps_acquisition_interval;
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_DL[DL_SAVE_GPS_POSITION].period = 200;  //if simplified test of the mission code is defined, save gps each 200s
+      #endif
       tasks_DL[DL_SAVE_GPS_POSITION].TickFct = &save_gps_data;
 
 			tasks_DL[DL_SAVE_ATTITUDE].period = spacecraft_configuration.data.imu_acquisition_interval;
+      #ifdef SIMPLIFIED_MISSION_CODE
+      tasks_DL[DL_SAVE_ATTITUDE].period = 200;  //if simplified test of the mission code is defined, save altitude each 200s
+      #endif
 			tasks_DL[DL_SAVE_ATTITUDE].TickFct = &save_attitude;
-
-      tasks_DL[DL_TAKE_PICTURE].period = 0;
-			tasks_DL[DL_TAKE_PICTURE].TickFct = &take_picture;
 
       tasks_DL[DL_POLL_TRANSMITTER].period = 1; //Should be 1ms but 1s should be sufficient?
 			tasks_DL[DL_POLL_TRANSMITTER].TickFct = &poll_transmitter; //To get 1ms a lot has to be changed in the code
 
       tasks_DL[DL_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval;
 			tasks_DL[DL_CHECK_HEALTH].TickFct = &check_health_status;
+
+      tasks_DL[DL_TAKE_PICTURE].period = 0;
+			tasks_DL[DL_TAKE_PICTURE].TickFct = &take_picture;
 
       current_mode = DL;
       current_tasks = tasks_DL; 
@@ -884,23 +903,28 @@ int8_t save_gps_data(int8_t t){
 }
 
 int8_t transmit_morse_telemetry (int8_t t){
-  save_morse_telemetry(t);
   //TODO: test and change string to fully match TMTC specification
-  //char morse_string[30];
-
-  //UART_puts(UART_INTERFACE, "[FBU][TASK] Sending morse telemetry...\r\n");
-  
-  //char batt_str[20];
-  //uint16_t batt_volt = 5;
-  //**UNCOMMENT WHEN YOU HAVE ACCESS TO WORKING EPS BOARD
-  //EPS_getInfo(&batt_volt, EPS_REG_BAT_V); //May need to change to 4, given in eps header
-  //if(Antenna_read_deployment_switch()){
-    //ADM_status = 'Y';
-  //}
-  //sprintf(batt_str, "%" PRId16, batt_volt);
-
-  //sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId16 "  K\0", batt_volt, ADM_status, deploy_attempts);
-  //Packet_cw_transmit_buffer(morse_string, strlen(morse_string), cw_tone_on, cw_tone_off); ***UNCOMMENT WHEN TX IS WORKING
+  #ifdef DEBUG_PRINT
+  UART_puts(UART_INTERFACE, "[FBU][TASK] Sending morse telemetry...\r\n");
+  #endif
+  char morse_string[30];
+  uint8_t batt_volt;
+  char ADM_char;
+  /* Read the battery voltage from EPS */
+  EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
+  /* Give information about the antenna deployment */
+  if(ADM_status == 1){
+    ADM_char = 'Y';
+  }
+  else{
+    ADM_char = 'N';
+  }
+  /* Prepare Morse string */
+  sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId16 "  K\0", batt_volt, ADM_char, deploy_attempts);
+  /* Store that string in FRAM memory */
+  Buffer_store_new_data(&morse_string);
+  /* Transmit Morse packet */
+  Packet_cw_transmit_buffer(morse_string, strlen(morse_string), &radio_config ,cw_tone_on, cw_tone_off);
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Morse telemetry sent\r\n");
   #endif
@@ -946,33 +970,6 @@ int8_t ad_deploy_attempt(int8_t t){
     deploy_attempts++;
     EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
   }
-  return 0;
-}
-
-int8_t save_morse_telemetry(int8_t t){
-  //SAVE MORSE TELEMETRY
-  #ifdef DEBUG_PRINT
-  UART_puts(UART_INTERFACE, "[TASK] Saving Morse Telemetry...\r\n");
-  #endif
-  char morse_string[30];
-  
-  //char batt_str[20];
-  uint16_t batt_volt = 5;
-  //**UNCOMMENT WHEN YOU HAVE ACCESS TO WORKING EPS BOARD
-  //EPS_getBatteryInfo(&batt_volt,  EPS_REG_BAT_V/*EPS_REG_SW_ON*/); //May need to change to 4, given in eps header
-  if(ADM_status == 1){
-    ADM_char = 'Y';
-  }
-  else{
-    ADM_char = 'N';
-  }
-  //sprintf(batt_str, "%" PRId16, batt_volt);
-
-  sprintf(morse_string, "U O S 3   %" PRId16 " V   %c   %" PRId32 "  K\0", batt_volt, ADM_char, deploy_attempts);
-  Buffer_store_new_data(&morse_string);
-  #ifdef DEBUG_PRINT
-  UART_puts(UART_INTERFACE, "[TASK] Morse Telemetry Saved.\r\n");
-  #endif
   return 0;
 }
 
@@ -1060,7 +1057,7 @@ int8_t  save_image_data(void){
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Saving Image data...\r\n");
   #endif
-  camera_result = Camera_capture(picture_size, no_of_pages, UART_INTERFACE, if_print, spacecraft_configuration.data.image_acquisition_profile);
+  camera_result = Camera_capture(picture_size, no_of_pages, spacecraft_configuration.data.image_acquisition_profile);
   if(!camera_result){ return false; }
   return true;
 }

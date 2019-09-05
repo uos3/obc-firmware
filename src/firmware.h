@@ -14,7 +14,8 @@
 #define UART_INTERFACE UART_DEBUG_4
 
 /* Uncomment when debugging - enables all the print statements to be compiled */
-//#define DEBUG_PRINT       //define keyword debug to enable every printing commands in this file
+#define DEBUG_PRINT       //define keyword debug to enable every printing commands in this file
+//#define SIMPLIFIED_MISSION_CODE   //define keyword for the test where we want to simplify mission code, omit waiting times etc.
 
 /* Round up N to the next multiple of S */
 #define ROUND_UP(N, S) ((((N) + (S) - 1) / (S)) * (S))
