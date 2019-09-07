@@ -181,7 +181,32 @@ void cc112x_cfg_fsk_params(uint8_t spi_device_id, cc112x_fsk_symbolrate_t fsk_sy
   uint8_t symbolrate_exponent, deviation_exponent, deviation_mantissa;
   uint32_t symbolrate_mantissa;
 
-  if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_1200)
+  if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_6000)
+  {
+    symbolrate_mantissa = 0x47AE1;
+    symbolrate_exponent = 0x06;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_5000)
+  {
+    symbolrate_mantissa = 0x11111;
+    symbolrate_exponent = 0x06;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_4000)
+  {
+    symbolrate_mantissa = 0xB4E82;
+    symbolrate_exponent = 0x05;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_3000)
+  {
+    symbolrate_mantissa = 0x47AE1;
+    symbolrate_exponent = 0x05;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_2000)
+  {
+    symbolrate_mantissa = 0xB4E82;
+    symbolrate_exponent = 0x04;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_1200)
   {
     symbolrate_mantissa = 0x0624d;
     symbolrate_exponent = 0x04;

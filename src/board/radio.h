@@ -4,12 +4,12 @@
 
 #define __RADIO_H__
 
-// #include <stddef.h>
-// #include <stdint.h>
-// #include <stdbool.h>
-// #include "../cc112x/cc112x.h"
-// #include "../cc112x/cc112x_spi.h"
-#include "../firmware.h"
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include "../cc112x/cc112x.h"
+#include "../cc112x/cc112x_spi.h"
+//#include "../firmware.h"
 //#include "../cc1125/cc1125.h"
 
 
@@ -28,6 +28,7 @@ double RSSI;
 typedef struct radio_config_t{
 	const double frequency; // MHz
 	double power; // dBm
+	cc112x_fsk_symbolrate_t symbolRate;
 }radio_config_t ;
 
 typedef enum {

@@ -15,6 +15,7 @@ static radio_config_t radio_transmitter =
 {
   145.5,
   10,    //From -11 to 15
+  CC112X_FSK_SYMBOLRATE_50,  //Irrelevant to morse
 };
 
 

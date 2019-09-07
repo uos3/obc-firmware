@@ -239,7 +239,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
     }                                           //repeat that until all the page data is portioned and stored in FRAM
   }
   #ifdef DEBUG_PRINT
-  print_to_terminal(page_buffer, count_picture_data); }
+  print_to_terminal(page_buffer, count_picture_data);
   #endif
 
   count_begin_marker = 0;
