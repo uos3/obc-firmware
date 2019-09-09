@@ -12,7 +12,7 @@ static radio_config_t radio_transmitter =
 {
   145.5,  //Frequency, currently this is not used
   9.0,   //Power From -11 to 15, this is not actually the dbm it will come out at
-  CC112X_FSK_SYMBOLRATE_1200,
+  CC112X_FSK_SYMBOLRATE_600,
 };
 //Interestingly as you write higher powers to the device, beyond about 9dB, power output actually drops
 
@@ -70,8 +70,8 @@ while(1)
     {
       //Radio_tx_msk
     }
-    
-    Delay_ms(3000);
+    //This delay has to be long enough to prevent the tobc from interupting the transmission 
+    Delay_ms(10000);
     UART_puts(UART_INTERFACE, "Sent.\r\n");
 
   }

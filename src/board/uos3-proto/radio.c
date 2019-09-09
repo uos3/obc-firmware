@@ -29,7 +29,6 @@
 //Not needed if we sort variable packet length and change planned length by including it after sync words
 
 
-
 // RX filter BW = 50.000000
 // Address config = No address check
 // Packet length = 125
@@ -452,7 +451,7 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
   //Better to be hard coded in the config above
   //cc112x_cfg_frequency(Radio_transmitter.spi_device, (float) radio_config->frequency); //set frequency according to the config file passed as argument
   cc112x_cfg_power(Radio_transmitter.spi_device, radio_config->power);  //set power according to the config file passed as argument
-  cc112x_cfg_fsk_params(Radio_transmitter.spi_device, radio_config->symbolRate, CC112X_FSK_DEVIATION_500);
+  cc112x_cfg_fsk_params(Radio_transmitter.spi_device, radio_config->symbolRate, CC112X_FSK_DEVIATION_8K);
   cc112x_manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
   UART_puts(UART_INTERFACE, "Calibrated\r\n");
 
@@ -519,7 +518,7 @@ Radio_Status_t Radio_tx_off(radio_config_t *radio_config)
 
 //Enables wake on receive, sets config for receiving fsk data and puts the radio into receive mode
 //TODO sort received packet handler
-Radio_Status_t Radio_enable_rx_ewor_fsk(radio_config_t *radio_config), void received_packet_handler(void))
+Radio_Status_t Radio_enable_rx_ewor_fsk(radio_config_t *radio_config, uint8_t *rxBuffer)
 {
     if(Radio_transmitter.busy)
   {
@@ -558,18 +557,18 @@ Radio_Status_t Radio_read_rx_fifo(uint8_t *rxBuffer) {
   uint8_t marcState, rxBytes;
 
   //Read MARCSTATE to check for RX FIFO error
-  cc112xSpiReadReg(RADIO_RX, CC112X_MARCSTATE, &marcState, 1);
+  cc112xSpiReadReg(Radio_receiver.spi_device, CC112X_MARCSTATE, &marcState);
 
   // Mask out MARCSTATE bits and check if we have a RX FIFO error
   if((marcState & 0x1F) == 0x11) {
     UART_puts(UART_GNSS, "RX FIFO error :(\n");
     // Flush RX FIFO
-    trxSpiCmdStrobe(RADIO_RX, CC112X_SFRX);
+    SPI_cmd(Radio_receiver.spi_device, CC112X_SFRX);
     
   } else {
     // Read n bytes from RX FIFO
-    cc112xSpiReadReg(RADIO_RX, CC112X_NUM_RXBYTES, &rxBytes, 1);
-    cc112xSpiReadRxFifo(RADIO_RX, rxBuffer, rxBytes);
+    cc112xSpiReadReg(Radio_receiver.spi_device, CC112X_NUM_RXBYTES, &rxBytes);
+    cc112xSpiReadRxFifo(Radio_receiver.spi_device, rxBuffer, rxBytes);
     
   }
 }
@@ -581,6 +580,7 @@ Radio_Status_t Radio_rx_off(radio_config_t *radio_config)
 
   return RADIO_STATUS_OK;
 }
+
 
 /**
  * @}
