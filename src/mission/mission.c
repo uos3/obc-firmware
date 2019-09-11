@@ -26,7 +26,7 @@
 #include "../board/memory_map.h"
 
 #define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
-#define BATTERY_VOLTAGE 6 //COMMENT WHEN USING EPS!!!
+#define BATTERY_VOLTAGE 7.8 //COMMENT WHEN USING EPS!!!
 #define BATTERY_THRESHOLD 7.5
 //--------------------------------PROTOTYPES OF FUNCTIONS---------------------------------
 //Main functions
@@ -42,7 +42,7 @@ int8_t save_eps_health_data(int8_t t);      //TODO: test, update with new TMTC s
 int8_t save_gps_data(int8_t t);             //completed
 int8_t check_health_status(int8_t t);       //TODO: write body of this function
 int8_t save_image_data(void);               //completed
-int8_t ad_deploy_attempt(int8_t t);         
+int8_t ad_deploy_attempt(int8_t t);         //TODO: complete the function, refer to comments in the function
 int8_t transmit_morse_telemetry(int8_t t);  //TODO: test
 int8_t transmit_next_telemetry(int8_t t);   //TODO: revise what is written and complete the body
 int8_t exit_fbu (int8_t t);                 //completed
@@ -947,6 +947,7 @@ int8_t ad_deploy_attempt(int8_t t){
   #endif
   //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V);
   if(batt_volt >= BATTERY_THRESHOLD){
+
     #ifdef DEBUG_PRINT
     LED_on(LED_B);  //debugging only
     #endif
@@ -954,14 +955,18 @@ int8_t ad_deploy_attempt(int8_t t){
     #ifdef DEBUG_PRINT
     LED_off(LED_B); //debugging only
     #endif
-    ADM_status = 1; //temporary, because the antenna deployment will be confirmed by receiving the telecommand
-    EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
+
     deploy_attempts++;
     EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
-    mode_switch(NF);  //This is temporary, when radio driver is complete you only exit adm via telecommand (to LP or NF depending on batt status)
-    #ifdef DEBUG_PRINT
+
+    /* To test the mission code functionality without receiving radio command to exit AD mode */
+    #ifdef SIMPLIFIED_MISSION_CODE
+    ADM_status = 1; //temporary, because the antenna deployment will be confirmed by receiving the telecommand
+    EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
     UART_puts(UART_INTERFACE, "[TASK] Antenna Deployed, Switched to NF Mode.\r\n");
+    mode_switch(NF);  //This is temporary, when radio driver is complete you only exit adm via telecommand (to LP or NF depending on batt status)    
     #endif
+
   }
   else{
     #ifdef DEBUG_PRINT
@@ -977,7 +982,17 @@ int8_t exit_ad(int8_t t){
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[AD][TASK] Exit AD mode\r\n");
   #endif
-  mode_switch(NF);
+  /* Being in this function mean that we received ground command, so the antenna is deployed (ADM_status = deployed/1), switching to NF or LP */
+  ADM_status = 1;
+  EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status);
+  /* Read the battery voltage and basing on its value, go to NF or LP mode */
+  uint16_t batt_volt;
+  EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
+  if(batt_volt > spacecraft_configuration.data.low_voltage_threshold){
+    mode_switch(NF);
+  }
+  mode_switch(LP);
+
   return 0;
 }
 /* Function for rebooting the MCU */
@@ -1295,6 +1310,9 @@ bool cfu_init(){
   //Return beacon with configuration state
 
   //Return to previous mode
+  #ifdef DEBUG_PRINT
+  UART_puts(UART_INTERFACE, "[TASK] CFU INITIALISED\r\n");
+  #endif
   mode_switch(NF);
   return true;
 
@@ -1324,6 +1342,9 @@ bool dl_init(){
   EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
 
 /* Transfer packets to cc1125 buffer */
+  #ifdef DEBUG_PRINT
+  UART_puts(UART_INTERFACE, "[TASK] DL INITIALISED\r\n");
+  #endif
   return true;
 }
 
