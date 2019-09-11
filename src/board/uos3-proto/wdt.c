@@ -34,7 +34,7 @@ void internal_wdt_handler(void){
     }
     #ifdef DEBUG_PRINT
     else{   
-    char output_buffer2[100]; 
+    char output_buffer2[110]; 
     sprintf(output_buffer2, "\r\n$$$ Internal Watchdog not cleared - \"watchdog_update\" is: %d - smaller or equal to 0\r\n$$$ MCU will reboot", watchdog_update); //only for test
     UART_puts(UART_INTERFACE, output_buffer2);
     }

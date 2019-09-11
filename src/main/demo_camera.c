@@ -15,11 +15,13 @@ int main(void)
   Board_init();
   watchdog_update = 0xFF;
   enable_watchdog_kick();
-  char output[30];
+  char output[100];
+  uint8_t page_buffer[108];
   uint64_t timestamp;
   uint32_t picture_size;
   uint16_t no_of_pages;
   RTC_init();
+  Buffer_init();
   
   UART_init(UART_INTERFACE,115200);
   UART_puts(UART_INTERFACE, "\r\nCamera Demo\r\nSTART\r\n");

@@ -56,33 +56,6 @@ int main(void)
   int stop = 1;
   while(stop--)
   { 
-    //image_length = 0;
-    //number_of_pages = 0;
-    /*LED_on(LED_B);
-    UART_puts(UART_GNSS, "\r\nCapturing..\r\n");
-    RTC_getTime_ms(&timestamp);
-    sprintf(time, "Time is %d\r\n",timestamp);
-    UART_puts(UART_GNSS, time);
-
-    if(Camera_capture(PAGE_LENGTH, &image_length, &number_of_pages, total_data))
-    {
-        sprintf(output, "Number of received pages is %d; image length is %d \r\n", number_of_pages, image_length);
-        UART_puts(UART_GNSS,output);
-        char output[20];
-        int print = 0;
-        while (print<=(image_length-1))
-        {
-          sprintf(output, "0x%02"PRIx8" ", total_data[print]);
-          UART_puts(UART_GNSS, output);
-          print++;
-        }
-    }
-    else
-    {
-        sprintf(output, "FAIL (%"PRIu32" Bytes) -- (Number of received pages - %"PRIu32")\r\n", image_length, number_of_pages);
-        UART_puts(UART_GNSS, output);
-    }
-    stop--;*/
     //variables
     watchdog_update = 0xFF;
     int index_rst=0, index_res=0, index_takepic=0, index_readsize=0,index_readdata=0, index_readdata2 =0, index_resolution = 0;;
@@ -124,17 +97,7 @@ int main(void)
     rst++;
     }
   }
-    /*
-    Delay_ms(25);
-    while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&reset_resp[rst]);
-      if(reset_resp[rst] == LK_RESET_RE[index_rst]){
-        index_rst++;
-      }else{
-        index_rst = 0;
-      }
-      rst++;
-    }*/
+
     watchdog_update = 0xFF;
     if(index_rst == sizeof(LK_RESET_RE)){UART_puts(UART_GNSS, "\r\nReset response matched\r\n");}
       else{UART_puts(UART_GNSS, "\r\nReset response not matched\r\n");}
@@ -145,7 +108,7 @@ int main(void)
     }
     Delay_ms(3000);
   //change resolution
-    UART_putb(UART_CAMERA,LK_RESOLUTION_800, sizeof(LK_RESOLUTION_800));
+    UART_putb(UART_CAMERA,LK_RESOLUTION_1600, sizeof(LK_RESOLUTION_1600));
     Delay_ms(25);
     while(UART_charsAvail(UART_CAMERA)){
       UART_getc_nonblocking(UART_CAMERA, &resol_resp[resol]);
@@ -223,39 +186,15 @@ int main(void)
   uint32_t i = 0x0000;
   uint8_t response_begin[5]={0},response_end[6]={0};
   uint8_t data_buffer[2080] = {0}; //some space for beginning characters and ending characters
-  //LK_READPICTURE[10] = (char)((jpegsize >> 24) & 0xFF);
-  //LK_READPICTURE[11] = (char)((jpegsize >> 16) & 0xFF);
-  //LK_READPICTURE[12] = (char)((jpegsize >> 8) & 0xFF);
-  //LK_READPICTURE[13] = (char)(jpegsize & 0xFF);
+
   LK_READPICTURE[12]= 0x08;
   LK_READPICTURE[13]= 0x20;
   LK_READPICTURE[14]= 0x00;
   LK_READPICTURE[15]= 0x0a;
-  //while(!endflag){
-  //send command and wait for the response
+
   uint64_t timestamp;
   uint8_t k = 0, z=0;
-  //int x =5;
-  //UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
-    /*Delay_ms(25);
-    while(UART_charsAvail(UART_CAMERA)){
-      UART_getc_nonblocking(UART_CAMERA,&read_resp[dat]);
-      if(read_resp[dat]==LK_READPICTURE_RE[index_readdata]){
-        index_readdata++;
-      }else{
-        index_readdata = 0;
-      }
-      dat++;
-      if(index_readdata==sizeof(LK_READPICTURE_RE)){break;}
-    }if(index_readdata == sizeof(LK_READPICTURE_RE)){
-      UART_puts(UART_GNSS, "\r\nData Resp matched\r\n");
-    }else{UART_puts(UART_GNSS, "\r\nData response not matched\r\n");}
-  
-    UART_putb(UART_GNSS, read_resp, sizeof(read_resp));
-    for(int i = 0; i<sizeof(LK_READPICTURE_RE);i++){
-      sprintf(output5, "0x%02"PRIx8" ",read_resp[i]);
-      UART_puts(UART_GNSS, output5);
-    }*/
+
 while(!endflag){
   //while(x--){
   LK_READPICTURE[8]=i/0x100;
@@ -318,33 +257,3 @@ UART_puts(UART_GNSS, "\r\nkupa");
     Delay_ms(2000);
   }
 }
-/* 
-void image_length_add(uint8_t *data, uint32_t data_length, uint32_t endfoundcount)
-{
-    char output[60];
-    //char output2[60];
-    //test
-    //DOES NOT WORK, CAUSES DRIVER TO FAIL
-    //char data_out[data_length];
-    (void) data;
-    //sprintf(output2, "endfoundcount is: %d\r\n", endfoundcount);
-    //UART_puts(UART_GNSS, output2);
-    image_length += data_length;
-    //if (endfoundcount == 0){
-    //test
-    /*for(uint32_t k=0; k<data_length; k++){
-        total_data[next_frame] = data[k];
-        //UART_puts(UART_GNSS, "data\r\n");
-        //sprintf(data_out,"%02" PRIx8 ", ", data[k] );
-        //UART_puts(UART_GNSS, data_out);
-        next_frame++;
-    //}
-    }
-    total_data[endfoundcount] = *data;  //endfoundcount is the value of counter and show the index of the data line/frame/page received
-    sprintf(output, "0x%02"PRIx8", 0x%02"PRIx8"  PRIu32"B).. 0x%02"PRIx8", "0x%02"PRIx8"\r\n",
-     data[0], data[1],
-     data_length,
-     data[data_length-2], data[data_length-1]
-    );
-    UART_puts(UART_GNSS, output);
-}*/

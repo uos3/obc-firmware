@@ -7,7 +7,6 @@
  * LIST ALL "TO DO" NEXT TO THE FUNCTION PROTOTYPE
  * OR HERE, ABOVE THE LIBRARIES, IF THEY DON'T MATCH ANY FUNCTION
  * 
- * TODO: update the code to the CONOPS
  * TODO: what is check_health_status function for?
  * 
  * @{
@@ -55,17 +54,13 @@ int8_t take_picture(int8_t);                //completed
 uint16_t perform_subsystem_check();         //TODO: voltage is read in centivolts!, as well as temp readings from the sensors; finish function with this knowledge
 void update_radio_parameters();             //TODO: revise what need to be done 
 
-//creating Morse signals now in radio.h
-// static void cw_tone_on(void);
-// static void cw_tone_off(void);
-
 //queue implementation and transition functions
-void suspend_all_tasks();
-void mode_switch(uint8_t mode);
-void queue_task(int8_t task_id, uint64_t task_period);
+void suspend_all_tasks();                                 //completed
+void mode_switch(uint8_t mode);                           //completed
+void queue_task(int8_t task_id, uint64_t task_period);    //completed
 
 //Mode initialisation functions
-bool fbu_init(void);                        //completed
+bool fbu_init(void);                //completed
 bool ad_init(void);
 bool nf_init(void);
 bool lp_init(void);
@@ -74,15 +69,14 @@ bool cfu_init(void);
 bool pt_init(void);
 bool dl_init(void);
 
-//Timer functions
+//Timer functions - all completed
 int8_t get_available_timer(void);
 int8_t free_timers(void);
 void timer_init(void);
-//void Timer_Update(uint8_t);
 void stop_timer_for_task(uint8_t id);
 void set_timer_for_task(uint8_t id, uint8_t task_id, uint64_t period, void (*timer_isr)() );
 
-//interrupt handlers/functions
+//interrupt handlers/functions - all completed
 void timer0_isr(void);
 void timer1_isr(void);
 void timer2_isr(void);
@@ -90,13 +84,13 @@ void timer3_isr(void);
 void timer4_isr(void);
 void timer5_isr(void);
 
-//data splitting functions
+//data splitting functions - all completed
 void data_split_32(int32_t data, uint8_t *split);
 void data_split_u32(uint32_t data, uint8_t *split);
 void data_split_16(int16_t data, uint8_t  *split);
 void data_split_u16(uint16_t data, uint8_t  *split);
 
-//FRAM packet creation function
+//FRAM packet creation function - all completed
 uint8_t place_data_in_packet(uint8_t position, int size, uint8_t *data_bytes, uint8_t *data_packet);
 uint8_t tenbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
 uint8_t sixbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
@@ -107,14 +101,9 @@ uint8_t sixteenbits_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *las
 opmode_t modes[8];
 timer_properties_t Timer_Properties;
 
-//camera variables
-uint32_t picture_size;              //do we need to store them? are those informations useful?
-uint16_t no_of_pages;               
-
 // [ RUN-TIME ]
 // Total number of tasks that can be run concurrently (limited by number of avail. timers)
 #define MAX_TASKS 6
-
 volatile int8_t task_q[MAX_TASKS];  // Task queue directly accessed by interrupts
 Node*           task_pq;            // Task priority queue constructed from previous q indirectly
 volatile uint8_t no_of_tasks_queued;
@@ -124,6 +113,10 @@ task_t* current_tasks;             //current task structure
 mode_n current_mode;               //for deciding which enums to use -> enums declaration in header
 mode_n previous_mode;              //for returning to previous mode from certain modes such as PT
 mode_n last_mode_before_reboot;    //for storing that information for the purpose of telemetry broadcast
+
+//camera variables
+uint32_t picture_size;              //do we need to store them? are those informations useful?
+uint16_t no_of_pages;               
 
 //specific for FBU
 bool FBU_exit_switch = false;
@@ -152,7 +145,7 @@ uint8_t rx_noisefloor;
 
 //------------------------------TRANSMITTER SETTINGS------------------------------------------------
 radio_config_t radio_config = { .frequency = 145.5, .power = 0, CC112X_FSK_SYMBOLRATE_1200};
-//this gives: frequency = 145.5; power = 10.0;
+//this gives: frequency = 145.5; power = 0 as default, power will be read from the configuration file;
 //------------------------------TIMERS VARIABLES AND FUNCTIONS---------------------------------------
 //can be moved (except variables) to separate source file, but lot of them are operating on the this file variables
 
@@ -258,39 +251,11 @@ ulPeriod = SysCtlClockGet();                                //get MCU clock rate
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-//-------------------------------------FUNCTIONS FOR THE MORSE TELEMTRY-----------------------------------------------
-
-//MOVED TO THE RADIO.C file
-/*
-static void cw_tone_on(void)
-{
-  uint8_t pwr_reg;
-
-  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-  manualCalibration(SPI_RADIO_TX);
-
-  radio_set_freq_f(SPI_RADIO_TX, &freq);
-
-  radio_set_pwr_f(SPI_RADIO_TX, &pwr, &pwr_reg);
-
-  SPI_cmd(SPI_RADIO_TX, CC112X_STX);
-
-  LED_on(LED_B);
-}
-
-static void cw_tone_off(void)
-{
-  radio_reset_config(SPI_RADIO_TX, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
-
-  LED_off(LED_B);
-}*/
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 //-----------------------------------MISSION INITIALISATION FUNCTION------------------------------------------
 
 void Mission_init(void)
 {
-  //initialisation of the board, drivers and all peripherals
+  /* Initialisation of the board, drivers and all peripherals */
   watchdog_update = 0xFF;           //set the watchdog control variable 
   Board_init();                     //init the board clock
   enable_watchdog_kick();           //init the external watchdog kick
@@ -321,13 +286,6 @@ void Mission_init(void)
   camera_result = true;
   gps_result = true;
   radio_config.power = spacecraft_configuration.data.tx_power;  //read initial power setting for the radio transmitter
-  
-  #ifdef DEBUG_PRINT
-  //PRINTS ULPERIOD - TO REMOVE
-  char output3[100];
-  sprintf(output3,"ULPERIOD: %" PRIu32 "\r\n", ulPeriod);
-	UART_puts(UART_INTERFACE, output3);
-  #endif
   /* Read the variables from the EEPROM memory */
   EEPROM_read(EEPROM_DEPLOY_STATUS, &ADM_status, 4);                  //read antenna deploy status
   EEPROM_read(EEPROM_DWELL_TIME_PASSED, &has_dwell_time_passed, 4);   //read information about completing dwell time
@@ -373,17 +331,17 @@ void Mission_init(void)
 //implements mission loop: sorts tasks by the priority and executes first one
 void Mission_loop(void)
 {
-  // Sort list of pending tasks by their priorities
+  /* Sort list of pending tasks by their priorities  - lower period->higher priority*/
   for (uint8_t i=0; i<MAX_TASKS; i++){
     if (task_q[i] != -1){
       circ_push(&task_pq, task_q[i], current_tasks[task_q[i]].period); 
 
-      // Remove task from standard queue
+      /* Remove task from standard queue */
       task_q[i] = -1;
       no_of_tasks_queued--;}
   }
 
-  // If there is a task to execute
+  /* If there is a task to execute */
   if (!circ_isEmpty(&task_pq)){
     uint8_t todo_task_index = circ_peek(&task_pq);    // peek the task
     #ifdef DEBUG_PRINT
@@ -396,7 +354,6 @@ void Mission_loop(void)
     #ifdef DEBUG_PRINT
     UART_puts(UART_INTERFACE, "**executed!**\r\n");
     #endif
-    // reset timer for that tasks------------------------------------!!!!! - for sure? then the timer for the task will need to be set again
     
     if(!circ_isEmpty(&task_pq)) circ_pop(&task_pq);    // pop the task from the queue
   }
@@ -413,12 +370,8 @@ void Mission_loop(void)
 
 //--------------------------QUEUE IMPLEMENTATION AND MODE TRANSITION------------------------------------
 
-//function for queing new task
+/* Queue new task */
 void queue_task(int8_t task_id, uint64_t task_period){
-
-  //If uncommented tasks fire as soon as mode initialised
-  //task_q[no_of_tasks_queued] = task_id;
-  //no_of_tasks_queued++;
   int8_t timer_id = get_available_timer();
   #ifdef DEBUG_PRINT
   char output[100];
@@ -428,14 +381,14 @@ void queue_task(int8_t task_id, uint64_t task_period){
   set_timer_for_task(timer_id, task_id, ulPeriod*current_tasks[task_id].period, timer_isr_map[task_id]);
 }
 
-//Function for suspending all the queued tasks
+/* Suspends all the queued tasks */
 void suspend_all_tasks(){
   while(!circ_isEmpty(&task_pq)){
     circ_pop(&task_pq);
   }
 }
 
-//Function for transition between the modes
+/* Switch between the modes */
 void mode_switch(uint8_t mode){
   free_timers();
   previous_mode = current_mode;
@@ -456,13 +409,12 @@ void Mode_init(int8_t type){
       modes[FBU].opmode_tasks = tasks_FBU;
       modes[FBU].num_tasks = 2;
 
-
       tasks_FBU[FBU_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;   //300s period
       tasks_FBU[FBU_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_FBU[EXIT_FBU].period = 2700;             //45min * 60s = 2700s, wait 45min to enter AD mode
       #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_FBU[EXIT_FBU].period = 300;              //if simplified test of the mission code is defined, wait only 5min instead of 45
+      tasks_FBU[EXIT_FBU].period = 300;              //if test is defined, wait only for 5 minutes
       #endif
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
 
@@ -488,7 +440,7 @@ void Mode_init(int8_t type){
 
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;    //10min period so 60s*10=600s
       #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 300;    //if simplified test of the mission code is defined, add deploy Attempt each 5min, not 10
+      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 300;    //if simplified test of the mission code is defined, add deploy Attempt each 5min, not 10 to save time
       #endif
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
 
@@ -984,7 +936,7 @@ int8_t exit_ad(int8_t t){
   #endif
   /* Being in this function mean that we received ground command, so the antenna is deployed (ADM_status = deployed/1), switching to NF or LP */
   ADM_status = 1;
-  EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status);
+  EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
   /* Read the battery voltage and basing on its value, go to NF or LP mode */
   uint16_t batt_volt;
   EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
