@@ -19,7 +19,14 @@
         "configuration.h": "c",
         "inttypes.h": "c",
         "stdio.h": "c",
-        "radio.h": "c"
+        "radio.h": "c",
+        "cc1120_rx_sniff_mode_reg_config.h": "c",
+        "cstddef": "cpp",
+        "string": "cpp",
+        "optional": "cpp",
+        "limits": "cpp",
+        "memory": "cpp",
+        "new": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

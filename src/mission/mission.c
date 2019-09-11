@@ -151,7 +151,7 @@ uint16_t data_packets_pending;
 uint8_t rx_noisefloor;
 
 //------------------------------TRANSMITTER SETTINGS------------------------------------------------
-radio_config_t radio_config = { .frequency = 145.5, .power = 0};
+radio_config_t radio_config = { .frequency = 145.5, .power = 0, CC112X_FSK_SYMBOLRATE_1200};
 //this gives: frequency = 145.5; power = 10.0;
 //------------------------------TIMERS VARIABLES AND FUNCTIONS---------------------------------------
 //can be moved (except variables) to separate source file, but lot of them are operating on the this file variables

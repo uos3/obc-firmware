@@ -29,9 +29,9 @@ int main(void)
 	
 	//uint8_t rxBuffer[128] = {0};	
 
-	UART_init(UART_GNSS, 500000);
-  UART_putc(UART_GNSS, '\r');
-	UART_putc(UART_GNSS, '\n');
+	UART_init(UART_DEBUG_4, 500000);
+  UART_putc(UART_DEBUG_4, '\r');
+	UART_putc(UART_DEBUG_4, '\n');
   for(ui32Loop = 0; ui32Loop < 300000; ui32Loop++) {};
 
   UART_putc(UART_GNSS, 'M');

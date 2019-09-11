@@ -8,7 +8,7 @@
 
 
 #include "../firmware.h"
-
+//#include "../board/radio.h"
 #define CW_PERIOD_MS	100
 
 /* Each element: length, pattern (2-bit, pause: 00, dit: 01, dah: 11) */
@@ -136,7 +136,7 @@ static const uint16_t Packet_cw_lookup[59][2] =
 };
 
 
-void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_config_t *Radio_config, void (*_cw_on)(radio_config_t *), void (*_cw_off)(void))//, void _cw_on(radio_config_t *), void _cw_off(void))
+void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_config_t *Radio_config, void (*_cw_on)(radio_config_t *), void (*_cw_off)(void))
 {
 	uint32_t i, j;
 	uint8_t c;
@@ -163,18 +163,16 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_con
 
 		/* Prepare for table lookup */
 		c = (uint8_t)(c - 32);
+		j = (uint32_t)(2 * (Packet_cw_lookup[c][0]));
 
-		for(
-			j = (uint32_t)(2 * (Packet_cw_lookup[c][0]-1));
-			j>0; 
-			j -= 2
-		)
+		while (j>0)
 		{
+			j -= 2;
 
 			switch((Packet_cw_lookup[c][1] >> (j)) & GCC_BINARY(0b11))
 			{
 				case GCC_BINARY(0b00):
-					UART_puts(UART_INTERFACE, "Space\r\n");
+					UART_puts(UART_INTERFACE, "Pause\r\n");
 					/* Pause (only used for space character) */
 					_cw_off();
 					Delay_ms(CW_PERIOD_MS);
@@ -197,10 +195,8 @@ void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_con
 					UART_puts(UART_INTERFACE, "Lookup failed\r\n");
 					break;
 			}
-			UART_puts(UART_INTERFACE, "Switch Complete\r\n");
-
 			_cw_off();
-			UART_puts(UART_INTERFACE, "Dot/dash sent\r\n");
+			UART_puts(UART_INTERFACE, "Dot/dash/pause sent\r\n");
 
 			/* Inter pulse pause */
 			Delay_ms(CW_PERIOD_MS);

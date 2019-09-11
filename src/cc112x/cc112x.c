@@ -181,7 +181,32 @@ void cc112x_cfg_fsk_params(uint8_t spi_device_id, cc112x_fsk_symbolrate_t fsk_sy
   uint8_t symbolrate_exponent, deviation_exponent, deviation_mantissa;
   uint32_t symbolrate_mantissa;
 
-  if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_1200)
+  if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_6000)
+  {
+    symbolrate_mantissa = 0x47AE1;
+    symbolrate_exponent = 0x06;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_5000)
+  {
+    symbolrate_mantissa = 0x11111;
+    symbolrate_exponent = 0x06;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_4000)
+  {
+    symbolrate_mantissa = 0xB4E82;
+    symbolrate_exponent = 0x05;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_3000)
+  {
+    symbolrate_mantissa = 0x47AE1;
+    symbolrate_exponent = 0x05;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_2000)
+  {
+    symbolrate_mantissa = 0xB4E82;
+    symbolrate_exponent = 0x04;
+  }
+  else if(fsk_symbolrate == CC112X_FSK_SYMBOLRATE_1200)
   {
     symbolrate_mantissa = 0x0624d;
     symbolrate_exponent = 0x04;
@@ -209,47 +234,45 @@ void cc112x_cfg_fsk_params(uint8_t spi_device_id, cc112x_fsk_symbolrate_t fsk_sy
 
   if(fsk_deviation == CC112X_FSK_DEVIATION_8K)
   {
-    //deviation_mantissa = ;
-    //deviation_exponent = ;
+    deviation_mantissa = 182;
+    deviation_exponent = 3;
   }
   else if(fsk_deviation == CC112X_FSK_DEVIATION_6K)
   {
-    //deviation_mantissa = ;
-    //deviation_exponent = ;
+    deviation_mantissa = 72;
+    deviation_exponent = 3;
   }
   else if(fsk_deviation == CC112X_FSK_DEVIATION_4K)
   {
-    //deviation_mantissa = ;
-    //deviation_exponent = ;
+    deviation_mantissa = 181;
+    deviation_exponent = 2;
   }
   else if(fsk_deviation == CC112X_FSK_DEVIATION_2K)
   {
-    //deviation_mantissa = ;
-    //deviation_exponent = ;
+    deviation_mantissa = 181;
+    deviation_exponent = 1;
   }
   else if(fsk_deviation == CC112X_FSK_DEVIATION_1K)
   {
-    //deviation_mantissa = ;
-    //deviation_exponent = ;
+    deviation_mantissa = 218;
+    deviation_exponent = 0;
   }
   else if(fsk_deviation == CC112X_FSK_DEVIATION_500)
   {
-    //deviation_mantissa = ;
-    //deviation_exponent = ;
+    deviation_mantissa = 109;
+    deviation_exponent = 0;
   }
   else if(fsk_deviation == CC112X_FSK_DEVIATION_250)
   {
-    //deviation_mantissa = ;
-    //deviation_exponent = ;
+    deviation_mantissa = 55;
+    deviation_exponent = 0;
   }
   else if(fsk_deviation == CC112X_FSK_DEVIATION_100)
   {
-    //deviation_mantissa = ;
-    //deviation_exponent = ;
+    deviation_mantissa = 22;
+    deviation_exponent = 0;
   }
-  // TODO: Remove
-  deviation_mantissa = 0;
-  deviation_exponent = 0;
+
 
   // dev
   //5K: m=17 e=3
@@ -266,7 +289,7 @@ void cc112x_cfg_fsk_params(uint8_t spi_device_id, cc112x_fsk_symbolrate_t fsk_sy
 
   /* Write Deviation */
   cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_DEVIATION_M), &deviation_mantissa);
-  val = (uint8_t)((deviation_exponent & 0x07) | (0 << 3) |  (0<<6));  // (0<<3) - FSK mode
+  val = (uint8_t)((deviation_exponent & 0x07));
   cc112xSpiWriteReg(spi_device_id, (uint8_t)(CC112X_MODCFG_DEV_E), &val);
 }
 
@@ -345,11 +368,8 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
   do
   {
     cc112xSpiReadReg(spi_device_id, CC112X_MARCSTATE, &marcstate);
-    sprintf(output,"Marcstate: %x\r\n", marcstate);
-    UART_puts(UART_INTERFACE, output);
   }
   while (marcstate != 0x41);
-  UART_puts(UART_INTERFACE, "marcstate checked\r\n");
 
   // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
   //    high VCDAC_START value

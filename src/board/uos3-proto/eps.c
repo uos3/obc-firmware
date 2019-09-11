@@ -50,14 +50,15 @@ void EPS_init(void)
 
 bool EPS_selfTest(void)
 {
+	EPS_readRegister(EPS_KNOWN_VAL, &eps_slave_packet_single);
 	/* Ref: https://github.com/uos3/eps-firmware/issues/1 */
-	uint8_t attempts = 0;		//Writing to register and retrying if failed
-	while (attempts < 3 && !EPS_readRegister(EPS_KNOWN_VAL, &eps_slave_packet_single)) {
-		attempts++;
-	}
-	if (attempts > 2) {
-		EPS_COMMS_FAILS++;
-	}
+	// uint8_t attempts = 0;		//Writing to register and retrying if failed
+	// while (attempts < 3 && !EPS_readRegister(EPS_KNOWN_VAL, &eps_slave_packet_single)) {
+	// 	attempts++;
+	// }
+	// if (attempts > 2) {
+	// 	EPS_COMMS_FAILS++;
+	// }
 	return (eps_slave_packet_single.value == EPS_ID);	//Should give a value of 0x42
 
 }
@@ -65,8 +66,8 @@ bool EPS_selfTest(void)
 bool EPS_getInfo(uint16_t *output, uint8_t regID)
 {
   UART_puts(UART_INTERFACE, "\r\nTrying to get reg data\r\n");
-  uint8_t attempts = 0;		//Writing to register and retrying if failed
-  /*while (attempts < 3 && !EPS_readRegister(regID, &eps_slave_packet_single)) {
+  /* uint8_t attempts = 0;		//Writing to register and retrying if failed
+  while (attempts < 3 && !EPS_readRegister(regID, &eps_slave_packet_single)) {
 	  attempts++;
   }
   if (attempts <3) {
@@ -244,6 +245,19 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	eps_master_packet.crc_l = (uint8_t)crc & 0xFF;
 	eps_master_packet.crc_h = (uint8_t)((crc >> 8) & 0xFF);
 
+	
+  	char output[100];
+	uint16_t print1 = eps_master_packet.value_l|(eps_master_packet.value_h<<8);
+	uint16_t print2 = eps_master_packet.crc_l|(eps_master_packet.crc_h<<8);
+	sprintf(output,"Packet Val: %x\r\n", print1);
+	UART_puts(UART_DEBUG_4, output);
+
+	sprintf(output,"Packet CRC: %x\r\n",print2);
+
+
+	UART_puts(UART_DEBUG_4, output);
+	
+
 	/* Send Master Read Packet */
 	UART_putb(UART_EPS, (char *)&eps_master_packet, 5);
 
@@ -251,7 +265,7 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	bytes_received = 0;
 	RTC_getTime(&current_time);
 	timeout = current_time;
-	while(current_time < (timeout + 2))
+	while(current_time < (timeout + 1))
 	{
 		if(UART_getc_nonblocking(UART_EPS, &c))
 		{
@@ -267,12 +281,18 @@ static bool EPS_readRegister(uint8_t register_id, eps_slave_packet_single_t *dat
 	}
 	if(bytes_received != bytes_expected)
 	{
+			sprintf(output,"EPS - Received wrong no bytes %d\r\n", bytes_received);
+
+			UART_puts(UART_DEBUG_4, output);
+
 		return false;
 	}
 
 	crc = EPS_crc((uint8_t *)data, 0, 4);
 	if(crc != data->crc)
 	{
+		UART_puts(UART_DEBUG_4, "EPS - Response CRC Failed\r\n");
+
 		return false;
 	}
 
@@ -305,7 +325,7 @@ bool EPS_writeRegister(uint8_t register_id, uint8_t register_value)
 	UART_putc(UART_EPS, (char)eps_master_packet.value_h);
 	UART_putc(UART_EPS, (char)eps_master_packet.crc_l);
 	UART_putc(UART_EPS, (char)eps_master_packet.crc_h);
-	
+
 	bytes_expected = 6;
 	bytes_received = 0;
 	RTC_getTime(&current_time);
