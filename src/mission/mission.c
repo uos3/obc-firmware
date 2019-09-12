@@ -987,7 +987,7 @@ int8_t save_attitude(int8_t t){
 	
   // Take multiple samples
 	for (uint8_t i=0; i<spacecraft_configuration.data.imu_sample_count; i++){
-		IMU_read_accel(mag_x, mag_y, mag_z);          //read mag. measurements
+		IMU_read_magno(mag_x, mag_y, mag_z);          //read mag. measurements
 		IMU_read_gyro(gyro_x, gyro_y, gyro_z);        //read gyro measurements
 
     //placing measurements in the packet

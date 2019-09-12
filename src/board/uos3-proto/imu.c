@@ -12,38 +12,9 @@
 #include "../i2c.h"
 
 #include "../imu.h"
-
- // the useful hardware constants (only used here so not moved away as yet)
  
 #define MPU_I2C_ADDR 0x68 // this is the MPU-9250A i2c address %1011000
 #define MAG_I2C_ADDR 0x0C // MAG_PASS_THROUGH_I2C_ADDR
-
-// MPU 9250 registers 
-
-#define MPU_CONFIG 26
-#define MPU_GYRO_CONFIG 27
-#define MPU_ACCEL_CONFIG 28
-#define MPU_ACCEL_XOUT 59
-#define MPU_ACCEL_YOUT 61
-#define MPU_ACCEL_ZOUT 63
-#define MPU_TEMP_OUT 65
-#define MPU_GYRO_XOUT 67
-#define MPU_GYRO_YOUT 69
-#define MPU_GYRO_ZOUT 71
-#define MPU_WHO_AM_I 117
-#define MPU_INT_BYPASS_ENABLE 55
-
-#define MAG_WIA 0	//contains device ID
-#define MAG_STA1 2 	//read only gives flags at 1 for DRDY and 2 for DOR (data ready and overload), used in read cycle
-#define MAG_HXL 3
-#define MAG_HYL 5
-#define MAG_HZL 7 	//offsets in magnetometer, note little endian, so need to be read opposite way round
-#define MAG_ST2 9
-#define MAG_CNTL1 10 // Magnetometer control register
-#define MAG_ASAX 16
-#define MAG_ASAY 17
-#define MAG_ASAZ 18
-
 
 void IMU_Init(void)
 {
@@ -53,7 +24,7 @@ void IMU_Init(void)
 	uint8_t i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR ,MPU_INT_BYPASS_ENABLE);
 	i2cstring[1] = i2cstatus | MPU_INT_BYPASS_ENABLE; // flag bypass on
 	i2cstring[3] = 0; // null terminated string
-	I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring); // turn on bypass to Magnetometer so visible on I2C
+	I2CcaSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring); // turn on bypass to Magnetometer so visible on I2C
 
 	// setup magnetometer
 	i2cstring[0] = MAG_CNTL1;
@@ -64,104 +35,135 @@ void IMU_Init(void)
 	I2CSendString(I2C_IMU, MAG_I2C_ADDR, i2cstring);
 }
 
-void IMU_set_accel_sensitivity(imu_accel_sensitivity_t imu_accel_sensitivity)
-{
-	switch(imu_accel_sensitivity)
-	{
-		case IMU_ACCEL_2G:
-			break;
-
-		case IMU_ACCEL_4G:
-			break;
-
-		case IMU_ACCEL_8G:
-			break;
-
-		case IMU_ACCEL_16G:
-			break;
-
-		default:
-			break;
-	}
-}
-
-void IMU_set_accel_bandwidth(imu_bandwidth_t imu_accel_bandwidth)
-{
-	switch(imu_accel_bandwidth)
-	{
-		case IMU_BW_5HZ:
-			break;
-
-		case IMU_BW_10HZ:
-			break;
-
-		case IMU_BW_20HZ:
-			break;
-
-		case IMU_BW_41HZ:
-			break;
-
-		case IMU_BW_92HZ:
-			break;
-
-		case IMU_BW_184HZ:
-			break;
-
-		case IMU_BW_460HZ:
-			break;
-
-		default:
-			break;
-	}
-}
-
 void IMU_set_gyro_sensitivity(imu_gyro_sensitivity_t imu_gyro_sensitivity)
 {
+	uint8_t i2cstatus;
+	uint8_t i2cstring[3];
 	switch(imu_gyro_sensitivity)
 	{
 		case IMU_GYRO_250DEG_S:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);		//read current configuration of config registers
+			i2cstring[0] = MPU_GYRO_CONFIG;										//first byte of the packet is target register address
+			i2cstring[1] = i2cstatus & 0b11100111;								//mask off bits [4:3] and keep the value of the other bits - bits [4:3] are separated by space from the others
+			i2cstring[2] = 0;													//zero-valued byte means end of the packet - look definition of I2CSendString
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);					//send the packet
 			break;
 
 		case IMU_GYRO_500DEG_S:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = (i2cstatus & 0b11100111) | 0b00001000; i2cstring[2] = 0;	//for 01 need to mask in two steps - first both to 0, and then one of them to 1
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);
 			break;
 
 		case IMU_GYRO_1000DEG_S:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = (i2cstatus & 0b11100111) | 0b00010000; i2cstring[2] = 0;	//similar like for 01, but other way around
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);
 			break;
 
 		case IMU_GYRO_2000DEG_S:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus | 0b00011000; i2cstring[2] = 0;
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);
 			break;
 
-		default:
+		default:	//250DEG_S
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11100111; i2cstring[2] = 0;
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);
 			break;
 	}
 }
-
+/* For information about the registers, values of constants look in the Register Map of the MPU9250, p.13 and 14 */
 void IMU_set_gyro_bandwidth(imu_bandwidth_t imu_gyro_bandwidth)
 {
+	uint8_t i2cstring[3];
+	uint8_t i2cstatus;
 	switch(imu_gyro_bandwidth)
 	{
 		case IMU_BW_5HZ:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_CONFIG);												//read status of MPU_CONFIG register
+			i2cstring[0] = MPU_CONFIG; i2cstring[1] = (i2cstatus | 0b00000111) & 0b11111110; i2cstring[2] = 0;		//changing bits [2:0] to 110 and keeping the value of others -> 110 refers to 5Hz
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);											//read status of MPU_GYRO_CONFIG register
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				//mask off bits [1:0] to set FCHOICE_B to 0b00 which enables larger choice of DLPF frequencies
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
 			break;
 
 		case IMU_BW_10HZ:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_CONFIG);												//read status of MPU_CONFIG register
+			i2cstring[0] = MPU_CONFIG; i2cstring[1] = (i2cstatus | 0b00000111) & 0b11111101; i2cstring[2] = 0;		//changing bits [2:0] to 101 and keeping the value of others -> 101 refers to 10Hz
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);											//read status of MPU_GYRO_CONFIG register
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				//mask off bits [1:0] to set FCHOICE_B to 0b00 which enables larger choice of DLPF frequencies
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
 			break;
 
 		case IMU_BW_20HZ:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_CONFIG);												//read status of MPU_CONFIG register
+			i2cstring[0] = MPU_CONFIG; i2cstring[1] = (i2cstatus | 0b00000111) & 0b11111100; i2cstring[2] = 0;		//changing bits [2:0] to 100 and keeping the value of others -> 100 refers to 20Hz
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);											//read status of MPU_GYRO_CONFIG register
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				//mask off bits [1:0] to set FCHOICE_B to 0b00 which enables larger choice of DLPF frequencies
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
 			break;
 
 		case IMU_BW_41HZ:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_CONFIG);												//read status of MPU_CONFIG register
+			i2cstring[0] = MPU_CONFIG; i2cstring[1] = (i2cstatus | 0b00000111) & 0b11111011; i2cstring[2] = 0;		//changing bits [2:0] to 011 and keeping the value of others -> 011 refers to 41Hz
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);											//read status of MPU_GYRO_CONFIG register
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				//mask off bits [1:0] to set FCHOICE_B to 0b00 which enables larger choice of DLPF frequencies
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
 			break;
 
 		case IMU_BW_92HZ:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_CONFIG);												//read status of MPU_CONFIG register
+			i2cstring[0] = MPU_CONFIG; i2cstring[1] = (i2cstatus | 0b00000111) & 0b11111010; i2cstring[2] = 0;		//changing bits [2:0] to 010 and keeping the value of others -> 010 refers to 92Hz
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);											//read status of MPU_GYRO_CONFIG register
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				//mask off bits [1:0] to set FCHOICE_B to 0b00 which enables larger choice of DLPF frequencies
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
 			break;
 
 		case IMU_BW_184HZ:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_CONFIG);												//read status of MPU_CONFIG register
+			i2cstring[0] = MPU_CONFIG; i2cstring[1] = (i2cstatus | 0b00000111) & 0b11111001; i2cstring[2] = 0;		//changing bits [2:0] to 001 and keeping the value of others -> 001 refers to 184Hz
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);											//read status of MPU_GYRO_CONFIG register
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				//mask off bits [1:0] to set FCHOICE_B to 0b00 which enables larger choice of DLPF frequencies
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
 			break;
 
-		case IMU_BW_460HZ:
+		case IMU_BW_250HZ:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_CONFIG);												//read status of MPU_CONFIG register
+			i2cstring[0] = MPU_CONFIG; i2cstring[1] = i2cstatus & 0b11111000; i2cstring[2] = 0;						//changing bits [2:0] to 000 and keeping the value of others -> 000 refers to 250Hz
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);											//read status of MPU_GYRO_CONFIG register
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				//mask off bits [1:0] to set FCHOICE_B to 0b00 which enables larger choice of DLPF frequencies
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
+			break;
+		
+		case IMU_BW_3600HZ:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = (i2cstatus | 0b00000011) & 0b11111110; i2cstring[2] = 0;  //changing bits [1:0] to 10 and keeping the others, to set FCHOICE_B to 10 
+																													 //which cause that we don't care about the value of DLPF_CFG and are using 3600Hz 
+																													 //(there is a way to use 3600Hz with FCHOICE_B = 0b00 - it will have a bit different characteristic)
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);
 			break;
 
-		default:
+		case IMU_BW_8800HZ:
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR ,MPU_GYRO_CONFIG);
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				 //changing bits [1:0] to 00 to set FCHOICE_B = 00 which refers to 8800Hz
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);
+
+		default:	//250Hz - why? -> https://github.com/betaflight/betaflight/pull/5483 
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_CONFIG);												//read status of MPU_CONFIG register
+			i2cstring[0] = MPU_CONFIG; i2cstring[1] = i2cstatus & 0b11111000; i2cstring[2] = 0;					//changing bits [2:0] to 000 and keeping the value of others -> 000 refers to 250Hz
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
+			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);											//read status of MPU_GYRO_CONFIG register
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				//mask off bits [1:0] to set FCHOICE_B to 0b00 which enables larger choice of DLPF frequencies
+			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
 			break;
 	}
 }
@@ -175,13 +177,6 @@ bool IMU_selftest(void)
 	return true;
 	}
 	return false;
-}
-
-void IMU_read_accel(int16_t *accel_x, int16_t *accel_y, int16_t *accel_z)
-{
-	*accel_x = (int16_t)I2CReceive16(I2C_IMU, MPU_I2C_ADDR, MPU_ACCEL_XOUT);
-	*accel_y = (int16_t)I2CReceive16(I2C_IMU, MPU_I2C_ADDR, MPU_ACCEL_YOUT);
-	*accel_z = (int16_t)I2CReceive16(I2C_IMU, MPU_I2C_ADDR, MPU_ACCEL_ZOUT);
 }
 
 void IMU_read_gyro(int16_t *gyro_x, int16_t *gyro_y, int16_t *gyro_z)
