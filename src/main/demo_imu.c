@@ -34,10 +34,6 @@ int main(void)
   {
     LED_on(LED_B);
 
-    IMU_read_accel(&x, &y, &z);
-    sprintf(output,">>> Accel: X %+06d, Y %+06d, Z %+06d\r\n", x, y, z);
-    UART_puts(UART_INTERFACE, output);
-
     IMU_read_gyro(&x, &y, &z);
     sprintf(output,">>> Gyro:  X %+06d, Y %+06d, Z %+06d\r\n", x, y, z);
     UART_puts(UART_INTERFACE, output);

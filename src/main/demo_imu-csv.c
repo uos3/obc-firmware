@@ -34,9 +34,6 @@ int main(void)
   {
     LED_on(LED_B);
 
-    IMU_read_accel(&x, &y, &z);
-    sprintf(output,"%+06d,%+06d,%+06d", x, y, z);
-
     IMU_read_gyro(&x, &y, &z);
     sprintf(output,"%s,%+06d,%+06d,%+06d", output, x, y, z);
 

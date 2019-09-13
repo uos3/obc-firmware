@@ -13,7 +13,6 @@
 #include "../rtc.h"
 #include "../delay.h"
 #include "../camera.h"
-#include "../../configuration/configuration.h"
 #include "../../firmware.h"
 #include <inttypes.h>
 

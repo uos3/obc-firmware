@@ -76,6 +76,8 @@ typedef struct configuration_data_t {
 	unsigned imu_acquisition_interval : 16;
 	unsigned imu_sample_count : 4;
 	unsigned imu_sample_interval : 8;
+	imu_gyro_bandwidth_t gyro_bandwidth : 3;
+	imu_gyro_range_t gyro_measurement_range : 2;
 
 	// GPS measurement parameters
 	unsigned gps_acquisition_interval : 16;
@@ -96,6 +98,8 @@ typedef struct configuration_data_t {
 	bool imu_accel_enabled:1;
 	bool imu_gyro_enabled:1;
 	bool imu_magno_enabled:1;
+
+	bool silent_flag : 1;
 
 	//tx_power_t tx_overtemp_power:4; // adjustable low-power for safe-mode?
 

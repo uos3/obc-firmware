@@ -70,6 +70,8 @@ static void Configuration_load_defaults(void)
   spacecraft_configuration.data.imu_acquisition_interval = 600;           //600s period
   spacecraft_configuration.data.imu_sample_count = 6;                     //6 samples
   spacecraft_configuration.data.imu_sample_interval = 500;                //500ms
+  spacecraft_configuration.data.gyro_bandwidth = 4;                       //92Hz
+  spacecraft_configuration.data.gyro_measurement_range = 0;               //250 deg/s
 
   spacecraft_configuration.data.gps_acquisition_interval = 600;           //600s period
   spacecraft_configuration.data.gps_sample_count = 4;                     //max 4 samples possible to fit in telemetry beacon
@@ -85,6 +87,8 @@ static void Configuration_load_defaults(void)
   spacecraft_configuration.data.imu_accel_enabled = 1;  //default ON
   spacecraft_configuration.data.imu_gyro_enabled = 1;   //default ON
   spacecraft_configuration.data.imu_magno_enabled = 1;  //default ON
+
+  spacecraft_configuration.data.silent_flag = 0;        //default silent turned off - radio transmissions enabled
 
   Configuration_update_checksum();
 }
