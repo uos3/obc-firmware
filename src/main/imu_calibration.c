@@ -1,7 +1,7 @@
 /**
- * File purpose:        IMU functionality demo
+ * File purpose:        IMU calibration script
  * Last modification:   22/08/2019
- * Status:              Ready for the test
+ * Status:              Ready for use
  */
 
 /* firmware.h contains all relevant headers */
@@ -14,7 +14,7 @@ int main(void)
     char output[200];
 
     Board_init();
-    watchdog_update = 0xFF;
+    watchdog_update = 0xFFFF;
     enable_watchdog_kick();
     UART_init(UART_INTERFACE, 9600);
 
@@ -28,11 +28,10 @@ int main(void)
         UART_puts(UART_INTERFACE, "\r\n>>>>>>>> Selftest: FAIL\r\n");
         while(1) {};
     }
-
     /*Calibrate gyroscope */
     int16_t gx_offset, gy_offset, gz_offset;
     IMU_calibrate_gyro(&gx_offset, &gy_offset, &gz_offset);
-    sprintf(output, ">>> Gyro Offsets: X %+06d, Y %+06d, Z %+06d\r\n", gx_offset,gy_offset, gz_offset);
+    sprintf(output, ">>> Current Gyro Offsets: X %+06d, Y %+06d, Z %+06d\r\n", gx_offset,gy_offset, gz_offset);
     UART_puts(UART_INTERFACE, output);
 
     while(i)

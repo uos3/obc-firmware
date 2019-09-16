@@ -40,7 +40,7 @@
  * if the mission loop will stuck, the variable will not be set back to 0XFF
  * and in result will be 0 or smaller after some time, when this happened, watchdog is not kicked and MCU will reboot
  */
-volatile uint8_t watchdog_update;
+volatile uint16_t watchdog_update;
 /**
  * @function
  * @ingroup watchdog_ext

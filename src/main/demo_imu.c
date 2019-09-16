@@ -29,6 +29,11 @@ int main(void)
     UART_puts(UART_INTERFACE, "\r\n>>>>>>>> Selftest: FAIL\r\n");
     while(1) {};
   }
+  int16_t gx_offset = (int16_t)I2CReceive16(I2C_IMU, 0x68, MPU_GYRO_X_OFFS_H);
+	int16_t gy_offset = (int16_t)I2CReceive16(I2C_IMU, 0x68, MPU_GYRO_Y_OFFS_H);
+	int16_t gz_offset = (int16_t)I2CReceive16(I2C_IMU, 0x68, MPU_GYRO_Z_OFFS_H);
+  sprintf(output, ">>> Current Gyro Offsets: X %+06d, Y %+06d, Z %+06d\r\n", gx_offset,gy_offset, gz_offset);
+  UART_puts(UART_INTERFACE, output);
 
   while(1)
   {
