@@ -21,7 +21,7 @@
   #error "FRAM Size not coded for."
 #endif
 
-#define BUFFER_FRAM_SIZE_INITIALISED	sizeof(bool)
+#define BUFFER_FRAM_SIZE_INITIALISED	  sizeof(bool)
 #define BUFFER_FRAM_SIZE_LAST_INDEX     sizeof(uint16_t)
 #define BUFFER_FRAM_SIZE_LAST_SLOT      sizeof(uint16_t)
 #define BUFFER_FRAM_SIZE_OCCUPANCY      ROUND_UP(BUFFER_SLOTS/8, 1)

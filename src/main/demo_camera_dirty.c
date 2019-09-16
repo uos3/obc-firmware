@@ -1,7 +1,7 @@
 /**
  * File purpose:        Old camera demo
  * Last modification:   27/07/2019
- * Status:              For backup and reference
+ * Status:              For backup and reference - used to investigate and establish camera responses on different commands
  */
 
 /* firmware.h contains all relevant headers */
@@ -13,8 +13,6 @@
 //#define PAGE_LENGTH 5000 //Buffer_slot_size is 3392bytes, do changed the page size!
 #define PAGE_LENGTH 106
 
-//uint32_t image_length, number_of_pages;     //variables to store the length of the received image and number of pages received
-//uint8_t *total_data;                        //variable to store the picture
 static char LK_RESET[]     = {0x56, 0x00, 0x26, 0x00};
 static char LK_RESET_RE[]    = {0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};
 static char LK_RESOLUTION_1600[] = {0x56, 0x00, 0x54, 0x01, 0x21};
@@ -42,9 +40,6 @@ static uint32_t UART_getw4(uint8_t serial)
 
 int main(void)
 {
-  /*char output[100];
-  /char time[100];
-  uint64_t timestamp;*/
   Board_init();
   watchdog_update = 0xFF;
   enable_watchdog_kick();
@@ -129,8 +124,7 @@ int main(void)
     }
     Delay_ms(100);
 
-  //take picture command
-    
+  //take picture command 
     UART_putb(UART_CAMERA, LK_PICTURE, sizeof(LK_PICTURE));
     Delay_ms(200);
     while(UART_charsAvail(UART_CAMERA)){

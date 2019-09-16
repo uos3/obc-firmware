@@ -24,7 +24,7 @@ bool Buffer_FRAM_cache_read(buffer_cache_t *buffer)
 
 void Buffer_FRAM_read_data(uint16_t slot, uint8_t *data)
 {
-  FRAM_read((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE);
+  FRAM_read((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE/8);
 }
 
 /*** Write ***/
@@ -61,7 +61,7 @@ void Buffer_FRAM_write_indexes(buffer_cache_t *buffer)
 
 void Buffer_FRAM_write_data(uint16_t slot, uint8_t *data)
 {
-  FRAM_write((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE);
+  FRAM_write((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE/8);
 }
 
 #endif

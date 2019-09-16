@@ -2,6 +2,9 @@
  * File purpose:        IMU calibration script
  * Last modification:   22/08/2019
  * Status:              Ready for use
+ * 
+ * This code calibrates the IMU chip, the IMU require calibration after power up, as it loses its offsets after power down
+ * You can implemenent calibration is any file, just by calling the function "IMU_calibrate_gyro". However, make sure that the board is flat and not moving
  */
 
 /* firmware.h contains all relevant headers */
@@ -14,7 +17,7 @@ int main(void)
     char output[200];
 
     Board_init();
-    watchdog_update = 0xFFFF;
+    watchdog_update = 0xFF;
     enable_watchdog_kick();
     UART_init(UART_INTERFACE, 9600);
 
