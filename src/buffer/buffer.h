@@ -24,7 +24,7 @@
 #define BUFFER_FRAM_SIZE_INITIALISED	  sizeof(bool)
 #define BUFFER_FRAM_SIZE_LAST_INDEX     sizeof(uint16_t)
 #define BUFFER_FRAM_SIZE_LAST_SLOT      sizeof(uint16_t)
-#define BUFFER_FRAM_SIZE_OCCUPANCY      ROUND_UP(BUFFER_SLOTS/8, 1)
+#define BUFFER_FRAM_SIZE_OCCUPANCY      ROUND_UP(BUFFER_SLOTS/8, 2)
 #define BUFFER_FRAM_SIZE_INDEXES        (BUFFER_SLOTS * sizeof(uint16_t))
 #define BUFFER_FRAM_SIZE_CRC		        sizeof(uint16_t)
 
@@ -49,7 +49,7 @@ typedef struct buffer_cache_t {
   bool initialised;
   uint16_t last_index_stored;
   uint16_t last_slot_transmitted;
-  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 1)]; // bitmap of occupancy
+  uint8_t occupancy[ROUND_UP(BUFFER_SLOTS/8, 2)]; // bitmap of occupancy
   uint16_t indexes[BUFFER_SLOTS]; // indexes[slot] = index
   uint16_t crc;
 } buffer_cache_t;

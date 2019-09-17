@@ -1,17 +1,18 @@
 /**
  * File purpose:        FRAM buffer demo
  * Last modification:   16/09/2019
- * Status:
+ * Status:              Developed using functions declared in the buffer/test folder made by Phil; Buffer functions are working correctly
  */
 
 #include "../firmware.h"
 #include <stdio.h>
 
-#define TEST_VERBOSE 0
+#define TEST_VERBOSE 1
 /* Declaration of test functions used - function copied and modified from buffer/test directory */
-bool test_buffer_add_remove_element(void);
-bool test_buffer_retrieve_element(void);
-bool test_buffer_roll(void);
+int test_buffer_add_remove_element(void);
+int test_buffer_retrieve_element(void);
+int test_buffer_roll(void);
+int test_buffer_fill_elements(void);
 
 int main(void){
     Board_init();
@@ -25,28 +26,39 @@ int main(void){
 
     UART_puts(UART_INTERFACE, "\r\n>>>>>>>> FRAM Buffer Demo\r\n");
     
+    int buffer_add_remove_element_result;
+    int buffer_retrieve_element_result;
+    int buffer_roll_result;
+    int buffer_fill_elements_result;
+    int occupied;
     while(1){
-        bool buffer_add_remove_element_result = test_buffer_add_remove_element();
+        buffer_add_remove_element_result = test_buffer_add_remove_element();
         sprintf(output, ">>> Test -> buffer_add_remove_element. Result -> %d\r\n", buffer_add_remove_element_result);
         UART_puts(UART_INTERFACE, output);
-        Delay_ms(10000);
+        Delay_ms(1000);
 
-        bool buffer_retrieve_element_result = test_buffer_retrieve_element();
+        buffer_retrieve_element_result = test_buffer_retrieve_element();
         sprintf(output, ">>> Test -> buffer_retrieve_element.   Result -> %d\r\n", buffer_retrieve_element_result);
         UART_puts(UART_INTERFACE, output);
-        Delay_ms(10000);
+        Delay_ms(1000);
         
-        bool buffer_roll_result = test_buffer_roll();
+        buffer_roll_result = test_buffer_roll();
         sprintf(output, ">>> Test -> buffer_roll.               Result -> %d\r\n", buffer_roll_result);
         UART_puts(UART_INTERFACE, output);
-        Delay_ms(10000);
+        Delay_ms(1000);
+
+        buffer_fill_elements_result = test_buffer_fill_elements();
+        sprintf(output, ">>> Test -> buffer_fill_elements.      Result -> %d\r\n", buffer_fill_elements_result);
+        UART_puts(UART_INTERFACE, output);
+        Delay_ms(1000);
 
         UART_puts(UART_INTERFACE, "\r\n");
+        watchdog_update = 0xFF;
     }
 }
 
 
-bool test_buffer_add_remove_element(void)
+int test_buffer_add_remove_element(void)
 {
 /* BUFFER_SLOT_SIZE is given in bits; one element uint8_t consists from 8 bits - so that's why division by 8*/
   uint8_t test_buffer_packet[BUFFER_SLOT_SIZE/8] = { 0 };   
@@ -57,33 +69,33 @@ bool test_buffer_add_remove_element(void)
 
   if(Buffer_count_occupied() != 0)
   {
-    return false;
+    return 1;
   }
 
   Buffer_store_new_data(test_buffer_packet);
   if(Buffer_count_occupied() != 1)
   {
-    return false;
+    return 2;
   }
 
   /* Remove incorrect index */
   Buffer_remove_index(0x34);
   if(Buffer_count_occupied() != 1)
   {
-    return false;
+    return 3;
   }
 
   /* Remove correct index */
   Buffer_remove_index(0x01);
   if(Buffer_count_occupied() != 0)
   {
-    return false;
+    return 4;
   }
 
-  return true;
+  return 0;
 }
 
-bool test_buffer_retrieve_element(void)
+int test_buffer_retrieve_element(void)
 {
 /* BUFFER_SLOT_SIZE is given in bits; one element uint8_t consists from 8 bits - so that's why division by 8*/
   uint32_t i;
@@ -102,13 +114,13 @@ bool test_buffer_retrieve_element(void)
   /* Check slot #0 is empty */
   if(Buffer_get_occupancy(0x00))
   {
-    return false;
+    return 1;
   }
 
   /* Attempt to retrieve a non-existent packet */
   if(Buffer_get_next_data(test_buffer_packet))
   {
-    return false;
+    return 2;
   }
 
   /* Store a single packet */
@@ -117,24 +129,24 @@ bool test_buffer_retrieve_element(void)
   /* Check slot #0 is occupied */
   if(!Buffer_get_occupancy(0x00))
   {
-    return false;
+    return 3;
   }
 
   /* Retrieve the packet */
   if(!Buffer_get_next_data(test_buffer_packet))
   {
-    return false;
+    return 4;
   }
 
   if(memcmp(test_buffer_packet, reference_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
-    return false;
+    return 5;
   }
 
-  return true;
+  return 0;
 }
 
-bool test_buffer_roll(void)
+int test_buffer_roll(void)
 {
   uint32_t i;
   uint8_t reference1_buffer_packet[BUFFER_SLOT_SIZE/8];
@@ -158,7 +170,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Buffer count should be empty, is: %d\r\n", Buffer_count_occupied());
     }
-    return false;
+    return 1;
   }
 
   /* Attempt to retrieve a non-existent packet */
@@ -168,7 +180,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Succeeded in retrieving non-existent packet.\r\n");
     }
-    return false;
+    return 2;
   }
 
   /* Store a single packet */
@@ -181,7 +193,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Buffer count should be 1, is: %d\r\n", Buffer_count_occupied());
     }
-    return false;
+    return 3;
   }
 
   /* Retrieve the packet and verify it */
@@ -191,7 +203,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to retrieve packet (attempt 1).\r\n");
     }
-    return false;
+    return 4;
   }
   if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
@@ -199,7 +211,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to match retrieved packet (attempt 1).\r\n");
     }
-    return false;
+    return 5;
   }
 
   /* Retrieve the packet and verify it */
@@ -209,7 +221,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to retrieve packet (attempt 2).\r\n");
     }
-    return false;
+    return 6;
   }
   if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
@@ -217,13 +229,13 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to match retrieved packet (attempt 2).\r\n");
     }
-    return false;
+    return 7;
   }
 
   /* Check packet is still in the buffer */
   if(Buffer_count_occupied() != 1)
   {
-    return false;
+    return 8;
   }
 
   /* Store next packet */
@@ -232,7 +244,7 @@ bool test_buffer_roll(void)
   /* Check new packet is in the buffer */
   if(Buffer_count_occupied() != 2)
   {
-    return false;
+    return 9;
   }
 
   /* Retrieve the packet and verify it */
@@ -242,7 +254,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to retrieve packet2 (attempt 1).\r\n");
     }
-    return false;
+    return 10;
   }
   if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
@@ -250,7 +262,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to match retrieved packet2 (attempt 1).\r\n");
     }
-    return false;
+    return 11;
   }
 
   /* Retrieve the packet and verify it */
@@ -260,7 +272,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to retrieve packet1 (attempt 3).\r\n");
     }
-    return false;
+    return 12;
   }
   if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
@@ -268,7 +280,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to match retrieved packet1 (attempt 3).\r\n");
     }
-    return false;
+    return 13;
   }
 
   /* Retrieve the packet and verify it */
@@ -278,7 +290,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to retrieve packet2 (attempt 2).\r\n");
     }
-    return false;
+    return 14;
   }
   if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
@@ -286,14 +298,14 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to match retrieved packet2 (attempt 2).\r\n");
     }
-    return false;
+    return 15;
   }
 
   /* Remove first packet - indexing starts with 1 */
   Buffer_remove_index(0x01);
   if(Buffer_count_occupied() != 1)
   {
-    return false;
+    return 16;
   }
 
   /* Retrieve the packet and verify it */
@@ -303,7 +315,7 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to retrieve packet2 (attempt 3).\r\n");
     }
-    return false;
+    return 17;
   }
   if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
@@ -311,15 +323,15 @@ bool test_buffer_roll(void)
     {
       Debug_print("Failed to match retrieved packet2 (attempt 3).\r\n");
     }
-    return false;
+    return 18;
   }
 
-  return true;
+  return 0;
 }
-#ifdef XXX
-bool test_buffer_fill_elements(void)
+
+int test_buffer_fill_elements(void)
 {
-  uint8_t test_buffer_packet[BUFFER_SLOT_SIZE] = { 0 };
+  uint8_t test_buffer_packet[BUFFER_SLOT_SIZE/8] = { 0 };
 
   Buffer_init();
   Buffer_reset();
@@ -335,7 +347,7 @@ bool test_buffer_fill_elements(void)
       {
         Debug_print("i: %d Occupied: %d\r\n", i, Buffer_count_occupied());
       }
-      return false;
+      return 1;
     }
   }
 
@@ -350,10 +362,9 @@ bool test_buffer_fill_elements(void)
       {
         Debug_print("i: %d Occupied: %d\r\n", i, Buffer_count_occupied());
       }
-      return false;
+      return 2;
     }
   }
 
-  return true;
+  return 0;
 }
-#endif
