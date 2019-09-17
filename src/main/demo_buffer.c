@@ -11,6 +11,7 @@
 /* Declaration of test functions used - function copied and modified from buffer/test directory */
 bool test_buffer_add_remove_element(void);
 bool test_buffer_retrieve_element(void);
+bool test_buffer_roll(void);
 
 int main(void){
     Board_init();
@@ -32,6 +33,11 @@ int main(void){
 
         bool buffer_retrieve_element_result = test_buffer_retrieve_element();
         sprintf(output, ">>> Test -> buffer_retrieve_element.   Result -> %d\r\n", buffer_retrieve_element_result);
+        UART_puts(UART_INTERFACE, output);
+        Delay_ms(10000);
+        
+        bool buffer_roll_result = test_buffer_roll();
+        sprintf(output, ">>> Test -> buffer_roll.               Result -> %d\r\n", buffer_roll_result);
         UART_puts(UART_INTERFACE, output);
         Delay_ms(10000);
 
@@ -205,7 +211,7 @@ bool test_buffer_roll(void)
     }
     return false;
   }
-  if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
     if(TEST_VERBOSE)
     {
@@ -238,7 +244,7 @@ bool test_buffer_roll(void)
     }
     return false;
   }
-  if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
     if(TEST_VERBOSE)
     {
@@ -256,7 +262,7 @@ bool test_buffer_roll(void)
     }
     return false;
   }
-  if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  if(memcmp(test_buffer_packet, reference1_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
     if(TEST_VERBOSE)
     {
@@ -274,7 +280,7 @@ bool test_buffer_roll(void)
     }
     return false;
   }
-  if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
     if(TEST_VERBOSE)
     {
@@ -283,7 +289,7 @@ bool test_buffer_roll(void)
     return false;
   }
 
-  /* Remove first packet */
+  /* Remove first packet - indexing starts with 1 */
   Buffer_remove_index(0x01);
   if(Buffer_count_occupied() != 1)
   {
@@ -299,7 +305,7 @@ bool test_buffer_roll(void)
     }
     return false;
   }
-  if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE) != 0)
+  if(memcmp(test_buffer_packet, reference2_buffer_packet, BUFFER_SLOT_SIZE/8) != 0)
   {
     if(TEST_VERBOSE)
     {

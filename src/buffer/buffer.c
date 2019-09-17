@@ -58,7 +58,7 @@ void Buffer_store_new_data(uint8_t *data_payload)
 
   uint16_t new_slot;
   uint16_t new_index;
-
+  /* Index of first (oldest) packet is 1 */
   new_index = (uint16_t)(buffer_cache.last_index_stored + 1);
 
   Buffer_find_new_slot(&new_slot);
