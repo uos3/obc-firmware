@@ -30,41 +30,23 @@ typedef struct mission_state_t {
 	uint16_t crc;
 } mission_state_t;
 
-/* Stored in RAM (volatile) */
-typedef struct subsystems_ok_t {
-	/* 32b word */
-	bool eeprom:1;
-	bool fram:1;
-	bool camera:1;
-	bool gps:1;
-	bool imu:1;
-	bool transmitter:1;
-	bool receiver:1;
-	bool eps:1;
-} subsystems_ok_t;
-
 typedef struct timer_properties_t {
 	uint32_t Timer_period[6];
 } timer_properties_t;
 
 
-mission_state_t mission_state;
-
-subsystems_ok_t subsystems_ok;
-
-
-
-// Custom structs
+/* Task structure */
 typedef struct task_t {
-	 /* Rate at which the task should tick, and hence its priority */
+/* Rate at which the task should tick, and hence its priority */
    uint32_t period;
 
-	 /* Function to call for task's tick which takes and returns the state */
+/* Function to call for task's tick which takes and returns the state */
    int8_t (*TickFct)(int8_t);
 
 } task_t;
 //task opmode_tasks[]; // you put in opmode_tasks[<mode whose tasks I want>] and you get a pointer to that array of tasks
 
+/* Modes of sattelite operation */
 typedef enum mode_n {
    FBU,				//first boot-up
    AD, 				//antenna-deployment
@@ -86,34 +68,34 @@ typedef enum FBU_task{
 typedef enum AD_task{
 	AD_SAVE_EPS_HEALTH,
 	TRANSMIT_MORSE_TELEMETRY,
-	ANTENNA_DEPLOY_ATTEMPT, //may be able to remove and do in either of previous tasks
+	ANTENNA_DEPLOY_ATTEMPT
 } AD_task;
 
 typedef enum NF_task {
 	NF_SAVE_EPS_HEALTH,
 	NF_SAVE_GPS_POS,
 	NF_SAVE_ATTITUDE,
-	NF_TRANSMIT_TELEMETRY, //Difference between transmit telemetry and downlink
-	NF_CHECK_HEALTH, //WHAT IS GATHERED IN CHECK HEALTH?
+	NF_TRANSMIT_TELEMETRY,
+	NF_CHECK_HEALTH, 		//WHAT IS GATHERED IN CHECK HEALTH?
 	NF_TAKE_PICTURE
 } NF_task;
 
 typedef enum LP_task{
-	//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
+//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
 	LP_SAVE_EPS_HEALTH,
-	LP_CHECK_HEALTH, //Config update from this task
+	LP_CHECK_HEALTH,
 	LP_TRANSMIT_TELEMETRY,
 } LP_task;
 
 typedef enum SM_task{
 	//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
 	SM_SAVE_EPS_HEALTH,
-	SM_CHECK_HEALTH, //Config update from this task
+	SM_CHECK_HEALTH,
 	SM_TRANSMIT_TELEMETRY,
-	REBOOT_CHECK
+	SM_REBOOT_CHECK
 } SM_task;
 
-/* not needed
+/* not needed - CFU and PT modes are just functions - not a typical mode of operation
 typedef enum CFU_task{
 	//All data gathering suspended by changing mode unless already added to scheduler, need to halt this?
 	READ_CF, //Also check values are in range
@@ -133,21 +115,20 @@ typedef enum DL_task{
 	DL_TAKE_PICTURE
 } DL_task;
 
-
+/* Operational mode structure */
 typedef struct opmode_t {
-   bool (*Mode_startup)(void); // Points to start-up code for this mode
+   bool (*Mode_startup)(void);	//Points to start-up code for this mode
    task_t* opmode_tasks;
    uint8_t num_tasks;
 } opmode_t;
 
-
+/* This structure represents three types of uplink transmission - basing on this different actions should be taken */
+/* For the values of each type - refer to the TMTC file, Type of Packet field */
 typedef enum GS_command {
-	IMAGE_REQUEST,
-	ACK_REC_PACKETS,
-	DL_REQUEST,
-	UPDATE_CONFIG,
-	ENTER_SAFE_MODE,
-	MANUAL_OVERRIDE
+	ACK_REC_PACKETS = 10,
+	UPDATE_CONFIG = 11,
+	GREETINGS_MESSAGE = 12,
+	TC_TELECOMMAND = 13
 } GS_command;
 
 
@@ -160,7 +141,6 @@ void Mission_SEU(void);
 void Mode_init(int8_t type);
 
 //Timers
-
 void timer0_isr(void);
 void timer1_isr(void);
 void timer2_isr(void);

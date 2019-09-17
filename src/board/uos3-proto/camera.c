@@ -249,7 +249,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
   count_end_marker = 0;
   jpeg_adress += 0x820;
   }
-  *no_of_pages = ROUND_UP(jpegsize/pagesize ,1);
+  *no_of_pages = ROUND_UP(jpegsize/pagesize ,1);  //TODO: replace ROUND_UP (not working) with expression to always round up the no_of_pages
   *picture_size = jpegsize;
   return true;
 }

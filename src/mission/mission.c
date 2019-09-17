@@ -37,11 +37,11 @@ void Mission_SEU(void);
 void Mode_init(int8_t type);
 
 //System tasks functions
-int8_t save_eps_health_data(int8_t t);      //TODO: test, update with new TMTC structure
+int8_t save_eps_health_data(int8_t t);      //TODO: test
 int8_t save_gps_data(int8_t t);             //completed
 int8_t check_health_status(int8_t t);       //TODO: write body of this function
 int8_t save_image_data(void);               //completed
-int8_t ad_deploy_attempt(int8_t t);         //TODO: complete the function, refer to comments in the function
+int8_t ad_deploy_attempt(int8_t t);         //completed - contains the field to uncomment when working with EPS board
 int8_t transmit_morse_telemetry(int8_t t);  //TODO: test
 int8_t transmit_next_telemetry(int8_t t);   //TODO: revise what is written and complete the body
 int8_t exit_fbu (int8_t t);                 //completed
@@ -51,7 +51,7 @@ int8_t sm_reboot(int8_t t);                 //completed
 int8_t process_gs_command(int8_t t);        //TODO: revise what is done
 int8_t poll_transmitter(int8_t t);          //TODO: revise what is done, what is missing
 int8_t take_picture(int8_t);                //completed
-uint16_t perform_subsystem_check();         //TODO: voltage is read in centivolts!, as well as temp readings from the sensors; finish function with this knowledge
+uint16_t perform_subsystem_check();         //TODO: voltage is read in centivolts!, as well as temp readings from the sensors; write checks of the transceivers status
 void update_radio_parameters();             //TODO: revise what need to be done 
 
 //queue implementation and transition functions
@@ -96,6 +96,9 @@ uint8_t tenbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tai
 uint8_t sixbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
 uint8_t sixteenbits_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
 //----------------------------------VARIABLES---------------------------------------------
+
+//structures to represent the status of each subsystem and the state of the mission
+mission_state_t mission_state;  //TODO: needs to be implemented
 
 //structures to organise modes, tasks and timers -> definition in header
 opmode_t modes[8];
@@ -413,9 +416,6 @@ void Mode_init(int8_t type){
       tasks_FBU[FBU_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_FBU[EXIT_FBU].period = 2700;             //45min * 60s = 2700s, wait 45min to enter AD mode
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_FBU[EXIT_FBU].period = 300;              //if test is defined, wait only for 5 minutes
-      #endif
       tasks_FBU[EXIT_FBU].TickFct = &exit_fbu;
 
       current_mode = FBU;
@@ -430,18 +430,12 @@ void Mode_init(int8_t type){
       modes[AD].num_tasks = 3;
 
       tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval; //300s period
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_AD[AD_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
-      #endif
       tasks_AD[AD_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
       tasks_AD[TRANSMIT_MORSE_TELEMETRY].TickFct = &transmit_morse_telemetry;
 
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;    //10min period so 60s*10=600s
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 300;    //if simplified test of the mission code is defined, add deploy Attempt each 5min, not 10 to save time
-      #endif
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
 
       current_mode = AD;
@@ -457,22 +451,13 @@ void Mode_init(int8_t type){
       modes[NF].num_tasks = 5;  //Don't want image to be captured until after a command is sent
 
 
-      tasks_NF[NF_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_NF[NF_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
-      #endif  
+      tasks_NF[NF_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;  
       tasks_NF[NF_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_NF[NF_SAVE_GPS_POS].period = spacecraft_configuration.data.gps_acquisition_interval;
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_NF[NF_SAVE_GPS_POS].period = 200; //if simplified test of the mission code is defined, save gps each 200s
-      #endif
       tasks_NF[NF_SAVE_GPS_POS].TickFct = &save_gps_data;
 
 			tasks_NF[NF_SAVE_ATTITUDE].period = spacecraft_configuration.data.imu_acquisition_interval;
-      #ifdef SIMPLIFIED_MISSION_CODE
-			tasks_NF[NF_SAVE_ATTITUDE].period = 200;  //if simplified test of the mission code is defined, save altitude each 200s
-      #endif
 			tasks_NF[NF_SAVE_ATTITUDE].TickFct = &save_attitude;
 
       tasks_NF[NF_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
@@ -498,9 +483,6 @@ void Mode_init(int8_t type){
 
 
       tasks_LP[LP_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_LP[LP_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
-      #endif
       tasks_LP[LP_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_LP[LP_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval;
@@ -521,9 +503,6 @@ void Mode_init(int8_t type){
       modes[SM].num_tasks = 3;  //Don't want reset to be started until after a command is sent
 
       tasks_SM[SM_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_SM[SM_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
-      #endif
       tasks_SM[SM_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_SM[SM_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval;
@@ -532,8 +511,8 @@ void Mode_init(int8_t type){
 			tasks_SM[SM_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
 			tasks_SM[SM_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-      tasks_SM[REBOOT_CHECK].period = 0;  //init with the period 0, so it won't be started automatically
-			tasks_SM[REBOOT_CHECK].TickFct = &sm_reboot;
+      tasks_SM[SM_REBOOT_CHECK].period = 0;  //init with the period 0, so it won't be started automatically
+			tasks_SM[SM_REBOOT_CHECK].TickFct = &sm_reboot;
 
 
       current_mode = SM;
@@ -573,21 +552,12 @@ void Mode_init(int8_t type){
       modes[DL].num_tasks = 5;  //Don't want image to be captured until after a command is sent
 
       tasks_DL[DL_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval;
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_DL[DL_SAVE_EPS_HEALTH].period = 100;  //if simplified test of the mission code is defined, save eps health each 100s
-      #endif
       tasks_DL[DL_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
 
       tasks_DL[DL_SAVE_GPS_POSITION].period = spacecraft_configuration.data.gps_acquisition_interval;
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_DL[DL_SAVE_GPS_POSITION].period = 200;  //if simplified test of the mission code is defined, save gps each 200s
-      #endif
       tasks_DL[DL_SAVE_GPS_POSITION].TickFct = &save_gps_data;
 
 			tasks_DL[DL_SAVE_ATTITUDE].period = spacecraft_configuration.data.imu_acquisition_interval;
-      #ifdef SIMPLIFIED_MISSION_CODE
-      tasks_DL[DL_SAVE_ATTITUDE].period = 200;  //if simplified test of the mission code is defined, save altitude each 200s
-      #endif
 			tasks_DL[DL_SAVE_ATTITUDE].TickFct = &save_attitude;
 
       tasks_DL[DL_POLL_TRANSMITTER].period = 1; //Should be 1ms but 1s should be sufficient?
@@ -637,7 +607,7 @@ uint16_t perform_subsystem_check(){
   status = (status<<1) + (uint16_t)FRAM_selfTest;
   // 3) check Camera - value of 1 is default, in case if any picture has not be taken before the test
   status = (status<<1) + (uint16_t)camera_result;
-  // 4) check GNSS
+  // 4) check GNSS - value of 1 is default, in case if any readings has not be taken before the test
   status = (status<<1) + (uint16_t)gps_result;
   // 5) check IMU
   status = (status<<1) + (uint16_t)IMU_selftest;
@@ -912,11 +882,11 @@ int8_t ad_deploy_attempt(int8_t t){
     EEPROM_write(EEPROM_ADM_DEPLOY_ATTEMPTS, &deploy_attempts, 4);
 
     /* To test the mission code functionality without receiving radio command to exit AD mode */
-    #ifdef SIMPLIFIED_MISSION_CODE
-    ADM_status = 1; //temporary, because the antenna deployment will be confirmed by receiving the telecommand
+    #ifdef MISSION_TEST_CONDITIONS
+    ADM_status = 1;                                       //set it to 1 to skip deployment confirmation with radio telecommand
     EEPROM_write(EEPROM_DEPLOY_STATUS, &ADM_status, 4);
     UART_puts(UART_INTERFACE, "[TASK] Antenna Deployed, Switched to NF Mode.\r\n");
-    mode_switch(NF);  //This is temporary, when radio driver is complete you only exit adm via telecommand (to LP or NF depending on batt status)    
+    mode_switch(NF);                                      //switch to NF mode to skip mode change upon radio telecommand  
     #endif
 
   }
@@ -1110,10 +1080,31 @@ int8_t take_picture(int8_t t){
   }
   return 0;
 }
-
+// This function should parse the received telecommand after its validation and basing on the value of "Type of packet" field - parse the received packet further and start required functions
 int8_t process_gs_command(int8_t t){
   //Reciever interupt has not been finsished so not completely sure what the parameters of this function will look like
 	switch(t){
+    /* First case - when Type of packet = 10 - recognize it as acknowledgent packet receipt and process that command to obtain indexes etc. */
+    case ACK_REC_PACKETS:
+		//update entries for packets in meta-table stored in FRAM
+		break;
+
+    case UPDATE_CONFIG:
+      mode_switch(CFU);
+      #ifdef DEBUG_PRINT
+      UART_puts(UART_INTERFACE, "[TASK] Switched to config update mode.\r\n");
+      #endif
+      //TODO: write all the functionality in the definitions of CFU mode - this switch should only stimulate mode change to CFU
+		  //generate config bytes and save to EEPROM
+		  //in two separate locations
+		  break;
+/* TC_TELECOMMAND case - code should parse the packet to read individual elements 
+  and match them with telecommand parameters from SCF file -> and basing on what was received - implement that function*/
+      case TC_TELECOMMAND:
+
+      break;
+/* All the rest is a trash, left here for now for the reference */
+    /* should be moved further
 		case IMAGE_REQUEST:
     image_trigger = true;
     if (current_mode == NF){
@@ -1123,26 +1114,16 @@ int8_t process_gs_command(int8_t t){
     if (current_mode == DL){
       Timer_Properties.Timer_period[5] = modes[DL].opmode_tasks[5].period;
       queue_task(5, modes[DL].opmode_tasks[5].period);
-    }
+    } 
     #ifdef DEBUG_PRINT
     UART_puts(UART_INTERFACE, "[TASK] Image Scheduled.\r\n");
     #endif
-		break;
-		case ACK_REC_PACKETS:
-		// update entries for packets in meta-table stored in FRAM
 		break;
 		case DL_REQUEST:
     //Dowlinking timing handled inside DL mode, basically an augmented version of NF mode
       mode_switch(DL);
 		break;
-		case UPDATE_CONFIG:
-      mode_switch(CFU);
-      #ifdef DEBUG_PRINT
-      UART_puts(UART_INTERFACE, "[TASK] Switched to config update mode.\r\n");
-      #endif
-		//generate config bytes and save to EEPROM
-		// in two separate locations
-		break;
+
 		case ENTER_SAFE_MODE:
       mode_switch(SM);
       #ifdef DEBUG_PRINT
@@ -1151,7 +1132,7 @@ int8_t process_gs_command(int8_t t){
 		break;
 		case MANUAL_OVERRIDE:
 		//reboot or switch-off subsystem
-		break;
+		break;*/
 	}
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished processing gs command.\r\n");
