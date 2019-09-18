@@ -32,16 +32,21 @@ rx_noisefloor 8
 */
 
 typedef struct packet_telemetry_realtime {
+  uint16_t spacecraft_id;
   uint32_t time;
-  uint16_t sequence;
+  uint32_t beacon_id;
+  uint8_t obc_temperature;
+  uint8_t battery_temperature;
   uint8_t battery_voltage;
   uint8_t battery_current;
-  uint8_t battery_temperature;
-  uint8_t obc_temperature;
-  uint8_t rx_temperature;
-  uint8_t tx_temperature;
+  uint8_t charge_current;
+  uint8_t operational_mode:2;
+  uint8_t rails_status:6;
+  uint16_t data_packets_pending;
+  uint8_t reboot_count;
   uint8_t pa_temperature;
-
+  uint8_t rssi;
+  uint16_t reserved_slot;
 } packet_telemetry_realtime;
 
 

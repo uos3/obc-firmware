@@ -11,12 +11,14 @@
 #ifndef __BUFFER_H__
 #define __BUFFER_H__
 
-#define BUFFER_SLOT_SIZE (uint32_t)848
+#define BUFFER_SLOT_SIZE (uint32_t)696  //it was 848 previously, but the FRAM buffer size of 848bits will not fit within specified TMTC commands
 
 #if(FRAM_SIZE == 0x20000)
- #define BUFFER_SLOTS 1210
+ //#define BUFFER_SLOTS 1210  //for 848
+ #define BUFFER_SLOTS 1500    //for 696bit -> 87bytes slot -> it gives used 130500Bytes of memory from 131072Bytes capacity - so there is a margin
 #elif(FRAM_SIZE == 0x80000)
- #define BUFFER_SLOTS 4840
+ //#define BUFFER_SLOTS 4840
+ #define BUFFER_SLOTS 6000
 #else
   #error "FRAM Size not coded for."
 #endif
