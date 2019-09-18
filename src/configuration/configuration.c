@@ -25,7 +25,7 @@ void Configuration_Init(void)
 
 static void Configuration_save_to_eeprom(void)
 {
-  EEPROM_write(EEPROM_CONFIGURATION_DATA_ADDRESS, (uint32_t*)(&spacecraft_configuration), sizeof(configuration_t));
+  EEPROM_write(EEPROM_CONFIGURATION_DATA_ADDRESS_MAIN, (uint32_t*)(&spacecraft_configuration), sizeof(configuration_t));
 }
 
 static bool Configuration_load_from_eeprom(void)
@@ -33,7 +33,7 @@ static bool Configuration_load_from_eeprom(void)
   if(EEPROM_selfTest() == false)
     return false;
 
-  EEPROM_read(EEPROM_CONFIGURATION_DATA_ADDRESS, (uint32_t*)(&spacecraft_configuration), sizeof(configuration_t));
+  EEPROM_read(EEPROM_CONFIGURATION_DATA_ADDRESS_MAIN, (uint32_t*)(&spacecraft_configuration), sizeof(configuration_t));
 
   return Configuration_verify_checksum();
 }

@@ -68,7 +68,9 @@ typedef enum FBU_task{
 typedef enum AD_task{
 	AD_SAVE_EPS_HEALTH,
 	TRANSMIT_MORSE_TELEMETRY,
-	ANTENNA_DEPLOY_ATTEMPT
+	ANTENNA_DEPLOY_ATTEMPT,
+	AD_PROCESS_GS_COMMAND = 6	//this one has specified value because it needs to be mode-independent (the same in every mode)
+								// - so the receiver pin interrupt will be always referring to correct task
 } AD_task;
 
 typedef enum NF_task {
@@ -77,7 +79,8 @@ typedef enum NF_task {
 	NF_SAVE_ATTITUDE,
 	NF_TRANSMIT_TELEMETRY,
 	NF_CHECK_HEALTH, 		//WHAT IS GATHERED IN CHECK HEALTH?
-	NF_TAKE_PICTURE
+	NF_TAKE_PICTURE,
+	NF_PROCESS_GS_COMMAND = 6
 } NF_task;
 
 typedef enum LP_task{
@@ -85,6 +88,7 @@ typedef enum LP_task{
 	LP_SAVE_EPS_HEALTH,
 	LP_CHECK_HEALTH,
 	LP_TRANSMIT_TELEMETRY,
+	LP_PROCESS_GS_COMMAND = 6
 } LP_task;
 
 typedef enum SM_task{
@@ -92,7 +96,8 @@ typedef enum SM_task{
 	SM_SAVE_EPS_HEALTH,
 	SM_CHECK_HEALTH,
 	SM_TRANSMIT_TELEMETRY,
-	SM_REBOOT_CHECK
+	SM_REBOOT_CHECK,
+	SM_PROCESS_GS_COMMAND = 6
 } SM_task;
 
 /* not needed - CFU and PT modes are just functions - not a typical mode of operation

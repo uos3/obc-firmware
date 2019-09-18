@@ -7,7 +7,7 @@
  * LIST ALL "TO DO" NEXT TO THE FUNCTION PROTOTYPE
  * OR HERE, ABOVE THE LIBRARIES, IF THEY DON'T MATCH ANY FUNCTION
  * 
- * TODO: what is check_health_status function for?
+ * TODO: 
  * 
  * @{
  */
@@ -24,9 +24,9 @@
  
 #include "../board/memory_map.h"
 
-#define TELEMETRY_SIZE 107 // 104 (tel) + 2 (timestamp) + 1 (id)
-#define BATTERY_VOLTAGE 7.8 //COMMENT WHEN USING EPS!!!
-#define BATTERY_THRESHOLD 7.5
+#define TELEMETRY_SIZE 107      //104 (tel) + 2 (timestamp) + 1 (id)
+#define BATTERY_VOLTAGE 7.8     //COMMENT WHEN USING EPS!!!
+
 //--------------------------------PROTOTYPES OF FUNCTIONS---------------------------------
 //Main functions
 void Mission_init(void);
@@ -37,7 +37,7 @@ void Mission_SEU(void);
 void Mode_init(int8_t type);
 
 //System tasks functions
-int8_t save_eps_health_data(int8_t t);      //TODO: test
+int8_t save_eps_health_data(int8_t t);      //TODO: test - contains the fields to uncomment when working with EPS board
 int8_t save_gps_data(int8_t t);             //completed
 int8_t check_health_status(int8_t t);       //TODO: write body of this function
 int8_t save_image_data(void);               //completed
@@ -52,7 +52,8 @@ int8_t process_gs_command(int8_t t);        //TODO: revise what is done
 int8_t poll_transmitter(int8_t t);          //TODO: revise what is done, what is missing
 int8_t take_picture(int8_t);                //completed
 uint16_t perform_subsystem_check();         //TODO: voltage is read in centivolts!, as well as temp readings from the sensors; write checks of the transceivers status
-void update_radio_parameters();             //TODO: revise what need to be done 
+void update_radio_parameters();             //TODO: revise what need to be done
+void receiver_interrupt_handler();          //TODO: write the body of the function; this function should be assigned to the pin interrupt of the receiver so it will be called on the pin interrupt
 
 //queue implementation and transition functions
 void suspend_all_tasks();                                 //completed
@@ -60,14 +61,14 @@ void mode_switch(uint8_t mode);                           //completed
 void queue_task(int8_t task_id, uint64_t task_period);    //completed
 
 //Mode initialisation functions
-bool fbu_init(void);                //completed
-bool ad_init(void);
-bool nf_init(void);
-bool lp_init(void);
-bool sm_init(void);
-bool cfu_init(void);
-bool pt_init(void);
-bool dl_init(void);
+bool fbu_init(void);                //completed - has the field to uncomment when working with EPS board
+bool ad_init(void);                 //completed
+bool nf_init(void);                 //completed
+bool lp_init(void);                 //completed - has the fields to uncomment when working with EPS board
+bool sm_init(void);                 //completed - has the fields to uncomment when working with EPS board
+bool cfu_init(void);                //TODO: refer to the comments inside the function
+bool pt_init(void);                 //completed
+bool dl_init(void);                 //TODO: refer to the comments inside the function
 
 //Timer functions - all completed
 int8_t get_available_timer(void);
@@ -90,7 +91,7 @@ void data_split_u32(uint32_t data, uint8_t *split);
 void data_split_16(int16_t data, uint8_t  *split);
 void data_split_u16(uint16_t data, uint8_t  *split);
 
-//FRAM packet creation function - all completed
+//FRAM packet creation function - all completed, not tested
 uint8_t place_data_in_packet(uint8_t position, int size, uint8_t *data_bytes, uint8_t *data_packet);
 uint8_t tenbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
 uint8_t sixbit_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *last_tail, uint8_t *reading_rest, uint8_t *data_packet_for_fram);
@@ -105,10 +106,11 @@ opmode_t modes[8];
 timer_properties_t Timer_Properties;
 
 // [ RUN-TIME ]
-// Total number of tasks that can be run concurrently (limited by number of avail. timers)
-#define MAX_TASKS 6
-volatile int8_t task_q[MAX_TASKS];  // Task queue directly accessed by interrupts
-Node*           task_pq;            // Task priority queue constructed from previous q indirectly
+// Total number of tasks that can be run concurrently (limited by number of avail. timers) plus one because one task - processing gc command is called by pin interrupt, not timer interrupt
+#define MAX_TASKS 7
+#define USED_TIMERS 6
+volatile int8_t task_q[MAX_TASKS]; // Task queue directly accessed by interrupts - incremented by 1 to give space for the processing ground command
+Node*           task_pq;             // Task priority queue constructed from previous q indirectly
 volatile uint8_t no_of_tasks_queued;
 
 // Properties
@@ -153,7 +155,7 @@ radio_config_t radio_config = { .frequency = 145.5, .power = 0, CC112X_FSK_SYMBO
 //can be moved (except variables) to separate source file, but lot of them are operating on the this file variables
 
 uint32_t ulPeriod;                  //stores the clock frequency of MCU, therefore represents the count value required for 1Hz timeout
-int8_t timer_to_task[MAX_TASKS];    //for mapping timers to tasks: timer_id -> task_id (reset look-up table); 
+int8_t timer_to_task[USED_TIMERS];  //for mapping timers to tasks: timer_id -> task_id (reset look-up table); 
 
 //list of all the timers used for scheduling tasks
 //"SYSCTL_PERIPH_TIMERn" - needed for enabling timers operations -> driverlib/sysctl.h and sysctl.c
@@ -278,12 +280,12 @@ void Mission_init(void)
   UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVERS INITIALISED**\r\n");
   #endif
 
-/* Initialise the task queue as empty */
+  /* Initialise the task queue as empty - if statement because we use only 6 timers */
   for (uint8_t i=0; i<MAX_TASKS; i++){
     task_q[i] = -1;
-    timer_to_task[i] = -1;
+    if(i<USED_TIMERS) timer_to_task[i] = -1;
     }
-/* set some global variables to initial values */
+  /* set some global variables to initial values */
   no_of_tasks_queued = 0;
   image_trigger = false;
   camera_result = true;
@@ -427,7 +429,7 @@ void Mode_init(int8_t type){
 
       modes[AD].Mode_startup = &ad_init;
       modes[AD].opmode_tasks = tasks_AD;
-      modes[AD].num_tasks = 3;
+      modes[AD].num_tasks = 3;            //fourth task is not called by the timer so it's not included here
 
       tasks_AD[AD_SAVE_EPS_HEALTH].period = spacecraft_configuration.data.eps_health_acquisition_interval; //300s period
       tasks_AD[AD_SAVE_EPS_HEALTH].TickFct = &save_eps_health_data;
@@ -438,13 +440,16 @@ void Mode_init(int8_t type){
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].period = 600;    //10min period so 60s*10=600s
       tasks_AD[ANTENNA_DEPLOY_ATTEMPT].TickFct = &ad_deploy_attempt;
 
+      tasks_AD[AD_PROCESS_GS_COMMAND].period = 0;       //to give the highest priority in the queue - this task is called by the pin interrupt, so the period is just for assessing the priority
+      tasks_AD[AD_PROCESS_GS_COMMAND].TickFct = &process_gs_command;
+
       current_mode = AD;
       current_tasks = tasks_AD;
     
     }break;
     case NF:{
       //Difference between data downlink mode and transitting telemetry? Is telemetry just for camera data?
-      task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*6);
+      task_t* tasks_NF = (task_t *) malloc (sizeof(task_t)*7);
 
       modes[NF].Mode_startup = &nf_init;
       modes[NF].opmode_tasks = tasks_NF;
@@ -466,16 +471,19 @@ void Mode_init(int8_t type){
 			tasks_NF[NF_CHECK_HEALTH].period = spacecraft_configuration.data.check_health_acquisition_interval; //30s
 			tasks_NF[NF_CHECK_HEALTH].TickFct = &check_health_status;
 
-      tasks_NF[NF_TAKE_PICTURE].period = 0;
-			tasks_NF[NF_TAKE_PICTURE].TickFct = &take_picture; 
+      tasks_NF[NF_TAKE_PICTURE].period = 0;         //0 because it is not recuring task, period is specified in the image request from the GC_command
+			tasks_NF[NF_TAKE_PICTURE].TickFct = &take_picture;
       
+      tasks_NF[NF_PROCESS_GS_COMMAND].period = 0;   //to give the highest priority in the queue - this task is called by the pin interrupt, so the period is just for assessing the priority
+      tasks_NF[NF_PROCESS_GS_COMMAND].TickFct = &process_gs_command;
+
       current_mode = NF;
       current_tasks = tasks_NF; 
       
     } break;
     case LP:{
       //CAN'T COMMAND OUT OF THIS MODE SO NO EXIT FUNCTION NEEDED, JUST USES CHECK HEALTH
-      task_t* tasks_LP = (task_t *) malloc (sizeof(task_t)*3);
+      task_t* tasks_LP = (task_t *) malloc (sizeof(task_t)*4);
 
       modes[LP].Mode_startup = &lp_init;
       modes[LP].opmode_tasks = tasks_LP;
@@ -490,13 +498,16 @@ void Mode_init(int8_t type){
 
 			tasks_LP[LP_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
 			tasks_LP[LP_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
+      
+      tasks_LP[LP_PROCESS_GS_COMMAND].period = 0;   //to give the highest priority in the queue - this task is called by the pin interrupt, so the period is just for assessing the priority
+      tasks_LP[LP_PROCESS_GS_COMMAND].TickFct = &process_gs_command;
 
       current_mode = LP;
       current_tasks = tasks_LP; 
 
     }break;
     case SM:{
-      task_t* tasks_SM = (task_t *) malloc (sizeof(task_t)*4);
+      task_t* tasks_SM = (task_t *) malloc (sizeof(task_t)*5);
 
       modes[SM].Mode_startup = &sm_init;
       modes[SM].opmode_tasks = tasks_SM;
@@ -511,9 +522,11 @@ void Mode_init(int8_t type){
 			tasks_SM[SM_TRANSMIT_TELEMETRY].period = spacecraft_configuration.data.tx_interval;
 			tasks_SM[SM_TRANSMIT_TELEMETRY].TickFct = &transmit_next_telemetry;
 
-      tasks_SM[SM_REBOOT_CHECK].period = 0;  //init with the period 0, so it won't be started automatically
+      tasks_SM[SM_REBOOT_CHECK].period = 0;  //zero because this task's period is assigned by the reboot request from the GC_command
 			tasks_SM[SM_REBOOT_CHECK].TickFct = &sm_reboot;
 
+      tasks_SM[SM_PROCESS_GS_COMMAND].period = 0; //to give the highest priority in the queue - this task is called by the pin interrupt, so the period is just for assessing the priority
+      tasks_SM[SM_PROCESS_GS_COMMAND].TickFct = &process_gs_command;
 
       current_mode = SM;
       current_tasks = tasks_SM; 
@@ -754,7 +767,7 @@ int8_t save_eps_health_data(int8_t t){
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished saving EPS health data.\r\n");
   #endif
-*/
+  */
   return 0;
 }
 
@@ -861,6 +874,7 @@ int8_t exit_fbu(int8_t t){
   mode_switch(AD);
   return 0;
 }
+
 /* Attempt to deploy antenna */
 int8_t ad_deploy_attempt(int8_t t){
   uint16_t batt_volt = BATTERY_VOLTAGE;
@@ -868,7 +882,7 @@ int8_t ad_deploy_attempt(int8_t t){
   UART_puts(UART_INTERFACE, "[TASK] Attempting To Deploy Antenna...\r\n");
   #endif
   //EPS_getInfo(&batt_volt,  EPS_REG_BAT_V);
-  if(batt_volt >= BATTERY_THRESHOLD){
+  if(batt_volt >= spacecraft_configuration.data.low_voltage_threshold){
 
     #ifdef DEBUG_PRINT
     LED_on(LED_B);  //debugging only
@@ -912,11 +926,13 @@ int8_t exit_ad(int8_t t){
   EPS_getInfo(&batt_volt, EPS_REG_BAT_V);
   if(batt_volt > spacecraft_configuration.data.low_voltage_threshold){
     mode_switch(NF);
+    return 0;
   }
   mode_switch(LP);
 
   return 0;
 }
+
 /* Function for rebooting the MCU */
 int8_t sm_reboot(int8_t t){
   #ifdef DEBUG_PRINT
@@ -1010,9 +1026,9 @@ void update_radio_parameters(){
 	// -get packet wait
 	// -manual calibration
 }
+
 /*THIS FUNCTION TRANSMITS THE CURRENT IMU AND GPS DATA IN A BEACON, DL MODE DOWNLINKS ALL DATA STORED IN THE BUFFER WHEN
 OVER THE UOS3 GROUNDSTATION*/
-
 int8_t transmit_next_telemetry(int8_t t){
   //TODO: preffered settings defined only in some demos, should it sta like that?
   /*
@@ -1080,45 +1096,82 @@ int8_t take_picture(int8_t t){
   }
   return 0;
 }
-// This function should parse the received telecommand after its validation and basing on the value of "Type of packet" field - parse the received packet further and start required functions
-int8_t process_gs_command(int8_t t){
-  //Reciever interupt has not been finsished so not completely sure what the parameters of this function will look like
-	switch(t){
-    /* First case - when Type of packet = 10 - recognize it as acknowledgent packet receipt and process that command to obtain indexes etc. */
-    case ACK_REC_PACKETS:
-		//update entries for packets in meta-table stored in FRAM
-		break;
 
+/* Interrupt handler for the receiver pin interrupt - puts the task to process_gs_command into the queue */
+/* It is done this way, rather than calling "process_gs_command" function inside the interrupt, because it may cause stack crash */
+/* And the interrupt routine would be expanding in size, as process_gs_command function is calling another function and so on - https://www.avrfreaks.net/forum/its-ok-call-function-inside-interrupt-routine */
+void receiver_interrupt_handler(){
+  //TODO: 1) clear interrupt flag
+
+  /* Place task no.6 (PROCESS_GS_COMMAND) in the circular queue - task has period 0 */
+  /* Therefore, it will be executed immediately - task function is "process_gs_command" */
+  task_q[6] = 6;
+  /* Increase the count of queued tasks */
+  no_of_tasks_queued ++;
+} 
+
+/* This function should be called by the receiver interrupt to process the received command */
+int8_t process_gs_command(int8_t t){
+  //TODO: 1)  Read the receiver FIFO -> Radio_read_rx_fifo function
+  //      2)  Process the packet -> by reading 8bits "Type of the packet" - execute one of the switch statements
+  uint8_t type_of_the_packet;
+
+	switch(type_of_the_packet){
+
+    /* First case - when Type of packet = 10 */
+    case ACK_REC_PACKETS:
+    //TODO: 1) Read the ID's of the acknowledged packets
+    //TODO: 2) Delete acknowledged packets from the FRAM - by deleting ID's: function "Buffer_remove_index"
+		  break;
+
+    /* Second case - when type_of_the_packet = 11 */
     case UPDATE_CONFIG:
-      mode_switch(CFU);
+      ; //null statement to solve C syntax error - "a label can only be part of a statement and a declaration is not a statement"
+      configuration_t received_configuration;
       #ifdef DEBUG_PRINT
       UART_puts(UART_INTERFACE, "[TASK] Switched to config update mode.\r\n");
       #endif
-      //TODO: write all the functionality in the definitions of CFU mode - this switch should only stimulate mode change to CFU
-		  //generate config bytes and save to EEPROM
-		  //in two separate locations
+      //TODO: 1) Process received telecommand and write value of each parameter to the "received_config" structure as well as received configuration checksum
+      //      2) save received config in the EEPROM under the address "EEPROM_RECEIVED_CONFIGURATION_FILE"
+      //      3) switch to CFU mode
+      //NOTE: need to modify eeprom.c so you will be able to read/write/check checksum on arbitrary configuration_t structure - now the main config is default
+      //NOTE: moreover need to add functionality which saves the current config in three copies - more in the eeprom.c comments
+      mode_switch(CFU);
 		  break;
-/* TC_TELECOMMAND case - code should parse the packet to read individual elements 
-  and match them with telecommand parameters from SCF file -> and basing on what was received - implement that function*/
-      case TC_TELECOMMAND:
 
+    /* Third case - greetings message - used to confirm antenna deployment and trigger transition to NF or LP mode */
+    case GREETINGS_MESSAGE:
+    //TODO: 1) Match the value of spacecraft ID
+    //TODO: 2) Read the message part
+    //TODO: 3) Send greetings telecommand back to the ground
+    //TODO: 4) Call the function - exit_ad
       break;
+
+    /* Fourth case - when type_of_the_packet = 13 */
+    case TC_TELECOMMAND:
+    //TODO: 1) Retrieve ALL pairs (parameter ID, data) - for possible parameters, their ID's and values look in the SCF file - "telecommand file" page
+    //TODO: 2) Run the loop through all the pairs
+    //TODO: 3) Using another switch/or nested if's match the possible ID's of data and based on that perform given function
+    //      for ex. the ID of the value match the ID of "image_acquisition_time" from the SCF -> start picture timer with the value of "image_acquisition_time" as period
+    //following code can be the way to do it
+    /*
+      case IMAGE_ACQUISITION_TIME_ID
+        image_trigger = true;
+        if (current_mode == NF){
+          Timer_Properties.Timer_period[5] = modes[NF].opmode_tasks[5].image_acquisition_time;
+          queue_task(5, modes[NF].opmode_tasks[5].period);
+        }
+        if (current_mode == DL){
+          Timer_Properties.Timer_period[5] = modes[DL].opmode_tasks[5].image_acquisition_time;
+          queue_task(5, modes[DL].opmode_tasks[5].period);
+        } 
+      break;
+    */
+      break;
+
+
 /* All the rest is a trash, left here for now for the reference */
     /* should be moved further
-		case IMAGE_REQUEST:
-    image_trigger = true;
-    if (current_mode == NF){
-      Timer_Properties.Timer_period[5] = modes[NF].opmode_tasks[5].period;
-      queue_task(5, modes[NF].opmode_tasks[5].period);
-    }
-    if (current_mode == DL){
-      Timer_Properties.Timer_period[5] = modes[DL].opmode_tasks[5].period;
-      queue_task(5, modes[DL].opmode_tasks[5].period);
-    } 
-    #ifdef DEBUG_PRINT
-    UART_puts(UART_INTERFACE, "[TASK] Image Scheduled.\r\n");
-    #endif
-		break;
 		case DL_REQUEST:
     //Dowlinking timing handled inside DL mode, basically an augmented version of NF mode
       mode_switch(DL);
@@ -1137,6 +1190,7 @@ int8_t process_gs_command(int8_t t){
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] Finished processing gs command.\r\n");
   #endif
+  return 0;
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1169,18 +1223,18 @@ bool fbu_init(){
     mode_switch(SM);
     return false;
   }
-  if(batt_volt>BATTERY_THRESHOLD){    //if all above is not met go to LP or NF mode according to the current voltage
-        mode_switch(NF);
-        return false;
+  if(batt_volt>spacecraft_configuration.data.low_voltage_threshold){    //if all above is not met go to LP or NF mode according to the current voltage
+    mode_switch(NF);
+    return false;
   }
   else{
-        mode_switch(LP);
-        return false;
+    mode_switch(LP);
+    return false;
   }
 }
 
 bool ad_init(){
-/* Update current mode variable and EEPROM memory */
+  /* Update current mode variable and EEPROM memory */
   EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] AD INITIALISED\r\n");
@@ -1189,7 +1243,7 @@ bool ad_init(){
 }
 
 bool nf_init(){
-/* Update current mode variable and EEPROM memory */
+  /* Update current mode variable and EEPROM memory */
   EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] NF INITIALISED\r\n");
@@ -1198,9 +1252,9 @@ bool nf_init(){
 }
 
 bool lp_init(){
-/* Update current mode variable and EEPROM memory */
+  /* Update current mode variable and EEPROM memory */
   EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
-/* Suspend all activities in queue from previous mode */
+  /* Suspend all activities in queue from previous mode */
   suspend_all_tasks();
 
   //UNCOMMENT WHEN WORKING EPS BOARD AVAILABLE
@@ -1214,9 +1268,9 @@ bool lp_init(){
 }
 
 bool sm_init(){
-/* Update current mode variable and EEPROM memory */
+  /* Update current mode variable and EEPROM memory */
   EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
-/* Suspend all activities in queue from previous mode */
+  /* Suspend all activities in queue from previous mode */
   suspend_all_tasks();
   //UNCOMMENT WHEN WORKING EPS BOARD AVAILABLE
   /*EPS_setPowerRail(EPS_PWR_CAM, 0);
@@ -1229,15 +1283,18 @@ bool sm_init(){
 }
 
 bool cfu_init(){
-/* Update current mode variable and EEPROM memory */
+  /* Update current mode variable and EEPROM memory */
   EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
-/* Suspend all activities in queue from previous mode */
+  /* Suspend all activities in queue from previous mode */
   suspend_all_tasks();
-  //Open recieved file and verify values (assuming the data has already been stored
-  //in the spacecraft_configuration struct from the data uplink)
+  //TODO: 1) Read received configuration packet from EEPROM and verify values
+  //TODO: 2) If the values are within expected ranges - overwrite the config file -> implement two/or three copies of the configuration in the EEPROM (not implemented )
+  //TODO: 3) Transmit current configuration state
+	//generate config bytes and save to EEPROM
+	//in two separate locations
 
   //Configuration_save_to_eeprom();
-  
+
   //Overwrite config file
 
   //Return beacon with configuration state
@@ -1251,16 +1308,17 @@ bool cfu_init(){
 
 }
 
+/* This function is actually taking and saving the picture - by calling "save_image_data" function */
 bool pt_init(){
-/* Update current mode variable and EEPROM memory */
+  /* Update current mode variable and EEPROM memory */
   EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
 
-/* Take picture and write to FRAM buffer */
+  /* Take picture and write to FRAM buffer */
   if(!save_image_data()){
     return false;
   }
 
-/* Return to previous mode */
+  /* Return to previous mode */
   if (previous_mode == DL){
     mode_switch(DL);
   }
@@ -1271,10 +1329,11 @@ bool pt_init(){
 }
 
 bool dl_init(){
-/* Update current mode variable and EEPROM memory */
+  /* Update current mode variable and EEPROM memory */
   EEPROM_write(EEPROM_CURRENT_MODE, &current_mode, 4);
-
-/* Transfer packets to cc1125 buffer */
+  //TODO: 1) Configure the transmitter to DL transmission
+  //TODO: 2) transfer packets to transmitter buffer
+  /* Transfer packets to cc1125 buffer */
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "[TASK] DL INITIALISED\r\n");
   #endif
