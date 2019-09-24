@@ -223,7 +223,7 @@ static inline void GPIO_InterruptHandler_GPIO(uint32_t _status, uint8_t _gpio_nu
     (*GPIO_states[_gpio_number].int_function)();
   }
 }
-
+/* Interrupt handler for GPIO port A */
 static void GPIO_PortA_InterruptHandler(void)
 {
   uint32_t status;
@@ -247,7 +247,55 @@ static void GPIO_PortA_InterruptHandler(void)
     GPIO_InterruptHandler_GPIO(status, GPIO_PA7);
   }
 }
+/* Interrupt handler for GPIO port B */
+static void GPIO_PortB_InterruptHandler(void)
+{
+  uint32_t status;
 
+  /* Retrieve GPIO Port Interrupt Status word */
+  status = GPIOIntStatus(GPIO_PORTB_BASE,true);
+
+  if(status)
+  {
+    /* Clear GPIO Port Interrupt Status */
+    GPIOIntClear(GPIO_PORTB_BASE, status);
+
+    /* Check each GPIO */
+    GPIO_InterruptHandler_GPIO(status, GPIO_PB0);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PB1);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PB2);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PB3);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PB4);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PB5);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PB6);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PB7);
+  }
+}
+/* Interrupt handler for GPIO port D */
+static void GPIO_PortD_InterruptHandler(void)
+{
+  uint32_t status;
+
+  /* Retrieve GPIO Port Interrupt Status word */
+  status = GPIOIntStatus(GPIO_PORTD_BASE,true);
+
+  if(status)
+  {
+    /* Clear GPIO Port Interrupt Status */
+    GPIOIntClear(GPIO_PORTD_BASE, status);
+
+    /* Check each GPIO */
+    GPIO_InterruptHandler_GPIO(status, GPIO_PD0);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PD1);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PD2);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PD3);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PD4);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PD5);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PD6);
+    GPIO_InterruptHandler_GPIO(status, GPIO_PD7);
+  }
+}
+/* Function for setting up the interrupt for specific GPIO pin */
 bool GPIO_set_risingInterrupt(uint8_t gpio_number, void *interrupt_callback(void))
 {
   if(gpio_number >= NUMBER_OF_GPIOS)
@@ -266,11 +314,18 @@ bool GPIO_set_risingInterrupt(uint8_t gpio_number, void *interrupt_callback(void
   {
     GPIOIntRegister(gpio->port, GPIO_PortA_InterruptHandler);
   }
+  else if(gpio->port == GPIO_PORTB_BASE)
+  {
+    GPIOIntRegister(gpio->port, GPIO_PortB_InterruptHandler);
+  }
+  else if(gpio->port, GPIO_PORTD_BASE)
+  {
+    GPIOIntRegister(gpio->port, GPIO_PortD_InterruptHandler);
+  }
   else
   {
     return false;
   }
-  // TODO - Implement other ports
 
   GPIOIntEnable(gpio->port, gpio->int_pin);
 

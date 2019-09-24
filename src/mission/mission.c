@@ -53,7 +53,9 @@ int8_t poll_transmitter(int8_t t);          //TODO: revise what is done, what is
 int8_t take_picture(int8_t);                //completed
 uint16_t perform_subsystem_check();         //TODO: voltage is read in centivolts!, as well as temp readings from the sensors; write checks of the transceivers status
 void update_radio_parameters();             //TODO: revise what need to be done
-void receiver_interrupt_handler();          //TODO: write the body of the function; this function should be assigned to the pin interrupt of the receiver so it will be called on the pin interrupt
+
+//interrupt handlers for pins interrupts - TODO: write the interrupt handlers for the transmitter and EPS interrupts
+void receiver_interrupt_handler();          //TODO: test
 
 //queue implementation and transition functions
 void suspend_all_tasks();                                 //completed
@@ -99,7 +101,7 @@ uint8_t sixteenbits_numbers(uint16_t eps_field, uint8_t data_count, uint8_t *las
 //----------------------------------VARIABLES---------------------------------------------
 
 //structures to represent the status of each subsystem and the state of the mission
-mission_state_t mission_state;  //TODO: needs to be implemented
+mission_state_t mission_state;  //TODO: needs to be implemented, if wanted
 
 //structures to organise modes, tasks and timers -> definition in header
 opmode_t modes[8];
@@ -275,6 +277,8 @@ void Mission_init(void)
   Buffer_init();                    //init Buffer functionality
   Configuration_Init();             //load default configuration settings
   timer_init();                     //set up and init all the timers used for the mission
+
+  GPIO_set_risingInterrupt(GPIO_PB7, receiver_interrupt_handler);  //set receiver pin interrupt and register callback function
   
   #ifdef DEBUG_PRINT
   UART_puts(UART_INTERFACE, "\r\n\n**BOARD & DRIVERS INITIALISED**\r\n");
@@ -1101,7 +1105,7 @@ int8_t take_picture(int8_t t){
 /* It is done this way, rather than calling "process_gs_command" function inside the interrupt, because it may cause stack crash */
 /* And the interrupt routine would be expanding in size, as process_gs_command function is calling another function and so on - https://www.avrfreaks.net/forum/its-ok-call-function-inside-interrupt-routine */
 void receiver_interrupt_handler(){
-  //TODO: 1) clear interrupt flag
+  /* no need to clear interrupt flag - done in GPIO functions */
 
   /* Place task no.6 (PROCESS_GS_COMMAND) in the circular queue - task has period 0 */
   /* Therefore, it will be executed immediately - task function is "process_gs_command" */
