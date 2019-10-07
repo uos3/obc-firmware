@@ -51,7 +51,8 @@ for file_name in all_files_set:
             for index, line in enumerate(lines_list):
                 if todo_search_string in line:
                     todo_text = todo_search_string + " " + line.split(todo_search_string)[1].lstrip()
-                    todo_item = todo_obj(file_name, index, todo_text)
+                    local_name = file_name.split(repo_root_folder)[1]
+                    todo_item = todo_obj(local_name, index, todo_text)
                     todo_obj_list.append(todo_item)
 
 
