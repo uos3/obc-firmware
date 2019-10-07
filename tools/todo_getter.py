@@ -27,6 +27,7 @@ repo_path = os.path.dirname(os.path.realpath(__file__)).split(repo_root_folder)[
 class todo_obj:
     def __init__(self, path_string, file_line_number, todo_string):
         self.__dict__.update(locals())
+        self.name = None
 
 
 # need list of c and h files in each directory...
@@ -55,9 +56,50 @@ for file_name in all_files_set:
                     todo_item = todo_obj(local_name, index, todo_text)
                     todo_obj_list.append(todo_item)
 
+# do allocations
+allocations_list =[
+    ["Richard", 0],
+    ["YZ", 0],
+    ["Hubert", 0]
+]
+
+total_todos = len(todo_obj_list)
+allocation_index = 0
+current_file = todo_obj_list[0].path_string
+mission_todos = []
+for todo in todo_obj_list:
+    if "src/mission/mission.c" in todo.path_string:
+        mission_todos.append(todo)
+        continue
+    
+    if todo.path_string != current_file:
+        allocation_index += 1
+        current_file = todo.path_string
+        if allocation_index == 3:
+            allocation_index = 0
+    todo.name = allocations_list[allocation_index][0]
+    allocations_list[allocation_index][1] += 1
+
+target = total_todos // 3
+total_leftover = len(mission_todos)
+allocation_index = 0
+for todo in mission_todos:
+    if allocations_list[allocation_index][1] < target:
+        pass
+    elif allocation_index < 3:
+        allocation_index += 1
+    else:
+        allocation_index = 0
+    todo.name = allocations_list[allocation_index][0]
+    allocations_list[allocation_index][1] += 1
+# print(total_leftover)
+print(allocations_list)
+
+
+
 
 # generate markdown file with list in
-md_list_template_string = "1. {todo_string}\n  PATH {path_string}\n  LINE NUMBER {file_line_number}\n\n"
+md_list_template_string = "1. {todo_string}\n\n  PATH {path_string}\n\n  LINE NUMBER {file_line_number}\n\n  ALLOCATION {name}\n\n"
 out_string = "\n# TODO list from codebase\n\n"
 for todo in todo_obj_list:
     out_string+=md_list_template_string.format(**todo.__dict__)
