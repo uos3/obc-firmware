@@ -354,10 +354,10 @@ void Mission_loop(void)
   if (!circ_isEmpty(&task_pq)){
     uint8_t todo_task_index = circ_peek(&task_pq);    // peek the task
     #ifdef DEBUG_PRINT
-    char output[100];
-    sprintf(output,"%+06d\r\n", todo_task_index);
-    UART_puts(UART_INTERFACE, output);
-    UART_puts(UART_INTERFACE, "**executing**\r\n");
+      char output[100];
+      sprintf(output,"%+06d\r\n", todo_task_index);
+      UART_puts(UART_INTERFACE, output);
+      UART_puts(UART_INTERFACE, "**executing**\r\n");
     #endif
     current_tasks[todo_task_index].TickFct(NULL);     // execute the function assigned to that task
     #ifdef DEBUG_PRINT
@@ -412,7 +412,7 @@ void Mode_init(int8_t type){
   Node* task_pq = newNode(0, 0);
   switch(type){
     case FBU:{
-      task_t* tasks_FBU = (task_t *) malloc (sizeof(task_t)*2);
+      task_t* tasks_FBU = (task_t *) malloc (sizeof(task_t)*2); // TODO: Fix this
 
       modes[FBU].Mode_startup = &fbu_init;
       modes[FBU].opmode_tasks = tasks_FBU;

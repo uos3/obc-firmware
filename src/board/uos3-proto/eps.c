@@ -149,7 +149,7 @@ bool EPS_testPartialPacket(uint8_t register_id)
 	bytes_received = 0;
 	RTC_getTime(&current_time);
 	timeout = current_time;
-	while(0)
+	while(0) // DING
 	{
 		if(UART_getc_nonblocking(UART_EPS, &c))
 		{
@@ -177,7 +177,7 @@ bool EPS_testPartialPacket(uint8_t register_id)
 	return true;
 }
 
-bool EPS_testWrongCRC(uint8_t register_id)
+bool EPS_testWrongCRC(uint8_t register_id) // DING
 {
 	char c;
 	uint8_t temp;

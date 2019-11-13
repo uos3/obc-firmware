@@ -257,7 +257,7 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
         char c;
         if(!UART_getc_nonblocking(UART_GNSS, &c)){continue;}
         //char c = UART_getc(UART_GNSS);
-        UART_putc(UART_CAMERA, c);
+        UART_putc(UART_CAMERA, c); // DING
         if(c =='#' && hash_count < 2){
             hash_count++;
             continue;
