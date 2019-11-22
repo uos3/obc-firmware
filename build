@@ -154,16 +154,22 @@ shift
 program=${1,,}
 shift
 
-
+qualname="main/$program"
 ## Check <program> argument
 if [ -z "$program" ]; then
     program=$board
     board="uos3-proto" ## insert default option here
 fi
-if [ ! -e "src/main/$program.c" ]; then
+if [ ! -e "src/main/$program.c" ] && [ -e "src/demo/$program.c" ]; then
+    # make qualified name for demo
+    qualname="demo/$program"
+fi
+if [ ! -e "src/main/$program.c" ] && [ ! -e "src/demo/$program.c" ]; then
     print_err "$_ERROR_ Main Program File \"$program\" not found"
+    ls src/demo
     exit 1
 fi
+
 
 ## Check <board> argument
 if [ -z "$board" ]; then
@@ -195,7 +201,7 @@ fi
 outdir="builds"
 filename="$(hyphenjoin $board $program $flags $githash)"
 
-flags="BOARD=${board} MAIN=${program} OUTDIR=${outdir} OUTFILE=\"${filename}\""
+flags="BOARD=${board} MAIN=${qualname} OUTDIR=${outdir} OUTFILE=\"${filename}\""
 
 if $opt_osize; then
   print "$_INFO_ Compiler optimise for size (-Os):$COLOUR_RED ON $COLOUR_OFF"
