@@ -6,7 +6,6 @@ builds/
 *.o
 *.a
 COM_PORT
-src/board/TivaWare_C_Series-2.1.4.178/*
 # Prerequisites
 *.d
 
