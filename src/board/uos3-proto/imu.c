@@ -10,10 +10,11 @@
 /*	NOTE: the IMU chip is loosing all the information about the offsets after powering down!
 	so need to calibrate it every time after power up!!! or load in the init function estimated offsets values by multiple calibrations
 
- 	the code for calibration of the gyroscope offsets is already written; 
-	the idea and example of the magnetometer calibration can be found here: https://github.com/kriswiner/MPU6050/wiki/Simple-and-Effective-Magnetometer-Calibration; 
+ 	the code for calibration of the gyroscope offsets is already written;
+	the idea and example of the magnetometer calibration can be found here: https://github.com/kriswiner/MPU6050/wiki/Simple-and-Effective-Magnetometer-Calibration;
 	Notes for self-test of imu: https://github.com/kriswiner/MPU9250/tree/master/Documents - this can be implemented to perform frequent tests of the IMU chip */
-	
+	/* Based on the idea given from */
+
 #include "board.h"
 #include "../i2c.h"
 #include "../delay.h"
@@ -36,7 +37,7 @@ void IMU_Init(void)
 	i2cstring[0] = MAG_CNTL1;
 	i2cstring[2] = 0;
 	i2cstring[1] = 0; 										//set mode to zero before changing mode
-	I2CSendString(I2C_IMU, MAG_I2C_ADDR, i2cstring); 		//set Magnetometer to safe mode before mode change 
+	I2CSendString(I2C_IMU, MAG_I2C_ADDR, i2cstring); 		//set Magnetometer to safe mode before mode change
 	i2cstring[1] = 0x12; 									//continuous (16hz) mode 1 with 16bit range
 	I2CSendString(I2C_IMU, MAG_I2C_ADDR, i2cstring);
 
@@ -156,11 +157,11 @@ void IMU_set_gyro_bandwidth(imu_gyro_bandwidth_t imu_gyro_bandwidth)
 			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = i2cstatus & 0b11111100; i2cstring[2] = 0;				//mask off bits [1:0] to set FCHOICE_B to 0b00 which enables larger choice of DLPF frequencies
 			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);														//write to register
 			break;
-		
+
 		case IMU_BW_3600HZ:
 			i2cstatus = I2CReceive(I2C_IMU, MPU_I2C_ADDR, MPU_GYRO_CONFIG);
-			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = (i2cstatus | 0b00000011) & 0b11111110; i2cstring[2] = 0;  //changing bits [1:0] to 10 and keeping the others, to set FCHOICE_B to 10 
-																													 //which cause that we don't care about the value of DLPF_CFG and are using 3600Hz 
+			i2cstring[0] = MPU_GYRO_CONFIG; i2cstring[1] = (i2cstatus | 0b00000011) & 0b11111110; i2cstring[2] = 0;  //changing bits [1:0] to 10 and keeping the others, to set FCHOICE_B to 10
+																													 //which cause that we don't care about the value of DLPF_CFG and are using 3600Hz
 																													 //(there is a way to use 3600Hz with FCHOICE_B = 0b00 - it will have a bit different characteristic)
 			I2CSendString(I2C_IMU, MPU_I2C_ADDR, i2cstring);
 			break;
@@ -205,7 +206,7 @@ void IMU_read_magno(int16_t *magno_x, int16_t *magno_y, int16_t *magno_z)
 	int16_t magno_calib_x = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ASAX);
 	int16_t magno_calib_y = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ASAY);
 	int16_t magno_calib_z = (int16_t)I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_ASAZ);
-	
+
 
 	*magno_x = (int16_t)(I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HXL) * (((magno_calib_x -128) * 0.5 ) / 128 + 1));
 	*magno_y = (int16_t)(I2CReceive16r(I2C_IMU, MAG_I2C_ADDR, MAG_HYL) * (((magno_calib_y -128) * 0.5 ) / 128 + 1));
@@ -297,4 +298,68 @@ void IMU_measumerements_for_calib(int16_t *mean_gx, int16_t *mean_gy, int16_t *m
 		Delay_ms(10);	//wait 40ms so we don't get repeated measurements; 40ms is chosen because the highest delay between measurements for BW 5Hz is 33.48ms -> p.13 Register Map Document
 	}
 	UART_puts(UART_DEBUG_4, "Measurements taken\r\n");
+}
+
+
+
+/* Function to calibrate the magnometer according to this link: https://github.com/kriswiner/MPU6050/wiki/Simple-and-Effective-Magnetometer-Calibration*/
+void IMU_calibrate_magno(int16_t *mag_bias_x, int16_t *mag_bias_y,int16_t *mag_bias_z, int16_t *mag_scale_x, int16_t *mag_scale_y, int16_t *mag_scale_z){
+	/* Bias variables represents the hard iron error offsets; scale represents the soft iron error scales*/
+	uint16_t i = 0 ,sample_count = 200;
+	int16_t mag_max_x = -32767, mag_max_y = -32767, mag_max_z = -32767;
+	int16_t mag_min_x  =32767, mag_min_y = 32767, mag_min_z = 32767;
+	int32_t temp_mag_x = 0, temp_mag_y = 0, temp_mag_z = 0;
+	char output[100];
+
+	//int16_t mag_max[3] = {-32767,-32767,-32767}, mag_min = {32767, 32767, 32767}, temp_mag[3] = {0,0,0};
+	//int32_t mag_bias[3] = {0,0,0}, mag_scale[3] = {0,0,0};
+
+	
+	/* Calibration of the magnometer relies on human motion, similar to how you calibrate the gps sensor on your phone*/
+	/* A figure eight pattern will enable the magnometer to determine the maximum and minimum values that the magnometer is reading */
+	/* In a sense, a perfect sphere would be expected(aka max and min matches the defined values for all three axis)*/
+	/* This is extremely dependent on the movement of the figure eight pattern; any other movements or lack of movement will not calibrate it properly*/
+	UART_puts(UART_DEBUG_4, "To calibrate magno: wave sensor in a figure eight pattern continously\r\n");
+	UART_puts(UART_DEBUG_4, "Beginning in 15 seconds\r\n");
+	Delay_ms(5000);
+	UART_puts(UART_DEBUG_4, "Beginning in 10 seconds\r\n");
+	Delay_ms(5000);
+	UART_puts(UART_DEBUG_4, "Beginning in 5 seconds\r\n");
+	Delay_ms(5000);
+	UART_puts(UART_DEBUG_4, "Beginning now\r\n");
+	/* Take 180 readings from the magnometer and continously update the maximum and minimum values for each axis*/
+	for(i =0; i < sample_count; i++){
+		if(i>20){
+				IMU_read_magno(&temp_mag_x, &temp_mag_y, &temp_mag_z);
+				if(temp_mag_x > mag_max_x){ mag_max_x = temp_mag_x;}
+				if(temp_mag_y > mag_max_y){ mag_max_y = temp_mag_y;}
+				if(temp_mag_z > mag_max_z){ mag_max_z = temp_mag_z;}
+				if(temp_mag_x < mag_min_x){ mag_min_x = temp_mag_x;}
+				if(temp_mag_y < mag_min_y){ mag_min_y = temp_mag_y;}
+				if(temp_mag_z < mag_min_y){ mag_min_z = temp_mag_z;}
+				Delay_ms(50);
+		}
+	}
+	sprintf(output, ">>> Magno Max from Calibration: X %+06d, Y %+06d, Z %+06d\r\n", mag_max_x,mag_max_y, mag_max_z);
+	UART_puts(UART_DEBUG_4, output);
+
+	sprintf(output, ">>> Magno Min from Calibration: X %+06d, Y %+06d, Z %+06d\r\n", mag_min_x,mag_min_y, mag_min_z);
+	UART_puts(UART_DEBUG_4, output);
+	/* Calculate the average radius of all three axis in order to form a perfect sphere*/
+	float avg_rad = ((mag_max_x - mag_min_x)/2) +  ((mag_max_y - mag_min_y)/2) + ((mag_max_z - mag_min_z)/2);
+	avg_rad /= 3.0;
+	/* The values placed here are the hard iron offsets to recenter the responses of the magnometer to the origin */
+	/* These values should be subtracted from the main reading in order to obtain a centered reading*/
+	*mag_bias_x = (mag_max_x + mag_min_x)/2;
+	*mag_bias_y = (mag_max_y + mag_min_y)/2;
+	*mag_bias_z	= (mag_max_z+ mag_min_z)/2;
+
+	UART_puts(UART_DEBUG_4, "Hard Iron Error correction performed.\r\n");
+	/* The values placed here are the scale senstitvities along each axis* aka soft iron errors* /
+	/* This values should be multiplied with the readings to adjust the scale accordingly*/
+	*mag_scale_x = (int16_t)avg_rad/((mag_max_x - mag_min_x)/2);
+	*mag_scale_y = (int16_t)avg_rad/((mag_max_y - mag_min_y)/2);
+	*mag_scale_z = (int16_t)avg_rad/((mag_max_z - mag_min_z)/2);
+
+	UART_puts(UART_DEBUG_4, "Soft Iron Error correction performed.\r\n");
 }
