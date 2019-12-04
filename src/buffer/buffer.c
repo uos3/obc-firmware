@@ -58,8 +58,12 @@ void Buffer_store_new_data(uint8_t *data_payload)
 
   uint16_t new_slot;
   uint16_t new_index;
+  char debug[100];
   /* Index of first (oldest) packet is 1 */
   new_index = (uint16_t)(buffer_cache.last_index_stored + 1);
+  sprintf(debug, "Data payload inserted: %d", data_payload);
+  //UART_puts(UART_INTERFACE, debug);
+  // buffer_cache.last_index_stored seems to always be 0, must be something to do with the definitions in buffer.h
 
   Buffer_find_new_slot(&new_slot);
   Buffer_FRAM_write_data(new_slot, data_payload);
@@ -76,7 +80,7 @@ void Buffer_set_index(uint16_t slot, uint16_t index)
 bool Buffer_get_next_data(uint8_t *data_payload)
 {
   Buffer_init();
-  
+
   if(Buffer_get_next_slot(&(buffer_cache.last_slot_transmitted)))
   {
     Buffer_FRAM_read_data(buffer_cache.last_slot_transmitted, data_payload);
@@ -213,7 +217,7 @@ void Buffer_set_occupancy(uint16_t slot, bool value)
 uint16_t Buffer_count_occupied(void)
 {
   Buffer_init();
-  
+
   uint16_t i;
   uint16_t result = 0;
 

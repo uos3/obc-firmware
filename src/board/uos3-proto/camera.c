@@ -103,7 +103,7 @@ static bool Camera_command(char *command, uint32_t command_length, char *respons
     }
     Delay_ms(1000);
     UART_putb(UART_CAMERA,command,command_length);
-  } 
+  }
   return true;
 }
 //function for setting the resolution of the image according to the chosen configuration
@@ -128,7 +128,7 @@ void set_resolution(image_acquisition_profile_t resolution){
   }
 }
 //main driver function - uses above functions to set the camera, capture the image and store it in the FRAM memory
-bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisition_profile_t resolution)
+bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisition_profile_t resolution, /*uint8_t *slot_counter*/)
 {
   //pagesize must be multiple of 8 - camera requirement, size of FRAM slot is 87bytes - it is multiplied by 24
   //to obtain a number around 2000 - in this case 2088 exactly -> this was found during camera tests with demo_camera_dirty
@@ -137,7 +137,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
   //with reading the characters, I think I read even more than 20pages - I have no idea why for the smaller pages it was not working
   //if you will have the problem with reading 1600 resolution picture, try doubling pagesize - when you edit pagesize make sure
   //that the size of page_buffer array is the same like pagesize
-  uint16_t pagesize = 0x828;   
+  uint16_t pagesize = 0x828;
   uint8_t begin_marker[5]={0}, end_marker[6]={0};
   uint8_t count_begin_marker = 0, count_end_marker = 0, count_picture_data = 0;
   uint8_t page_buffer[2088]={0};
@@ -161,10 +161,10 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
     #ifdef DEBUG_PRINT
     UART_puts(UART_INTERFACE, "Resolution Error \r\n");
     #endif
-    return false; 
+    return false;
   }
   Delay_ms(200);
-  // set compression 
+  // set compression
   if(!Camera_command(LK_COMPRESSION, sizeof(LK_COMPRESSION), LK_COMPRESSION_RE, sizeof(LK_COMPRESSION_RE)))
   {
     #ifdef DEBUG_PRINT
@@ -184,7 +184,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
   Delay_ms(200);
   // read size
   if(!Camera_command(LK_JPEGSIZE, sizeof(LK_JPEGSIZE),LK_JPEGSIZE_RE, sizeof(LK_JPEGSIZE_RE)))
-  { 
+  {
     #ifdef DEBUG_PRINT
     UART_puts(UART_INTERFACE, "Pictrue size error \r\n");
     #endif
@@ -216,7 +216,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
       if(UART_charsAvail(UART_CAMERA)){
         if(count_begin_marker<5){                                  //read first five characters which are response markers
             UART_getc_nonblocking(UART_CAMERA, &begin_marker[count_begin_marker]);
-            count_begin_marker++; 
+            count_begin_marker++;
         }
         else if(count_begin_marker>=5 && count_picture_data<pagesize && !endflag)
         {
@@ -229,7 +229,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
           {
             count_picture_data++;
           }
-            
+
         }
         else
         {
@@ -240,14 +240,15 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
     }
 
   /* Need to divide the 2080 characters into the portions of 104 characters to match the size of FRAM_buffer slot */
-  uint8_t j = 0;                                //variable to support operation
+  uint8_t j = 0, //slot_counter = 0;                  //variable to support operation
   uint8_t storage_buffer[BUFFER_SLOT_SIZE/8];   //buffer which will be sent directly to the FRAM
   for(int i = 0; i<pagesize; i++){              //run the for loop through all the elements of the data read from the camera
     storage_buffer[j] = page_buffer[i];         //copy the data to the storage_buffer
-    j++;                                        
+    j++;
     if(j == (BUFFER_SLOT_SIZE/8)){              //if j match the size of the BUFFER slot size, send the storage_buffer to the FRAM and reset j to 0 for the next portion
       j = 0;
       Buffer_store_new_data(storage_buffer);
+      //slot_counter++;
     }                                           //repeat that until all the page data is portioned and stored in FRAM
   }
 
@@ -258,5 +259,6 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
   }
   *no_of_pages = ROUND_UP(jpegsize/pagesize ,1);  //TODO: replace ROUND_UP (not working) with expression to always round up the no_of_pages
   *picture_size = jpegsize;
+  //*slot_counter = slot_counter;
   return true;
 }

@@ -3,7 +3,7 @@
  *
  * @brief Buffer Functions & Definitions
  *
- * @details 
+ * @details
  *
  * @ingroup buffer
  */
@@ -23,12 +23,12 @@
   #error "FRAM Size not coded for."
 #endif
 
-#define BUFFER_FRAM_SIZE_INITIALISED	  sizeof(bool)
-#define BUFFER_FRAM_SIZE_LAST_INDEX     sizeof(uint16_t)
-#define BUFFER_FRAM_SIZE_LAST_SLOT      sizeof(uint16_t)
-#define BUFFER_FRAM_SIZE_OCCUPANCY      ROUND_UP(BUFFER_SLOTS/8, 2)
-#define BUFFER_FRAM_SIZE_INDEXES        (BUFFER_SLOTS * sizeof(uint16_t))
-#define BUFFER_FRAM_SIZE_CRC		        sizeof(uint16_t)
+#define BUFFER_FRAM_SIZE_INITIALISED	  sizeof(bool) //1 byte
+#define BUFFER_FRAM_SIZE_LAST_INDEX     sizeof(uint16_t) //16 bytes
+#define BUFFER_FRAM_SIZE_LAST_SLOT      sizeof(uint16_t) //16 bytes
+#define BUFFER_FRAM_SIZE_OCCUPANCY      ROUND_UP(BUFFER_SLOTS/8, 2) //750
+#define BUFFER_FRAM_SIZE_INDEXES        (BUFFER_SLOTS * sizeof(uint16_t)) //24000
+#define BUFFER_FRAM_SIZE_CRC		        sizeof(uint16_t) //16 bytes
 
 #define BUFFER_FRAM_ADDRESS_INITIALISED	0x000000
 #define BUFFER_FRAM_ADDRESS_LAST_INDEX  (BUFFER_FRAM_ADDRESS_INITIALISED + BUFFER_FRAM_SIZE_INITIALISED)
@@ -37,6 +37,10 @@
 #define BUFFER_FRAM_ADDRESS_INDEXES     (BUFFER_FRAM_ADDRESS_OCCUPANCY + BUFFER_FRAM_SIZE_OCCUPANCY)
 #define BUFFER_FRAM_ADDRESS_CRC	 	    (BUFFER_FRAM_ADDRESS_INDEXES + BUFFER_FRAM_SIZE_INDEXES)
 #define BUFFER_FRAM_ADDRESS_SLOTS       (BUFFER_FRAM_ADDRESS_CRC + BUFFER_FRAM_SIZE_CRC)
+
+//The address of the FRAM works in this manner : starting from 0x000000, the fram displays the last index, last slot, occupancy
+//indexes, crc BEFORE the address of the data begins. From Camera Demo this caused the address for writing data to begin at 3195
+//
 
 /* Illustrative struct of FRAM data layout:
 typedef struct buffer_data {
