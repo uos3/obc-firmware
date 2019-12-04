@@ -7,6 +7,7 @@
 #include "../uart.h"
 #include "../rtc.h"
 #include <stdint.h>
+#include "../../firmware.h"
 
 #define CRC32_POLYNOMIAL 0xEDB88320L
 
@@ -99,21 +100,21 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
 
             if(c==','){
                 var_counter++;
-                
+
             }
             if(var_counter==6 && c != ','){
                 append(week_no, c);
- 
+
             }
             if(var_counter==7 && c != ','){
                 append(seconds, c);
             }
-    
+
         }
         if(command_wait == false){
             append(received_Message, c);
             if (c == '\r'){
-                //Will not be able to get stuck in this loop, always a '\0' character 
+                //Will not be able to get stuck in this loop, always a '\0' character
                 int i = 0;
                 while(received_Message[i] != '\0'){
                     if(RTC_timerElapsed_ms(start_timestamp, timeout)){
@@ -175,7 +176,7 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                         return 1;
                     }
                 }
-                return 0; 
+                return 0;
             }
         }
     }
@@ -243,7 +244,7 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
     *alt_sd = 0;
     *week_num = 0;
     *week_seconds = 0;
-                        
+
 
     uint32_t longlat_factor = 6, alt_factor = 1, seconds_factor = 2;
 
@@ -255,20 +256,25 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
 
     while  (!RTC_timerElapsed_ms(start_timestamp, timeout)){
         char c;
-        if(!UART_getc_nonblocking(UART_GNSS, &c)){continue;}
+        if(!UART_getc_nonblocking(UART_GNSS, &c)){
+          UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3001*\r\n");
+          continue;
+        }
         //char c = UART_getc(UART_GNSS);
-        UART_putc(UART_CAMERA, c); // DING
+        UART_putc(UART_INTERFACE, c); // DING
         if(c =='#' && hash_count < 2){
+            UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3002*\r\n");
             hash_count++;
             continue;
         }
         if(hash_count < 2){
+          UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3003*\r\n");
             continue;
         }
         if(c == '*'){
             star_trigger = true;
         }
- 
+
         if(hash_count == 2 && star_trigger != true){
             /*if(c=='"'){
                 append(crc_string, '\\');
@@ -288,7 +294,7 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
 
             if(c==','){
                 var_counter++;
-                
+
             }
             if(var_counter==6 && c != ','){
                 append(week_no, c);
@@ -298,12 +304,13 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
             if(var_counter==7 && c != ','){
                 append(seconds, c);
             }
-    
+
         }
         if(command_wait == false){
+          UART_puts(UART_INTERFACE, "\r\n**Step Reached!!*3011*\r\n");
             append(received_Message, c);
             if (c == '\r'){
-                //Will not be able to get stuck in this loop, always a '\0' character 
+                //Will not be able to get stuck in this loop, always a '\0' character
                 int i = 0;
                 while(received_Message[i] != '\0'){
                     if(RTC_timerElapsed_ms(start_timestamp, timeout)){
@@ -381,7 +388,7 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
                 UART_puts(UART_CAMERA, "end of adjusted string values\n");*/
 
                 //UART_puts(UART_CAMERA, crc_string);
-            
+
 
                 *longitude = (int32_t)(atoi(long_str));
                 *latitude = (int32_t)(atoi(lat_str));
@@ -391,9 +398,9 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
                 compress(alt_sd, alt_sd_str);
                 char buffer[15];
                 itoa(lat_sd, buffer, 10);
-                UART_puts(UART_CAMERA, "\n\r");
-                UART_puts(UART_CAMERA, buffer);
-                UART_puts(UART_CAMERA, "\n\r");
+                UART_puts(UART_INTERFACE, "\n\r");
+                UART_puts(UART_INTERFACE, buffer);
+                UART_puts(UART_INTERFACE, "\n\r");
 
                 *week_num = (uint16_t)atoi(week_no);
                 *week_seconds  = (uint32_t)atoi(seconds);
@@ -406,22 +413,22 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
                 for(int crc_count = 0; crc_count < 8; crc_count++){
                     if(crc_hex[crc_count] != crc_str[crc_count]){
 
-                        UART_puts(UART_CAMERA, "\r\n**FAILED!!**\r\n");
+                        UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3901*\r\n");
                         return 1;
                     }
                 }
 
-                UART_puts(UART_CAMERA, "\r\nSUCCESS\r\n");
+                UART_puts(UART_INTERFACE, "\r\nSUCCESS\r\n");
 
 
-                UART_puts(UART_CAMERA, crc_hex);
+                UART_puts(UART_INTERFACE, crc_hex);
                 RTC_getTime_ms(&current_time);
                 *ex_time = current_time - start_timestamp;
-                return 0; 
+                return 0;
             }
         }
     }
-    UART_puts(UART_CAMERA, "\r\n**FAILED!!**\r\n");
+    UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3902*\r\n");
     return 1;
 }
 

@@ -314,7 +314,7 @@ void IMU_calibrate_magno(int16_t *mag_bias_x, int16_t *mag_bias_y,int16_t *mag_b
 	//int16_t mag_max[3] = {-32767,-32767,-32767}, mag_min = {32767, 32767, 32767}, temp_mag[3] = {0,0,0};
 	//int32_t mag_bias[3] = {0,0,0}, mag_scale[3] = {0,0,0};
 
-	
+
 	/* Calibration of the magnometer relies on human motion, similar to how you calibrate the gps sensor on your phone*/
 	/* A figure eight pattern will enable the magnometer to determine the maximum and minimum values that the magnometer is reading */
 	/* In a sense, a perfect sphere would be expected(aka max and min matches the defined values for all three axis)*/

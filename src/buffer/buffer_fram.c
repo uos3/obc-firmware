@@ -61,7 +61,13 @@ void Buffer_FRAM_write_indexes(buffer_cache_t *buffer)
 
 void Buffer_FRAM_write_data(uint16_t slot, uint8_t *data)
 {
+  char debug[100];
   FRAM_write((uint32_t)(BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE)), data, BUFFER_SLOT_SIZE/8);
+  sprintf(debug, "FRAM_write_data function called\r\n Address: %d; data: %d, Length: %d \r\n", BUFFER_FRAM_ADDRESS_SLOTS + (slot * BUFFER_SLOT_SIZE), data, BUFFER_SLOT_SIZE/8);
+  UART_puts(UART_INTERFACE, debug);
+  sprintf(debug, "Slot: %d \r\n" , slot);
+  UART_puts(UART_INTERFACE, debug);
+
 }
 
 #endif

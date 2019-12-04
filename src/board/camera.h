@@ -34,6 +34,6 @@ typedef enum {
  * @parameter Pointer to function to save each page
  * @returns Whether or not the image capture was successful
  */
-bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisition_profile_t resolution);
+bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisition_profile_t resolution, /*uint8_t* slot_counter*/);
 
 #endif /*  __CAMERA_H__ */
