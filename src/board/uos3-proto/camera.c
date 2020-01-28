@@ -128,7 +128,7 @@ void set_resolution(image_acquisition_profile_t resolution){
   }
 }
 //main driver function - uses above functions to set the camera, capture the image and store it in the FRAM memory
-bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisition_profile_t resolution, /*uint8_t *slot_counter*/)
+bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisition_profile_t resolution/*, uint8_t *slot_counter*/)
 {
   //pagesize must be multiple of 8 - camera requirement, size of FRAM slot is 87bytes - it is multiplied by 24
   //to obtain a number around 2000 - in this case 2088 exactly -> this was found during camera tests with demo_camera_dirty
@@ -240,7 +240,7 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
     }
 
   /* Need to divide the 2080 characters into the portions of 104 characters to match the size of FRAM_buffer slot */
-  uint8_t j = 0, //slot_counter = 0;                  //variable to support operation
+  uint8_t j = 0; //slot_counter = 0;                  //variable to support operation
   uint8_t storage_buffer[BUFFER_SLOT_SIZE/8];   //buffer which will be sent directly to the FRAM
   for(int i = 0; i<pagesize; i++){              //run the for loop through all the elements of the data read from the camera
     storage_buffer[j] = page_buffer[i];         //copy the data to the storage_buffer
