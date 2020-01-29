@@ -9,8 +9,8 @@
  */
 
 #include "board.h"
-#include "../spi.h"
-#include "../gpio.h"
+#include "spi.h"
+#include "gpio.h"
 
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"

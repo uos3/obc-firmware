@@ -9,7 +9,7 @@
  */
 
 #include "board.h"
-#include "../uart.h"
+#include "uart.h"
 
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
