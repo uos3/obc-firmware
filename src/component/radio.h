@@ -1,14 +1,15 @@
 
 
 #ifndef __RADIO_H__
-
 #define __RADIO_H__
+
 
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "../cc112x/cc112x.h"
-#include "../cc112x/cc112x_spi.h"
+
+#include "cc112x.h"
+#include "cc112x_spi.h"
 //#include "../firmware.h"
 //#include "../cc1125/cc1125.h"
 

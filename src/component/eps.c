@@ -12,8 +12,6 @@
 #include "rtc.h"
 #include "eps.h"
 
-// DEBUG_NOTES ( REMOVE LATER )
-#include "../../firmware.h"
 
 typedef struct eps_master_packet_t {
   uint8_t register_id:7;
@@ -65,7 +63,9 @@ bool EPS_selfTest(void)
  
 bool EPS_getInfo(uint16_t *output, uint8_t regID)
 {
+#ifdef DEBUG_MODE
   UART_puts(UART_INTERFACE, "\r\nTrying to get reg data\r\n");
+#endif
   /* uint8_t attempts = 0;		//Writing to register and retrying if failed
   while (attempts < 3 && !EPS_readRegister(regID, &eps_slave_packet_single)) {
 	  attempts++;

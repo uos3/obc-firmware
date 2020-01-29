@@ -7,7 +7,7 @@
  * @{
  */
 
-#include "../driver/board.h"
+#include "board.h"
 #include "eeprom.h"
 
 #include "driverlib/sysctl.h"

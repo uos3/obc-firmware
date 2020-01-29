@@ -12,10 +12,9 @@
 
 // #include "../board/radio.h"
 // #include <stddef.h>
-// #include <stdint.h>
+#include <inttypes.h>
+#include "radio.h"
 // #include <stdbool.h>
-#include "../firmware.h"
-
 
 void Packet_cw_transmit_buffer(uint8_t *cw_buffer, uint32_t cw_length, radio_config_t *Radio_config, void (*_cw_on)(radio_config_t *), void (*_cw_off)(void));// void _cw_on(radio_config_t *), void _cw_off(void));
 

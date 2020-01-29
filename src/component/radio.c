@@ -1,20 +1,3 @@
-/**
- * @ingroup uos3-proto
- * @ingroup radio
- *
- * @file uos3-proto/radio.c
- * @brief Radio Driver - uos3-proto board
- *
- * @{
- */
-#include "../../firmware.h"
-// #include "../driver/board.h"
-// #include "../driver/spi.h"
-// #include "../driver/gpio.h"
-// #include "radio.h"
-// #include "cc112x.h"
-//#include "cc1125.h"
-
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_gpio.h"
@@ -25,6 +8,8 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 
+#include "../driver/board.h"
+#include "radio.h"
 #define minRxPktLen 127    //(bytes) needs updating when packet structures fixed, not including preamble, sync words etc
 //Not needed if we sort variable packet length and change planned length by including it after sync words
 
@@ -415,15 +400,18 @@ Radio_Status_t Radio_tx_msk(radio_config_t *radio_config, uint8_t *data_buffer, 
   cc112x_cfg_power(Radio_transmitter.spi_device, radio_config->power);  //set power according to the config file passed as argument
   cc112x_cfg_fsk_params(Radio_transmitter.spi_device, radio_config->symbolRate, CC112X_FSK_DEVIATION_500);
   cc112x_manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
-  UART_puts(UART_INTERFACE, "Calibrated\r\n");
-  
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Calibrated\r\n");
+  #endif
   //Load tx fifo
   cc112xSpiWriteTxFifo(Radio_transmitter.spi_device, data_buffer, data_length);
-  UART_puts(UART_INTERFACE, "Loaded to FIFO\r\n");
-
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Loaded to FIFO\r\n");
+  #endif
   SPI_cmd(Radio_transmitter.spi_device, CC112X_STX);  //enable TX operation
-  UART_puts(UART_INTERFACE, "Transmitting\r\n");
-
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Transmitting\r\n");
+  #endif
   return RADIO_STATUS_OK;
 }
 
@@ -432,8 +420,9 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
 
   if(Radio_transmitter.busy)
   {
-    UART_puts(UART_INTERFACE, "Radio busy\r\n");
-
+    #ifdef DEBUG_MODE
+      UART_puts(UART_INTERFACE, "Radio busy\r\n");
+    #endif
     return RADIO_STATUS_BUSY;
   }
 
@@ -442,7 +431,9 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
   
 
   if (!(cc112x_query_partnumber(Radio_transmitter.spi_device))) {
-    UART_puts(UART_INTERFACE, "Part num query failed\r\n");
+    #ifdef DEBUG_MODE
+      UART_puts(UART_INTERFACE, "Part num query failed\r\n");
+    #endif
     return;
   }
 
@@ -453,15 +444,18 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
   cc112x_cfg_power(Radio_transmitter.spi_device, radio_config->power);  //set power according to the config file passed as argument
   cc112x_cfg_fsk_params(Radio_transmitter.spi_device, radio_config->symbolRate, CC112X_FSK_DEVIATION_8K);
   cc112x_manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
-  UART_puts(UART_INTERFACE, "Calibrated\r\n");
-
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Calibrated\r\n");
+  #endif
   //Load tx fifo
   cc112xSpiWriteTxFifo(Radio_transmitter.spi_device, data_buffer, data_length);
-  UART_puts(UART_INTERFACE, "Loaded to FIFO\r\n");
-
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Loaded to FIFO\r\n");
+  #endif
   SPI_cmd(Radio_transmitter.spi_device, CC112X_STX);  //enable TX operation
-  UART_puts(UART_INTERFACE, "Transmitting\r\n");
-
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Transmitting\r\n");
+  #endif
   return RADIO_STATUS_OK;
 }
 
@@ -471,7 +465,9 @@ void cw_tone_on(radio_config_t *radio_config)   {
   //Checking the transmitter is switched on otherwise it wont be detected until halfway through manual calibration resulting in
   //an out of band transmission
   if (!(cc112x_query_partnumber(Radio_transmitter.spi_device))) {
-    UART_puts(UART_INTERFACE, "Part num query failed\r\n");
+    #ifdef DEBUG_MODE
+      UART_puts(UART_INTERFACE, "Part num query failed\r\n");
+    #endif
     return;
   }
   cc112x_set_config(Radio_transmitter.spi_device, preferredSettings_cw, sizeof(preferredSettings_cw)/sizeof(registerSetting_t));
@@ -480,8 +476,9 @@ void cw_tone_on(radio_config_t *radio_config)   {
   //cc112x_cfg_frequency(Radio_transmitter.spi_device, (float) radio_config->frequency); //set frequency according to the config file passed as argument
   cc112x_cfg_power(Radio_transmitter.spi_device, radio_config->power);  //set power according to the config file passed as argument
   cc112x_manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
-
-  UART_puts(UART_INTERFACE, "Beginning Transmit\r\n");
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Beginning Transmit\r\n");
+  #endif
   SPI_cmd(Radio_transmitter.spi_device, CC112X_STX);  //enable TX operation
   LED_on(LED_B);
 }
@@ -522,8 +519,9 @@ Radio_Status_t Radio_enable_rx_ewor_fsk(radio_config_t *radio_config, uint8_t *r
 {
     if(Radio_transmitter.busy)
   {
-    UART_puts(UART_INTERFACE, "Radio busy\r\n");
-
+    #ifdef DEBUG_MODE
+      UART_puts(UART_INTERFACE, "Radio busy\r\n");
+    #endif
     return RADIO_STATUS_BUSY;
   }
 
@@ -532,7 +530,9 @@ Radio_Status_t Radio_enable_rx_ewor_fsk(radio_config_t *radio_config, uint8_t *r
   
   //Check it will actually receive settings
   if (!(cc112x_query_partnumber(Radio_receiver.spi_device))) {
-    UART_puts(UART_INTERFACE, "Part num query failed\r\n");
+    #ifdef DEBUG_MODE
+      UART_puts(UART_INTERFACE, "Part num query failed\r\n");
+    #endif
     return;
   }
 
@@ -542,11 +542,13 @@ Radio_Status_t Radio_enable_rx_ewor_fsk(radio_config_t *radio_config, uint8_t *r
   //cc112x_cfg_frequency(Radio_transmitter.spi_device, (float) radio_config->frequency); //set frequency according to the config file passed as argument
   cc112x_cfg_fsk_params(Radio_receiver.spi_device, radio_config->symbolRate, CC112X_FSK_DEVIATION_500);
   cc112x_manualCalibration(Radio_receiver.spi_device); //calibrate the radio
-  UART_puts(UART_INTERFACE, "Calibrated\r\n");
-
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Calibrated\r\n");
+  #endif
   //SPI_cmd(Radio_receiver.spi_device, CC112X_SRX);  //enable RX operation
-  UART_puts(UART_INTERFACE, "Receive mode\r\n");
-
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Receive mode\r\n");
+  #endif
   return RADIO_STATUS_OK;
 }
 
@@ -561,7 +563,9 @@ Radio_Status_t Radio_read_rx_fifo(uint8_t *rxBuffer) {
 
   // Mask out MARCSTATE bits and check if we have a RX FIFO error
   if((marcState & 0x1F) == 0x11) {
-    UART_puts(UART_GNSS, "RX FIFO error :(\n");
+    #ifdef DEBUG_MODE
+      UART_puts(UART_INTERFACE, "RX FIFO error :(\n");
+    #endif
     // Flush RX FIFO
     SPI_cmd(Radio_receiver.spi_device, CC112X_SFRX);
     

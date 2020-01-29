@@ -7,14 +7,17 @@
  *
  * @{
  */
+#include <inttypes.h>
 
 #include "../driver/board.h"
 #include "../driver/uart.h"
-#include "rtc.h"
 #include "../driver/delay.h"
+#include "rtc.h"
 #include "camera.h"
-#include "../../firmware.h"
-#include <inttypes.h>
+
+#ifndef BUFFER_SLOT_SIZE
+  #define BUFFER_SLOT_SIZE 256
+#endif
 
 //-------------------------------------CAMERA COMMANDS-----------------------------------------------
 static char LK_RESET[]     = {0x56, 0x00, 0x26, 0x00};
@@ -241,11 +244,11 @@ bool Camera_capture(uint32_t *picture_size, uint16_t* no_of_pages, image_acquisi
 
   /* Need to divide the 2080 characters into the portions of 104 characters to match the size of FRAM_buffer slot */
   uint8_t j = 0; //slot_counter = 0;                  //variable to support operation
-  uint8_t storage_buffer[BUFFER_SLOT_SIZE/8];   //buffer which will be sent directly to the FRAM
+  uint8_t storage_buffer[BUFFER_SLOT_SIZE];   //buffer which will be sent directly to the FRAM
   for(int i = 0; i<pagesize; i++){              //run the for loop through all the elements of the data read from the camera
     storage_buffer[j] = page_buffer[i];         //copy the data to the storage_buffer
     j++;
-    if(j == (BUFFER_SLOT_SIZE/8)){              //if j match the size of the BUFFER slot size, send the storage_buffer to the FRAM and reset j to 0 for the next portion
+    if(j == (BUFFER_SLOT_SIZE)){              //if j match the size of the BUFFER slot size, send the storage_buffer to the FRAM and reset j to 0 for the next portion
       j = 0;
       Buffer_store_new_data(storage_buffer);
       //slot_counter++;

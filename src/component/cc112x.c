@@ -6,9 +6,12 @@
 // #include <stddef.h>
 // #include <inttypes.h>
 // #include <limits.h>
-#include "../firmware.h"
 // #include "../board/spi.h"
+#include <stdbool.h>
+#include <inttypes.h>
 #include "cc112x.h"
+#include "cc112x_spi.h"
+#include "../utility/debug.h"
 // #include "cc112x_spi.h"
 #if CC_XO_FREQ != 38400000
   #error CC112X Lib is currently hardcoded for CC_XO_FREQ of 38.4MHz

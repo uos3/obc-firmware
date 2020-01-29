@@ -5,8 +5,11 @@
  *
  * @{
  */
-
-#include "../firmware.h"
+#include <stdbool.h>
+#include <inttypes.h>
+#include "configuration.h"
+#include "../component/eeprom.h"
+#include "../driver/board.h"
 
 static void Configuration_save_to_eeprom(void);
 static bool Configuration_load_from_eeprom(void);

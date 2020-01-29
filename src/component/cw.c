@@ -1,13 +1,12 @@
-/**
- * @ingroup cw
- *
- * @file cw.c
- *
- * @{
- */
 
+#include <inttypes.h>
+#include "../utility/debug.h"
+#include "radio.h"
 
-#include "../firmware.h"
+#ifndef GCC_BINARY
+	#define GCC_BINARY(x) (__extension__ x)
+#endif
+
 //#include "../board/radio.h"
 #define CW_PERIOD_MS	100
 

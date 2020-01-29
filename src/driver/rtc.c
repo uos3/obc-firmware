@@ -6,16 +6,16 @@
  *
  * @{
  */
+#include <time.h>
 
-#include "../driver/board.h"
-#include "rtc.h"
-#include "../driver/delay.h"
 
 /* Required for 'struct tm' prototypes in driverlib/hibernate.h */
-#include <time.h>
 
 #include "driverlib/sysctl.h"
 #include "driverlib/hibernate.h"
+#include "board.h"
+#include "delay.h"
+#include "rtc.h"
 
 void RTC_init(void)
 {
