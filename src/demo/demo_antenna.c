@@ -3,13 +3,31 @@
  * Last modification:   27/07/2019
  * Status:              Functional
  */
+
 #include <stdio.h>
-#include "../firmware.h"
+#include <stdint.h>
+
+#ifndef DEBUG_MODE
+    #define DEBUG_MODE
+#endif
+#include "../utility/debug.h" 
+#include "../driver/gpio.h"
+#include "../driver/delay.h"
+#include "../driver/board.h"
+#include "../driver/uart.h"
+#include "../driver/rtc.h"
+#include "../driver/watchdog_ext.h"
+#include "../driver/wdt.h"
+#include "../component/led.h"
 
 #define BURN_TIME 7140
 #define WAIT_TIME 10000
 
-void Antenna_deploy_demo(void);
+void Antenna_deploy_demo(void){
+    GPIO_set(GPIO_PB0);
+    Delay_ms(BURN_TIME);
+    GPIO_reset(GPIO_PB0);
+}
 
 int main(){
     watchdog_update=0xFF;
@@ -57,10 +75,3 @@ int main(){
     }
 }
 
-
-void Antenna_deploy_demo(void)
-{
-  GPIO_set(GPIO_PB0);
-  Delay_ms(BURN_TIME);
-  GPIO_reset(GPIO_PB0);
-}

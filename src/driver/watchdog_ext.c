@@ -8,9 +8,7 @@
  * @ALL UART connected statements are for the purpose of testing only!
  * @{
  */
-
-#include "board.h"
-#include "../watchdog_ext.h"
+#include <stdint.h>
 
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -18,7 +16,11 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/timer.h"
-#include "../led.h"
+
+
+#include "board.h"
+#include "watchdog_ext.h"
+
 
 typedef struct WDT {
   uint8_t gpio;
@@ -34,7 +36,7 @@ void Timer0IntHandler(void)
 {	
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);		//clear the interrupt mask
 	watchdog_update--;
-	#ifdef DEBUG_PRINT
+	#ifdef DEBUG_MODE
 	UART_puts(UART_INTERFACE, "\r\n### External Watchdog interrupt Handler");
 	#endif
 	if(watchdog_update>0){

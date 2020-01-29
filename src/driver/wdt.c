@@ -8,11 +8,6 @@
  * @{
  */
 
-#include "board.h"
-#include "delay.h"
-#include "wdt.h"
-#include "../watchdog_ext.h"
-
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -20,23 +15,29 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/watchdog.h"
 
+#include "board.h"
+#include "delay.h"
+#include "wdt.h"
+#include "watchdog_ext.h"
+
+
 void internal_wdt_handler(void){
     watchdog_update--;
     if(watchdog_update>0){
-    WatchdogIntClear(WATCHDOG0_BASE);               
-    WatchdogIntClear(WATCHDOG1_BASE);
-    #ifdef DEBUG_PRINT
-    char output_buffer[100];
-    sprintf(output_buffer, "\r\n$$$ Internal Watchdog cleared - \"watchdog_update\" is: %d - greater than zero", watchdog_update);
-    UART_puts(UART_INTERFACE, output_buffer);
-    #endif
+      WatchdogIntClear(WATCHDOG0_BASE);               
+      WatchdogIntClear(WATCHDOG1_BASE);
+      #ifdef DEBUG_MODE
+        char output_buffer[100];
+        sprintf(output_buffer, "\r\n$$$ Internal Watchdog cleared - \"watchdog_update\" is: %d - greater than zero", watchdog_update);
+        UART_puts(UART_INTERFACE, output_buffer);
+      #endif
     }
-    #ifdef DEBUG_PRINT
-    else{   
-    char output_buffer2[110]; 
-    sprintf(output_buffer2, "\r\n$$$ Internal Watchdog not cleared - \"watchdog_update\" is: %d - smaller or equal to 0\r\n$$$ MCU will reboot", watchdog_update); //only for test
-    UART_puts(UART_INTERFACE, output_buffer2);
-    }
+    #ifdef DEBUG_MODE
+      else{   
+        char output_buffer2[110]; 
+        sprintf(output_buffer2, "\r\n$$$ Internal Watchdog not cleared - \"watchdog_update\" is: %d - smaller or equal to 0\r\n$$$ MCU will reboot", watchdog_update); //only for test
+        UART_puts(UART_INTERFACE, output_buffer2);
+      }
     #endif
 }
 

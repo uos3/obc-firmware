@@ -28,7 +28,7 @@
 #ifndef _WDT_EXT_H_
 #define _WDT_EXT_H_
 
-#include "../firmware.h"
+#include <stdint.h>
 //by md9u17
 /**
  * @variable

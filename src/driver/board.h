@@ -1,7 +1,7 @@
 /* This file contains any board-specific constants that need to be passed into the driver functions */
 
-#ifndef __BOARD_UOS3_PROTO_H__
-#define __BOARD_UOS3_PROTO_H__
+#ifndef __BOARD_H__
+#define __BOARD_H__ 
 
 #define GPIO_PA0	0x00
 #define GPIO_PA1	0x01
@@ -79,5 +79,7 @@
 
 #define I2C_TEMP			0x0
 #define I2C_IMU				0x1
+
+void Board_init(void);
 
 #endif /*  __BOARD_UOS3_PROTO_H__ */

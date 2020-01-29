@@ -8,12 +8,11 @@
  * @{
  */
 
-#include "board.h"
-
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
-
 #include "driverlib/sysctl.h"
+
+#include "board.h"
 
 void Board_init(void)
 {

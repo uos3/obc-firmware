@@ -11,7 +11,7 @@
 #ifndef __WDT_H__
 #define __WDT_H__
 
-#include "../firmware.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
