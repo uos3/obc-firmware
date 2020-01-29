@@ -8,11 +8,11 @@
  * @{
  */
 
-#include "board.h"
-#include "../uart.h"
-#include "../rtc.h"
-#include "../delay.h"
-#include "../camera.h"
+#include "../driver/board.h"
+#include "../driver/uart.h"
+#include "rtc.h"
+#include "../driver/delay.h"
+#include "camera.h"
 #include "../../firmware.h"
 #include <inttypes.h>
 

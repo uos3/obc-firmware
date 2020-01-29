@@ -15,10 +15,10 @@
 	Notes for self-test of imu: https://github.com/kriswiner/MPU9250/tree/master/Documents - this can be implemented to perform frequent tests of the IMU chip */
 	/* Based on the idea given from */
 
-#include "board.h"
-#include "../i2c.h"
-#include "../delay.h"
-#include "../imu.h"
+#include "../driver/board.h"
+#include "../driver/i2c.h"
+#include "../driver/delay.h"
+#include "imu.h"
 
 #define MPU_I2C_ADDR 0x68 // this is the MPU-9250A i2c address %1011000
 #define MAG_I2C_ADDR 0x0C // MAG_PASS_THROUGH_I2C_ADDR

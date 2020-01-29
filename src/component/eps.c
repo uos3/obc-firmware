@@ -7,10 +7,10 @@
  * @{
  */
 
-#include "board.h"
-#include "../uart.h"
-#include "../rtc.h"
-#include "../eps.h"
+#include "../driver/board.h"
+#include "../driver/uart.h"
+#include "rtc.h"
+#include "eps.h"
 
 // DEBUG_NOTES ( REMOVE LATER )
 #include "../../firmware.h"

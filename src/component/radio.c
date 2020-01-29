@@ -8,12 +8,12 @@
  * @{
  */
 #include "../../firmware.h"
-// #include "board.h"
-// #include "../spi.h"
-// #include "../gpio.h"
-// #include "../radio.h"
-// #include "../../cc112x/cc112x.h"
-//#include "../../cc1125/cc1125.h"
+// #include "../driver/board.h"
+// #include "../driver/spi.h"
+// #include "../driver/gpio.h"
+// #include "radio.h"
+// #include "cc112x.h"
+//#include "cc1125.h"
 
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"

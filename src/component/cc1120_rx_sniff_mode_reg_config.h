@@ -43,7 +43,7 @@ extern "C" {
  * INCLUDES
  */
 #include "../firmware.h"
-#include "../cc1125/cc112x_spi.h"
+#include "cc112x_spi.h"
 
 
 /******************************************************************************

@@ -7,9 +7,9 @@
  * @{
  */
 
-#include "board.h"
-#include "../rtc.h"
-#include "../delay.h"
+#include "../driver/board.h"
+#include "rtc.h"
+#include "../driver/delay.h"
 
 /* Required for 'struct tm' prototypes in driverlib/hibernate.h */
 #include <time.h>

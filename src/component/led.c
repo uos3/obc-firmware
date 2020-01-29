@@ -8,10 +8,10 @@
  * @{
  */
 
-#include "board.h"
-#include "../gpio.h"
+#include "../driver/board.h"
+#include "../driver/gpio.h"
 
-#include "../led.h"
+#include "led.h"
 
 /* LED description struct */
 typedef struct LED {

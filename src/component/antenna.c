@@ -8,11 +8,11 @@
  * @{
  */
 
-#include "board.h"
-#include "../gpio.h"
-#include "../delay.h"
+#include "../driver/board.h"
+#include "../driver/gpio.h"
+#include "../driver/delay.h"
 
-#include "../antenna.h"
+#include "antenna.h"
 
 void Antenna_deploy(uint16_t burn_time)
 {

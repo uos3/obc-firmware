@@ -1,5 +1,5 @@
 #include "cc112x_spi.h"
-#include "../board/spi.h"
+#include "../driver/spi.h"
 
 //#include "../firmware.h"
 

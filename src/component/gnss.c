@@ -1,11 +1,11 @@
-#include "../gnss.h"
+#include "gnss.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "board.h"
+#include "../driver/board.h"
 #include <math.h>
-#include "../uart.h"
-#include "../rtc.h"
+#include "../driver/uart.h"
+#include "rtc.h"
 #include <stdint.h>
 #include "../../firmware.h"
 

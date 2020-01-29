@@ -8,10 +8,10 @@
  * @{
  */
 
-#include "board.h"
-#include "../i2c.h"
+#include "../driver/board.h"
+#include "../driver/i2c.h"
 
-#include "../temperature_sensors.h"
+#include "temperature_sensors.h"
 
 int16_t Temperature_read_pct2075(void)
 {
