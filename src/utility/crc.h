@@ -11,8 +11,6 @@
 #ifndef __PACKET_CRC16_H__
 #define __PACKET_CRC16_H__
 
-#include "../firmware.h"
-
 /**
  * @function
  * @ingroup crc
@@ -38,8 +36,6 @@ void Packet_crc16(uint8_t *input, uint32_t length, uint16_t *output);
 
 #ifndef __UTIL_CRC_H__
 #define __UTIL_CRC_H__
-
-#include "../firmware.h"
 
 /**
  * @function

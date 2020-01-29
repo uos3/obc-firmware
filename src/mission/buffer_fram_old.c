@@ -7,7 +7,10 @@
  */
 #ifndef __BUFFER_FRAM_H__
 #define __BUFFER_FRAM_H__
-#include "../firmware.h"
+#include "../driver/uart.h"
+#include "../component/fram.h"
+#include "../utility/crc.h"
+#include "buffer.h"
 
 /*** Read ***/
 
