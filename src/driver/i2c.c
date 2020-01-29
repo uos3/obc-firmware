@@ -25,7 +25,7 @@
 #include "driverlib/sysctl.h"
 
 
-#include "../i2c.h" // base definitions for functions
+#include "i2c.h" // base definitions for functions
 
 /* I2C physical port description struct */
 typedef struct I2C_port_t {

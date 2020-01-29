@@ -9,9 +9,8 @@
  */
 
 #include "board.h"
-
-#include "../delay.h"
-#include "../wdt.h"
+#include "delay.h"
+#include "wdt.h"
 #include "../watchdog_ext.h"
 
 #include "inc/hw_ints.h"
