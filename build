@@ -1,232 +1,28 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
+# this was a copy-paste job from the output of the makefile
 
-## Cross-Platform Embedded Toolchain
-## Copyright (c) 2016 Phil Crump <phil@philcrump.co.uk>
-## Freely distributable under the MIT license.
-
-## hacked by Suzanna Lucarotti 2017 to assume uos3-proto folder if not specified (my code ain't gonna work with any other as it stands)
-
-
-source_dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
-cd $source_dir
-
-opt_flash=false
-opt_debug=false
-opt_quiet=false
-opt_sound=false
-opt_asm=false
-opt_werror=false
-opt_verbose=false
-opt_osize=false
-
-COLOUR_GREEN='\033[0;32m'
-COLOUR_YELLOW='\033[1;33m'
-COLOUR_PURPLE='\033[0;35m'
-COLOUR_RED='\033[0;31m'
-COLOUR_OFF='\033[0;00m'
-CLEAR_LINE='\033[2K'
-
-_ERROR_="$COLOUR_RED[ERROR]$COLOUR_OFF"
-_INFO_="$COLOUR_PURPLE[INFO]$COLOUR_OFF"
-_DEBUG_="$COLOUR_YELLOW[DEBUG]$COLOUR_OFF"
-
-stdin="/proc/$$/fd/0"
-stdout="/proc/$$/fd/1"
-stderr="/proc/$$/fd/2"
-stdnull="/dev/null"
-
-usage() {
-    echo "Usage: build <board> <program> or build <program> to assume uos3-proto" >&2
-}
-
-print() {
-    if ! $opt_quiet
+# first change directory to driver.
+if [ "$1" == "-h" ]
     then
-        echo -e $@ >&$stdout
-    fi
-}
-print_err() {
-    if ! $opt_quiet
-    then
-        echo -e $@ >&$stderr
-    fi
-}
+    echo "Bash script for building the firmaware\nusage: ./build \$main_directory \$main_file\nmain_directory is either 'demo' or 'missiom' depending on the file"
+else
+    cd src/driver
+    REL_MAINDIR=".."
+    MAINDIR="$1"
+    MAINFILE="$2"
+    OUTDIR="../../builds"
+    strlen=${#MAINFILE}
+    OUTFILE="build_${MAINFILE:0:$strlen-2}"
+    WARNINGS="-Wall -Wextra -Wpedantic -Wswitch-default -Wswitch-enum -Wduplicated-cond -Wconversion -Wlogical-op -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations"
 
-hyphenjoin() {
-  str=""
-  while [ $# -gt 0 ]
-  do
-    str="$str$1-"
-    shift
-  done
-  if [ ! -z "$str" ]
-  then
-    str="${str::-1}"
-  fi
-  echo "$str"
-}
-
-flash() {
-  if $opt_flash; then
-    flash_args="";
-    if $opt_sound; then flash_args="$flash_args -s"; fi
-    if $opt_verbose; then flash_args="$flash_args -v"; fi
-    ${source_dir}/flash ${flash_args} ${outdir}/${filename};
-  fi
-}
-
-debug() {
-  if $opt_debug; then
-    debug_args="";
-    if $opt_verbose; then debug_args="$debug_args -v"; fi
-    ${source_dir}/debug ${debug_args} ${outdir}/${filename};
-  fi
-}
-
-asmdump() {
-  if $opt_asm; then
-     arm-none-eabi-objdump -DSlx ${source_dir}/${outdir}/${filename} > ${source_dir}/${outdir}/${filename}.asm
-     print "$_INFO_$COLOUR_GREEN Machine code: ${outdir}/${filename}.asm$COLOUR_OFF"
-  fi
-}
-
-print_help() {
-  echo ""
-  echo " Usage: ./build [options] <board> <application> (board is assumed to be uos3-proto if omitted)"
-  echo ""
-  echo " Options:"
-  echo ""
-  echo " -h        Display this help and exit."
-  echo " -q        Hide all messages apart from errors."
-  echo " -v        Compile (& Flash) verbosely."
-  echo " -m        Also generate machine code output."
-  echo " -w        Tell compiler to treat warnings as errors."
-  echo " -s        Tell compiler to optimise for code size."
-  echo " -F        Attempt to flash board if compile is successful."
-  echo " -S        Play sound if flash is successful. [requires -F]"
-  echo ""
-}
-
-## Read Flags
-OPTIND=1
-while getopts ":hmdsqvFDSw" opt; do
-  case "$opt" in
-    h) # Help
-      print_help
-      exit 0
-      ;;
-    m) # ASM
-      opt_asm=true
-      ;;
-    s) # Optimise for Size
-      opt_osize=true
-      ;;
-    q) # Quiet
-      opt_quiet=true
-      ;;
-    v) # Verbose
-      opt_verbose=true
-      ;;
-    F) # Flash
-      opt_flash=true
-      ;;
-    D) # Debug
-      opt_debug=true
-      ;;
-    S) # Sound
-      opt_sound=true
-      ;;
-    w) # Warnings as Errors
-      opt_werror=true
-      ;;
-    ?) # Illegal Option
-      print_err "$_ERROR_ Illegal option '$OPTARG'"
-      print_help
-      exit 3
-      ;;
-  esac
-done
-for i in `seq 2 $OPTIND`; do shift; done
-
-## Read Arguments
-board=${1,,}
-shift
-program=${1,,}
-shift
-
-qualname="main/$program"
-## Check <program> argument
-if [ -z "$program" ]; then
-    program=$board
-    board="uos3-proto" ## insert default option here
+    arm-none-eabi-gcc \
+    -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -MD -std=c99 -c \
+    -DPART_TM4C123GH6PGE \
+    -DHEAPSIZE=0x2000 -DSTACKSIZE=0x800\
+    -DTARGET_IS_TM4C123_RB1\
+    -ITivaWare_C_Series-2.1.4.178\
+    -ggdb3 -O0 \
+    $WARNINGS \
+    -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,--gc-sections -Wl,--print-memory-usage -nostartfiles --specs=nano.specs --specs=nosys.specs -Wl,--defsym,HEAPSIZE=0x2000 -Wl,--defsym,STACKSIZE=0x800  \
+    $REL_MAINDIR/$MAINDIR/$MAINFILE  -o $OUTDIR/$OUTFILE
 fi
-if [ ! -e "src/main/$program.c" ] && [ -e "src/demo/$program.c" ]; then
-    # make qualified name for demo
-    qualname="demo/$program"
-fi
-if [ ! -e "src/main/$program.c" ] && [ ! -e "src/demo/$program.c" ]; then
-    print_err "$_ERROR_ Main Program File \"$program\" not found"
-    ls src/demo
-    exit 1
-fi
-
-
-## Check <board> argument
-if [ -z "$board" ]; then
-    print_err "$_ERROR_ A board must be specified"
-    usage
-    exit 1
-fi
-if [ ! -d "src/board/${board}" ]; then
-    print_err "$_ERROR_ Board \"${board}\" not found"
-    exit 1
-fi
-
-## Run <board>'s dependencies script if it exists
-if [ -f "src/board/${board}/dependencies.sh" ]; then
-    src/board/${board}/dependencies.sh;
-    if [[ $? != 0 ]]; then
-      exit 1
-    fi
-fi
-
-## Set up Makefile Flags
-
-githash="$(git describe --dirty --always)"
-# Mark as dirty if untracked files exist
-if [ -z "$(echo "$githash" | grep "dirty")" ] && [ ! -z "$(git status --porcelain | grep "^??")" ]; then
-	githash="$githash-dirty"
-fi
-
-outdir="builds"
-filename="$(hyphenjoin $board $program $flags $githash)"
-
-flags="BOARD=${board} MAIN=${qualname} OUTDIR=${outdir} OUTFILE=\"${filename}\""
-
-if $opt_osize; then
-  print "$_INFO_ Compiler optimise for size (-Os):$COLOUR_RED ON $COLOUR_OFF"
-  flags="${flags} OSIZE_ON=true"
-fi
-if $opt_werror; then
-  print "$_INFO_ Compiler set Warnings as Errors:$COLOUR_RED ON $COLOUR_OFF"
-  flags="${flags} WERROR_ON=true"
-fi
-if $opt_verbose; then
-  print "$_INFO_ Compiler Verbose:$COLOUR_RED ON $COLOUR_OFF"
-  flags="${flags} VERBOSE_ON=true"
-fi
-
-## Change to board directory, make clean, make, then print summary message.
-cd "src/board/$board"
-make ${flags} clean \
-&& make ${flags} \
-&& {
-	print "$_INFO_$COLOUR_GREEN Built: ${outdir}/${filename}$COLOUR_OFF" \
-	&& asmdump \
-	&& flash \
-  && debug \
-	&& exit 0
-} || {
-	print "$_ERROR_$COLOUR_RED There were errors in the build process$COLOUR_OFF" \
-	&& exit 1
-}
