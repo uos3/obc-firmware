@@ -30,7 +30,7 @@ PART=TM4C123GH6PGE
 #
 # The base directory for TivaWare.
 #
-FW_ROOT=../../..
+FW_ROOT=../..
 ROOT=TivaWare_C_Series-2.1.4.178
 
 # 8KB Heap
@@ -47,7 +47,8 @@ ifneq ($(RUNTESTS),)
   include ${FW_ROOT}/src/test.mk
 endif
 
-BOARD_INCLUDE="-DBOARD_INCLUDE=\"board/${BOARD}/board.h\""
+# changed from old struture. This is included in a few places...
+BOARD_INCLUDE="-DBOARD_INCLUDE=\"driver/board.h\""
 
 # Moved from makedefs
 os     := ${shell uname -s}
@@ -136,13 +137,6 @@ all: ${FW_ROOT}/${OUTDIR}/${OUTFILE}
 #
 # The rule to clean out all the build products.
 #
-src-clean:
-	@rm -rf ${wildcard *.o}
-	@rm -rf $(patsubst %.c,%.o,$(filter %.c,${FW_SRCS}))
-	@rm -rf $(patsubst %.c,%.d,$(filter %.c,${FW_SRCS}))
-
-clean: src-clean
-	@rm -rf ${wildcard ${FW_ROOT}/${OUTDIR}/*}
 
 #
 # The rule to create the target directory.
