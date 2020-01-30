@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include "configuration.h"
-#include "../component/eeprom.h"
+#include "../driver/eeprom.h"
 #include "../driver/board.h"
 
 static void Configuration_save_to_eeprom(void);
