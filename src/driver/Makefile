@@ -142,64 +142,64 @@ all: ${FW_ROOT}/${OUTDIR}/${OUTFILE}
 # The rule to create the target directory.
 #
 ${FW_ROOT}/${OUTDIR}:
-	@mkdir -p ${FW_ROOT}/${OUTDIR}/
+	mkdir -p ${FW_ROOT}/${OUTDIR}/
 
 # The rule for building the object file from each C source file.
 #
 %.o: %.c
-	@if [ 'x${VERBOSE_ON}' = x ];                          \
+	if [ 'x${VERBOSE_ON}' = x ];                          \
 	 then                                                 \
 	     echo "  CC    ${<}";                             \
 	 else                                                 \
-	     echo ${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}; \
+	     echo ${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${} ${<}; \
 	 fi
-	@${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}
+	${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${} ${<}
 
 #
 # The rule for building the object file from each assembly source file.
 #
 %.o: %.S
-	@if [ 'x${VERBOSE_ON}' = x ];                               \
+	if [ 'x${VERBOSE_ON}' = x ];                               \
 	 then                                                    \
 	     echo "  AS    ${<}";                                \
 	 else                                                    \
-	     echo ${CC} ${AFLAGS} -D${COMPILER} -o ${@} -c ${<}; \
+	     echo ${CC} ${AFLAGS} -D${COMPILER} -o ${} -c ${<}; \
 	 fi
-	@${CC} ${AFLAGS} -D${COMPILER} -o ${@} -c ${<}
+	${CC} ${AFLAGS} -D${COMPILER} -o ${} -c ${<}
 
 #
 # The rule for creating an object library.
 #
 %.a:
-	@if [ 'x${VERBOSE_ON}' = x ];     \
+	if [ 'x${VERBOSE_ON}' = x ];     \
 	 then                          \
-	     echo "  AR    ${@}";      \
+	     echo "  AR    ${}";      \
 	 else                          \
-	     echo ${AR} -cr ${@} ${^}; \
+	     echo ${AR} -cr ${} ${^}; \
 	 fi
-	@${AR} -cr ${@} ${^}
+	${AR} -cr ${} ${^}
 #
 # The rule for linking the application.
 #
 ${FW_ROOT}/${OUTDIR}/${OUTFILE}:
-	@if [ 'x${VERBOSE_ON}' = x ];                                            \
+	if [ 'x${VERBOSE_ON}' = x ];                                            \
 	 then                                                                 \
-	     echo "  LD    ${@} ${LNK_SCP}";                                  \
+	     echo "  LD    ${} ${LNK_SCP}";                                  \
 	 else                                                                 \
 	     echo ${LD} -T ${SCATTERgcc}                                         \
 	          --entry ${ENTRY_SYM}                       \
-	          ${LDFLAGSgcc_${notdir ${@:.axf=}}}                          \
-	          ${LDFLAGS} -o ${@}.axf $(filter %.o, ${^}) $(filter %.a, ${^})      \
+	          ${LDFLAGSgcc_${notdir ${:.axf=}}}                          \
+	          ${LDFLAGS} -o ${}.axf $(filter %.o, ${^}) $(filter %.a, ${^})      \
 	          '${LIBM}' '${LIBC}' '${LIBGCC}';                            \
 	 fi;                                                                  \
 	${LD} -T ${SCATTERgcc}                                                   \
 	      --entry ${ENTRY_SYM}                           \
-	      ${LDFLAGSgcc_${notdir ${@:.axf=}}}                              \
-	      ${LDFLAGS} -o ${@}.axf $(filter %.o, ${^}) $(filter %.a, ${^})  \
+	      ${LDFLAGSgcc_${notdir ${:.axf=}}}                              \
+	      ${LDFLAGS} -o ${}.axf $(filter %.o, ${^}) $(filter %.a, ${^})  \
 	      '${LIBM}' '${LIBC}' '${LIBGCC}';                          
-	@${OBJCOPY} -O elf32-littlearm ${@}.axf ${@};
-	@rm -f ${@}.axf;
-	@$(MAKE) -s src-clean;
+	${OBJCOPY} -O elf32-littlearm ${}.axf ${};
+	rm -f ${}.axf;
+	$(MAKE) -s src-clean;
 
 #
 # Rules for building the blinky example.
