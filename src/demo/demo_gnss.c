@@ -5,10 +5,22 @@
  */
 
 /* firmware.h contains all relevant headers */
-#include "../firmware.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
+
+#include "../driver/board.h"
+#include "../driver/delay.h"
+#include "../driver/uart.h"
+#include "../driver/watchdog_ext.h"
+
+#include "../component/gnss.h"
+#include "../component/led.h"
+
+#ifndef DEBUG_MODE
+    #define DEBUG_MODE
+#endif
+#include "../utility/debug.h"
 
 
 int main(void){
@@ -36,9 +48,11 @@ int main(void){
         UART_puts(UART_INTERFACE, "\n\r>>> Taking measurement\n\r");
         GNSS_getData(&longitude, &latitude, &altitude, &long_sd, &lat_sd, &alt_sd, &week, &seconds);
         UART_puts(UART_INTERFACE, ">>> Measurement collection complete\r\n");
-        sprintf(message, "\n\rLongitude: %" PRId32 "\n\rLatitude: %" PRId32 "\n\rAltitude: %" PRId32 "\n\rLatitude s_d: %" PRId8 
-        "\n\rLongitude s_d: %" PRId8 "\n\rAltitude s_d: %" PRId8 "\n\rWeek Number: %" PRId16 "\n\rWeek Seconds: %" PRId32 "\n\r",
-        longitude, latitude, altitude, long_sd, lat_sd, alt_sd, week, seconds);
+        sprintf(
+            message,
+            "\n\rLongitude: %ld \n\r Latitude: %ld \n\rAltitude: %ld \n\rLatitude s_d: %d \n\rLongitude s_d: %d \n\rAltitude s_d: %d \n\rWeek Number: %d \n\rWeek Seconds: %ld \n\r",
+            longitude, latitude, altitude, long_sd, lat_sd, alt_sd, week, seconds
+        );
         UART_puts(UART_INTERFACE, message);
         UART_puts(UART_INTERFACE, ">>> Waiting for next collection...\n\r");
         

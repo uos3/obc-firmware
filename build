@@ -1,20 +1,38 @@
 #! /usr/bin/env bash
-# this was a copy-paste job from the output of the makefile
+# this was a copy-paste job from the output of the makefile.
+# Includes all neccisary MCU flags, we think
 
-# first change directory to driver.
+# use, you need (running on linux):
+# the arm compile toolchain 
+# the TivaWare library
+
 if [ "$1" == "-h" ]
     then
-    echo "Bash script for building the firmaware\nusage: ./build \$main_directory \$main_file\nmain_directory is either 'demo' or 'missiom' depending on the file"
+    echo "Bash script for building the firmaware"
+    echo "usage:" 
+    echo "./build \$main_directory \$main_file"
+    echo "main_directory is either 'demo' or 'mission' depending on the file"
 else
+    # first change directory to driver.
     cd src/driver
+    # relative position of the src directory to the driver directory
+    # original makefile was located in the 
     REL_MAINDIR=".."
+    # set the file containing main's directory from arg 1
     MAINDIR="$1"
+    # set the main file from arg 2
     MAINFILE="$2"
+    # output directory 
     OUTDIR="../../builds"
+
+    # trim the filename to remove the c extension 
+    # TODO - add the compile date and a githash
     strlen=${#MAINFILE}
     OUTFILE="build_${MAINFILE:0:$strlen-2}"
+    # TODO - we want the warnings to be optional
     WARNINGS="-Wall -Wextra -Wpedantic -Wswitch-default -Wswitch-enum -Wduplicated-cond -Wconversion -Wlogical-op -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations"
 
+    # compile string
     arm-none-eabi-gcc \
     -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -MD -std=c99 -c \
     -DPART_TM4C123GH6PGE \
@@ -25,4 +43,5 @@ else
     $WARNINGS \
     -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,--gc-sections -Wl,--print-memory-usage -nostartfiles --specs=nano.specs --specs=nosys.specs -Wl,--defsym,HEAPSIZE=0x2000 -Wl,--defsym,STACKSIZE=0x800  \
     $REL_MAINDIR/$MAINDIR/$MAINFILE  -o $OUTDIR/$OUTFILE
+    rm $OUTDIR/*.d
 fi
