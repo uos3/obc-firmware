@@ -9,6 +9,8 @@
  * @{
  */
 #include <stdint.h>
+#include "board.h"
+#include "watchdog_ext.h"
 
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -18,8 +20,6 @@
 #include "driverlib/timer.h"
 
 
-#include "board.h"
-#include "watchdog_ext.h"
 
 
 typedef struct WDT {

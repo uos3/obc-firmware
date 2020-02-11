@@ -7,6 +7,10 @@
  *
  * @{
  */
+#include "board.h"
+#include "delay.h"
+#include "wdt.h"
+#include "watchdog_ext.h"
 
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -15,10 +19,6 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/watchdog.h"
 
-#include "board.h"
-#include "delay.h"
-#include "wdt.h"
-#include "watchdog_ext.h"
 
 
 void internal_wdt_handler(void){

@@ -11,11 +11,11 @@
 
 /* Required for 'struct tm' prototypes in driverlib/hibernate.h */
 
-#include "driverlib/sysctl.h"
-#include "driverlib/hibernate.h"
 #include "board.h"
 #include "delay.h"
 #include "rtc.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/hibernate.h"
 
 void RTC_init(void)
 {

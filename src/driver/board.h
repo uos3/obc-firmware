@@ -3,6 +3,10 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__ 
 
+#include <stdbool.h>
+#include <stdint.h>
+#include "inc/hw_types.h"
+
 #define GPIO_PA0	0x00
 #define GPIO_PA1	0x01
 #define GPIO_PA2	0x02
@@ -79,6 +83,7 @@
 
 #define I2C_TEMP			0x0
 #define I2C_IMU				0x1
+
 
 void Board_init(void);
 
