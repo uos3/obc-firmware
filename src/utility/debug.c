@@ -1,12 +1,3 @@
-/**
- * @ingroup uos3-proto
- * @ingroup debug
- *
- * @file uos3-proto/debug.c
- * @brief Debug message print - uos3-proto board <NOT IMPLEMENTED>
- *
- * @{
- */
 
 #include "../driver/board.h"
 

@@ -3,13 +3,65 @@
 # 	based on the dependancies only IT requires.
 
 TIVAWARE=../TivaWare_C_Series-2.1.4.178
-CFLAGS = -linttypes -lstdbool -I$(TIVAWARE) 
+#******************************************************************************
+#
+# Makefile - Rules for building the blinky example.
+#
+# Copyright (c) 2011-2017 Texas Instruments Incorporated.  All rights reserved.
+# Software License Agreement
+# 
+# Texas Instruments (TI) is supplying this software for use solely and
+# exclusively on TI's microcontroller products. The software is owned by
+# TI and/or its suppliers, and is protected under applicable copyright
+# laws. You may not combine this software with "viral" open-source
+# software in order to form a larger program.
+# 
+# THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+# NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+# NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+# CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+# DAMAGES, FOR ANY REASON WHATSOEVER.
+# 
+# This is part of revision 2.1.4.178 of the DK-TM4C123G Firmware Package.
+#
+#******************************************************************************
+
+#
+# Defines the part type that this project uses.
+#
 PART=TM4C123GH6PGE
+
+#
+# The base directory for TivaWare.
+#
+FW_ROOT=.
+ROOT=../TivaWare_C_Series-2.1.4.178
+OUTDIR?=builds
+OUTFILE?=demo_antenna.out
 
 # 8KB Heap
 HEAPSIZE = 0x2000
 # 2KB Stack
 STACKSIZE = 0x800
+
+#
+# Include the common make definitions.
+#
+# include ${FW_ROOT}/src/firmware.mk
+FW_SRCS=src/component/led.c \
+ src/driver/board.c \
+ src/driver/gpio.c \
+ src/driver/delay.c \
+ src/driver/board.c \
+ src/driver/watchdog_ext.c \
+ src/driver/uart.c \
+ src/driver/rtc.c \
+ src/driver/wdt.c \
+
+BOARD_INCLUDE="-DBOARD_INCLUDE=\"../driver/board.h\""
+
+# Moved from makedefs
 os     := ${shell uname -s}
 ifndef COMPILER
   COMPILER = gcc
@@ -55,8 +107,6 @@ CFLAGS += ${CFLAGSgcc}
 AFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 CFLAGS += ${patsubst %,-I%,${subst :, ,${IPATH}}}
 
-IPATH=${TIVAWARE}
-
 CFLAGS += -ggdb3
 ifneq ($(OSIZE_ON),)
   CFLAGS += -Os
@@ -82,10 +132,51 @@ ifneq ($(TESTVERBOSE_ON),)
   CFLAGS += -DTEST_VERBOSE=true
 endif
 
+# FW_SRCS+= $(wildcard ./src/driver/*.c) liblabrador_ldpc.a
+
+#
+# Where to find header files that do not live in the source directory.
+#
+IPATH=${ROOT}
+
+# The rule for building the object file from each C source file.
+#
+%.o: %.c
+	@if [ 'x${VERBOSE_ON}' = x ];                          \
+	 then                                                 \
+	     echo "  CC    ${<}";                             \
+	 else                                                 \
+	     echo ${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}; \
+	 fi
+	@${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}
+
+#
+# The rule for building the object file from each assembly source file.
+#
+%.o: %.S
+	@if [ 'x${VERBOSE_ON}' = x ];                               \
+	 then                                                    \
+	     echo "  AS    ${<}";                                \
+	 else                                                    \
+	     echo ${CC} ${AFLAGS} -D${COMPILER} -o ${@} -c ${<}; \
+	 fi
+	@${CC} ${AFLAGS} -D${COMPILER} -o ${@} -c ${<}
+
+#
+# The rule for creating an object library.
+#
+%.a:
+	@if [ 'x${VERBOSE_ON}' = x ];     \
+	 then                          \
+	     echo "  AR    ${@}";      \
+	 else                          \
+	     echo ${AR} -cr ${@} ${^}; \
+	 fi
+	@${AR} -cr ${@} ${^}
 
 builds/demo_antenna.out: src/main/demo_antenna.o
 
-	if [ 'x${VERBOSE_ON}' = x ];                                            \
+	@if [ 'x${VERBOSE_ON}' = x ];                                            \
 	 then                                                                 \
 	     echo "  LD    ${@} ${LNK_SCP}";echo "${LNK_SCP}"; \
 	 else                                                                 \
@@ -147,11 +238,21 @@ src/main/demo_antenna.o: src/utility/debug.o \
  src/driver/wdt.o \
 
 
+#
+# The rule to create the target directory.
+#
+${FW_ROOT}/${OUTDIR}:
+	@mkdir -p ${FW_ROOT}/${OUTDIR}/
+
+
 clean:
 	@rm -rf src/*/*.o
 	@rm -rf src/*/*.d
 
-builds/demo_antenna.out: src/driver/tm4c_startup_${COMPILER}.o
+${FW_ROOT}/${OUTDIR}/${OUTFILE}: $(patsubst %.c,%.o,${FW_SRCS})
+${FW_ROOT}/${OUTDIR}/${OUTFILE}: ${ROOT}/driverlib/gcc/libdriver.a
+${FW_ROOT}/${OUTDIR}/${OUTFILE}: src/driver/tm4c_startup_${COMPILER}.o
+${FW_ROOT}/${OUTDIR}/${OUTFILE}: src/driver/tm4c123g.ld
 SCATTERgcc=src/driver/tm4c123g.ld
 ENTRY_SYM=ResetISR
 CFLAGSgcc=-DTARGET_IS_TM4C123_RB1
