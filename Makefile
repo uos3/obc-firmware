@@ -38,6 +38,7 @@ PART=TM4C123GH6PGE
 FW_ROOT=.
 ROOT=../TivaWare_C_Series-2.1.4.178
 OUTDIR?=builds
+# MAINFILE?=demo_antenna
 
 # 8KB Heap
 HEAPSIZE = 0x2000
@@ -46,8 +47,8 @@ STACKSIZE = 0x800
 
 #
 # Include the common make definitions.
-include builds/firmware_sources.mk
 
+include builds/firmware_sources.mk
 
 # FW_SRCS=src/component/led.c \
 #  src/driver/board.c \
@@ -175,7 +176,7 @@ IPATH=${ROOT}
 	@${AR} -cr ${@} ${^}
 
 ${OUTDIR}/${MAINFILE}.out: src/main/${MAINFILE}.o
-
+# builds/demo_antenna.out: src/main/demo_antenna.o
 	@if [ 'x${VERBOSE_ON}' = x ];                                            \
 	 then                                                                 \
 	     echo "  LD    ${@} ${LNK_SCP}";echo "${LNK_SCP}"; \
@@ -191,9 +192,9 @@ ${OUTDIR}/${MAINFILE}.out: src/main/${MAINFILE}.o
 	      ${LDFLAGSgcc_${notdir ${@:.axf=}}}                              \
 	      ${LDFLAGS} -o ${@}.axf $(filter %.o, ${^}) $(filter %.a, ${^})  \
 	      '${LIBM}' '${LIBC}' '${LIBGCC}';                          
-	${OBJCOPY} -O elf32-littlearm ${@}.axf ${@};
-	rm -f ${@}.axf;
-	$(MAKE) -s clean;
+	@${OBJCOPY} -O elf32-littlearm ${@}.axf ${@};
+	@rm -f ${@}.axf;
+	@$(MAKE) -s clean;
 
 
 %.o: %.c
@@ -250,6 +251,7 @@ ${OUTDIR}:
 clean:
 	@rm -rf src/*/*.o
 	@rm -rf src/*/*.d
+	# @rm builds/*.mk
 
 ${OUTDIR}/${MAINFILE}.out: $(patsubst %.c,%.o,${FW_SRCS})
 ${OUTDIR}/${MAINFILE}.out: ${ROOT}/driverlib/gcc/libdriver.a
