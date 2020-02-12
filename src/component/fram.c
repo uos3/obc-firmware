@@ -48,6 +48,7 @@ void FRAM_write(uint32_t address, uint8_t *data, uint32_t length)
 
 void FRAM_read(uint32_t address, uint8_t *data, uint32_t length)
 {
+  // TODO - investigate why the latch isn't reset
   SPI_burstread32(SPI_FRAM, ((FRAM_OPCODE_READ << 24) | (address & 0xFFFFFF)), data, length);
 }
 
