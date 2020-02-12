@@ -2,7 +2,7 @@
 # 	1) needs to compile any possible main file (those in the main folder)
 # 	based on the dependancies only IT requires.
 
-TIVAWARE=src/driver/TivaWare_C_Series-2.1.4.178
+TIVAWARE=../TivaWare_C_Series-2.1.4.178
 CFLAGS = -linttypes -lstdbool -I$(TIVAWARE) 
 PART=TM4C123GH6PGE
 
@@ -84,9 +84,10 @@ endif
 
 
 builds/demo_antenna.out: src/main/demo_antenna.o
-	@if [ 'x${VERBOSE_ON}' = x ];                                            \
+
+	if [ 'x${VERBOSE_ON}' = x ];                                            \
 	 then                                                                 \
-	     echo "  LD    ${@} ${LNK_SCP}";                                  \
+	     echo "  LD    ${@} ${LNK_SCP}";echo "${LNK_SCP}"; \
 	 else                                                                 \
 	     echo ${LD} -T ${SCATTERgcc}                                         \
 	          --entry ${ENTRY_SYM}                       \
@@ -99,9 +100,40 @@ builds/demo_antenna.out: src/main/demo_antenna.o
 	      ${LDFLAGSgcc_${notdir ${@:.axf=}}}                              \
 	      ${LDFLAGS} -o ${@}.axf $(filter %.o, ${^}) $(filter %.a, ${^})  \
 	      '${LIBM}' '${LIBC}' '${LIBGCC}';                          
-	@${OBJCOPY} -O elf32-littlearm ${@}.axf ${@};
-	@rm -f ${@}.axf;
-	@$(MAKE) -s clean;
+	${OBJCOPY} -O elf32-littlearm ${@}.axf ${@};
+	rm -f ${@}.axf;
+	$(MAKE) -s clean;
+
+
+%.o: %.c
+	@if [ 'x${VERBOSE_ON}' = x ];                          \
+	 then                                                 \
+	     echo "  CC    ${<}";                             \
+	 else                                                 \
+	     echo ${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}; \
+	 fi
+	@${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}
+#
+%.o: %.S
+	@if [ 'x${VERBOSE_ON}' = x ];                               \
+	 then                                                    \
+	     echo "  AS    ${<}";                                \
+	 else                                                    \
+	     echo ${CC} ${AFLAGS} -D${COMPILER} -o ${@} -c ${<}; \
+	 fi
+	@${CC} ${AFLAGS} -D${COMPILER} -o ${@} -c ${<}
+
+#
+# The rule for creating an object library.
+#
+%.a:
+	@if [ 'x${VERBOSE_ON}' = x ];     \
+	 then                          \
+	     echo "  AR    ${@}";      \
+	 else                          \
+	     echo ${AR} -cr ${@} ${^}; \
+	 fi
+	@${AR} -cr ${@} ${^}
 
 src/main/demo_antenna.o: src/utility/debug.o \
  src/component/led.o \
@@ -119,7 +151,7 @@ clean:
 	@rm -rf src/*/*.o
 	@rm -rf src/*/*.d
 
-
+builds/demo_antenna.out: src/driver/tm4c_startup_${COMPILER}.o
 SCATTERgcc=src/driver/tm4c123g.ld
 ENTRY_SYM=ResetISR
 CFLAGSgcc=-DTARGET_IS_TM4C123_RB1
