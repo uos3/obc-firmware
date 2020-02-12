@@ -38,7 +38,6 @@ PART=TM4C123GH6PGE
 FW_ROOT=.
 ROOT=../TivaWare_C_Series-2.1.4.178
 OUTDIR?=builds
-OUTFILE?=demo_antenna.out
 
 # 8KB Heap
 HEAPSIZE = 0x2000
@@ -47,17 +46,18 @@ STACKSIZE = 0x800
 
 #
 # Include the common make definitions.
-#
-# include ${FW_ROOT}/src/firmware.mk
-FW_SRCS=src/component/led.c \
- src/driver/board.c \
- src/driver/gpio.c \
- src/driver/delay.c \
- src/driver/board.c \
- src/driver/watchdog_ext.c \
- src/driver/uart.c \
- src/driver/rtc.c \
- src/driver/wdt.c \
+include builds/firmware_sources.mk
+
+
+# FW_SRCS=src/component/led.c \
+#  src/driver/board.c \
+#  src/driver/gpio.c \
+#  src/driver/delay.c \
+#  src/driver/board.c \
+#  src/driver/watchdog_ext.c \
+#  src/driver/uart.c \
+#  src/driver/rtc.c \
+#  src/driver/wdt.c \
 
 BOARD_INCLUDE="-DBOARD_INCLUDE=\"../driver/board.h\""
 
@@ -174,7 +174,7 @@ IPATH=${ROOT}
 	 fi
 	@${AR} -cr ${@} ${^}
 
-builds/demo_antenna.out: src/main/demo_antenna.o
+${OUTDIR}/${MAINFILE}.out: src/main/${MAINFILE}.o
 
 	@if [ 'x${VERBOSE_ON}' = x ];                                            \
 	 then                                                                 \
@@ -226,33 +226,35 @@ builds/demo_antenna.out: src/main/demo_antenna.o
 	 fi
 	@${AR} -cr ${@} ${^}
 
-src/main/demo_antenna.o: src/utility/debug.o \
- src/component/led.o \
- src/driver/board.o \
- src/driver/gpio.o \
- src/driver/delay.o \
- src/driver/board.o \
- src/driver/watchdog_ext.o \
- src/driver/uart.o \
- src/driver/rtc.o \
- src/driver/wdt.o \
 
+# src/main/demo_antenna.o: src/utility/debug.o \
+#  src/component/led.o \
+#  src/driver/board.o \
+#  src/driver/gpio.o \
+#  src/driver/delay.o \
+#  src/driver/board.o \
+#  src/driver/watchdog_ext.o \
+#  src/driver/uart.o \
+#  src/driver/rtc.o \
+#  src/driver/wdt.o 
+
+include builds/custom_rule.mk
 
 #
 # The rule to create the target directory.
 #
-${FW_ROOT}/${OUTDIR}:
-	@mkdir -p ${FW_ROOT}/${OUTDIR}/
+${OUTDIR}:
+	@mkdir -p ${OUTDIR}
 
 
 clean:
 	@rm -rf src/*/*.o
 	@rm -rf src/*/*.d
 
-${FW_ROOT}/${OUTDIR}/${OUTFILE}: $(patsubst %.c,%.o,${FW_SRCS})
-${FW_ROOT}/${OUTDIR}/${OUTFILE}: ${ROOT}/driverlib/gcc/libdriver.a
-${FW_ROOT}/${OUTDIR}/${OUTFILE}: src/driver/tm4c_startup_${COMPILER}.o
-${FW_ROOT}/${OUTDIR}/${OUTFILE}: src/driver/tm4c123g.ld
+${OUTDIR}/${MAINFILE}.out: $(patsubst %.c,%.o,${FW_SRCS})
+${OUTDIR}/${MAINFILE}.out: ${ROOT}/driverlib/gcc/libdriver.a
+${OUTDIR}/${MAINFILE}.out: src/driver/tm4c_startup_${COMPILER}.o
+${OUTDIR}/${MAINFILE}.out: src/driver/tm4c123g.ld
 SCATTERgcc=src/driver/tm4c123g.ld
 ENTRY_SYM=ResetISR
 CFLAGSgcc=-DTARGET_IS_TM4C123_RB1

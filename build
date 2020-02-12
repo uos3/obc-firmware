@@ -1,0 +1,72 @@
+#! /usr/bin/python3
+import os
+
+# strictly speaking, you can do both the rule generation
+# and the fw sources generation from the same loop
+
+
+# make builds/$MAINNAME FW_SRCS=$FW_SRCS MAINFILE=$MAINNAME
+compiler="arm-none-eabi-gcc"
+main_name = "demo_blink"
+main_rel_path = "src/main/.."
+tivaware_location="../TivaWare_C_Series-2.1.4.178"
+tmp_filename = "/tmp/compile_output.txt"
+firmware_sources = ""
+
+# add internal source files to the list
+generate_source_command = f"{compiler} -H src/main/{main_name}.c -I{tivaware_location} 2> {tmp_filename}"
+os.system(generate_source_command)
+with open(tmp_filename, 'r') as fp:
+    for line in fp:
+        # print(line)
+        if line[0:2] == ". ":
+            if main_rel_path in line:
+                line="src"+line.split(main_rel_path)[-1]
+            else:
+                line=line[2:]
+            firmware_sources+=line[:-3]+".c "
+
+
+# print(firmware_sources)
+# generate the custom rule for the dependancy compilation
+custom_rule_command = f"{compiler} -MM src/main/{main_name}.c -I{tivaware_location} 1> {tmp_filename}"
+os.system(custom_rule_command)
+with open(tmp_filename, 'r') as fp:
+    custom_rule_output = fp.read()
+# for some reason, this still includes the ../tivaware stuff. 
+# print(custom_rule_output)
+# fortunately, in python, this is TRIVIAL to remove
+# print("custom rule output:\n", custom_rule_output)
+final_custom_rule = f"src/main/{main_name}.o: "
+for dependancy in custom_rule_output.split(" ")[1:]:
+    if tivaware_location in dependancy:
+        # yeet tivawares
+        continue
+    if ".." in dependancy:
+        dependancy = "src" + dependancy.split("..")[-1]
+    if ".h" == dependancy[-2:]:
+        final_custom_rule += dependancy[:-2]+".o "
+        continue
+    if main_name in dependancy:
+        # we also don't want the original c file to be 
+        # in the dependancies
+        continue
+
+# print("---- custom_rule ----\n",final_custom_rule,"\n")
+# ladies and gentleman, may I present to you the final statement:
+# make_command = f"make builds/{main_name}.out OUTDIR=builds MAINFILE={main_name} CUSTOM_RULE=\"{final_custom_rule}\" FW_SRCS=\"{firmware_sources}\""
+# print(make_command)
+
+# instead of trying to fill a string in a makefile (dumb), add a dependancy
+# file that's included at the top. (smort)
+
+with open("builds/firmware_sources.mk", 'w') as fw_srcs_mkfile:
+    fw_srcs_mkfile.write(f"FW_SRCS={firmware_sources}")
+
+with open("builds/custom_rule.mk", 'w') as custom_rule_mkfile:
+    custom_rule_mkfile.write(final_custom_rule)
+
+
+make_command = f"make builds/{main_name}.out MAINFILE={main_name}"
+os.system(make_command)
+# boom
