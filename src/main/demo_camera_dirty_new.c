@@ -20,7 +20,7 @@
 
 //#define PAGE_LENGTH 5000 //Buffer_slot_size is 3392bytes, do changed the page size!
 #define PAGE_LENGTH 106
-#define PAGE_SIZE = 2080
+#define PAGE_SIZE 2080
 
 static char LK_RESET[]     = {0x56, 0x00, 0x26, 0x00};
 static char LK_RESET_RE[]    = {0x0d, 0x0a, 0x49, 0x6e, 0x69, 0x74, 0x20, 0x65, 0x6e, 0x64, 0x0d, 0x0a};
@@ -54,6 +54,7 @@ int main(void)
   enable_watchdog_kick();
   RTC_init();
 
+
     LED_on(LED_B);
     Delay_ms(2000);
 
@@ -68,6 +69,15 @@ int main(void)
     int index_rst=0, index_res=0, index_takepic=0, index_readsize=0,index_readdata=0, index_readdata2 =0, index_resolution = 0;;
     int rst = 0, res = 0, pic = 0, size=0, dat =0, dat2 = 0, dat3=0, resol=0;
     char reset_resp[20], res_resp[20]={0}, pic_res[20], size_resp[20]={0}, read_resp[20]={0}, read_resp2[20], resol_resp[20]={0};
+    char *output = malloc(100*sizeof(char));
+    char *output2 = malloc(100*sizeof(char));
+    char *output3 = malloc(100*sizeof(char));
+    char *output4 = malloc(100*sizeof(char));
+    char *output5 = malloc(100*sizeof(char));
+    char *output6 = malloc(100*sizeof(char));
+    char *output7 = malloc(100*sizeof(char));
+    char *output8 = malloc(100*sizeof(char));
+    char *output9 = malloc(100*sizeof(char));
     uint32_t jpegsize;
 
 
