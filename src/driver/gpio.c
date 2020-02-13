@@ -296,7 +296,7 @@ static void GPIO_PortD_InterruptHandler(void)
   }
 }
 /* Function for setting up the interrupt for specific GPIO pin */
-bool GPIO_set_risingInterrupt(uint8_t gpio_number, void *interrupt_callback(void))
+bool GPIO_set_risingInterrupt(uint8_t gpio_number, void (*interrupt_callback)(void))
 {
   if(gpio_number >= NUMBER_OF_GPIOS)
     return false;
@@ -307,8 +307,8 @@ bool GPIO_set_risingInterrupt(uint8_t gpio_number, void *interrupt_callback(void
 
   GPIOIntTypeSet(gpio->port, gpio->pin, GPIO_RISING_EDGE);
 
-  #warning "Phil isn't sure about this:"
-  gpio_state->int_function = &interrupt_callback;
+  // #warning "Phil isn't sure about this:"
+  gpio_state->int_function = interrupt_callback;
 
   if(gpio->port == GPIO_PORTA_BASE)
   {

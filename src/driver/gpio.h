@@ -70,7 +70,7 @@ bool GPIO_read(uint8_t gpio_number);
  * @param pointer to the function to be called in the interrupt
  * @returns true on success, false on failure
  */
-bool GPIO_set_risingInterrupt(uint8_t gpio_number, void *interrupt_callback(void));
+bool GPIO_set_risingInterrupt(uint8_t gpio_number, void (*interrupt_callback)(void));
 
 /**
  * @function
