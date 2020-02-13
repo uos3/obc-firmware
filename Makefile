@@ -259,8 +259,8 @@ CFLAGSgcc=-DTARGET_IS_TM4C123_RB1
 clean:
 	@rm -rf src/*/*.o
 	@rm -rf src/*/*.d
-	@rm builds/*.mk
 
 clean-builds:
 	@rm builds/*.out
+	@rm builds/*.mk
 
