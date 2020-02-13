@@ -69,8 +69,8 @@ int main(void)
     // Variables
     watchdog_update = 0xFF;
     int index_rst=0, index_res=0, index_takepic=0, index_readsize=0,index_readdata=0, index_readdata2 =0, index_resolution = 0;;
-    int rst = 0, res = 0, pic = 0, size=0, dat =0, dat2 = 0, dat3=0, resol=0;
-    int PAGE_SIZE = 2080
+    int rst = 0, res = 0, pic = 0, size=0, dat =0, page_byte = 0, dat3=0, resol=0;
+    uint32_t PAGE_SIZE = 2080;
     char reset_resp[20], res_resp[20]={0}, pic_res[20], size_resp[20]={0}, read_resp[20]={0}, read_resp2[20], resol_resp[20]={0};
     char *output = malloc(100*sizeof(char));
     char *output2 = malloc(100*sizeof(char));
@@ -82,10 +82,10 @@ int main(void)
     char *output8 = malloc(100*sizeof(char));
     char *output9 = malloc(100*sizeof(char));
     uint32_t jpegsize;
+    uint32_t page_start_address;
 
-
-    // Execute reset command
-    UART_puts(UART_INTERFACE, "Reseting camera...\r\n");
+        // Execute reset command
+        // UART_puts(UART_INTERFACE, "Reseting camera...\r\n");
     UART_putb(UART_CAMERA, LK_RESET, sizeof(LK_RESET));
     uint64_t start_timestamp;
     RTC_getTime_ms(&start_timestamp);
@@ -116,17 +116,17 @@ int main(void)
     watchdog_update = 0xFF;
 
     // Check output command match
-    if(index_rst == sizeof(LK_RESET_RE)){
-        UART_puts(UART_INTERFACE, "Reset command matched...\r\n");
-    }
-    else{
-        UART_puts(UART_INTERFACE, "Reset command not matched...\r\n");
-    }
+    // if(index_rst == sizeof(LK_RESET_RE)){
+    //     UART_puts(UART_INTERFACE, "Reset command matched...\r\n");
+    // }
+    // else{
+    //     UART_puts(UART_INTERFACE, "Reset command not matched...\r\n");
+    // }
 
     // Reset response command
-    UART_puts(UART_INTERFACE, "Reset response is...\r\n");
-    UART_putb(UART_INTERFACE, reset_resp, sizeof(LK_RESET_RE));
-    UART_puts(UART_INTERFACE, "Reset camera done...\r\n");
+    // UART_puts(UART_INTERFACE, "Reset response is...\r\n");
+    // UART_putb(UART_INTERFACE, reset_resp, sizeof(LK_RESET_RE));
+    // UART_puts(UART_INTERFACE, "Reset camera done...\r\n");
     Delay_ms(3000);
 
 
@@ -145,18 +145,18 @@ int main(void)
     }
 
     // Check output command match
-    if(index_resolution==sizeof(LK_PICTURE_RE)){
-        UART_puts(UART_INTERFACE,"\r\nResolution response matched\r\n");
-    } else{
-        UART_puts(UART_INTERFACE,"\r\nResolution response not matched\r\n");
-    }
+    // if(index_resolution==sizeof(LK_PICTURE_RE)){
+    //     UART_puts(UART_INTERFACE,"\r\nResolution response matched\r\n");
+    // } else{
+    //     UART_puts(UART_INTERFACE,"\r\nResolution response not matched\r\n");
+    // }
 
     // Show resolution response command
-    UART_putb(UART_INTERFACE,resol_resp, sizeof(resol_resp));
-    for(int i =0;i<sizeof(LK_RESOLUTION_RE);i++){
-      sprintf(output8,"0x%02"PRIx8" ",resol_resp[i]);
-      UART_puts(UART_INTERFACE,output8);
-    }
+    // UART_putb(UART_INTERFACE,resol_resp, sizeof(resol_resp));
+    // for(int i =0;i<sizeof(LK_RESOLUTION_RE);i++){
+    //   sprintf(output8,"0x%02"PRIx8" ",resol_resp[i]);
+    //   UART_puts(UART_INTERFACE,output8);
+    // }
     Delay_ms(100);
 
     // Execute take picture command 
@@ -176,18 +176,18 @@ int main(void)
     }
 
     // Check take picture output command
-    if(index_takepic == sizeof(LK_PICTURE_RE)){
-        UART_puts(UART_INTERFACE, "\r\nPicture Resp matched\r\n");
-    } else{
-        UART_puts(UART_INTERFACE, "\r\nPicture response not matched\r\n");
-    }
+    // if(index_takepic == sizeof(LK_PICTURE_RE)){
+    //     UART_puts(UART_INTERFACE, "\r\nPicture Resp matched\r\n");
+    // } else{
+    //     UART_puts(UART_INTERFACE, "\r\nPicture response not matched\r\n");
+    // }
 
     // Show take picture response command
-    UART_putb(UART_INTERFACE, pic_res, sizeof(LK_PICTURE_RE));
-    for(int i = 0;i<sizeof(LK_PICTURE_RE);i++){
-      sprintf(output2, "0x%02"PRIx8" ", pic_res[i]);
-      UART_puts(UART_INTERFACE, output2);
-    }
+    // UART_putb(UART_INTERFACE, pic_res, sizeof(LK_PICTURE_RE));
+    // for(int i = 0;i<sizeof(LK_PICTURE_RE);i++){
+    //   sprintf(output2, "0x%02"PRIx8" ", pic_res[i]);
+    //   UART_puts(UART_INTERFACE, output2);
+    // }
 
     //Execute read picture size command
     UART_putb(UART_CAMERA, LK_JPEGSIZE, sizeof(LK_JPEGSIZE));
@@ -207,30 +207,30 @@ int main(void)
     }
 
     // Check read picture response
-    if(index_readsize == sizeof(LK_JPEGSIZE_RE)){
-        UART_puts(UART_INTERFACE, "\r\nPicture Size Resp matched\r\n");
-    }else{
-        UART_puts(UART_INTERFACE, "\r\nPicture size response not matched\r\n");
-    }
+    // if(index_readsize == sizeof(LK_JPEGSIZE_RE)){
+    //     UART_puts(UART_INTERFACE, "\r\nPicture Size Resp matched\r\n");
+    // }else{
+    //     UART_puts(UART_INTERFACE, "\r\nPicture size response not matched\r\n");
+    // }
 
     // Store JPEGSIZE
     jpegsize = UART_getw4(UART_CAMERA);
-    UART_puts(UART_INTERFACE, "\r\nJPEG SIZE STORED\r\n");
+    // UART_puts(UART_INTERFACE, "\r\nJPEG SIZE STORED\r\n");
 
     // Show read picture response
-    UART_putb(UART_INTERFACE, size_resp, sizeof(size_resp));
-    for(int i = 0; i<sizeof(LK_JPEGSIZE_RE);i++){
-      sprintf(output3, "0x%02"PRIx8" ",size_resp[i]);
-      UART_puts(UART_INTERFACE, output3);
-    }
+    // UART_putb(UART_INTERFACE, size_resp, sizeof(size_resp));
+    // for(int i = 0; i<sizeof(LK_JPEGSIZE_RE);i++){
+    //   sprintf(output3, "0x%02"PRIx8" ",size_resp[i]);
+    //   UART_puts(UART_INTERFACE, output3);
+    // }
 
     // Show JPEG size response
-    UART_puts(UART_INTERFACE,"\n\r");
-    sprintf(output4, "%u ", jpegsize);
-    UART_puts(UART_INTERFACE, output4);
+    // UART_puts(UART_INTERFACE,"\n\r");
+    // sprintf(output4, "%u ", jpegsize);
+    // UART_puts(UART_INTERFACE, output4);
 
 
-    UART_puts(UART_INTERFACE,"Preparing to read picture data ...");
+    // UART_puts(UART_INTERFACE,"Preparing to read picture data ...");
   
     //Read the picture
     bool endflag = false;
@@ -250,7 +250,7 @@ int main(void)
         //while(x--){
         LK_READPICTURE[8]=i/0x100;
         LK_READPICTURE[9]=i%0x100;
-        UART_puts(UART_INTERFACE,"\n\r");
+        // UART_puts(UART_INTERFACE,"\n\r");
         UART_putb(UART_CAMERA,LK_READPICTURE,sizeof(LK_READPICTURE));
         RTC_getTime_ms(&timestamp);
         while(!RTC_timerElapsed_ms(timestamp,2000)){
@@ -259,16 +259,16 @@ int main(void)
                     // RESPONSE HEAD
                     UART_getc_nonblocking(UART_CAMERA,&response_begin[k]);
                     k++;
-                } else if(k>=5 && dat2<pagesize && !endflag){
+                } else if((k>=5) && (page_byte<PAGE_SIZE) && (!endflag)){
                     // RESPONSE PICTURE
-                    UART_getc_nonblocking(UART_CAMERA,&data_buffer[dat2]);
-                    if((data_buffer[dat2-1]==0xff && data_buffer[dat2]==0xd9)){
+                    UART_getc_nonblocking(UART_CAMERA,&data_buffer[page_byte]);
+                    if((data_buffer[page_byte-1]==0xff && data_buffer[page_byte]==0xd9)){
                         endflag = true;
-                        dat2++;
+                        page_byte++;
                     }
                     else
                     {
-                    dat2++; 
+                    page_byte++; 
                     }
                 } else
                 {
@@ -279,24 +279,26 @@ int main(void)
             }
         }
 
-        for(int i =0;i<dat2;i++){
-            sprintf(output6, "0x%02"PRIx8" ",data_buffer[i]);
-            UART_puts(UART_INTERFACE, output6);
-        }
+        // for(int i =0;i<page_byte;i++){
+        //     sprintf(output6, "%c",data_buffer[i]);
+        //     UART_puts(UART_INTERFACE, output6);
+        // }
 
-        FRAM_write(i, data_buffer, 0x820);
+        UART_putb(UART_INTERFACE, data_buffer, page_byte);
+        // FRAM_write(page_start_address, data_buffer, page_byte);
 
-        dat2=0;
-        i += PAGE_SIZE;
+        page_byte=0;
+        page_start_address += PAGE_SIZE;
         k=0;
 
-        if(i > jpegsize){
-            endflag = true;
+        if (page_start_address > jpegsize)
+        {
+          endflag = true;
         }
 
     }
 
-    UART_puts(UART_INTERFACE, "\r\nEND!");
+    // UART_puts(UART_INTERFACE, "\r\nEND!");
     free(output9);
     free(output8);
     free(output2);
