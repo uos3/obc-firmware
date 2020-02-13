@@ -8,6 +8,8 @@
  * @ingroup drivers
  */
 
+// TODO - find out which of these is internal. Merge them anyway.
+
 #ifndef __WDT_H__
 #define __WDT_H__
 

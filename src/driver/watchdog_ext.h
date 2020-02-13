@@ -8,15 +8,13 @@
 * @ingroup drivers
 */  
 
+// TODO - find out which of these is internal, which is external, merge them.
+
 // this is development code to aid in implementing watchdog kicking on interrupt
 
 // not necessarily in Uos3 Cubesat flight software - risk that automatically kicking on interrupt
 
 // might prevent watchdog timer resetting when operation has actually failed
-
-// could set a flag regularly, but actual kicking should be done as far as possible explicitly
-
-//
 
 // Two ways to initialise the interrupt. Dynamically with TimerIntRegister, or statically by setting
 // the define variable TIMER0A to the routine name (with my modified tm4c_startup_gcc.c this works)
