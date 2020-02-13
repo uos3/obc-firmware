@@ -1,24 +1,27 @@
+/*
+    Debug tools, feel free to expand.
+
+    Author: Richard A
+    Last modified: 2020 02 13
+    Status: Functional
+*/
+
+
 #ifndef __DEBUG_H__
 #define __DEBUG_H__
 
+// toggle comment when not debugging
+#define DEBUG_MODE
+
 #include "../driver/board.h"
 
-#define DEBUG_A GPIO_PC4
-#define DEBUG_B GPIO_PD4
-#define DEBUG_C GPIO_PD5
-#define DEBUG_D GPIO_PB0
-#define DEBUG_E GPIO_PC5
-
-/* Uncomment when blackmagic connected to UART 4. Will allow for debug prints. */
-// #define DEBUG_MODE
-
-/* UART_INTEFRACE is commonly used to indicate the debug line. WIll raise an
-error if not defined. It will only be defined if debug mode is active, which
-is the only circumstance the print statements should be used. */
+// protection against not having it defined
 #ifdef DEBUG_MODE
     #define UART_INTERFACE UART_DEBUG_4
 #endif
 
-void Debug_print(char* fmt, ...);
+void debug_init();
+
+void debug_print(char* debug_message);
 
 #endif /*  __DEBUG_H__ */
