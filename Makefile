@@ -248,11 +248,6 @@ ${OUTDIR}:
 	@mkdir -p ${OUTDIR}
 
 
-clean:
-	@rm -rf src/*/*.o
-	@rm -rf src/*/*.d
-	# @rm builds/*.mk
-
 ${OUTDIR}/${MAINFILE}.out: $(patsubst %.c,%.o,${FW_SRCS})
 ${OUTDIR}/${MAINFILE}.out: ${ROOT}/driverlib/gcc/libdriver.a
 ${OUTDIR}/${MAINFILE}.out: src/driver/tm4c_startup_${COMPILER}.o
@@ -260,3 +255,12 @@ ${OUTDIR}/${MAINFILE}.out: src/driver/tm4c123g.ld
 SCATTERgcc=src/driver/tm4c123g.ld
 ENTRY_SYM=ResetISR
 CFLAGSgcc=-DTARGET_IS_TM4C123_RB1
+
+clean:
+	@rm -rf src/*/*.o
+	@rm -rf src/*/*.d
+	@rm builds/*.mk
+
+clean-builds:
+	@rm builds/*.out
+
