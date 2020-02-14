@@ -20,7 +20,9 @@ void debug_init(){
 }
 
 void debug_print(char* debug_message) {
-  UART_puts(UART_INTERFACE, debug_message); 
-  UART_puts(UART_INTERFACE, "\r\n");
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, debug_message); 
+    UART_puts(UART_INTERFACE, "\r\n");
+  #endif
 }
 
