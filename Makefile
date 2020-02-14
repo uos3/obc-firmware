@@ -114,17 +114,17 @@ ifneq ($(OSIZE_ON),)
 else
   CFLAGS += -O0
 endif 
-# CFLAGS += -Wall \
-# 			-Wextra \
-# 			-Wpedantic \
-# 			-Wswitch-default \
-# 			-Wswitch-enum \
-# 			-Wduplicated-cond \
-# 			-Wconversion \
-# 			-Wlogical-op \
-# 			-Wstrict-prototypes \
-# 			-Wmissing-prototypes \
-# 			-Wmissing-declarations
+WARNINGS += -Wall \
+			-Wextra \
+			-Wpedantic \
+			-Wswitch-default \
+			-Wswitch-enum \
+			-Wduplicated-cond \
+			-Wconversion \
+			-Wlogical-op \
+			-Wstrict-prototypes \
+			-Wmissing-prototypes \
+			-Wmissing-declarations
 ifneq ($(WERROR_ON),)
   CFLAGS += -Werror
 endif
