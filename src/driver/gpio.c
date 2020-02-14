@@ -318,7 +318,7 @@ bool GPIO_set_risingInterrupt(uint8_t gpio_number, void (*interrupt_callback)(vo
   {
     GPIOIntRegister(gpio->port, GPIO_PortB_InterruptHandler);
   }
-  else if(gpio->port, GPIO_PORTD_BASE)
+  else if(gpio->port == GPIO_PORTD_BASE)
   {
     GPIOIntRegister(gpio->port, GPIO_PortD_InterruptHandler);
   }
