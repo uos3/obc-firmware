@@ -14,6 +14,13 @@ void data_split_u32(uint32_t data, uint8_t *split){
     split[3] = (data & 0xff000000) >> 24;
 }
 
+void data_split_u32_le(uint32_t data, uint8_t *split){
+    split[3] = (data & 0x000000ff);
+    split[2] = (data & 0x0000ff00) >> 8;
+    split[1] = (data & 0x00ff0000) >> 16;
+    split[0] = (data & 0xff000000) >> 24;
+}
+
 void data_split_u16(uint16_t data, uint8_t *split){
     split[0] = (data & 0x000000ff);
     split[1] = (data & 0x0000ff00) >> 8;

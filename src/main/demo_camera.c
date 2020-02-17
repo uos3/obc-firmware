@@ -1,5 +1,7 @@
 /* 
-    Author: Richard A, 2019
+    Author: Richard A
+    Last modified: 2020 02 14
+    Status: functional file size reading.
     Camera demo: takes a picture, dumps it into FRAM (ignoring the blocks) and
     then dumps the FRAM over UART. 
     
@@ -23,9 +25,9 @@
 #include "../utility/debug.h"
 #include "../utility/byte_plexing.h"
 
-#define CAMERA_FUNC_TEST
+// #define CAMERA_FUNC_TEST
 // empirically determined
-#define CAMERA_TIMEOUT 3000
+#define CAMERA_TIMEOUT 5000
 
 static uint8_t CAMERA_RESET_CMD[] = {0x56, 0x00, 0x26, 0x00};
 // static uint8_t CAMERA_RESET_RES[] = {0x76, 0x00, 0x26, 0x00};
@@ -39,9 +41,14 @@ static uint8_t CAMERA_TAKE_PICTURE_RES[] = {0x76, 0x00, 0x36, 0x00, 0x00};
 static uint8_t CAMERA_READ_JPG_SIZE_CMD[] = {0x56, 0x00, 0x34, 0x01, 0x00};
 static uint8_t CAMERA_READ_JPG_SIZE_RES[] = {0x76, 0x00, 0x34, 0x00, 0x04, 0x00}; // expect 3 more bytes describing size
 
-static uint8_t CAMERA_READ_JPG_FILE_CMD[] = {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A, 0x00};
-// next is initial address (3 bytes) then 0x00, then data length (3 bytes) then interval (2 bytes)
+static uint8_t CAMERA_READ_JPG_FILE_CMD[] = {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A};
+// next is initial address (4 bytes) then data length (4 bytes) then interval (2 bytes)
 static uint8_t CAMERA_READ_JPG_FILE_RES[] = {0x76, 0x00, 0x32, 0x00, 0x00};
+// probably want some text in here
+static uint8_t CAMERA_READ_JPG_FILE_DATA_LEN[] = {0x00, 0x00, 0x08, 0x00};
+// 2048 bytes. Nice number. In theory, min res file is ~1450 bytes.
+static uint8_t CAMERA_READ_JPG_FILE_DATA_INTERVAL[] = {0x00, 0x0A};
+
 static uint8_t CAMERA_PAGE_HEADER[] = {0xFF, 0xD8};
 static uint8_t CAMERA_PAGE_FOOTER[] = {0xFF, 0xD9};
 
@@ -49,10 +56,7 @@ static uint8_t CAMERA_SET_RESOLUTION_160x120[] = {0x56, 0x00, 0x54, 0x01, 0x22};
 static uint8_t CAMERA_SET_RESOLUTION_RES[] = {0x76, 0x00, 0x54, 0x00, 0x00};
 
 
-
-#ifdef CAMERA_FUNC_TEST
-    char output[100];
-#endif
+char output[100];
 
 
 uint8_t* get_n_bytes_from_camera(uint32_t n_bytes){
@@ -190,8 +194,119 @@ uint8_t* demo_get_jpeg_size_response(){
 }
 
 
-void demo_retrieve_picture (){
-    // fifth is where the fun begins
+void camera_get_jpg_page_cmd(uint32_t page_start_address){
+    uint8_t page_start_address_bytes[4];
+
+    // get page command
+    send_to_camera(CAMERA_READ_JPG_FILE_CMD, sizeof(CAMERA_READ_JPG_FILE_CMD));
+
+    // create some bytes here
+    data_split_u32_le(page_start_address, page_start_address_bytes);
+    send_to_camera(page_start_address_bytes, 4);
+
+    // length to read
+    send_to_camera(CAMERA_READ_JPG_FILE_DATA_LEN, sizeof(CAMERA_READ_JPG_FILE_DATA_LEN));
+
+    // interval 
+    send_to_camera(CAMERA_READ_JPG_FILE_DATA_INTERVAL, sizeof(CAMERA_READ_JPG_FILE_DATA_INTERVAL));
+}
+
+
+uint8_t page_has_footer(uint8_t* page_buffer, uint32_t collected){
+    if ((collected > 0) && (page_buffer[collected - 1] == CAMERA_PAGE_FOOTER[0]) && (page_buffer[collected] == CAMERA_PAGE_FOOTER[1]))
+    {
+        return 0xFF;
+    }
+    return 0x00;
+}
+
+
+uint32_t pull_camera_page(uint8_t* page_buffer, uint32_t page_length, uint8_t* footer_detected){
+    uint32_t collected =0;
+    uint64_t timer_start_time;
+    uint8_t current_byte;
+
+    RTC_getTime_ms(&timer_start_time);
+    while (!RTC_timerElapsed_ms(timer_start_time, CAMERA_TIMEOUT)){
+        // if there are no characters (this check important, without it, values are just spat out)
+        if (!UART_charsAvail(UART_CAMERA)){
+            // pass
+        }
+        // if there is atleast 1 character
+        else if (UART_getc_nonblocking(UART_CAMERA, &current_byte)){
+            RTC_getTime_ms(&timer_start_time);
+            page_buffer[collected] = current_byte;
+            // update the flag.
+            if (page_has_footer(page_buffer, collected) == 0xFF){
+                *footer_detected = 0xFF;
+            }
+            // I am concerned that the 'return' is transmitted after the page
+            // reset timer. It might take a long time to retrieve a page.
+            // We only want to print the picture if this isn't a functional test.
+            // also, we don't want to print the page footer.
+            #ifndef CAMERA_FUNC_TEST
+                UART_putb(UART_INTERFACE, &current_byte, 1);
+            #endif
+            collected++;
+            // if the buffer is full
+            if (collected == page_length){
+                #ifdef CAMERA_FUNC_TEST
+                    debug_print("Page filled");
+                #endif
+                return page_length;
+            }
+        }
+    }
+    // timer has elapsed. This probably means no more bytes are being transmitted.
+    #ifdef CAMERA_FUNC_TEST
+        debug_print("timer elapsed");
+    #endif
+    return collected;
+}
+
+
+void demo_retrieve_picture(uint32_t jpeg_size){
+    #ifdef CAMERA_FUNC_TEST
+        debug_print("\r\n--- Picture retrieve start ---");
+    #endif
+    // header                              Initial address       Read file             Response delay
+    // 0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A, 0x00  0x00 0x00 0x00  0x00  0x00 0x08 0x00  0x00 0x0A
+    uint32_t read_address = 0;
+    uint32_t page_length = 0;
+    uint32_t read_length = 0;
+    uint32_t total_read = 0;
+    uint8_t end_flag = 0;
+    uint8_t* page_buffer;
+
+    // create buffer space for page
+    page_length = data_combine_u32(CAMERA_READ_JPG_FILE_DATA_LEN);
+    #ifdef CAMERA_FUNC_TEST
+        sprintf(output, "packed camera read length: %lu", page_length);
+        debug_print(output);
+    #endif
+    
+    page_buffer = malloc(read_length*sizeof(uint8_t));
+    if (page_buffer == NULL){
+        return;
+    }
+
+    camera_get_jpg_page_cmd(read_address);
+    await_response(CAMERA_READ_JPG_FILE_RES, sizeof(CAMERA_READ_JPG_FILE_RES));
+    // one header
+    await_response(CAMERA_PAGE_HEADER, sizeof(CAMERA_PAGE_HEADER));
+    while (total_read <= jpeg_size){
+        read_length = pull_camera_page(page_buffer, page_length, &end_flag);
+        total_read += read_length;
+        // possible to compare to JPEG size.
+        // temp
+        camera_get_jpg_page_cmd(total_read);
+        await_response(CAMERA_READ_JPG_FILE_RES, sizeof(CAMERA_READ_JPG_FILE_RES));
+        #ifdef CAMERA_FUNC_TEST
+            sprintf(output, "total read: %lu, endflag detected %u", total_read, end_flag);
+            debug_print(output);
+        #endif
+        end_flag = 0x00;
+    }
 }
 
 int main(void){
@@ -228,12 +343,15 @@ int main(void){
         sprintf(output, "read jpeg file size as %d bytes", jpeg_size);
         debug_print(output);
     #endif 
-    // demo_retrieve_picture();
+
+    demo_retrieve_picture(jpeg_size);
+    // might not be significant, but tests thus far show 11 more bytes than expected.
 
     LED_off(LED_B);
     #ifdef CAMERA_FUNC_TEST
         debug_print("--- End Demo ---");
     #endif
+    // debug_print("");
     while (1){
         watchdog_update = 0xFF;
     }

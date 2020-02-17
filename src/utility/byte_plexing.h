@@ -7,6 +7,8 @@ void data_split_32(int32_t data, uint8_t *split);
 
 void data_split_u32(uint32_t data, uint8_t *split);
 
+void data_split_u32_le(uint32_t data, uint8_t *split);
+
 void data_split_u16(uint16_t data, uint8_t *split);
 
 void data_split_16(int16_t data, uint8_t *split);
