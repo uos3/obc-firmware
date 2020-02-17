@@ -26,3 +26,11 @@ void debug_print(char* debug_message) {
   #endif
 }
 
+void debug_clear(){
+  for (int i = 0; i < 100; i++){
+    #ifdef DEBUG_MODE
+      UART_puts(UART_INTERFACE, "\r\n");
+    #endif
+  }
+}
+

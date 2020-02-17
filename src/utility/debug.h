@@ -24,4 +24,6 @@ void debug_init();
 
 void debug_print(char* debug_message);
 
+void debug_clear();
+
 #endif /*  __DEBUG_H__ */
