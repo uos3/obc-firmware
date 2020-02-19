@@ -27,11 +27,11 @@ void buffer_status_print(){
 }
 
 int main(){
-	Board_init();
+	// Board_init();
 	debug_init();
 	debug_clear();
-	enable_watchdog_kick();
-	watchdog_update = 0xFF;
+	// enable_watchdog_kick();
+	// watchdog_update = 0xFF;
 
 	debug_print("=== DEMO buffer ===");
 	debug_print("reads the non-volitile status, write some data, read it back");
@@ -88,8 +88,9 @@ int main(){
 	}
 	debug_print("");
 	debug_print("=== end demo ===");
-	while(1){
-		watchdog_update=0xFF;
-	}
+	// while(1){
+	// 	watchdog_update=0xFF;
+	// }
+	debug_end();
 }
 
