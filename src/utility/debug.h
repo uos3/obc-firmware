@@ -26,4 +26,8 @@ void debug_print(char* debug_message);
 
 void debug_clear();
 
+void debug_end();
+
+void debug_hex(uint8_t data[], uint32_t data_len);
+
 #endif /*  __DEBUG_H__ */
