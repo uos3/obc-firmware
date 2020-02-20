@@ -61,10 +61,13 @@ while(1)
     watchdog_update = 0xFF;           //set the watchdog control variable
     debug_print("Sending Beacon");
 
-    //cc112x_read_config(SPI_RADIO_TX, registerlist, sizeof(registerlist));
+    uint8_t config_result = cc112x_read_config(SPI_RADIO_TX, registerlist, sizeof(registerlist));
+
+    debug_hex(config_result, sizeof(config_result));
+
     //This delay has to be long enough to prevent the tobc from interupting the transmission
     Delay_ms(10000);
-    UART_puts(UART_INTERFACE, "Sent.\r\n");
+    debug_print("Configuration List Complete");
 
   }
 }

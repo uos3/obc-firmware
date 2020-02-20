@@ -335,6 +335,14 @@ void cc112x_set_config(uint8_t spi_device_id, const registerSetting_t *cfg, uint
     }
 }
 
+void cc112x_read_config(uint8_t spi_device_id, const registerSetting_t *list, uint16_t len){
+  uint8_t registerSettings_list[len];
+  for(uint16_t i = 0; i<len; i++){
+    registerSettings_list[i]= cc112xSpiReadReg(spi_device_id, list[i].addr, &readByte);
+  }
+  return registerSettings_list;
+}
+
 
 
 /*******************************************************************************
