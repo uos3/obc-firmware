@@ -54,7 +54,9 @@ void cw_tone_on(radio_config_t *radio_config);
 
 void cw_tone_off(void);
 
+Radio_Status_t Radio_tx_cw(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t data_length);
 
 
 
-#endif /*  __RADIO_H__ */ 
+
+#endif /*  __RADIO_H__ */
