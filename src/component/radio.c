@@ -8,6 +8,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 
+#include <stdint.h>
 #include "../driver/board.h"
 #include "radio.h"
 #define minRxPktLen 127    //(bytes) needs updating when packet structures fixed, not including preamble, sync words etc
@@ -127,7 +128,7 @@ static const registerSetting_t preferredSettings_rxmsk[] = {
     {CC112X_XOSC1,          0x03},
 };
 
-const registerSetting_t preferredSettings_fsk[]= 
+const registerSetting_t preferredSettings_fsk[]=
 {
   {CC112X_IOCFG3,            0x59},
   {CC112X_IOCFG2,            0x13},
@@ -178,7 +179,7 @@ const registerSetting_t preferredSettings_fsk[]=
 //pkt cfg2 set to default
 
 
-// const registerSetting_t preferredSettings_cw[]= 
+// const registerSetting_t preferredSettings_cw[]=
 // {
 //    {CC112X_IOCFG3,            0x59},
 //    {CC112X_IOCFG2,            0x13},
@@ -233,7 +234,7 @@ const registerSetting_t preferredSettings_fsk[]=
 // };
 
 //From demo phil cw
-// static const registerSetting_t preferredSettings_cw[]= 
+// static const registerSetting_t preferredSettings_cw[]=
 // {
 //    {CC112X_IOCFG3,            0x59},  //used to control external PA active low
 //    {CC112X_IOCFG2,            0x13},  //Always on in tx , crc in rx
@@ -288,7 +289,7 @@ const registerSetting_t preferredSettings_fsk[]=
   {CC112X_MODCFG_DEV_E,      0x18}, // OOK
   {CC112X_PREAMBLE_CFG1,     0x00}, // No preamble
   */
-static const registerSetting_t preferredSettings_cw[]= 
+static const registerSetting_t preferredSettings_cw[]=
 {
    {CC112X_IOCFG3,         0x59},
    {CC112X_IOCFG2,         0x13},
@@ -341,6 +342,59 @@ static const registerSetting_t preferredSettings_cw[]=
    {CC112X_XOSC1,             0x07},
    {CC112X_SERIAL_STATUS,     0x08},
 };
+static const registerSetting_t preferredSettings_cw_new[]=
+{
+  {CC112X_IOCFG3,         0x59}, //0b01011001 - PA_PD with output inverted
+  {CC112X_IOCFG2,         0x13}, //0b00010011 - PKT_CRC_OK
+  {CC112X_IOCFG1,         0xB0}, //0b10110000 - HIGHZ with Analog enabled : GPIO1 is MISO
+  {CC112X_IOCFG0,            0x06},//0b00000110 - PKT_SYNC_RXTX
+  {CC112X_SYNC_CFG0,         0x00},//0b00000000 - SYNC MODE Set to 0
+  {CC112X_SYNC_CFG1,         0x08},//ob00001000 - SYNC_THR is 8, Default was A(1010)
+  {CC112X_DEVIATION_M,       0xB4},//0b10110100 - See Page 72 of CC1125 User Manual
+  {CC112X_MODCFG_DEV_E,      0x1A},//0b00011010 - Set Modem Mode normal, MOD_format: 011 = ASK/OOK
+  {CC112X_DCFILT_CFG,        0x1C},
+  {CC112X_PREAMBLE_CFG1,     0x00},//0b00000000 - No preamble used to transmit
+  {CC112X_FREQ_IF_CFG,       0x35},//0b01100101 - RX Mixer Frequency Configuration
+  {CC112X_IQIC,              0xC6},
+  {CC112X_CHAN_BW,           0x10},
+  {CC112X_MDMCFG1,           0x06},//0b01000110 - Bit 6 is FIFO Enable
+  {CC112X_MDMCFG0,           0x05},
+  {CC112X_SYMBOL_RATE2,      0x40},
+  {CC112X_SYMBOL_RATE1,      0x62},
+  {CC112X_SYMBOL_RATE0,      0x4E},
+  {CC112X_AGC_REF,           0x20},
+  {CC112X_AGC_CS_THR,        0x19},
+  {CC112X_AGC_CFG1,          0xA9},
+  {CC112X_AGC_CFG0,          0xCF},
+  {CC112X_FIFO_CFG,          0x00},//Set no automatic flushing of RXFIFO, and threshold = 0
+  {CC112X_SETTLING_CFG,      0x03},//0b00000110 - no auto calibration + 150microseconds settling time
+  {CC112X_FS_CFG,            0x1B},//0b00011011 - 136.7 - 160.0 MHz Band, out of lock detector enabled
+  {CC112X_PKT_CFG2,          0x00},//0b00000000 - Normal/FIFO mode, with CCA_MODE always clear indication
+  {CC112X_PKT_CFG1,          0x00},//0b00000000 - no whitening no crc no address check no byte swap no append
+  {CC112X_PKT_CFG0,          0x20},//0b00100000 - variable packet length mode, no UART mode
+  {CC112X_PA_CFG2,           0x34},//0b01010100 - Set power output to -7.5dBm (PA_POWER_RAMP = 20)
+  {CC112X_IF_MIX_CFG,        0x00},
+  {CC112X_FREQOFF_CFG,       0x22},//0b00100010 - freq offset correction enabled(User manual may be wrong on bit description)
+  {CC112X_CFM_DATA_CFG,      0x00},//0b00000000 - custom frequency modulation disabled
+  {CC112X_FREQ2,             0x5A},//This corresponds to 145.5 MHz, with external oscillator 38.4MHz
+  {CC112X_FREQ1,             0xEF},
+  {CC112X_FREQ0,             0xFF},
+  {CC112X_IF_ADC0,           0x05},
+  {CC112X_FS_DIG1,           0x00},
+  {CC112X_FS_DIG0,           0x5F},//0b01011111 - FS Loop bandwidth in TX is 170.8 kHz
+  {CC112X_FS_CAL0,           0x0E},//0b00001110
+  {CC112X_FS_DIVTWO,         0x03},//0b00000101
+  {CC112X_FS_DSM0,           0x33},
+  {CC112X_FS_DVC0,           0x17},
+  {CC112X_FS_PFD,            0x50},
+  {CC112X_FS_PRE,            0x6E},
+  {CC112X_FS_REG_DIV_CML,    0x14},
+  {CC112X_FS_SPARE,          0xAC},
+  {CC112X_XOSC5,             0x0E},
+  {CC112X_XOSC3,             0xC7},
+  {CC112X_XOSC1,             0x07},
+  {CC112X_SERIAL_STATUS,     0x08},
+};
 typedef struct Radio_device {
   uint8_t   spi_device;
   uint8_t   device_id;
@@ -386,7 +440,7 @@ Radio_Status_t Radio_tx_msk(radio_config_t *radio_config, uint8_t *data_buffer, 
 
   /* Reset Radio */
   SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
-  
+
   if(Radio_query_partnumber(&Radio_transmitter) != Radio_transmitter.device_id)
   {
     return RADIO_STATUS_WRONGPART;
@@ -428,7 +482,7 @@ Radio_Status_t Radio_tx_fsk(radio_config_t *radio_config, uint8_t *data_buffer, 
 
   /* Reset Radio */
   SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
-  
+
 
   if (!(cc112x_query_partnumber(Radio_transmitter.spi_device))) {
     #ifdef DEBUG_MODE
@@ -488,6 +542,49 @@ void cw_tone_off(void)  {
   LED_off(LED_B);
 }
 
+Radio_Status_t Radio_tx_cw(radio_config_t *radio_config, uint8_t *data_buffer, uint32_t data_length){
+
+  char output[100];
+  if(Radio_transmitter.busy)
+  {
+    #ifdef DEBUG_MODE
+      UART_puts(UART_INTERFACE, "Radio busy\r\n");
+    #endif
+    return RADIO_STATUS_BUSY;
+  }
+
+  /* Reset Radio */
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
+
+
+  if (!(cc112x_query_partnumber(Radio_transmitter.spi_device))) {
+    #ifdef DEBUG_MODE
+      UART_puts(UART_INTERFACE, "Part num query failed\r\n");
+    #endif
+    return;
+  }
+  /* Configure Radio */
+  cc112x_set_config(Radio_transmitter.spi_device, preferredSettings_cw_new, sizeof(preferredSettings_cw_new)/sizeof(registerSetting_t));
+  //Better to be hard coded in the config above
+  //cc112x_cfg_frequency(Radio_transmitter.spi_device, (float) radio_config->frequency); //set frequency according to the config file passed as argument
+  cc112x_cfg_power(Radio_transmitter.spi_device, radio_config->power);  //set power according to the config file passed as argument
+  cc112x_cfg_fsk_params(Radio_transmitter.spi_device, radio_config->symbolRate, CC112X_FSK_DEVIATION_8K);
+  cc112x_manualCalibration(Radio_transmitter.spi_device); //calibrate the radio
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Calibrated\r\n");
+  #endif
+  //Load tx fifo
+  cc112xSpiWriteTxFifo(Radio_transmitter.spi_device, data_buffer, data_length);
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Loaded to FIFO\r\n");
+  #endif
+  SPI_cmd(Radio_transmitter.spi_device, CC112X_STX);  //enable TX operation
+  #ifdef DEBUG_MODE
+    UART_puts(UART_INTERFACE, "Transmitting\r\n");
+  #endif
+  return RADIO_STATUS_OK;
+}
+
 
 
 Radio_Status_t Radio_tx_off(radio_config_t *radio_config)
@@ -498,7 +595,7 @@ Radio_Status_t Radio_tx_off(radio_config_t *radio_config)
   SPI_cmd(Radio_transmitter.spi_device, CC112X_SRES);
 
   Radio_transmitter.busy = false;
-  
+
   /* Test we can still talk to it */
   if(Radio_query_partnumber(&Radio_transmitter) != Radio_transmitter.device_id)
   {
@@ -527,7 +624,7 @@ Radio_Status_t Radio_enable_rx_ewor_fsk(radio_config_t *radio_config, uint8_t *r
 
   /* Reset Radio */
   SPI_cmd(Radio_receiver.spi_device, CC112X_SRES);
-  
+
   //Check it will actually receive settings
   if (!(cc112x_query_partnumber(Radio_receiver.spi_device))) {
     #ifdef DEBUG_MODE
@@ -568,12 +665,12 @@ Radio_Status_t Radio_read_rx_fifo(uint8_t *rxBuffer) {
     #endif
     // Flush RX FIFO
     SPI_cmd(Radio_receiver.spi_device, CC112X_SFRX);
-    
+
   } else {
     // Read n bytes from RX FIFO
     cc112xSpiReadReg(Radio_receiver.spi_device, CC112X_NUM_RXBYTES, &rxBytes);
     cc112xSpiReadRxFifo(Radio_receiver.spi_device, rxBuffer, rxBytes);
-    
+
   }
 }
 

@@ -13,7 +13,7 @@
 
 
 #define UART_INTERFACE UART_DEBUG_4
-static uint8_t buffer[17] = "UOS3 UOS3 UOS3 k\0";
+static uint8_t buffer[17] = "UOS3 UOS3 UOS3 k";
 static uint32_t buffer_length = 16;
 static radio_config_t radio_transmitter =
 {
@@ -45,9 +45,8 @@ int main(void)
     watchdog_update = 0xFF;           //set the watchdog control variable
     sprintf(output,"Sending Beacon :\"%s\"\r\n", buffer);
     UART_puts(UART_INTERFACE, output);
-    Packet_cw_transmit_buffer(buffer, buffer_length, &radio_transmitter, &cw_tone_on, &cw_tone_off);
+    Radio_tx_cw(&radio_transmitter, buffer, buffer_length);
     Delay_ms(5000);
     UART_puts(UART_INTERFACE, "Sent.\r\n");
-
   }
 }
