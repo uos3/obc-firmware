@@ -424,7 +424,7 @@ int main(){
 	cc112x_reset(SPI_DEVICE);
 	// check CC112x exists
 	if (!(cc112x_query_partnumber(SPI_DEVICE))){
-		debug_print("TX not found on SPI");
+		debug_print("Device not found on SPI");
 	}
 
 	// reading configuration registers.
