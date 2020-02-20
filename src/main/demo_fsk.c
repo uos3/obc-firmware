@@ -1,18 +1,19 @@
-//#include "../firmware.h"
 
 #include "../board/radio.h"
 #include "../board/watchdog_ext.h"
-#define UART_INTERFACE UART_DEBUG_4
 
 #define useMSK 0
 
+// sample packet
+uint8_t sample_packet[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x00, 0x01, 0x0F, 'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'}
+
 // static uint8_t buffer[17] = "UOS3 UOS3 UOS3 k\0";
 // static uint32_t buffer_length = 16;
-static radio_config_t radio_transmitter = 
-{
-  145.5,  //Frequency, currently this is not used
-  9.0,   //Power From -11 to 15, this is not actually the dbm it will come out at
-  CC112X_FSK_SYMBOLRATE_600,
+static radio_config_t radio_transmitter =
+    {
+        145.5, //Frequency, currently this is not used
+        9.0,   //Power From -11 to 15, this is not actually the dbm it will come out at
+        CC112X_FSK_SYMBOLRATE_600,
 };
 //Interestingly as you write higher powers to the device, beyond about 9dB, power output actually drops
 
