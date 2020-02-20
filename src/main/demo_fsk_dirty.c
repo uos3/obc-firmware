@@ -9,10 +9,10 @@
 #include "../driver/uart.h"
 #include "../driver/watchdog_ext.h"
 
+#include "../utility/debug.h"
+
 #include <stdio.h>
 
-#define useMSK 0
-#define UART_INTERFACE UART_DEBUG_4
 // sample packet
 uint8_t sample_packet[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x00, 0x01, 0x0F, 'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'};
 #define sample_packet_length 31
@@ -25,11 +25,6 @@ static radio_config_t radio_transmitter =
         9.0,   //Power From -11 to 15, this is not actually the dbm it will come out at
         CC112X_FSK_SYMBOLRATE_6000,
 };
-//Interestingly as you write higher powers to the device, beyond about 9dB, power output actually drops
-
-#define PACKET_LENGTH_32x32 128 // 1024/8
-
-uint8_t packet_test_32x32[PACKET_LENGTH_32x32];
 static void transmit_complete(void);
 
 
@@ -49,39 +44,24 @@ static void transmit_complete(void)  {
 
 int main(void)
 {
-  char output[100];
-  Board_init();
-  watchdog_update = 0xFF;           //set the watchdog control variable
-  enable_watchdog_kick();
+  debug_init();
 
-  UART_init(UART_INTERFACE, 9600);
-  UART_puts(UART_INTERFACE, "\r\nCW Radio fsk Demo\r\n");
+  debug_print("FSK DIRTY DEMO 02/2020");
 
-  sprintf(output,"Freq: %.3fMHz, Power: %+.1fdBmW\r\n", radio_transmitter.frequency, radio_transmitter.power);
-  UART_puts(UART_INTERFACE, output);
-
-  uint32_t i;
-
-  /* Populate packet */
-  for(i=0; i<PACKET_LENGTH_32x32; i++)
-  {
-    packet_test_32x32[i] = (uint8_t)(Random(255));
+  if (!(cc112x_query_partnumber(SPI_RADIO_TX))) {
+    debug_print("Part Number Query Failed");
   }
-  uint32_t buffer_length = PACKET_LENGTH_32x32;
+  uint8_t TX_result = cc112xGetRxStatus(SPI_RADIO_TX);
+  debug_hex(TX_result, sizeof(uint8_t));
+
+  uint32_t buffer_length = sample_packet_length;
 
 while(1)
   {
     watchdog_update = 0xFF;           //set the watchdog control variable
-    sprintf(output,"Sending Beacon :");    //\"%s\"\r\n", buffer);
-    UART_puts(UART_INTERFACE, output);
-    if (!useMSK)  {
-      Radio_tx_fsk(&radio_transmitter, sample_packet, sample_packet_length, &transmit_complete);
-    }
-    else
-    {
-      //Radio_tx_msk
-    }
+    debug_print("Sending Beacon");
 
+    //cc112x_read_config(SPI_RADIO_TX, registerlist, sizeof(registerlist));
     //This delay has to be long enough to prevent the tobc from interupting the transmission
     Delay_ms(10000);
     UART_puts(UART_INTERFACE, "Sent.\r\n");

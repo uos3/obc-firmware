@@ -41,6 +41,13 @@ uint8_t cc112x_query_partnumber(uint8_t spi_device_id)
   return result;
 }
 
+uint8_t cc112x_query_num_txbytes(uint8_t spi_device_id)
+{
+  uint8_t result;
+  cc112xSpiReadReg(spi_device_id, (CC112X_NUM_TXBYTES), &result);
+  return result;
+}
+
 void cc112x_cfg_frequency(uint8_t spi_device_id, float freq) // cc112x_bandsel_option_t bandsel_option, uint32_t _frequency_word)
 {
 
@@ -67,7 +74,7 @@ void cc112x_cfg_frequency(uint8_t spi_device_id, float freq) // cc112x_bandsel_o
   float f;
   f = divisor * ((freq)*1000000) * 65536 / CC_XO_FREQ;
   uint32_t freq_reg = (uint32_t)f;
-   
+
    // work back to calculate the actual freq
    f = (float)freq_reg*CC_XO_FREQ;
    f = f / divisor;
@@ -316,7 +323,7 @@ void cc112x_cfg_ook_params(uint8_t spi_device_id, cc112x_ook_symbolrate_t ook_sy
 
 
 void cc112x_set_config(uint8_t spi_device_id, const registerSetting_t *cfg, uint16_t len)
-{	
+{
   char output[100];
   uint8_t marcstate;
 
@@ -326,7 +333,6 @@ void cc112x_set_config(uint8_t spi_device_id, const registerSetting_t *cfg, uint
         writeByte = cfg[i].data;
         cc112xSpiWriteReg(spi_device_id, cfg[i].addr, &writeByte);
     }
-    
 }
 
 
@@ -367,14 +373,14 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
   UART_puts(UART_INTERFACE, "Starting calibration\r\n");
 
   SPI_cmd(spi_device_id, CC112X_SCAL);
-  
+
   do
   {
     cc112xSpiReadReg(spi_device_id, CC112X_MARCSTATE, &marcstate);
   }
   while (marcstate != 0x41);
 
-  // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with 
+  // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with
   //    high VCDAC_START value
   cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_VCO2), &calResults_for_vcdac_start_high[FS_VCO2_INDEX]);
   cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_VCO4), &calResults_for_vcdac_start_high[FS_VCO4_INDEX]);
@@ -399,7 +405,7 @@ void cc112x_manualCalibration(uint8_t spi_device_id)
   }
   while (marcstate != 0x41);
 
-  // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained 
+  // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained
   //    with mid VCDAC_START value
   cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_VCO2), &calResults_for_vcdac_start_mid[FS_VCO2_INDEX]);
   cc112xSpiReadReg(spi_device_id, (uint8_t)(CC112X_FS_VCO4), &calResults_for_vcdac_start_mid[FS_VCO4_INDEX]);
