@@ -6,7 +6,7 @@
 
 #define BLOCK_SIZE 256
 /* block 0 is reserved for semi-non volitile. CRC is included in the packet at the end*/
-#define DATA_START_INDEX 20
+#define BUFFER_DATA_START_INDEX 20
 /* TMTC v4.6 defines first application byte as index 20 (not 19, you can't count.) */
 #define BUFFER_STATUS_MAX_LEN 4
 /* used as an offset for writing status to the buffer. */
@@ -38,5 +38,7 @@ void _buffer_overwrite_table();
 uint8_t buffer_retrieve_next_transmit(uint8_t *block_buffer, uint8_t *block_length);
 
 void buffer_free_block(uint32_t block_address);
+
+uint32_t buffer_write_reserved(uint32_t block_number, uint8_t write_start_position, uint8_t data[], uint32_t data_len);
 
 #endif /* BUFFER */

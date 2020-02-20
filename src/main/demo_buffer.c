@@ -82,7 +82,7 @@ int main(){
 	for(int i = 1; i <= buffer_status.current_block_address; i++){
 		buffer_status.transmit_block_address = i;
 		buffer_retrieve_next_transmit(block_buffer, &read_length);
-		for (int j = DATA_START_INDEX; j< read_length; j++){
+		for (int j = BUFFER_DATA_START_INDEX; j< read_length; j++){
 			UART_putc(UART_INTERFACE, block_buffer[j]);
 		}
 	}
