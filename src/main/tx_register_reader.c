@@ -416,12 +416,14 @@ const uint16_t register_addresses[] = {
 
 char output[256];
 
+#define SPI_DEVICE SPI_RADIO_RX
+
 int main(){
 	debug_init();
 	debug_print("=== TX config reader ===");
-	cc112x_reset(SPI_RADIO_TX);	
+	cc112x_reset(SPI_DEVICE);
 	// check CC112x exists
-	if (!(cc112x_query_partnumber(SPI_RADIO_TX))){
+	if (!(cc112x_query_partnumber(SPI_DEVICE))){
 		debug_print("TX not found on SPI");
 	}
 
@@ -432,13 +434,13 @@ int main(){
 	for (int i = 0; i<(sizeof(register_addresses)/sizeof(uint16_t)); i++){
 		if ((register_addresses[i] & 0xFF00) == 0x0000){
 			// for the 8-bit register space
-			retval = cc112xSpiReadReg(SPI_RADIO_TX, register_addresses[i], &reg_result8);
+			retval = cc112xSpiReadReg(SPI_DEVICE, register_addresses[i], &reg_result8);
 			sprintf(output, "% 30s 0x%04X:\t%u\t%u", register_names[i], register_addresses[i], retval, reg_result8);
 			debug_print(output);
 		}
 		else{
 			// for the 16 bit register? Honesty, I've got no clue how this works
-			retval = cc112xSpiReadReg(SPI_RADIO_TX, register_addresses[i], reg_result16);
+			retval = cc112xSpiReadReg(SPI_DEVICE, register_addresses[i], reg_result16);
 			sprintf(output, "% 30s 0x%04X:\t%u\t%u %u", register_names[i], register_addresses[i], retval, reg_result16[0], reg_result16[1]);
 			debug_print(output);
 		}
