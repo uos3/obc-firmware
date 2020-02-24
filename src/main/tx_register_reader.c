@@ -414,9 +414,10 @@ const uint16_t register_addresses[] = {
 	0x70,
 };
 
+
 char output[256];
 
-#define SPI_DEVICE SPI_RADIO_RX
+#define SPI_DEVICE SPI_RADIO_TX
 
 int main(){
 	debug_init();
@@ -432,16 +433,18 @@ int main(){
 	uint8_t reg_result8 = 0;
 	rfStatus_t retval = 0;
 	for (int i = 0; i<(sizeof(register_addresses)/sizeof(uint16_t)); i++){
+		retval = 0; reg_result8 = 0;
+		reg_result16[0] = 0; reg_result16[1] = 0; 
 		if ((register_addresses[i] & 0xFF00) == 0x0000){
 			// for the 8-bit register space
 			retval = cc112xSpiReadReg(SPI_DEVICE, register_addresses[i], &reg_result8);
-			sprintf(output, "% 30s 0x%04X:\t%u\t%u", register_names[i], register_addresses[i], retval, reg_result8);
+			sprintf(output, "% 30s 0x%04X:\t0x%02X\t0x%02X", register_names[i], register_addresses[i], retval, reg_result8);
 			debug_print(output);
 		}
 		else{
 			// for the 16 bit register? Honesty, I've got no clue how this works
 			retval = cc112xSpiReadReg(SPI_DEVICE, register_addresses[i], reg_result16);
-			sprintf(output, "% 30s 0x%04X:\t%u\t%u %u", register_names[i], register_addresses[i], retval, reg_result16[0], reg_result16[1]);
+			sprintf(output, "% 30s 0x%04X:\t0x%02X\t0x%02X 0x%02X", register_names[i], register_addresses[i], retval, reg_result16[0], reg_result16[1]);
 			debug_print(output);
 		}
 
