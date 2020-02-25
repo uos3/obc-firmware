@@ -2,7 +2,7 @@
 # Python script to create a list of strings against addresses for C pre-processor defines.
 
 target_filename = "../src/component/cc112x_spi.h"
-target_file_startline = 54
+target_file_startline = 53
 target_file_stopline = 273
 longest_namelength = 30
 
@@ -49,4 +49,3 @@ c_valuelist += c_end
 with open("c_output.txt", 'w') as file:
 	file.write(c_namelist)
 	file.write(c_valuelist)
-

@@ -4,6 +4,7 @@
 
 // I don't expect this to be light on memory, but atleast printing will be easy?
 const char register_names[][30] = {
+	"CC112X_IOCFG3",
 	"CC112X_IOCFG2",
 	"CC112X_IOCFG1",
 	"CC112X_IOCFG0",
@@ -209,6 +210,7 @@ const char register_names[][30] = {
 	"CC112X_STATE_TXFIFO_ERROR",
 };
 const uint16_t register_addresses[] = {
+	0x0000,
 	0x0001,
 	0x0002,
 	0x0003,
@@ -434,7 +436,7 @@ int main(){
 	rfStatus_t retval = 0;
 	for (int i = 0; i<(sizeof(register_addresses)/sizeof(uint16_t)); i++){
 		retval = 0; reg_result8 = 0;
-		reg_result16[0] = 0; reg_result16[1] = 0; 
+		reg_result16[0] = 0; reg_result16[1] = 0;
 		if ((register_addresses[i] & 0xFF00) == 0x0000){
 			// for the 8-bit register space
 			retval = cc112xSpiReadReg(SPI_DEVICE, register_addresses[i], &reg_result8);
