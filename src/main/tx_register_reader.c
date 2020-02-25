@@ -418,7 +418,7 @@ const uint16_t register_addresses[] = {
 
 
 char output[256];
-
+//change this device from SPI_RADIO_TX or SPI_RADIO_RX to double check default registers
 #define SPI_DEVICE SPI_RADIO_TX
 
 int main(){
@@ -445,6 +445,7 @@ int main(){
 		}
 		else{
 			// for the 16 bit register? Honesty, I've got no clue how this works
+			// every register returns an byte(8 bits). 16 bits refers to the extended addresses, not the data returned.
 			retval = cc112xSpiReadReg(SPI_DEVICE, register_addresses[i], reg_result16);
 			sprintf(output, "% 30s 0x%04X:\t0x%02X\t0x%02X 0x%02X", register_names[i], register_addresses[i], retval, reg_result16[0], reg_result16[1]);
 			debug_print(output);
