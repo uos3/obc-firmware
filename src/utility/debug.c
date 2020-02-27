@@ -14,6 +14,7 @@
 #include "../driver/uart.h"
 #include "../driver/watchdog_ext.h"
 #include "../component/led.h"
+#include "../driver/delay.h"
 
 #include "debug.h"
 
@@ -73,3 +74,11 @@ void debug_printf(const char f_string[], ...){
 }
 
 
+void debug_flash(uint8_t n_times){
+	for (int i = 0; i< n_times; i++){
+		LED_off(LED_B);
+		Delay_ms(200);
+		LED_on(LED_B);
+		Delay_ms(200);
+	}
+}

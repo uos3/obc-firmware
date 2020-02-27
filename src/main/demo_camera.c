@@ -54,8 +54,11 @@ static uint8_t CAMERA_READ_JPG_FILE_DATA_INTERVAL[] = {0x00, 0x0A};
 static uint8_t CAMERA_PAGE_HEADER[] = {0xFF, 0xD8};
 static uint8_t CAMERA_PAGE_FOOTER[] = {0xFF, 0xD9};
 
+static uint8_t CAMERA_STOP_TAKING[] = {0x56, 0x00, 0x36, 0x01, 0x03};
+static uint8_t CAMERA_STOP_TAKING_RES[] = {0x76, 0x00, 0x36, 0x00, 0x00};
+
 static uint8_t CAMERA_SET_RESOLUTION_1600x1200[] = {0x56, 0x00, 0x54, 0x01, 0x21};
-static uint8_t CAMERA_SET_RESOLUTION_160x120[] = {0x56, 0x00, 0x54, 0x01, 0x22};
+static uint8_t CAMERA_SET_RESOLUTION_160x120[] = {0x56, 0x00, 0x54, 0x01, 0x21};
 static uint8_t CAMERA_SET_RESOLUTION_RES[] = {0x76, 0x00, 0x54, 0x00, 0x00};
 
 
@@ -153,6 +156,12 @@ void demo_init_camera(){
 }
 
 
+void camera_stop_taking(){
+	send_to_camera(CAMERA_STOP_TAKING, sizeof(CAMERA_STOP_TAKING));
+	await_response(CAMERA_STOP_TAKING_RES, sizeof(CAMERA_STOP_TAKING_RES));
+}
+
+
 void change_resolution(){
 	#ifdef CAMERA_FUNC_TEST
 		debug_print("--- Sending Resolution command ---");
@@ -234,6 +243,9 @@ uint8_t page_has_cmd_end(uint8_t *page_buffer, uint32_t current_page_size){
 	}
 
 	page_buffer_command_end_index = current_page_size - 1 - cmd_footer_size;
+	#ifdef CAMERA_FUNC_TEST
+
+	#endif
 
 	if (memcmp(&page_buffer[page_buffer_command_end_index], CAMERA_READ_JPG_FILE_RES, cmd_footer_size) == 0)
 	{
@@ -271,15 +283,16 @@ uint32_t pull_camera_page(uint8_t *page_buffer, uint32_t page_length){
 			// current_byte = UART_getc(UART_CAMERA);
 			page_buffer[collected] = current_byte;
 			collected++;
+			if (page_has_cmd_end(page_buffer, collected) == 0xFF)
+			{
+				return (collected - sizeof(CAMERA_READ_JPG_FILE_RES) - 1);
+			}
 		}
 	}
 	// timer has elapsed. This probably means no more bytes are being transmitted.
 	#ifdef CAMERA_FUNC_TEST
 		debug_print("page pull: timer elapsed");
 	#endif
-	if (page_has_cmd_end(page_buffer, collected) == 0xFF){
-		return (collected - sizeof(CAMERA_READ_JPG_FILE_RES) -1);
-	}
 	return collected;
 }
 
@@ -381,7 +394,12 @@ int main(void)
 
 	change_resolution();
 
+	// just so you know when it's taking the picture.
+	debug_flash(3);
+
 	demo_take_picture();
+
+	debug_flash(3);
 
 	// jpeg_size = demo_read_file_size();
 	jpeg_size_buffer = demo_get_jpeg_size_response();
@@ -404,10 +422,11 @@ int main(void)
 
 	demo_retrieve_picture(jpeg_size);
 
+	camera_stop_taking();
+
 	#ifdef CAMERA_FUNC_TEST
 		debug_print("=== end demo ===");
 	#endif
 
 	debug_end();
 }
-// 1856
