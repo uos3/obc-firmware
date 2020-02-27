@@ -24,6 +24,8 @@ void debug_init();
 
 void debug_print(char* debug_message);
 
+void debug_printf(const char f_string[], ...);
+
 void debug_clear();
 
 void debug_end();
