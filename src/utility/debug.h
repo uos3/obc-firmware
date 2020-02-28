@@ -24,10 +24,14 @@ void debug_init();
 
 void debug_print(char* debug_message);
 
+void debug_printf(const char f_string[], ...);
+
 void debug_clear();
 
 void debug_end();
 
 void debug_hex(uint8_t data[], uint32_t data_len);
+
+void debug_flash(uint8_t n_times);
 
 #endif /*  __DEBUG_H__ */

@@ -26,6 +26,7 @@
 #include "../utility/byte_plexing.h"
 
 // #define CAMERA_FUNC_TEST
+// #define CAMERA_FSIZE_COMP
 // empirically determined
 #define CAMERA_TIMEOUT 5000
 
@@ -45,14 +46,19 @@ static uint8_t CAMERA_READ_JPG_SIZE_RES[] = {0x76, 0x00, 0x34, 0x00, 0x04, 0x00}
 static uint8_t CAMERA_READ_JPG_FILE_CMD[] = {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A};
 // probably want some text in here
 static uint8_t CAMERA_READ_JPG_FILE_RES[] = {0x76, 0x00, 0x32, 0x00, 0x00};
+static uint8_t CAMERA_READ_JPG_FILE_RES_ALT[] = {0x76, 0x76, 0x00, 0x32, 0x00};
 // 2048 bytes. Nice number. In theory, min res file is ~1450 bytes.
 static uint8_t CAMERA_READ_JPG_FILE_DATA_LEN[] = {0x00, 0x00, 0x08, 0x00};
-static uint8_t CAMERA_READ_JPG_FILE_DATA_INTERVAL[] = {0x01, 0x00};
+static uint8_t CAMERA_READ_JPG_FILE_DATA_INTERVAL[] = {0x00, 0x0A};
 
 static uint8_t CAMERA_PAGE_HEADER[] = {0xFF, 0xD8};
 static uint8_t CAMERA_PAGE_FOOTER[] = {0xFF, 0xD9};
 
-static uint8_t CAMERA_SET_RESOLUTION_160x120[] = {0x56, 0x00, 0x54, 0x01, 0x22};
+static uint8_t CAMERA_STOP_TAKING[] = {0x56, 0x00, 0x36, 0x01, 0x03};
+static uint8_t CAMERA_STOP_TAKING_RES[] = {0x76, 0x00, 0x36, 0x00, 0x00};
+
+static uint8_t CAMERA_SET_RESOLUTION_1600x1200[] = {0x56, 0x00, 0x54, 0x01, 0x21};
+static uint8_t CAMERA_SET_RESOLUTION_160x120[] = {0x56, 0x00, 0x54, 0x01, 0x21};
 static uint8_t CAMERA_SET_RESOLUTION_RES[] = {0x76, 0x00, 0x54, 0x00, 0x00};
 
 
@@ -147,9 +153,12 @@ void demo_init_camera(){
 	// sending to camera seems neccisary, only spits out the init end after prodding.
 	was_sequence_recieved = await_response(CAMERA_INIT_END, sizeof(CAMERA_INIT_END));
 	// delay of 2-3s was suggested by documentation, however it isn't neccisary (apparently)
-	// Delay_ms(3000);
+}
 
-	// documentation suggests changing resolution and then resetting.
+
+void camera_stop_taking(){
+	send_to_camera(CAMERA_STOP_TAKING, sizeof(CAMERA_STOP_TAKING));
+	await_response(CAMERA_STOP_TAKING_RES, sizeof(CAMERA_STOP_TAKING_RES));
 }
 
 
@@ -159,7 +168,6 @@ void change_resolution(){
 	#endif
 	send_to_camera(CAMERA_SET_RESOLUTION_160x120, sizeof(CAMERA_SET_RESOLUTION_160x120));
 	await_response(CAMERA_SET_RESOLUTION_RES, sizeof(CAMERA_SET_RESOLUTION_RES));
-
 }
 
 
@@ -235,8 +243,15 @@ uint8_t page_has_cmd_end(uint8_t *page_buffer, uint32_t current_page_size){
 	}
 
 	page_buffer_command_end_index = current_page_size - 1 - cmd_footer_size;
+	#ifdef CAMERA_FUNC_TEST
+
+	#endif
 
 	if (memcmp(&page_buffer[page_buffer_command_end_index], CAMERA_READ_JPG_FILE_RES, cmd_footer_size) == 0)
+	{
+		return 0xFF;
+	}
+	else if (memcmp(&page_buffer[page_buffer_command_end_index], CAMERA_READ_JPG_FILE_RES_ALT, cmd_footer_size) == 0)
 	{
 		return 0xFF;
 	}
@@ -261,28 +276,23 @@ uint32_t pull_camera_page(uint8_t *page_buffer, uint32_t page_length){
 		}
 		// if there is atleast 1 character
 		else if (UART_getc_nonblocking(UART_CAMERA, &current_byte))
+		// else
 		{
 			// resets the timeout
 			// RTC_getTime_ms(&timer_start_time);
+			// current_byte = UART_getc(UART_CAMERA);
 			page_buffer[collected] = current_byte;
 			collected++;
-			// update the flag.
-			// if (page_has_cmd_end(page_buffer, collected) == 0xFF){
-			// 	// want to trim the command from the jpeg. Hopefully, this occurs and not the timeout.
-			// 	return (collected - sizeof(CAMERA_READ_JPG_FILE_RES));
-			// }
-			// if (collected == page_length){
-			// 	return page_length;
-			// }
+			if (page_has_cmd_end(page_buffer, collected) == 0xFF)
+			{
+				return (collected - sizeof(CAMERA_READ_JPG_FILE_RES) - 1);
+			}
 		}
 	}
 	// timer has elapsed. This probably means no more bytes are being transmitted.
 	#ifdef CAMERA_FUNC_TEST
 		debug_print("page pull: timer elapsed");
 	#endif
-	if (page_has_cmd_end(page_buffer, collected) == 0xFF){
-		return (collected - sizeof(CAMERA_READ_JPG_FILE_RES));
-	}
 	return collected;
 }
 
@@ -293,8 +303,6 @@ uint8_t demo_retrieve_picture(uint32_t jpeg_size){
 	// header                              Initial address       Read file             Response delay
 	// 0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A, 0x00  0x00 0x00 0x00  0x00  0x00 0x08 0x00  0x00 0x0A
 
-	// address to read from the camera, in bytes?
-	uint32_t read_address = 0;
 	// the maximum page length
 	uint32_t max_page_length = 0;
 	// the total number of bytes read from the camera, sans cmd strings
@@ -322,20 +330,19 @@ uint8_t demo_retrieve_picture(uint32_t jpeg_size){
 		#ifdef CAMERA_FUNC_TEST
 			debug_print("issuing read command");
 		#endif
-		camera_get_jpg_page_cmd(read_address);
+		// read address is the same as the total read
+		camera_get_jpg_page_cmd(total_read);
 		// wait for correct sign
 		await_response(CAMERA_READ_JPG_FILE_RES, sizeof(CAMERA_READ_JPG_FILE_RES));
 		// pull the page from the camera
 		page_read = pull_camera_page(page_buffer, max_page_length);
+		// update total read
+		total_read+=page_read;
 		// for the test only, dump the pages over UART
 		#ifndef CAMERA_FUNC_TEST
 			UART_putb(UART_INTERFACE, page_buffer, page_read);
 		#endif
-		// update total read
-		total_read+=page_read;
 		// if it's not in bytes, this needs to change
-		read_address+=total_read;
-		// read_address++;
 		#ifdef CAMERA_FUNC_TEST
 			sprintf(output, "read page of length: %lu for a total of %lu",page_read, total_read);
 			debug_print(output);
@@ -348,7 +355,7 @@ uint8_t demo_retrieve_picture(uint32_t jpeg_size){
 			#endif
 			return 0xFF;
 		}
-		break;
+		// break;
 	}
 	if (page_has_footer(page_buffer, page_read)){
 		#ifdef CAMERA_FUNC_TEST
@@ -384,7 +391,15 @@ int main(void)
 
 	// recommended in the documentation
 	Delay_ms(4000);
+
+	change_resolution();
+
+	// just so you know when it's taking the picture.
+	debug_flash(3);
+
 	demo_take_picture();
+
+	debug_flash(3);
 
 	// jpeg_size = demo_read_file_size();
 	jpeg_size_buffer = demo_get_jpeg_size_response();
@@ -401,8 +416,13 @@ int main(void)
 		sprintf(output, "read jpeg file size as %d bytes", jpeg_size);
 		debug_print(output);
 	#endif
+	#ifdef CAMERA_FSIZE_COMP
+		debug_printf("jpeg_size %d", jpeg_size);
+	#endif
 
 	demo_retrieve_picture(jpeg_size);
+
+	camera_stop_taking();
 
 	#ifdef CAMERA_FUNC_TEST
 		debug_print("=== end demo ===");
