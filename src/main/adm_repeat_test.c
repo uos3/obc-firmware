@@ -9,8 +9,8 @@
 #include "../utility/debug.h"
 
 #define BURN_TIME 7500-312
-#define COOLDOWN 5*60*1000
-// #define COOLDOWN 10
+// #define COOLDOWN 5*60*1000
+#define COOLDOWN 10
 
 #define output_size 80
 
@@ -68,7 +68,7 @@ int main(){
 			// test_num += n_times;
 		}
 		else{
-			debug_printf("invalid option '%s'.\r\navailable commands are: burn, done", output);
+			debug_printf("invalid option '%s'.\r\navailable commands are: burn, done, do x", output);
 		}
 
 	}
