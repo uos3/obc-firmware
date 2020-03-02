@@ -42,13 +42,14 @@ static uint8_t CAMERA_SET_RESOLUTION_CMD[] = {0x56, 0x00, 0x54, 0x01};
 static uint8_t CAMERA_SET_RESOLUTION_RES[] = {0x76, 0x00, 0x54, 0x00, 0x00};
 
 // resolution settings
-uint8_t CAMERA_RESOLUTION_160x120[] = {0x22};
-uint8_t CAMERA_RESOLUTION_320x240[] = {0x11};
-uint8_t CAMERA_RESOLUTION_640x480[] = {0x00};
-uint8_t CAMERA_RESOLUTION_800x600[] = {0x1D};
-uint8_t CAMERA_RESOLUTION_1024x768[] = {0x1C};
-uint8_t CAMERA_RESOLUTION_1280x960[] = {0x1B};
-uint8_t CAMERA_RESOLUTION_1600x1200[] = {0x21};
+#define CAMERA_RESOLUTION_160x120 0x22
+#define CAMERA_RESOLUTION_320x240 0x11
+#define CAMERA_RESOLUTION_640x480 0x00
+#define CAMERA_RESOLUTION_800x600 0x1D
+#define CAMERA_RESOLUTION_1024x768 0x1C
+#define CAMERA_RESOLUTION_1280x960 0x1B
+#define CAMERA_RESOLUTION_1600x1200 0x21
+
 
 #define CAMERA_TIMEOUT 2000
 
@@ -207,8 +208,6 @@ bool camera_stop(){
 	bool: true if the response was recieved, false if not.
 */
 bool camera_reset(){
-
-	
 	return camera_cmd_noopts(CAMERA_RESET_CMD, CAMERA_RESET_RES);
 }
 
@@ -221,7 +220,6 @@ bool camera_reset(){
 	returns:
 	bool; true if the response was recieved, false if not.
 */
-bool camera_set_resolution(uint8_t resolution_byte[]){
-
-
+bool camera_set_resolution(uint8_t resolution_setting){
+	return camera_cmd_withopts(CAMERA_SET_RESOLUTION_CMD, CAMERA_SET_RESOLUTION_RES, &resolution_setting, 1);
 }
