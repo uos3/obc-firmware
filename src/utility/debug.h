@@ -34,4 +34,8 @@ void debug_hex(uint8_t data[], uint32_t data_len);
 
 void debug_flash(uint8_t n_times);
 
+uint32_t debug_get_command(char output[], uint32_t max_output_length);
+
+int debug_parse_int(char buffer[], int n_characters);
+
 #endif /*  __DEBUG_H__ */
