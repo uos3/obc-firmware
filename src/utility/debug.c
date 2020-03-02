@@ -127,11 +127,18 @@ int debug_parse_int(char buffer[], int n_characters){
 	return result;
 }
 
+void debug_flush_uart(){
+	while(UART_charsAvail(UART_INTERFACE)){
+		UART_getc(UART_INTERFACE);
+	}
+}
+
 
 uint32_t debug_get_command(char output[], uint32_t max_output_length){
 	uint32_t recieved = 0;
 	char happy_with_buffer[2];
 	bool happy_with_output = false;
+	debug_flush_uart();
 	while(!happy_with_output){
 		debug_printf("| Enter a command: ");
 		recieved = debug_get_string(output, max_output_length);
