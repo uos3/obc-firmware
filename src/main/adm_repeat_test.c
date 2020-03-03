@@ -3,20 +3,28 @@
 #include "../driver/uart.h"
 #include "../driver/rtc.h"
 #include "../driver/delay.h"
+#include "../driver/gpio.h"
 
 #include "../component/antenna.h"
 
 #include "../utility/debug.h"
 
 #define BURN_TIME 7500-312
-// #define COOLDOWN 5*60*1000
-#define COOLDOWN 10
+// #define COOLDOWN 1*60*1000
+// #define COOLDOWN 10
 
 #define output_size 80
 
+int COOLDOWN = 5*60*1000;
 char do_test_command[] = "burn";
 char finish_command[] = "done";
 char do_n_command[] = "do ";
+
+void Antenna_deploy_demo(void){
+    GPIO_set(GPIO_PB0);
+    Delay_ms(BURN_TIME);
+    GPIO_reset(GPIO_PB0);
+}
 
 void demo_adm(){
 	uint64_t burn_start_time;
@@ -26,7 +34,7 @@ void demo_adm(){
 	debug_printf("burning now...");
 	debug_flash(3);
 	RTC_getTime_ms(&burn_start_time);
-	Antenna_deploy(BURN_TIME);
+	Antenna_deploy_demo();
 	RTC_getTime_ms(&burn_stop_time);
 	debug_flash(3);
 	burn_elapsed_time = ((double) burn_stop_time - (double) burn_start_time)/1000.0;
@@ -62,8 +70,11 @@ int main(){
 				debug_printf("\r\n--- ADM test number %d ---", test_num);
 				demo_adm();
 				test_num++;
-				debug_printf("cooling down for %d ms", COOLDOWN);
-				Delay_ms(COOLDOWN);
+				if (i!=(n_times-1)){
+					debug_printf("cooling down for %d ms", COOLDOWN);
+					// skips last countdown
+					debug_countdown(COOLDOWN, 5);
+				}
 			}
 			// test_num += n_times;
 		}

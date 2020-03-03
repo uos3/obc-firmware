@@ -16,14 +16,20 @@
 #include "../driver/watchdog_ext.h"
 #include "../component/led.h"
 #include "../driver/delay.h"
+#include "../driver/rtc.h"
 
 #include "debug.h"
 
+char line_end[] = "\r\n";
+char no_line_end[] = "";
+char *line_end_ptr;
 
 void debug_init(){
 	// might aswell include board watchdog init
 	Board_init();
 	enable_watchdog_kick();
+	RTC_init();
+	line_end_ptr = &line_end;
 	watchdog_update = 0xFF;
 	UART_init(UART_INTERFACE, 9600);
 	LED_on(LED_B);
@@ -32,14 +38,14 @@ void debug_init(){
 void debug_print(char* debug_message) {
 	#ifdef DEBUG_MODE
 		UART_puts(UART_INTERFACE, debug_message); 
-		UART_puts(UART_INTERFACE, "\r\n");
+		UART_puts(UART_INTERFACE, line_end_ptr);
 	#endif
 }
 
 void debug_clear(){
 	for (int i = 0; i < 100; i++){
 		#ifdef DEBUG_MODE
-			UART_puts(UART_INTERFACE, "\r\n");
+			UART_puts(UART_INTERFACE, line_end_ptr);
 		#endif
 	}
 }
@@ -153,4 +159,23 @@ uint32_t debug_get_command(char output[], uint32_t max_output_length){
 	return recieved;
 }
 
+void debug_countdown(int total_countdown_time_ms, uint32_t n_intervals){
+	uint64_t start_time;
+	uint64_t interval;
+	int n_occured = 1;
+	line_end_ptr = &no_line_end;
+	interval = total_countdown_time_ms/(n_intervals);
+	RTC_getTime_ms(&start_time);
+	debug_print("Time elapsed (s): ");
+	while(!RTC_timerElapsed_ms(start_time, total_countdown_time_ms)){
+		if (RTC_timerElapsed_ms(start_time, interval*n_occured)){
+			// debug_printf("%d ", (int) (start_time-warning_time)*1000);
 
+			debug_printf("%d ", ((int) interval)/1000*n_occured);
+			n_occured++;
+		}
+		Delay_ms(interval/100);
+	}
+	line_end_ptr = &line_end;
+	debug_print("");
+}
