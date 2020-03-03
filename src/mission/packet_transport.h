@@ -1,5 +1,5 @@
-#ifndef PACKET_TRANSPORT_H
-#define PACKET_TRANSPORT_H
+#ifndef TRANSPORT_H
+#define TRANSPORT_H
 /*
 	Provides transport layer functions as defined in TMTC_20191127_v4.6
 */
@@ -19,11 +19,11 @@ typedef struct transport_info_t
 } transport_info_t;
 
 
-uint8_t packet_transport_info_asbyte(transport_info_t transport_info);
+uint8_t transport_info_asbyte(transport_info_t transport_info);
 
-transport_info_t packet_transport_info_frombyte(uint8_t byte);
+transport_info_t transport_info_frombyte(uint8_t byte);
 
-transport_info_t packet_transport_info_init(uint8_t packet_type, uint8_t is_start, uint8_t is_end, uint8_t is_init, uint8_t is_do_not_continue);
+transport_info_t transport_info_init(uint8_t packet_type, uint8_t is_start, uint8_t is_end, uint8_t is_init, uint8_t is_do_not_continue);
 
 uint32_t packet_write_sequence_to_buffer(uint16_t buffer_block_number, uint16_t sequence_number);
 
