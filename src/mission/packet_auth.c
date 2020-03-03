@@ -34,7 +34,7 @@ void packet_hasher(Packet* packet){
 	}
 
 	// put the packet data in
-	memcpy(combined_data, packet->data,  data_length);
+	memcpy(combined_data, packet->transport_start,  data_length);
 	// put the secret after the data
 	memcpy(&combined_data[data_length], PACKET_SECRET_WORD, sizeof(PACKET_SECRET_WORD));
 	#ifdef DEBUG_MODE
@@ -45,7 +45,7 @@ void packet_hasher(Packet* packet){
 	util_shake_ctx_t shake_it_up;
 	Util_shake_init(&shake_it_up, PACKET_HASH_LEN);
 	Util_shake_update(&shake_it_up, combined_data, combined_length);
-	Util_shake_out(&shake_it_up, packet->hash);
+	Util_shake_out(&shake_it_up, packet->auth_start);
 	// no longer need combined data, so free.
 	free(combined_data);
 }
@@ -53,11 +53,11 @@ void packet_hasher(Packet* packet){
 
 uint8_t packet_is_authentic(Packet* packet){
 	uint8_t packet_hash_buffer[PACKET_HASH_LEN];
-	memcpy(packet_hash_buffer, packet->hash, PACKET_HASH_LEN);
+	memcpy(packet_hash_buffer, packet->auth_start, PACKET_HASH_LEN);
 
 	#ifdef DEBUG_MODE
 		debug_print("PACKET_AUTH.C original hash:");
-		debug_hex(packet->hash, PACKET_HASH_LEN);
+		debug_hex(packet->auth_start, PACKET_HASH_LEN);
 	#endif
 
 	// copy hash to temp
@@ -66,10 +66,10 @@ uint8_t packet_is_authentic(Packet* packet){
 	packet_hasher(packet);
 	#ifdef DEBUG_MODE
 		debug_print("PACKET_AUTH.C new hash:");
-		debug_hex(packet->hash, PACKET_HASH_LEN);
+		debug_hex(packet->auth_start, PACKET_HASH_LEN);
 	#endif
 
-	if (memcmp(packet_hash_buffer, packet->hash, PACKET_HASH_LEN) == 0){
+	if (memcmp(packet_hash_buffer, packet->auth_start, PACKET_HASH_LEN) == 0){
 		// true, no differences in the hashes
 		return 0xFF;
 	}
