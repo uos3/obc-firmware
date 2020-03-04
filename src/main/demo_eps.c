@@ -1,5 +1,10 @@
 /* firmware.h contains all relevant headers */
-#include "../firmware.h"
+#include "../component/eps.h"
+#include "../driver/wdt.h"
+#include "../driver/watchdog_ext.h"
+#include "../driver/board.h"
+#include "../driver/rtc.h"
+#include "../utility/debug.h"
 
 #include <stdio.h>
 #define testGet 1

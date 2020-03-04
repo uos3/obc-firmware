@@ -9,7 +9,7 @@
 
 #include "../driver/board.h"
 #include "../driver/uart.h"
-#include "rtc.h"
+#include "../driver/rtc.h"
 #include "eps.h"
 
 
