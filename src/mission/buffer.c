@@ -1,8 +1,10 @@
 /*
 	New, non-volitile buffer system.
 	Author: Richard A
-	Last modified: 2020 02 17
-	Current status: None overflow functional.
+	Last modified: 2020 03 06
+	Current status: functional
+	we only have 32k RAM, but maybe some of that could be dedicated to a 
+	contignency replacement buffer...
 */
 
 
