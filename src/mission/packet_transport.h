@@ -19,6 +19,12 @@ typedef struct transport_info_t
 } transport_info_t;
 
 
+typedef struct transport_header_t{
+	PACKET_SEQUENCE_TYPE sequence_number;
+	transport_info_t info;
+}transport_header_t;
+
+
 uint8_t transport_info_asbyte(transport_info_t transport_info);
 
 transport_info_t transport_info_frombyte(uint8_t byte);
