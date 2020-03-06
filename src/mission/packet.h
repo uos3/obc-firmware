@@ -1,7 +1,7 @@
-#include "packet_base.h"
-#include "packet_auth.h"
-#include "packet_transport.h"
-#include "packet_application.h"
+#include "packet/packet_base.h"
+#include "packet/packet_auth.h"
+#include "packet/packet_transport.h"
+#include "packet/packet_application.h"
 
 /*
 	should mirror each blocks structure in the buffer.
