@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 
 void data_split_32(int32_t data, uint8_t *split){
     split[0] = ((uint32_t)data & 0x000000ff);
@@ -50,4 +51,12 @@ uint32_t data_combine_u24(uint8_t *split_data)
     combined_data += ((uint32_t)split_data[0] << 16);
     // combined_data += ((uint32_t)split_data[0] << 24);
     return combined_data;
+}
+
+void flip_endian(uint8_t* value_to_flip_ptr,  uint32_t length){
+    uint8_t original_copy[length];
+    memcpy(original_copy, value_to_flip_ptr, length);
+    for (int i = 0; i< length; i++){
+        value_to_flip_ptr[length-1 -i] = original_copy[i];
+    }
 }
