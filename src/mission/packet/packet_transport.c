@@ -3,9 +3,10 @@
 */
 
 #include "packet_base.h"
-#include "buffer.h"
+#include "../buffer.h"
 #include "packet_transport.h"
 // #include "../utility/debug.h"
+#include "../../utility/byte_plexing.h"
 // #include <stdio.h>
 
 /* Writing packets */
@@ -29,7 +30,7 @@ transport_info_t transport_info_frombyte(uint8_t byte){
 	return transport_info;
 }
 
-transport_info_t transport_info_init(uint8_t type, uint8_t is_start, uint8_t is_end, uint8_t is_init, uint8_t is_do_not_continue){
+transport_info_t transport_info_fromfields(uint8_t type, uint8_t is_start, uint8_t is_end, uint8_t is_init, uint8_t is_do_not_continue){
 	transport_info_t transport_info;
 	transport_info.packet_type = (type & 0x0F);		 // mask with 11110000 and shift right 4 times
 	transport_info.start_of_sequence = ((is_start & 0x08) >> 3); // 00001000
@@ -56,10 +57,39 @@ uint32_t packet_write_sequence_to_buffer(uint16_t buffer_block_number, uint16_t 
 	return buffer_write_reserved(buffer_block_number, PACKET_SEQUENCE_START_INDEX, data, PACKET_SEQUENCE_LEN);
 }
 
-uint32_t packet_write_transport_to_buffer(uint16_t buffer_block_number, transport_info_t transport_info){
+uint32_t packet_write_transport_info_to_buffer(uint16_t buffer_block_number, transport_info_t transport_info){
 	uint8_t data;
 	data = transport_info_asbyte(transport_info);
 	return buffer_write_reserved(buffer_block_number, TRANSPORT_INFO_START_INDEX, &data, TRANSPORT_INFO_LEN);
+}
+
+
+uint32_t packet_write_transport_header_to_buffer(uint16_t buffer_block_num, transport_header_t transport_header){
+	return buffer_write_reserved(buffer_block_num, PACKET_SEQUENCE_START_INDEX, transport_header.as_bytes, TRANSPORT_LEN);
+}
+
+uint16_t packet_prep_transport(){
+	// retreive status from buffer
+	uint16_t first_block_num, last_block_num, tmp;
+	transport_header_t current_header;
+	first_block_num = buffer_status.transmit_block_address;
+	last_block_num = buffer_status.current_block_address;
+
+	// first block, start of sequence raised:
+
+
+	for(uint16_t seq_num = first_block_num; seq_num < last_block_num; seq_num++){
+		// make transport header
+		// - sequence number
+		tmp = seq_num;
+		// on GCC for x86/64, this should execute.
+		#if little_endian
+			flip_endian(&tmp, PACKET_SEQUENCE_LEN);
+		#endif
+		current_header.as_struct.sequence_number = tmp;
+		// - transport info
+		current_header.as_struct.info = transport_info_fromfields(PACKET_TYPE_DAT, 0, 0, 0, 0);
+	}
 }
 
 /* Reading packets */

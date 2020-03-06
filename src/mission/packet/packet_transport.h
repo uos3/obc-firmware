@@ -5,9 +5,12 @@
 */
 
 #include "packet_base.h"
-#include "buffer.h"
+#include "../buffer.h"
+
 
 #define PACKET_TYPE_ACK 0xF
+#define PACKET_TYPE_DAT 0x0
+
 // can use bit field addresses to construct the transport information section
 #pragma pack(1)
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__

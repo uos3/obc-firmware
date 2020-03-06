@@ -10,8 +10,8 @@
 
 #include "packet_base.h"
 // #include "driverlib/shamd5.h" // my hopes and dreams shattered by model number
-#include "../utility/shake.h"
-#include "../utility/debug.h"
+#include "../../utility/shake.h"
+#include "../../utility/debug.h"
 
 #ifdef DEBUG_MODE
 	char output[256];

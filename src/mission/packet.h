@@ -1,3 +1,4 @@
+
 #include "packet/packet_base.h"
 #include "packet/packet_auth.h"
 #include "packet/packet_transport.h"
@@ -14,3 +15,5 @@ typedef struct typed_packet_t{
 	transport_header_t transport_header;
 	uint8_t data_bytes[BLOCK_SIZE-BUFFER_DATA_START_INDEX];
 }typed_packet_t;
+
+void store_payload_data(uint8_t whofor, uint8_t data, uint32_t data_len);

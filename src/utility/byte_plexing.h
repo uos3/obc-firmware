@@ -23,6 +23,9 @@
 */
 #define cast_asptr(var) ((uint8_t*) &var)
 
+#define big_endian (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+#define little_endian (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+
 void data_split_32(int32_t data, uint8_t *split);
 
 void data_split_u32(uint32_t data, uint8_t *split);
