@@ -29,18 +29,12 @@ void debug_init(){
 	Board_init();
 	enable_watchdog_kick();
 	RTC_init();
-	line_end_ptr = &line_end;
+	line_end_ptr = (char*) &line_end;
 	watchdog_update = 0xFF;
 	UART_init(UART_INTERFACE, 9600);
 	LED_on(LED_B);
 }
 
-void debug_print(char* debug_message) {
-	#ifdef DEBUG_MODE
-		UART_puts(UART_INTERFACE, debug_message); 
-		UART_puts(UART_INTERFACE, line_end_ptr);
-	#endif
-}
 
 void debug_clear(){
 	for (int i = 0; i < 100; i++){
@@ -57,13 +51,20 @@ void debug_end(){
 	}
 }
 
+void debug_print(char* debug_message) {
+	#ifdef DEBUG_MODE
+		UART_puts(UART_INTERFACE, debug_message); 
+		UART_puts(UART_INTERFACE, line_end_ptr);
+	#endif
+}
+
 void debug_hex(uint8_t* data, uint32_t data_len){
 	char output[6];
 	for (int i = 0; i< data_len; i++){
 		sprintf(output, "0x%02X ", data[i]);
 		UART_puts(UART_INTERFACE, output);
 	}
-	UART_puts(UART_INTERFACE, "\r\n");
+	UART_puts(UART_INTERFACE, line_end_ptr);
 }
 
 void _vdebug_printf(const char* f_string, va_list vars)
@@ -78,6 +79,12 @@ void debug_printf(const char* f_string, ...){
 	va_start(argp, f_string);
 	_vdebug_printf(f_string, argp);
 	va_end(argp);
+}
+
+void debug_printl(char* string, uint32_t len){
+	UART_putb(UART_INTERFACE, string, len);
+	UART_puts(UART_INTERFACE, "");
+	UART_puts(UART_INTERFACE, line_end_ptr);
 }
 
 
@@ -163,7 +170,7 @@ void debug_countdown(int total_countdown_time_ms, uint32_t n_intervals){
 	uint64_t start_time;
 	uint64_t interval;
 	int n_occured = 1;
-	line_end_ptr = &no_line_end;
+	line_end_ptr = (char*) &no_line_end;
 	interval = total_countdown_time_ms/(n_intervals);
 	RTC_getTime_ms(&start_time);
 	debug_print("Time elapsed (s): ");
@@ -176,6 +183,6 @@ void debug_countdown(int total_countdown_time_ms, uint32_t n_intervals){
 		}
 		Delay_ms(interval/100);
 	}
-	line_end_ptr = &line_end;
+	line_end_ptr = (char*) &line_end;
 	debug_print("");
 }
