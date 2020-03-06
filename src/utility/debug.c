@@ -170,7 +170,7 @@ void debug_countdown(int total_countdown_time_ms, uint32_t n_intervals){
 	while(!RTC_timerElapsed_ms(start_time, total_countdown_time_ms)){
 		if (RTC_timerElapsed_ms(start_time, interval*n_occured)){
 			// debug_printf("%d ", (int) (start_time-warning_time)*1000);
-
+			watchdog_update = 0xFF;
 			debug_printf("%d ", ((int) interval)/1000*n_occured);
 			n_occured++;
 		}
