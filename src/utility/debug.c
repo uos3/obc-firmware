@@ -57,7 +57,7 @@ void debug_end(){
 	}
 }
 
-void debug_hex(uint8_t data[], uint32_t data_len){
+void debug_hex(uint8_t* data, uint32_t data_len){
 	char output[6];
 	for (int i = 0; i< data_len; i++){
 		sprintf(output, "0x%02X ", data[i]);
@@ -66,14 +66,14 @@ void debug_hex(uint8_t data[], uint32_t data_len){
 	UART_puts(UART_INTERFACE, "\r\n");
 }
 
-void _vdebug_printf(const char f_string[], va_list vars)
+void _vdebug_printf(const char* f_string, va_list vars)
 {
 	char tmp_output[256];
 	vsprintf(tmp_output, f_string, vars);
 	debug_print(tmp_output);
 }
 
-void debug_printf(const char f_string[], ...){
+void debug_printf(const char* f_string, ...){
 	va_list argp;
 	va_start(argp, f_string);
 	_vdebug_printf(f_string, argp);
@@ -91,7 +91,7 @@ void debug_flash(uint8_t n_times){
 }
 
 
-uint32_t debug_get_string(char output[], uint32_t max_output_length){
+uint32_t debug_get_string(char* output, uint32_t max_output_length){
 	uint32_t recieved = 0;
 	char current_character = 0;
 	bool end_flag = false;
@@ -113,7 +113,7 @@ uint32_t debug_get_string(char output[], uint32_t max_output_length){
 	return recieved+1;
 }
 
-int debug_parse_int(char buffer[], int n_characters){
+int debug_parse_int(char* buffer, int n_characters){
 	int result, i, multiplier, length, digit;
 	multiplier = 1;
 	length = strlen(buffer);
@@ -140,7 +140,7 @@ void debug_flush_uart(){
 }
 
 
-uint32_t debug_get_command(char output[], uint32_t max_output_length){
+uint32_t debug_get_command(char* output, uint32_t max_output_length){
 	uint32_t recieved = 0;
 	char happy_with_buffer[2];
 	bool happy_with_output = false;
