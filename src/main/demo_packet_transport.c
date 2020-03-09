@@ -15,7 +15,7 @@ int main(){
 	// uint8_t is_start, is_end, is_init, is_do_not_continue
 
 	sequence_number = 0x0A01;
-	trans_inf = packet_transport_info_init(0x00, 0xFF, 0xFF, 0x00, 0x00);
+	trans_inf = transport_info_fromfields(0x00, 0xFF, 0xFF, 0x00, 0x00);
 	
 	debug_print("getting transport info as byte, should be 0x0C");
 	trans_inf_byte = packet_transport_info_asbyte(trans_inf);
@@ -42,7 +42,7 @@ int main(){
 	debug_print("sequence number: ");
 	debug_hex((uint8_t *) &output+PACKET_SEQUENCE_START_INDEX, PACKET_SEQUENCE_LEN);
 	debug_print("transport info: ");
-	debug_hex((uint8_t *) &output+PACKET_TRANSPORT_INFO_START_INDEX, PACKET_TRANSPORT_INFO_LEN);
+	debug_hex((uint8_t *) &output+TRANSPORT_INFO_START_INDEX, TRANSPORT_INFO_LEN);
 	debug_print("data: ");
 	debug_print((uint8_t *) &output+BUFFER_DATA_START_INDEX);
 
