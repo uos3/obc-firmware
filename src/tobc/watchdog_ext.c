@@ -9,8 +9,9 @@
  * @{
  */
 #include <stdint.h>
-#include "board.h"
-#include "watchdog_ext.h"
+#include "../driver/board.h"
+#include "../driver/watchdog_ext.h"
+#include "../driver/gpio.h"
 
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -18,7 +19,6 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/timer.h"
-#include "gpio.h"
 
 
 

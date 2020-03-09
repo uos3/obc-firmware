@@ -8,7 +8,7 @@
  * @{
  */
 
-#include "delay.h"
+#include "../driver/delay.h"
 
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"

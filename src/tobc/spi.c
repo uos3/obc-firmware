@@ -8,9 +8,9 @@
  * @{
  */
 
-#include "board.h"
-#include "spi.h"
-#include "gpio.h"
+#include "../driver/board.h"
+#include "../driver/spi.h"
+#include "../driver/gpio.h"
 
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"

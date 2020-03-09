@@ -11,9 +11,9 @@
 
 /* Required for 'struct tm' prototypes in driverlib/hibernate.h */
 
-#include "board.h"
-#include "delay.h"
-#include "rtc.h"
+#include "../driver/board.h"
+#include "../driver/delay.h"
+#include "../driver/rtc.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/hibernate.h"
 
