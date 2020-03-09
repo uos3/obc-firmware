@@ -15,7 +15,7 @@
 #include "inc/hw_memmap.h"
 #include "driverlib/sysctl.h"
 
-#include "board.h"
+#include "../driver/board.h"
 
 void Board_init(void)
 {
