@@ -33,14 +33,14 @@ typedef struct transport_info_t
 } transport_info_t;
 #endif
 
-typedef struct _transport_header_struct_t{
+typedef struct transport_header_struct{
 	PACKET_SEQUENCE_TYPE sequence_number;
 	transport_info_t info;
-}_transport_header_struct_t;
+}transport_header_struct;
 
 typedef union transport_header_t{
-	_transport_header_struct_t as_struct;
-	uint8_t as_bytes[sizeof(_transport_header_struct_t)];
+	transport_header_struct as_struct;
+	uint8_t as_bytes[sizeof(transport_header_struct)];
 }transport_header_t;
 #pragma pack()
 

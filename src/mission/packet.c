@@ -11,7 +11,7 @@ void packet_prep_buffer(){
 	uint8_t block_remaining_length;
 
 	// the total amount of bytes in the block, including reserved
-	current_block_length = buffer_status.current_block_position;
+	current_block_length = buffer_status.as_struct.current_block_position;
 	// the total writable length. Remember, first byte in block is the length/status byte.
 	block_remaining_length = BLOCK_SIZE - current_block_length;
 
@@ -26,7 +26,7 @@ void packet_prep_buffer(){
 
 
 uint64_t packet_is_unfinished(uint32_t data_len){
-	if (data_len > buffer_status.current_block_position){
+	if (data_len > buffer_status.as_struct.current_block_position){
 		return 0xFF;
 	}
 	return 0x00;

@@ -83,8 +83,8 @@ uint16_t packet_prep_transport(){
 	// retreive status from buffer
 	uint16_t first_block_num, last_block_num, seq_num, block_num;
 	transport_header_t current_header;
-	first_block_num = buffer_status.transmit_block_address;
-	last_block_num = buffer_status.current_block_address;
+	first_block_num = buffer_status.as_struct.transmit_block_address;
+	last_block_num = buffer_status.as_struct.current_block_address;
 
 	// little bit of logic to asset that the for loop will run
 	if (last_block_num < first_block_num){

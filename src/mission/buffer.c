@@ -45,7 +45,7 @@ void _buffer_overwrite_table(){
 	buffer_status.as_struct.current_block_address = (uint32_t)0x01;
 	buffer_status.as_struct.transmit_block_address = (uint32_t)0x01;
 	buffer_status.as_struct.recieve_block_start = (uint32_t)0x00;
-	buffer_status.as_struct.recieve_block_length = (uint32_t) 0x00;
+	buffer_status.as_struct.recieve_block_end = (uint32_t) 0x00;
 	buffer_store_status();
 }
 
