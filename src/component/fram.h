@@ -16,9 +16,9 @@
 #include <stdbool.h>
 
 /* 1Mbit (128KB) FM25V10 */
-#define FRAM_SIZE	0x20000
+// #define FRAM_SIZE	0x20000
 /* 4Mbit (512KB) CY15B104Q */
-//#define FRAM_SIZE	0x80000
+#define FRAM_SIZE	0x80000
 
 #define FRAM_MAX_ADDRESS (FRAM_SIZE - 1)
 
