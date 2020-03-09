@@ -9,15 +9,18 @@
 import os, sys
 
 main_name = "demo_blink"
+board = "tobc"
+makefile = "Makefile"
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         main_name = sys.argv[1]
-        print(f"=== building {main_name} ===")
         if "." in main_name:
             main_name = main_name.split(".")[0]
-    elif len(sys.argv) == 1:
-        print(f"=== building {main_name} ===")
-
+    if len(sys.argv) > 2:
+        board = sys.argv[2]
+        makefile = F"{board}.mk"
+    print(f"=== building {main_name} ===")
+    print(f"using board: {board}")
 
 compiler = "arm-none-eabi-gcc"
 main_root = "src/main/"
@@ -26,8 +29,6 @@ tivaware_location = "../TivaWare_C_Series-2.1.4.178"
 tmp_filename = "/tmp/compile_output.txt"
 source_folders = os.listdir("src")
 main_path = main_root + main_name + ".c"
-board = "tobc"
-
 
 def in_firmware(line):
     if tivaware_location in line:
@@ -69,7 +70,7 @@ def get_dependancies_from_headers(file_to_check):
 
 
 def get_dependancies_from_makerules(file_to_check):
-        # print("checking:",file_to_check)
+    # print("checking:",file_to_check)
     file_dependancies = set()
     command_string = f"{compiler} -MM {file_to_check} -I{tivaware_location} >{tmp_filename}"
     os.system(command_string)
@@ -131,5 +132,5 @@ if __name__ == "__main__":
     with open("builds/custom_rule.mk", 'w') as custom_rule_mkfile:
         custom_rule_mkfile.write(final_custom_rule)
 
-    make_command = f"make builds/{main_name}.out MAINFILE={main_name}"
+    make_command = f"make -f {makefile} builds/{main_name}.out MAINFILE={main_name}"
     os.system(make_command)
