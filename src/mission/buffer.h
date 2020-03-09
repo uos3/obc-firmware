@@ -15,15 +15,24 @@
 #define BUFFER_STATUS_MAX_LEN 4
 #define BUFFER_BLOCKS FRAM_SIZE/BLOCK_SIZE
 
-typedef struct buffer_status_t
+#pragma pack(1)
+typedef struct buffer_status_struct
 {
     uint8_t buffer_init;
     /* the address in the block of the next writable location */
     uint8_t current_block_position;
     /* the block's index in the FRAM */
     uint32_t current_block_address;
-    /* the block ready for the next transmit */
+    /* the first block to transmit */
     uint32_t transmit_block_address;
+    /* */
+    uint32_t recieve_block_start;
+    uint32_t recieve_block_length;
+} buffer_status_struct;
+
+typedef union buffer_status_t{
+    buffer_status_struct as_struct;
+    uint8_t as_bytes[sizeof(buffer_status_struct)]
 } buffer_status_t;
 
 buffer_status_t buffer_status;
