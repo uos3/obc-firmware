@@ -3,10 +3,10 @@
 */
 
 #include "packet_base.h"
-#include "../buffer.h"
+#include "buffer.h"
 #include "packet_transport.h"
 // #include "../utility/debug.h"
-#include "../../utility/byte_plexing.h"
+#include "../utility/byte_plexing.h"
 // #include <stdio.h>
 
 /* Writing packets */
@@ -68,28 +68,43 @@ uint32_t packet_write_transport_header_to_buffer(uint16_t buffer_block_num, tran
 	return buffer_write_reserved(buffer_block_num, PACKET_SEQUENCE_START_INDEX, transport_header.as_bytes, TRANSPORT_LEN);
 }
 
+transport_header_t transport_header_fromfields(uint16_t seq_num, uint8_t type, uint8_t is_start, uint8_t is_end, uint8_t is_init, uint8_t is_do_not_continue){
+	transport_header_t header;
+	// TMTC specifies MSB first, hence flipping.
+	#if little_endian
+		flip_endian(cast_asptr(seq_num), PACKET_SEQUENCE_LEN);
+	#endif
+	header.as_struct.sequence_number = seq_num;
+	header.as_struct.info = transport_info_fromfields(PACKET_TYPE_DAT, 0, 0, 0, 0);	
+	return header;
+}
+
 uint16_t packet_prep_transport(){
 	// retreive status from buffer
-	uint16_t first_block_num, last_block_num, tmp;
+	uint16_t first_block_num, last_block_num, seq_num, block_num;
 	transport_header_t current_header;
 	first_block_num = buffer_status.transmit_block_address;
 	last_block_num = buffer_status.current_block_address;
 
-	// first block, start of sequence raised:
-
-
-	for(uint16_t seq_num = first_block_num; seq_num < last_block_num; seq_num++){
-		// make transport header
-		// - sequence number
-		tmp = seq_num;
-		// on GCC for x86/64, this should execute.
-		#if little_endian
-			flip_endian(&tmp, PACKET_SEQUENCE_LEN);
-		#endif
-		current_header.as_struct.sequence_number = tmp;
-		// - transport info
-		current_header.as_struct.info = transport_info_fromfields(PACKET_TYPE_DAT, 0, 0, 0, 0);
+	// little bit of logic to asset that the for loop will run
+	if (last_block_num < first_block_num){
+		// number of blocks -1 is the number of the last block
+		last_block_num += (BUFFER_BLOCKS - 1 - first_block_num);
 	}
+	seq_num = first_block_num;
+	// first block, start of sequence raised:
+	current_header = transport_header_fromfields(seq_num, PACKET_TYPE_DAT, 1, 0, 0, 0);
+	packet_write_transport_header_to_buffer(seq_num, current_header);
+
+	for(seq_num ; seq_num < last_block_num; seq_num++){
+		block_num = seq_num % BUFFER_BLOCKS;
+		// make transport header
+		current_header = transport_header_fromfields(seq_num, PACKET_TYPE_DAT, 0, 0, 0, 0);
+	}
+	// for loop exits when seq_num = last_block_num
+	current_header = transport_header_fromfields(seq_num, PACKET_TYPE_DAT, 0, 1, 0, 0);
+	packet_write_transport_header_to_buffer(seq_num, current_header);
+	return seq_num++;
 }
 
 /* Reading packets */

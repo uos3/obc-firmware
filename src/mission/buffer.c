@@ -209,10 +209,10 @@ uint32_t buffer_write_next(uint8_t* data, uint32_t data_len){
 		buffer_increment_block();
 		// reduce the length to write by that about
 		data_len -= retval;
-		#ifdef DEBUG_MODE
-			sprintf(output, "BUFFER.C: data writing has occured: fsp, %u retval %u, datalen %u to CBA %u", free_space_len, retval, data_len, buffer_status.current_block_address);
-			debug_print(output);
-		#endif
+		// #ifdef DEBUG_MODE
+		// 	sprintf(output, "BUFFER.C: data writing has occured: fsp, %u retval %u, datalen %u to CBA %u", free_space_len, retval, data_len, buffer_status.current_block_address);
+		// 	debug_print(output);
+		// #endif
 		// move up the pointer to the start of the data
 		data = &data[retval]; // TODO - replace with pointer arthitmetic & re-test
 		// get the free space in the new block
@@ -227,22 +227,22 @@ uint32_t buffer_write_next(uint8_t* data, uint32_t data_len){
 			address is then offset by the current pos in block
 		*/
 		retval = _buffer_write(data, data_len);
-		#ifdef DEBUG_MODE
-			sprintf(output, "BUFFER.C: last data write in series: fsp, %u retval %u, datalen %u to CBA %u", free_space_len, retval, data_len, buffer_status.current_block_address);
-			debug_print(output);
-		#endif
+		// #ifdef DEBUG_MODE
+		// 	sprintf(output, "BUFFER.C: last data write in series: fsp, %u retval %u, datalen %u to CBA %u", free_space_len, retval, data_len, buffer_status.current_block_address);
+		// 	debug_print(output);
+		// #endif
 			// Need to update current position in block. Already know data fits.
 	}
 	buffer_store_status();
 	return retval;
 }
 
-uint8_t buffer_retrieve_next_transmit(uint8_t block_buffer[], uint8_t *length_in_block){
+void buffer_retrieve_block(uint16_t block_num, uint8_t block_buffer[], uint8_t *length_in_block){
 	// just read the entire block.
-	FRAM_read(buffer_status.transmit_block_address*BLOCK_SIZE, block_buffer, BLOCK_SIZE);
+	FRAM_read(block_num*BLOCK_SIZE, block_buffer, BLOCK_SIZE);
 	// length should be in the first byte.
 	*length_in_block = block_buffer[0];
-	return block_buffer[0];
+	// return block_buffer[0];
 }
 
 void buffer_free_block(uint32_t block_address){

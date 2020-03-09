@@ -38,7 +38,7 @@ void buffer_init(void);
 
 void _buffer_overwrite_table();
 
-uint8_t buffer_retrieve_next_transmit(uint8_t *block_buffer, uint8_t *block_length);
+void buffer_retrieve_block(uint16_t block_num, uint8_t *block_buffer, uint8_t *block_length);
 
 void buffer_free_block(uint32_t block_address);
 

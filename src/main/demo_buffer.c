@@ -64,13 +64,13 @@ int main(){
 	buffer_status_print();
 
 	debug_print("demo: reading the block back");
-	buffer_retrieve_next_transmit(block_buffer, &read_length);
+	buffer_retrieve_block(buffer_status.transmit_block_address, block_buffer, &read_length);
 
-	block_buffer[255] = (uint8_t) '\0';
+	block_buffer[read_length] = (uint8_t) '\0';
 	sprintf(output, "demo: read length %u", read_length);
 	debug_print(output);
 	debug_print("demo: contents of buffer:");
-	debug_print(block_buffer);
+	debug_print(&block_buffer[BUFFER_DATA_START_INDEX]);
 	
 
 	debug_print("Writing more data to the buffer, > 1 block");
@@ -80,8 +80,7 @@ int main(){
 
 	// read all the data
 	for(int i = 1; i <= buffer_status.current_block_address; i++){
-		buffer_status.transmit_block_address = i;
-		buffer_retrieve_next_transmit(block_buffer, &read_length);
+		buffer_retrieve_block(i, block_buffer, &read_length);
 		for (int j = BUFFER_DATA_START_INDEX; j< read_length; j++){
 			UART_putc(UART_INTERFACE, block_buffer[j]);
 		}

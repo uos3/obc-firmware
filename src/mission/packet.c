@@ -1,13 +1,8 @@
 
-#include "packet/packet_base.h"
-#include "packet/packet_auth.h"
-#include "packet/packet_transport.h"
-#include "packet/packet_application.h"
-
-// #include "packet_base.h"
-// #include "packet_auth.h"
-// #include "packet_transport.h"
-// #include "packet_application.h"
+#include "packet_base.h"
+#include "packet_auth.h"
+#include "packet_transport.h"
+#include "packet_application.h"
 #include "buffer.h"
 
 
@@ -30,7 +25,7 @@ void packet_prep_buffer(){
 }
 
 
-uint64_t packet_is_unfinished(data_len){
+uint64_t packet_is_unfinished(uint32_t data_len){
 	if (data_len > buffer_status.current_block_position){
 		return 0xFF;
 	}
@@ -38,7 +33,7 @@ uint64_t packet_is_unfinished(data_len){
 }
 
 
-void store_payload_data(uint8_t whofor, uint8_t data, uint32_t data_len){
+void store_payload_data(uint8_t whofor, uint8_t* data, uint32_t data_len){
 	app_header_t header;
 	uint8_t is_unfinished;
 
@@ -54,3 +49,4 @@ void store_payload_data(uint8_t whofor, uint8_t data, uint32_t data_len){
 	buffer_write_next(header.as_bytes, APPLICATION_HEADER_LEN);
 	buffer_write_next(data, data_len);
 }
+

@@ -17,6 +17,8 @@
 #define TRANSPORT_INFO_START_INDEX (PACKET_SEQUENCE_START_INDEX+PACKET_SEQUENCE_LEN) // expands to 19
 #define TRANSPORT_LEN PACKET_SEQUENCE_LEN+TRANSPORT_INFO_LEN // expands to 3
 
+#define APPLICATION_START_INDEX PACKET_SEQUENCE_START_INDEX+TRANSPORT_LEN // expands to 20?
+
 typedef struct Packet{
     uint8_t length;
     uint8_t packet_buffer[PACKET_LEN];

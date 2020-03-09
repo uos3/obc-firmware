@@ -1,8 +1,8 @@
 
-#include "packet/packet_base.h"
-#include "packet/packet_auth.h"
-#include "packet/packet_transport.h"
-#include "packet/packet_application.h"
+#include "packet_base.h"
+#include "packet_auth.h"
+#include "packet_transport.h"
+#include "packet_application.h"
 
 /*
 	should mirror each blocks structure in the buffer.
@@ -16,4 +16,5 @@ typedef struct typed_packet_t{
 	uint8_t data_bytes[BLOCK_SIZE-BUFFER_DATA_START_INDEX];
 }typed_packet_t;
 
-void store_payload_data(uint8_t whofor, uint8_t data, uint32_t data_len);
+void store_payload_data(uint8_t whofor, uint8_t* data, uint32_t data_len);
+
