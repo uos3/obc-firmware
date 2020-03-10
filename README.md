@@ -10,34 +10,40 @@ The design is such so that the main hardware code and hardware can be easily var
 
 Open a terminal in the root folder of this firmware repository, then run the following commands:
 
-`./build uos3-proto demo_blinky` - will compile demo_blinky.c with the folder 'src/board/uos3-proto/' included
+`./build main_filename [,board]` to compile src/main/`main_filename`. If `board`
+is not included, the firmware will be compiled for the TOBC. If anything else
+is supplied as `board`, the build script will expect a corresponding `board.mk`
+file. `linux` is an option which will allow the firmware to be compiled and
+executed on GNU linux.
 
-  * The resultant ELF filename will be 'builds/_<board>-<program>-<gitref>_' eg 'builds/uos3-proto-blinky-fd8ea0c'
-
-`./flash <binary>` - will flash a board (using a USB blackmagic probe) with specified ELF file
-
-  * `./flash` with no arguments will use the most recent build from _builds/_
-
+`./flash` will flash the first found `.out` file in the `builds` folder. An
+alternate file can be specified by adding its path: `./flash builds/filename.out`
 
 ## To write a test program for the 'uos3-proto' circuit board
 
 1. Install the software dependencies below
 
 2. Create a C source file in _src/main/_, eg. *test.c*. A minimal example is below.
-```
-#include "../firmware.h"
+
+```c
+
+#include "../driver/board.h"
+#include "../driver/watchdog_ext.h"
 
 int main(void)
 {
   Board_init();
-
+  enable_watchdog_kick();
   /* Test Code goes here */
 }
+
 ```
 
-  * *firmware.h* should include all board header files.
-  * `Board_init()` should run hardware setup functions required for the board.
-  * The C source file must contain *main()* as this is the function that will be run on the hardware.
+* `Board_init()` will run basic system setup functions.
+* `enable_watchdog_kick()` will setup up the interrupt handlers to kick the
+  external watchdog.
+* Alternatively, `#include "../utility/debug.h"` and `debug_init();` can be added.
+* The C source file must contain *main()* as this is the function that will be run on the hardware.
 
 3. Compile the application with: `./build uos3-proto test`
 
@@ -103,3 +109,5 @@ Phil Crump <phil@philcrump.co.uk>
 Matthew Brejza
 
 Suzanna Lucarotti
+
+Richard Abrams
