@@ -1,5 +1,7 @@
 #include <string.h>
 #include "../utility/debug.h"
+#include "../utility/byte_plexing.h"
+#include "../driver/fram.h"
 
 #include "../mission/packet.h"
 #include "../mission/packet_transport.h"
@@ -22,7 +24,7 @@ void packet_transmit_buffer(){
 }
 
 void print_transport_header(transport_header_struct header){
-	debug_print("printing transport header");
+	// debug_print("printing transport header");
 	debug_print("| seqeunce num\t| type\t| S\t| E\t| I\t| D\t|");
 	debug_printf("| %12d\t| %2d\t| %1d\t| %1d\t| %1d\t| %1d\t|", 
 		header.sequence_number, 
@@ -33,6 +35,45 @@ void print_transport_header(transport_header_struct header){
 		header.info.do_not_continue
 	);
 
+}
+
+long get_mem_offset(void* p1, void* p2){
+	long offset;
+	offset = (long) p2 - (long) p1;
+	return offset;
+}
+
+
+void print_packet(packet_typed_t* packet){
+	long offset;
+	debug_printf("packet at %p", packet);
+	// debug_hex(packet->as_bytes, sizeof(packet_typed_t));
+	debug_disable_newline();
+	for (int i = 0; i < BUFFER_DATA_START_INDEX; i++){
+		if (i >= PACKET_HASH_START_INDEX && i < PACKET_SEQUENCE_START_INDEX){
+			debug_print("---- ");
+		}
+		else{
+			debug_hex((uint8_t*) &packet->as_bytes[i], 1);
+		}
+	}
+	debug_enable_newline();
+	debug_print("");
+
+	// length
+	offset = get_mem_offset(packet, &packet->as_struct.length);
+	debug_printf("length, offset: %ld ---", offset);
+	debug_printf("| % 3d\t|", packet->as_struct.length);
+
+	// hash
+	offset = get_mem_offset(packet, &packet->as_struct.hash.bytes);
+	debug_printf("hash, offset: %ld ---", offset);
+	// debug_hex(packet->as_struct.hash.bytes, PACKET_HASH_LEN);
+	
+	// transport header
+	offset = get_mem_offset(packet, &packet->as_struct.transport_header);
+	debug_printf("transport header, offset: %ld ---", offset);
+	print_transport_header(packet->as_struct.transport_header);
 }
 
 
@@ -49,12 +90,12 @@ int main(){
 	// add the transport layer to all completed packets
 	packet_prep_transport();
 	// packet_transmit_buffer();
-
+	debug_printf("packet struct length: %ld", sizeof(packet_typed_struct));
 	// read transport demo
 	// treating the stored data as recieved data.
 	// section is more important for ground station than it is for cubey, as more assumptions can be made
 	buffer_status.as_struct.recieve_block_start = buffer_status.as_struct.transmit_block_address;
-	buffer_status.as_struct.recieve_block_end = buffer_status.as_struct.current_block_address;
+	buffer_status.as_struct.recieve_block_end = buffer_status.as_struct.current_block_address+1;
 	debug_printf("transmit address: %d, cba: %d", buffer_status.as_struct.transmit_block_address, buffer_status.as_struct.current_block_address);
 
 	packet_typed_t current_packet;
@@ -62,13 +103,16 @@ int main(){
 	uint8_t length;
 	for (int block_num = buffer_status.as_struct.recieve_block_start; block_num<buffer_status.as_struct.recieve_block_end; block_num++){
 		// read block in, store in packet struct
-		buffer_retrieve_block(block_num, current_packet.as_bytes, &length);
-		// buffer_retrieve_block(block_num, readin_buffer, &length);
-		// memcpy(current_packet.as_bytes, readin_buffer, length);
+		buffer_retrieve_block(block_num, readin_buffer, &length);
+		// copy the start of the read-inbuffer
+		memcpy(current_packet.as_bytes, readin_buffer, sizeof(packet_typed_t));
+		// have to flip the endianness of the sequence number if big endian
+		#if little_endian
+			flip_endian(cast_asptr(current_packet.as_struct.transport_header.sequence_number), 2);
+		#endif
 		// check that start of sequence is infact start of sequence
-		print_transport_header(current_packet.as_struct.transport_header.as_struct);
-		debug_hex(current_packet.as_bytes, BUFFER_DATA_START_INDEX);
-
+		debug_printf("\r\n=== printing packet number %d ===", block_num);
+		print_packet(&current_packet);
 	}
 
 	debug_end();
