@@ -41,35 +41,12 @@ uint32_t packet_write_transport_header_to_buffer(uint16_t buffer_block_num, tran
 }
 
 
-uint16_t packet_prep_transport(){
-	// retreive status from buffer
-	uint16_t first_block_num, last_block_num, seq_num, block_num;
-	transport_header_t current_header;
-	first_block_num = buffer_status.as_struct.transmit_block_address;
-	last_block_num = buffer_status.as_struct.current_block_address;
-
-	// little bit of logic to asset that the for loop will run
-	if (last_block_num < first_block_num){
-		// number of blocks -1 is the number of the last block
-		last_block_num += (BUFFER_BLOCKS - 1 - first_block_num);
-		debug_printf("packet_transport.c: warning: changed block numbering");
-	}
-	seq_num = first_block_num;
-	// first block, start of sequence raised:
-	current_header = transport_header_fromfields(seq_num, PACKET_TYPE_DAT, 1, 0, 0, 0);
-	packet_write_transport_header_to_buffer(seq_num, current_header);
-	seq_num++;
-	for(seq_num ; seq_num < last_block_num; seq_num++){
-		block_num = seq_num % BUFFER_BLOCKS;
-		// debug_printf("prepping transport for block %d", seq_num);
-		// make transport header
-		current_header = transport_header_fromfields(seq_num, PACKET_TYPE_DAT, 0, 0, 0, 0);
-		packet_write_transport_header_to_buffer(seq_num, current_header);
-	}
-	// for loop exits when seq_num = last_block_num
-	current_header = transport_header_fromfields(seq_num, PACKET_TYPE_DAT, 0, 1, 0, 0);
-	packet_write_transport_header_to_buffer(seq_num, current_header);
-	return seq_num++;
-}
-
 /* Reading packets */
+
+bool transport_is_start_of_sequence(transport_header_struct header){
+	if (header.info.start_of_sequence > 0){
+		return true;
+	}
+	// implicit else
+	return false;
+}
