@@ -2,7 +2,7 @@
 #define BUFFER
 
 #include <stdint.h>
-#include "../component/fram.h"
+#include "../driver/fram.h"
 
 /* block 0 is reserved for semi-non volitile. CRC is included in the packet at the end*/
 #define BLOCK_SIZE 256
@@ -16,6 +16,7 @@
 #define BUFFER_BLOCKS FRAM_SIZE/BLOCK_SIZE
 
 #pragma pack(1)
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 typedef struct buffer_status_struct
 {
     uint8_t buffer_init;
@@ -29,6 +30,21 @@ typedef struct buffer_status_struct
     uint32_t recieve_block_start;
     uint32_t recieve_block_end;
 } buffer_status_struct;
+#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+typedef struct buffer_status_struct
+{
+    uint32_t recieve_block_end;
+    /* */
+    uint32_t recieve_block_start;
+    /* the first block to transmit */
+    uint32_t transmit_block_address;
+    /* the block's index in the FRAM */
+    uint32_t current_block_address;
+    /* the address in the block of the next writable location */
+    uint8_t current_block_position;
+    uint8_t buffer_init;
+} buffer_status_struct;
+#endif
 
 typedef union buffer_status_t{
     buffer_status_struct as_struct;

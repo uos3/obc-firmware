@@ -11,7 +11,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-#include "../component/fram.h"
+#include "../driver/fram.h"
 #include "../utility/debug.h"
 #include "../utility/byte_plexing.h"
 
