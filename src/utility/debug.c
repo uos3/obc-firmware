@@ -49,6 +49,8 @@ void debug_end(){
 	LED_off(LED_B);
 	while(1){
 		watchdog_update = 0xFF;
+		// to prevent CPU roasting
+		delay(1000);
 	}
 }
 
