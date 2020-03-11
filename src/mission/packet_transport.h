@@ -16,20 +16,20 @@
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 typedef struct transport_info_t
 {
-	int packet_type : 4;
-	int start_of_sequence : 1;
-	int end_of_sequence : 1;
-	int initial_packet : 1;
-	int do_not_continue : 1;
+	uint8_t packet_type : 4;
+	uint8_t start_of_sequence : 1;
+	uint8_t end_of_sequence : 1;
+	uint8_t initial_packet : 1;
+	uint8_t do_not_continue : 1;
 } transport_info_t;
 #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 typedef struct transport_info_t
 {
-	int do_not_continue : 1;
-	int initial_packet : 1;
-	int end_of_sequence : 1;
-	int start_of_sequence : 1;
-	int packet_type : 4;
+	uint8_t do_not_continue : 1;
+	uint8_t initial_packet : 1;
+	uint8_t end_of_sequence : 1;
+	uint8_t start_of_sequence : 1;
+	uint8_t packet_type : 4;
 } transport_info_t;
 #endif
 
@@ -42,7 +42,6 @@ typedef union transport_header_t{
 	transport_header_struct as_struct;
 	uint8_t as_bytes[sizeof(transport_header_struct)];
 }transport_header_t;
-#pragma pack()
 
 
 uint8_t transport_info_asbyte(transport_info_t transport_info);

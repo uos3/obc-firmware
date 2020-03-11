@@ -23,7 +23,9 @@
 */
 #define cast_asptr(var) ((uint8_t*) &var)
 
+// big endian means "big end first" (no, seriously, look it up)
 #define big_endian (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+// little endian means "little end first"
 #define little_endian (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
 
 void data_split_32(int32_t data, uint8_t *split);

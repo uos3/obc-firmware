@@ -24,6 +24,7 @@ char line_end[] = "\r\n";
 char no_line_end[] = "";
 char *line_end_ptr;
 
+
 void debug_init(){
 	// might aswell include board watchdog init
 	Board_init();
