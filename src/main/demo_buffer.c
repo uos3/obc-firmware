@@ -10,7 +10,7 @@
 #include "../driver/board.h"
 #include "../driver/wdt.h"
 #include "../driver/watchdog_ext.h"
-#include "../component/fram.h"
+#include "../driver/fram.h"
 #include "../mission/buffer.h"
 #include "../utility/debug.h"
 #include "../driver/uart.h"
@@ -19,10 +19,10 @@ char output[256];
 
 void buffer_status_print(){
 	sprintf(output, "demo: buffer status: %u, cba %u, cbp %u, tba %u",
-			buffer_status.buffer_init,
-			buffer_status.current_block_address,
-			buffer_status.current_block_position,
-			buffer_status.transmit_block_address);
+			buffer_status.as_struct.buffer_init,
+			buffer_status.as_struct.current_block_address,
+			buffer_status.as_struct.current_block_position,
+			buffer_status.as_struct.transmit_block_address);
 	debug_print(output);
 }
 
@@ -64,7 +64,7 @@ int main(){
 	buffer_status_print();
 
 	debug_print("demo: reading the block back");
-	buffer_retrieve_block(buffer_status.transmit_block_address, block_buffer, &read_length);
+	buffer_retrieve_block(buffer_status.as_struct.transmit_block_address, block_buffer, &read_length);
 
 	block_buffer[read_length] = (uint8_t) '\0';
 	sprintf(output, "demo: read length %u", read_length);
@@ -75,11 +75,13 @@ int main(){
 
 	debug_print("Writing more data to the buffer, > 1 block");
 	buffer_write_next(more_data_to_write, more_data_len);
+	debug_print("done. status:");
 	buffer_status_print();
 
 
+	debug_print("Reading data from the buffer");
 	// read all the data
-	for(int i = 1; i <= buffer_status.current_block_address; i++){
+	for(int i = 1; i <= buffer_status.as_struct.current_block_address; i++){
 		buffer_retrieve_block(i, block_buffer, &read_length);
 		for (int j = BUFFER_DATA_START_INDEX; j< read_length; j++){
 			UART_putc(UART_INTERFACE, block_buffer[j]);
