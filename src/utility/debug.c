@@ -92,9 +92,12 @@ void debug_printf(const char* f_string, ...){
 }
 
 void debug_printl(char* string, uint32_t len){
-	UART_putb(UART_INTERFACE, string, len);
-	UART_puts(UART_INTERFACE, "");
-	UART_puts(UART_INTERFACE, line_end_ptr);
+	debug_disable_newline();
+	for (int i = 0; i < len; i++){
+		debug_printf("%c", string[i]);
+	}
+	debug_enable_newline();
+	debug_print("");
 }
 
 void debug_flash(uint8_t n_times){

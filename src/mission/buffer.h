@@ -59,6 +59,8 @@ uint32_t buffer_write_next(uint8_t *data, uint32_t data_len);
 
 uint32_t buffer_write_reserved(uint32_t block_number, uint8_t write_start_position, uint8_t data[], uint32_t data_len);
 
+bool buffer_read_data(uint16_t start_block_number, uint8_t* data_ptr, uint32_t length_to_read,  uint32_t* read_length);
+
 void buffer_init(void);
 
 void _buffer_overwrite_table();

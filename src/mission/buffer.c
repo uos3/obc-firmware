@@ -99,7 +99,7 @@ uint32_t buffer_get_free_length(){
 
 uint32_t buffer_get_block_used_length(uint32_t block_number){
 	uint8_t used_length;
-	FRAM_read(buffer_status.as_struct.current_block_address*BLOCK_SIZE, &used_length, 1);
+	FRAM_read(block_number*BLOCK_SIZE, &used_length, 1);
 	return (uint32_t) used_length;
 }
 
@@ -214,4 +214,48 @@ void buffer_retrieve_block(uint16_t block_num, uint8_t block_buffer[], uint8_t *
 void buffer_free_block(uint32_t block_address){
 	uint8_t free_data[] = {0x00};
 	FRAM_write(block_address*BLOCK_SIZE, free_data, 1);
+}
+
+
+bool buffer_read_data(uint16_t start_block_number, uint8_t* data_ptr, uint32_t length_to_read, uint32_t* last_read_addr){
+	// uint16_t current_block_number;
+	uint32_t FRAM_read_address,  blocks_read_counter, current_block_number, current_block_length, eff_block_num;
+	current_block_number = start_block_number;
+
+	// best case senario: expected data is immediately found. Lengths should be *approximately*
+	// BLOCK_SIZE - APP_HEADER_LEN. Doing anything too clever with this could result in disaster.
+	uint8_t read_length = 0;
+	// instead, just insist that we only go all the way round the buffer once
+	debug_printf("buffer blocks: %u, start block: %u", BUFFER_BLOCKS, start_block_number);
+	for (blocks_read_counter = 0; blocks_read_counter < 10; blocks_read_counter++){
+		eff_block_num = blocks_read_counter + start_block_number;
+		current_block_number = eff_block_num - BLOCK_SIZE*(eff_block_num/BLOCK_SIZE);
+		// sanity check the block, we aren't reading the reserved space
+		current_block_length = buffer_get_block_used_length(current_block_number);
+		if (current_block_length <= BUFFER_DATA_START_INDEX){
+			debug_printf("BUFFER.C: block reading failed at block %u", current_block_number);
+			return false;
+		}
+		// implicit else
+		// we know that the data length is the block length - data start index
+		current_block_length -= BUFFER_DATA_START_INDEX -1;
+		// want to trim to the correct length. Also means all data has been found.
+		if (current_block_length >= (length_to_read - read_length)){
+			current_block_length = length_to_read - read_length;
+		}
+		debug_printf("BUFFER.C: current block number % 2u, has length: %u", current_block_number, current_block_length);
+		// actually reading the block
+		FRAM_read_address = current_block_number*BLOCK_SIZE+BUFFER_DATA_START_INDEX;
+		FRAM_read(FRAM_read_address, &data_ptr[read_length], current_block_length);
+		// increase read length
+		read_length += current_block_length;
+		// if we've got all the bytes, return
+		if (read_length >= length_to_read){
+			FRAM_read_address += current_block_length;
+			*last_read_addr = FRAM_read_address;
+			return true;
+		}
+	}
+	debug_printf("BUFFER.C: read all the blocks and failed");
+	return false;
 }

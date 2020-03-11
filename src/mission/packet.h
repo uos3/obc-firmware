@@ -39,4 +39,8 @@ void store_payload_data(uint8_t whofor, uint8_t* data, uint32_t data_len);
 
 uint16_t packet_prep_transport();
 
+void packet_retrieve_from_buffer(uint16_t block_num, packet_typed_t* packet_ptr, uint8_t* packet_length_ptr);
+
+uint8_t* packet_get_next_app(uint16_t start_block_num, uint32_t* length);
+
 #endif

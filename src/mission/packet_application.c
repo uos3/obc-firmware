@@ -1,8 +1,10 @@
 #include <stdint.h>
+#include <string.h>
 
 #include "packet_base.h"
 #include "packet_application.h"
 #include "buffer.h"
+#include "../utility/byte_plexing.h"
 
 uint8_t app_info_asbyte(app_info_t app_info){
 	uint8_t byte;
@@ -33,6 +35,18 @@ app_info_t app_info_fromfields(uint8_t whofor, uint8_t is_unfinished, uint8_t is
 	app_info.confirm = ((is_confirm & 0x02) >> 1);	// 00000010
 	app_info.now = (is_now & 0x01); // 00000001
 	return app_info;
+}
+
+bool app_retrieve_header(app_header_t* header, uint8_t* data_array, uint8_t data_array_length, uint8_t header_start_index){
+	if (header_start_index > (data_array_length-1 - sizeof(app_header_t))){
+		return false;
+	}
+	memcpy(header->as_bytes, data_array+header_start_index, sizeof(app_header_t));
+	// check endian
+	#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+		flip_endian(cast_asptr(header->as_struct.length), APPLICATION_LEN_LEN);
+	#endif
+	return true;
 }
 
 bool app_is_unfinished(uint32_t data_len){

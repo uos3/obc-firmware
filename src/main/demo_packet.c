@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "../utility/debug.h"
 #include "../utility/byte_plexing.h"
 #include "../driver/fram.h"
@@ -35,6 +36,17 @@ void print_transport_header(transport_header_struct header){
 		header.info.do_not_continue
 	);
 
+}
+
+void print_app_header(app_header_struct_t header){
+	debug_print("| application length\t| whofor\t| U\t| R\t| C\t| N\t|");
+	debug_printf("| % 18u\t| % 6d\t| %1d\t| %1d\t| %1d\t| %1d\t|",
+		header.length,
+		header.info.unfinished,
+		header.info.ret,
+		header.info.confirm,
+		header.info.now
+	);
 }
 
 long get_mem_offset(void* p1, void* p2){
@@ -96,25 +108,35 @@ int main(){
 	// section is more important for ground station than it is for cubey, as more assumptions can be made
 	buffer_status.as_struct.recieve_block_start = buffer_status.as_struct.transmit_block_address;
 	buffer_status.as_struct.recieve_block_end = buffer_status.as_struct.current_block_address+1;
-	debug_printf("transmit address: %d, cba: %d", buffer_status.as_struct.transmit_block_address, buffer_status.as_struct.current_block_address);
+	debug_printf("Read test: transmit address: %d, cba: %d", buffer_status.as_struct.transmit_block_address, buffer_status.as_struct.current_block_address);
 
 	packet_typed_t current_packet;
 	uint8_t readin_buffer[BLOCK_SIZE];
 	uint8_t length;
 	for (int block_num = buffer_status.as_struct.recieve_block_start; block_num<buffer_status.as_struct.recieve_block_end; block_num++){
 		// read block in, store in packet struct
-		buffer_retrieve_block(block_num, readin_buffer, &length);
-		// copy the start of the read-inbuffer
-		memcpy(current_packet.as_bytes, readin_buffer, sizeof(packet_typed_t));
-		// have to flip the endianness of the sequence number if big endian
-		#if little_endian
-			flip_endian(cast_asptr(current_packet.as_struct.transport_header.sequence_number), 2);
-		#endif
+		packet_retrieve_from_buffer(block_num, &current_packet, &length);
 		// check that start of sequence is infact start of sequence
 		debug_printf("\r\n=== printing packet number %d ===", block_num);
 		print_packet(&current_packet);
 	}
 
+	// read test, can we recover the data.
+
+	uint8_t* data;
+	uint32_t data_length;
+	data = packet_get_next_app(buffer_status.as_struct.recieve_block_start, &data_length);
+	// should just be able to print it?
+	debug_printf("length: %u", data_length);
+	debug_enable_newline();
+	debug_printl(data, data_length);
+	app_header_t apph;
+	debug_hex(data, sizeof(app_header_t));
+	memcpy(apph.as_bytes, data, sizeof(app_header_t));
+	print_app_header(apph.as_struct);
+	free(data);
+
+	debug_print("=== end demo ===");
 	debug_end();
 	return 0;
 }

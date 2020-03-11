@@ -61,4 +61,6 @@ uint8_t app_info_asbyte(app_info_t app_info);
 
 bool app_is_unfinished(uint32_t data_len);
 
+bool app_retrieve_header(app_header_t* header, uint8_t* data_array, uint8_t data_array_length, uint8_t header_start_index);
+
 #endif // packet application h
