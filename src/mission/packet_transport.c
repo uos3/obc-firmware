@@ -36,8 +36,8 @@ transport_header_t transport_header_fromfields(uint16_t seq_num, uint8_t type, u
 	return header;
 }
 
-uint32_t packet_write_transport_header_to_buffer(uint16_t buffer_block_num, transport_header_t transport_header){
-	return buffer_write_reserved(buffer_block_num, PACKET_SEQUENCE_START_INDEX, transport_header.as_bytes, TRANSPORT_LEN);
+uint32_t packet_write_transport_to_buffer(uint16_t buffer_block_number, transport_header_t transport_header){
+	return buffer_write_reserved(buffer_block_number, PACKET_SEQUENCE_START_INDEX, transport_header.as_bytes, TRANSPORT_LEN);
 }
 
 

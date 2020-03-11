@@ -69,4 +69,6 @@ void buffer_free_block(uint32_t block_address);
 
 void buffer_increment_block();
 
+uint32_t buffer_get_free_length();
+
 #endif /* BUFFER */

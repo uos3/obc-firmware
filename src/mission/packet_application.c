@@ -2,6 +2,7 @@
 
 #include "packet_base.h"
 #include "packet_application.h"
+#include "buffer.h"
 
 uint8_t app_info_asbyte(app_info_t app_info){
 	uint8_t byte;
@@ -32,4 +33,11 @@ app_info_t app_info_fromfields(uint8_t whofor, uint8_t is_unfinished, uint8_t is
 	app_info.confirm = ((is_confirm & 0x02) >> 1);	// 00000010
 	app_info.now = (is_now & 0x01); // 00000001
 	return app_info;
+}
+
+bool app_is_unfinished(uint32_t data_len){
+	if (data_len > buffer_get_free_length()){
+		return true;
+	}
+	return false;
 }

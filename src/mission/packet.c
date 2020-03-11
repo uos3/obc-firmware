@@ -3,7 +3,9 @@
 #include "packet_auth.h"
 #include "packet_transport.h"
 #include "packet_application.h"
+#include "packet.h"
 #include "buffer.h"
+#include "../utility/debug.h"
 
 
 void packet_prep_buffer(){
@@ -34,7 +36,7 @@ void store_payload_data(uint8_t whofor, uint8_t* data, uint32_t data_len){
 
 	// build the header
 	header.as_struct.length = data_len;
-	is_unfinished = packet_is_unfinished(data_len);
+	is_unfinished = app_is_unfinished(data_len);
 	header.as_struct.info = app_info_fromfields(whofor, is_unfinished, 0, 0, 0);
 
 	// write to buffer
@@ -58,18 +60,18 @@ uint16_t packet_prep_transport(){
 	seq_num = first_block_num;
 	// first block, start of sequence raised:
 	current_header = transport_header_fromfields(seq_num, PACKET_TYPE_DAT, 1, 0, 0, 0);
-	packet_write_transport_header_to_buffer(seq_num, current_header);
+	packet_write_transport_to_buffer(seq_num, current_header);
 	seq_num++;
 	for(seq_num ; seq_num < last_block_num; seq_num++){
 		block_num = seq_num % BUFFER_BLOCKS;
 		// debug_printf("prepping transport for block %d", seq_num);
 		// make transport header
 		current_header = transport_header_fromfields(seq_num, PACKET_TYPE_DAT, 0, 0, 0, 0);
-		packet_write_transport_header_to_buffer(seq_num, current_header);
+		packet_write_transport_to_buffer(seq_num, current_header);
 	}
 	// for loop exits when seq_num = last_block_num
 	current_header = transport_header_fromfields(seq_num, PACKET_TYPE_DAT, 0, 1, 0, 0);
-	packet_write_transport_header_to_buffer(seq_num, current_header);
+	packet_write_transport_to_buffer(seq_num, current_header);
 	return seq_num++;
 }
 

@@ -55,8 +55,8 @@ typedef union transport_header_t{
 
 transport_header_t transport_header_fromfields(uint16_t seq_num, uint8_t type, uint8_t is_start, uint8_t is_end, uint8_t is_init, uint8_t is_do_not_continue);
 
-uint32_t packet_write_transport_to_buffer(uint16_t buffer_block_number, transport_info_t transport_info);
+uint32_t packet_write_transport_to_buffer(uint16_t buffer_block_number, transport_header_t header);
 
-uint16_t packet_prep_transport();
+bool transport_is_start_of_sequence(transport_header_struct header);
 
 #endif
