@@ -33,10 +33,19 @@ typedef struct transport_info_t
 } transport_info_t;
 #endif
 
+
+#pragma pack(1)
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 typedef struct transport_header_struct{
 	PACKET_SEQUENCE_TYPE sequence_number;
 	transport_info_t info;
 }transport_header_struct;
+#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+typedef struct transport_header_struct{
+	PACKET_SEQUENCE_TYPE sequence_number;
+	transport_info_t info;
+}transport_header_struct;
+#endif
 
 typedef union transport_header_t{
 	transport_header_struct as_struct;
@@ -44,13 +53,7 @@ typedef union transport_header_t{
 }transport_header_t;
 
 
-uint8_t transport_info_asbyte(transport_info_t transport_info);
-
-transport_info_t transport_info_frombyte(uint8_t byte);
-
-transport_info_t transport_info_fromfields(uint8_t packet_type, uint8_t is_start, uint8_t is_end, uint8_t is_init, uint8_t is_do_not_continue);
-
-uint32_t packet_write_sequence_to_buffer(uint16_t buffer_block_number, uint16_t sequence_number);
+transport_header_t transport_header_fromfields(uint16_t seq_num, uint8_t type, uint8_t is_start, uint8_t is_end, uint8_t is_init, uint8_t is_do_not_continue);
 
 uint32_t packet_write_transport_to_buffer(uint16_t buffer_block_number, transport_info_t transport_info);
 
