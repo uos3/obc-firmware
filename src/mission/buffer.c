@@ -154,6 +154,7 @@ uint32_t buffer_write_reserved(uint32_t block_number, uint8_t write_start_positi
 	// implicit else
 	uint32_t start_address;
 	start_address = block_number * BLOCK_SIZE + write_start_position;
+	// debug_printf("BUFFER.C: write reserved to buffer address: %u", start_address);
 	FRAM_write(start_address, data, data_len);
 	return data_len;
 }
