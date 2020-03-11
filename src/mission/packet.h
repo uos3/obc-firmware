@@ -34,3 +34,4 @@ typedef union packet_typed_t{
 
 void store_payload_data(uint8_t whofor, uint8_t* data, uint32_t data_len);
 
+uint16_t packet_prep_transport();
