@@ -52,6 +52,14 @@ void debug_end(){
 	}
 }
 
+void debug_enable_newline(){
+	line_end_ptr = (char*) &line_end;
+}
+
+void debug_disable_newline(){
+	line_end_ptr = (char*) &no_line_end;
+}
+
 void debug_print(char* debug_message) {
 	#ifdef DEBUG_MODE
 		UART_puts(UART_INTERFACE, debug_message); 
@@ -68,8 +76,7 @@ void debug_hex(uint8_t* data, uint32_t data_len){
 	UART_puts(UART_INTERFACE, line_end_ptr);
 }
 
-void _vdebug_printf(const char* f_string, va_list vars)
-{
+void _vdebug_printf(const char* f_string, va_list vars){
 	char tmp_output[256];
 	vsprintf(tmp_output, f_string, vars);
 	debug_print(tmp_output);
@@ -87,7 +94,6 @@ void debug_printl(char* string, uint32_t len){
 	UART_puts(UART_INTERFACE, "");
 	UART_puts(UART_INTERFACE, line_end_ptr);
 }
-
 
 void debug_flash(uint8_t n_times){
 	for (int i = 0; i< n_times; i++){
@@ -146,7 +152,6 @@ void debug_flush_uart(){
 		UART_getc(UART_INTERFACE);
 	}
 }
-
 
 uint32_t debug_get_command(char* output, uint32_t max_output_length){
 	uint32_t recieved = 0;

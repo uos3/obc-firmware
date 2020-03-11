@@ -26,6 +26,10 @@ void debug_clear();
 
 void debug_end();
 
+void debug_enable_newline();
+
+void debug_disable_newline();
+
 // prints data as hex digits, displayed 0xAA
 void debug_hex(uint8_t* data, uint32_t data_len);
 
@@ -37,7 +41,6 @@ void debug_printf(const char f_string[], ...);
 
 // prints a non null terminated string.
 void debug_printl(char* string, uint32_t len);
-
 
 
 void debug_flash(uint8_t n_times);
