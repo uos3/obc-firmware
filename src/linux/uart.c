@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include "../driver/uart.h"
 #include "../driver/board.h"
 
@@ -9,7 +10,11 @@ void UART_init(uint8_t uart_num, uint32_t baudrate){}
 
 char UART_getc(uint8_t uart_num){}
 
-void UART_putc(uint8_t uart_num, char c){}
+void UART_putc(uint8_t uart_num, char c){
+	if (uart_num == UART_DEBUG_4){
+		printf("%c", c);
+	}
+}
 
 void UART_puts(uint8_t uart_num, char *str){
 	if (uart_num == UART_DEBUG_4){
@@ -17,7 +22,14 @@ void UART_puts(uint8_t uart_num, char *str){
 	}
 }
 
-void UART_putb(uint8_t uart_num, char *str, uint32_t len){}
+void UART_putb(uint8_t uart_num, char *str, uint32_t len){
+	if (uart_num == UART_DEBUG_4){
+		char buffer[len+1];
+		memcpy(buffer, str, len);
+		buffer[len] = '\0';
+		printf(str);
+	}
+}
 
 bool UART_getc_nonblocking(uint8_t uart_num, char *c){}
 
