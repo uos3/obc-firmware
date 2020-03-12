@@ -51,26 +51,28 @@ typedef union buffer_status_t{
     uint8_t as_bytes[sizeof(buffer_status_struct)];
 } buffer_status_t;
 
+
 buffer_status_t buffer_status;
-
-uint8_t buffer_retrieve_status();
-
-uint32_t buffer_write_next(uint8_t *data, uint32_t data_len);
-
-uint32_t buffer_write_reserved(uint32_t block_number, uint8_t write_start_position, uint8_t data[], uint32_t data_len);
-
-bool buffer_read_data(uint16_t start_block_number, uint8_t* data_ptr, uint32_t length_to_read,  uint32_t* read_length);
 
 void buffer_init(void);
 
 void _buffer_overwrite_table();
 
-void buffer_retrieve_block(uint16_t block_num, uint8_t *block_buffer, uint8_t *block_length);
-
-void buffer_free_block(uint32_t block_address);
+uint8_t buffer_retrieve_status();
 
 void buffer_increment_block();
 
 uint32_t buffer_get_free_length();
+
+void buffer_free_block(uint32_t block_address);
+
+uint32_t buffer_write_next(uint8_t *data, uint32_t data_len);
+
+uint32_t buffer_write_reserved(uint32_t block_number, uint8_t write_start_position, uint8_t data[], uint32_t data_len);
+
+void buffer_retrieve_block(uint16_t block_num, uint8_t *block_buffer, uint8_t *block_length);
+
+uint32_t buffer_read_length(uint16_t start_block_number, uint8_t start_block_position, uint8_t* output, uint32_t length_to_read);
+
 
 #endif /* BUFFER */
