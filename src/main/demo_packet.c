@@ -62,7 +62,7 @@ void print_packet(packet_typed_t* packet){
 	// debug_hex(packet->as_bytes, sizeof(packet_typed_t));
 	debug_disable_newline();
 	for (int i = 0; i < BUFFER_DATA_START_INDEX; i++){
-		if (i >= PACKET_HASH_START_INDEX && i < PACKET_SEQUENCE_START_INDEX){
+		if (i >= AUTH_START_INDEX && i < TRANSPORT_SEQUENCE_START_INDEX){
 			debug_print("---- ");
 		}
 		else{
@@ -78,7 +78,7 @@ void print_packet(packet_typed_t* packet){
 	debug_printf("| % 3d\t|", packet->as_struct.length);
 
 	// hash
-	offset = get_mem_offset(packet, &packet->as_struct.hash.bytes);
+	offset = get_mem_offset(packet, &packet->as_struct.hash.as_bytes);
 	debug_printf("hash, offset: %ld ---", offset);
 	// debug_hex(packet->as_struct.hash.bytes, PACKET_HASH_LEN);
 	
@@ -125,7 +125,10 @@ int main(){
 
 	uint8_t* data;
 	uint32_t data_length;
-	data = packet_get_next_app(buffer_status.as_struct.recieve_block_start, &data_length);
+	uint8_t app_position;
+	app_position = 0;
+	app_header_t first_app_header;
+	// first_app_header = (buffer_status.recieve_start_block, app_position);
 	// should just be able to print it?
 	debug_printf("length: %u", data_length);
 	debug_enable_newline();
