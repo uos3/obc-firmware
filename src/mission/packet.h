@@ -13,18 +13,17 @@
 	have arbitary start points for non-standard length members, this is easier
 */
 #pragma pack(1)
-
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 typedef struct packet_typed_struct{
 	uint8_t data_bytes[BLOCK_SIZE-BUFFER_DATA_START_INDEX];
 	transport_header_struct transport_header;
-	packet_hash_t hash;
+	auth_struct hash;
 	uint8_t length;
 }packet_typed_struct;
 #elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 typedef struct packet_typed_struct{
 	uint8_t length;
-	packet_hash_t hash;
+	auth_struct hash;
 	transport_header_struct transport_header;
 	uint8_t data_bytes[BLOCK_SIZE-BUFFER_DATA_START_INDEX];
 }packet_typed_struct;
@@ -41,6 +40,10 @@ uint16_t packet_prep_transport();
 
 void packet_retrieve_from_buffer(uint16_t block_num, packet_typed_t* packet_ptr, uint8_t* packet_length_ptr);
 
-uint8_t* packet_get_next_app(uint16_t start_block_num, uint32_t* length);
+uint32_t packet_get_app_data_from_buffer(uint16_t block_num, uint8_t app_header_start_index, uint8_t* app_buffer, app_header_t app_header);
+
+app_header_t packet_get_app_header_from_buffer(uint16_t block_num, uint8_t app_header_start_index);
+
+
 
 #endif
