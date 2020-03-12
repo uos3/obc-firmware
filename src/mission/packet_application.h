@@ -51,14 +51,16 @@ typedef union app_header_t{
 	uint8_t as_bytes[APPLICATION_HEADER_LEN];
 } app_header_t;
 
-app_header_t app_header_constructor();
+// constructs an application layer information struct from fields 
+app_info_t app_info_fromfields(uint8_t whofor, bool is_unfinished, bool is_ret, bool is_confirm, bool is_now);
 
-app_info_t app_info_fromfields(uint8_t whofor, uint8_t is_unfinished, uint8_t is_ret, uint8_t is_confirm, uint8_t is_now);
+// constructs an application header from data, and corrects endian
+app_header_t app_header_frombytes(uint8_t* data);
 
-app_info_t app_info_frombyte(uint8_t byte);
+// constructs an application header from fields, and sets endian to the standard
+app_header_t app_header_fromfields(APPLICATION_LEN_TYPE data_length, uint8_t whofor, bool is_unfinished, bool is_ret, bool is_confirm, bool is_now);
 
-uint8_t app_info_asbyte(app_info_t app_info);
-
+// checks to see if the application 'unfinished' flag should be set
 bool app_is_unfinished(uint32_t data_len);
 
 bool app_retrieve_header(app_header_t* header, uint8_t* data_array, uint8_t data_array_length, uint8_t header_start_index);
