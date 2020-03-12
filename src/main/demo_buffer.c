@@ -6,6 +6,7 @@
 #define DEBUG_MODE
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "../driver/board.h"
 #include "../driver/wdt.h"
@@ -80,14 +81,27 @@ int main(){
 
 
 	debug_print("Reading data from the buffer");
-	// read all the data
-	for(int i = 1; i <= buffer_status.as_struct.current_block_address; i++){
-		buffer_retrieve_block(i, block_buffer, &read_length);
-		for (int j = BUFFER_DATA_START_INDEX; j< read_length; j++){
-			UART_putc(UART_INTERFACE, block_buffer[j]);
-		}
+	// // read all the data
+	// for(int i = 1; i <= buffer_status.as_struct.current_block_address; i++){
+	// 	buffer_retrieve_block(i, block_buffer, &read_length);
+	// 	for (int j = BUFFER_DATA_START_INDEX; j< read_length; j++){
+	// 		UART_putc(UART_INTERFACE, block_buffer[j]);
+	// 	}
+	// }
+	// debug_print("");
+	uint32_t length_to_read = sizeof(more_data_to_write)*sizeof(uint8_t);
+	// length_to_read+= + sizeof(data_to_write) * sizeof(uint8_t);
+	uint8_t start_pos = sizeof(data_to_write) + BUFFER_DATA_START_INDEX;
+	uint8_t* read_data = malloc(length_to_read);
+	uint32_t actual_read = 0;
+	if (read_data != NULL){
+		actual_read = buffer_read_length(buffer_status.as_struct.transmit_block_address, start_pos, read_data, length_to_read);
 	}
-	debug_print("");
+	debug_printf("data length: %d. actually read: %d bytes", length_to_read, actual_read);
+	debug_printl(read_data, actual_read);
+
+	free(read_data);
+
 	debug_print("=== end demo ===");
 	// while(1){
 	// 	watchdog_update=0xFF;
