@@ -26,8 +26,7 @@ void packet_transmit_buffer(){
 
 void print_transport_header(transport_header_struct header){
 	// debug_print("printing transport header");
-	debug_print("| seqeunce num\t| type\t| S\t| E\t| I\t| D\t|");
-	debug_printf("| %12d\t| %2d\t| %1d\t| %1d\t| %1d\t| %1d\t|", 
+	debug_printf("| %12d | % 4d | %1d | %1d | %1d | %1d |", 
 		header.sequence_number, 
 		header.info.packet_type, 
 		header.info.start_of_sequence,
@@ -39,9 +38,9 @@ void print_transport_header(transport_header_struct header){
 }
 
 void print_app_header(app_header_struct_t header){
-	debug_print("| application length\t| whofor\t| U\t| R\t| C\t| N\t|");
-	debug_printf("| % 18u\t| % 6d\t| %1d\t| %1d\t| %1d\t| %1d\t|",
+	debug_printf("| % 18u | % 6d | %1d | %1d | %1d | %1d |",
 		header.length,
+		header.info.whofor,
 		header.info.unfinished,
 		header.info.ret,
 		header.info.confirm,
@@ -75,7 +74,7 @@ void print_packet(packet_typed_t* packet){
 	// length
 	offset = get_mem_offset(packet, &packet->as_struct.length);
 	debug_printf("length, offset: %ld ---", offset);
-	debug_printf("| % 3d\t|", packet->as_struct.length);
+	debug_printf("| % 3d |", packet->as_struct.length);
 
 	// hash
 	offset = get_mem_offset(packet, &packet->as_struct.hash.as_bytes);
