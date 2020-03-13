@@ -26,7 +26,7 @@ app_header_t app_header_fromfields(APPLICATION_LEN_TYPE data_length, uint8_t who
 	info = app_info_fromfields(whofor, is_unfinished, is_ret, is_confirm, is_now);
 
 	#if little_endian
-		flip_endian(correct_endian_length, APPLICATION_LEN_LEN);
+		flip_endian(cast_asptr(correct_endian_length), APPLICATION_LEN_LEN);
 	#endif
 
 	header.as_struct.info = info;
@@ -40,7 +40,7 @@ app_header_t app_header_frombytes(uint8_t* data){
 	memcpy(header.as_bytes, data, APPLICATION_HEADER_LEN);
 
 	#if little_endian
-		flip_endian(header.as_struct.length, APPLICATION_LEN_LEN);
+		flip_endian(cast_asptr(header.as_struct.length), APPLICATION_LEN_LEN);
 	#endif
 
 	return header;
