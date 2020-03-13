@@ -91,7 +91,7 @@ void packet_retrieve_from_buffer(uint16_t block_num, packet_typed_t* packet_ptr,
 
 uint32_t packet_get_app_data_from_buffer(uint16_t block_num, uint8_t app_header_start_index, uint8_t* app_buffer, app_header_t app_header){
 	uint32_t length;
-	uint8_t data_read_start_index = app_header_start_index + sizeof(app_header_t);
+	uint8_t data_read_start_index = app_header_start_index + sizeof(app_header_t)+BUFFER_DATA_START_INDEX;
 	length = app_header.as_struct.length;
 	return buffer_read_length(block_num, data_read_start_index, app_buffer, length);
 }
