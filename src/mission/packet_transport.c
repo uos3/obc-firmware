@@ -29,7 +29,7 @@ transport_header_t transport_header_fromfields(uint16_t seq_num, uint8_t type, u
 	transport_header_t header;
 	// TMTC specifies MSB first, hence flipping.
 	#if little_endian
-		flip_endian(cast_asptr(seq_num), PACKET_SEQUENCE_LEN);
+		flip_endian(cast_asptr(seq_num), TRANSPORT_SEQUENCE_LEN);
 	#endif
 	header.as_struct.sequence_number = seq_num;
 	header.as_struct.info = transport_info_fromfields(type, is_start, is_end, is_init, is_do_not_continue);	
@@ -37,7 +37,7 @@ transport_header_t transport_header_fromfields(uint16_t seq_num, uint8_t type, u
 }
 
 uint32_t packet_write_transport_to_buffer(uint16_t buffer_block_number, transport_header_t transport_header){
-	return buffer_write_reserved(buffer_block_number, PACKET_SEQUENCE_START_INDEX, transport_header.as_bytes, TRANSPORT_LEN);
+	return buffer_write_reserved(buffer_block_number, TRANSPORT_SEQUENCE_START_INDEX, transport_header.as_bytes, TRANSPORT_LEN);
 }
 
 
