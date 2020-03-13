@@ -13,7 +13,7 @@
 	returns:
 	uint8_t var[offset], if var was already an array
 */
-#define cast_asbyte(var, offset) (*((uint8_t*) &var)+offset)
+#define cast_asbyte(var, offset) *(((uint8_t*) &var)+offset)
 
 /*
 	casts the address of var as a uint8_t ptr
