@@ -5,7 +5,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "inc/hw_types.h"
+// #include "inc/hw_types.h"
 
 #define GPIO_PA0	0x00
 #define GPIO_PA1	0x01

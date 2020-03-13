@@ -1,5 +1,8 @@
 #include <string.h>
+#include <stdlib.h>
 #include "../utility/debug.h"
+#include "../utility/byte_plexing.h"
+#include "../driver/fram.h"
 
 #include "../mission/packet.h"
 #include "../mission/packet_transport.h"
@@ -22,9 +25,9 @@ void packet_transmit_buffer(){
 }
 
 void print_transport_header(transport_header_struct header){
-	debug_print("printing transport header");
-	debug_print("| seqeunce num\t| type\t| S\t| E\t| I\t| D\t|");
-	debug_printf("| %12d\t| %2d\t| %1d\t| %1d\t| %1d\t| %1d\t|", 
+	// debug_print("printing transport header");
+	debug_print("| seqeunce num | type | S | E | I | D |");
+	debug_printf("| %12d | % 4d | %1d | %1d | %1d | %1d |", 
 		header.sequence_number, 
 		header.info.packet_type, 
 		header.info.start_of_sequence,
@@ -33,6 +36,57 @@ void print_transport_header(transport_header_struct header){
 		header.info.do_not_continue
 	);
 
+}
+
+void print_app_header(app_header_struct_t header){
+	debug_print("| application length | whofor | U | R | C | N |");
+	debug_printf("| % 18u | % 6d | %1d | %1d | %1d | %1d |",
+		header.length,
+		header.info.whofor,
+		header.info.unfinished,
+		header.info.ret,
+		header.info.confirm,
+		header.info.now
+	);
+}
+
+long get_mem_offset(void* p1, void* p2){
+	long offset;
+	offset = (long) p2 - (long) p1;
+	return offset;
+}
+
+
+void print_packet(packet_typed_t* packet){
+	long offset;
+	debug_printf("packet at %p", packet);
+	// debug_hex(packet->as_bytes, sizeof(packet_typed_t));
+	debug_disable_newline();
+	for (int i = 0; i < BUFFER_DATA_START_INDEX; i++){
+		if (i >= AUTH_START_INDEX && i < TRANSPORT_SEQUENCE_START_INDEX){
+			debug_print("---- ");
+		}
+		else{
+			debug_hex((uint8_t*) &packet->as_bytes[i], 1);
+		}
+	}
+	debug_enable_newline();
+	debug_print("");
+
+	// length
+	offset = get_mem_offset(packet, &packet->as_struct.length);
+	debug_printf("length, offset: %ld ---", offset);
+	debug_printf("| % 3d |", packet->as_struct.length);
+
+	// hash
+	offset = get_mem_offset(packet, &packet->as_struct.hash.as_bytes);
+	debug_printf("hash, offset: %ld ---", offset);
+	// debug_hex(packet->as_struct.hash.bytes, PACKET_HASH_LEN);
+	
+	// transport header
+	offset = get_mem_offset(packet, &packet->as_struct.transport_header);
+	debug_printf("transport header, offset: %ld ---", offset);
+	print_transport_header(packet->as_struct.transport_header);
 }
 
 
@@ -49,28 +103,46 @@ int main(){
 	// add the transport layer to all completed packets
 	packet_prep_transport();
 	// packet_transmit_buffer();
-
+	debug_printf("packet struct length: %ld", sizeof(packet_typed_struct));
 	// read transport demo
 	// treating the stored data as recieved data.
 	// section is more important for ground station than it is for cubey, as more assumptions can be made
 	buffer_status.as_struct.recieve_block_start = buffer_status.as_struct.transmit_block_address;
-	buffer_status.as_struct.recieve_block_end = buffer_status.as_struct.current_block_address;
-	debug_printf("transmit address: %d, cba: %d", buffer_status.as_struct.transmit_block_address, buffer_status.as_struct.current_block_address);
+	buffer_status.as_struct.recieve_block_end = buffer_status.as_struct.current_block_address+1;
+	debug_printf("Read test: transmit address: %d, cba: %d", buffer_status.as_struct.transmit_block_address, buffer_status.as_struct.current_block_address);
 
 	packet_typed_t current_packet;
 	uint8_t readin_buffer[BLOCK_SIZE];
 	uint8_t length;
 	for (int block_num = buffer_status.as_struct.recieve_block_start; block_num<buffer_status.as_struct.recieve_block_end; block_num++){
 		// read block in, store in packet struct
-		buffer_retrieve_block(block_num, current_packet.as_bytes, &length);
-		// buffer_retrieve_block(block_num, readin_buffer, &length);
-		// memcpy(current_packet.as_bytes, readin_buffer, length);
+		packet_retrieve_from_buffer(block_num, &current_packet, &length);
 		// check that start of sequence is infact start of sequence
-		print_transport_header(current_packet.as_struct.transport_header.as_struct);
-		debug_hex(current_packet.as_bytes, BUFFER_DATA_START_INDEX);
-
+		debug_printf("\r\n=== printing packet number %d ===", block_num);
+		print_packet(&current_packet);
 	}
 
+	// read test, can we recover the data.
+
+	uint8_t* data;
+	uint32_t data_length;
+	uint8_t app_position;
+	app_position = 0;
+	app_header_t first_app_header;
+	first_app_header = packet_get_app_header_from_buffer(buffer_status.as_struct.recieve_block_start, 0);
+	data_length = first_app_header.as_struct.length;
+	// should just be able to print it?
+	debug_printf("Application layer found length: %u", data_length);
+	print_app_header(first_app_header.as_struct);
+
+	debug_print("Reading the data");
+	data = malloc(data_length);
+	packet_get_app_data_from_buffer(buffer_status.as_struct.recieve_block_start, 0, data, first_app_header);
+	debug_printl(data, data_length);
+	free(data);
+
+
+	debug_print("=== end demo ===");
 	debug_end();
 	return 0;
 }

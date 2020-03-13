@@ -9,24 +9,26 @@
 import os, sys
 
 main_name = "demo_blink"
+board = "tobc"
+makefile = "Makefile"
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         main_name = sys.argv[1]
-        print(f"=== building {main_name} ===")
         if "." in main_name:
             main_name = main_name.split(".")[0]
-    elif len(sys.argv) == 1:
-        print(f"=== building {main_name} ===")
+    if len(sys.argv) > 2:
+        board = sys.argv[2]
+        makefile = F"{board}.mk"
+    print(f"=== building {main_name} ===")
+    print(f"using board: {board}")
 
-
-compiler="arm-none-eabi-gcc"
+compiler = "arm-none-eabi-gcc"
 main_root = "src/main/"
 rel_path_sig = ". "
-tivaware_location="../TivaWare_C_Series-2.1.4.178"
+tivaware_location = "../TivaWare_C_Series-2.1.4.178"
 tmp_filename = "/tmp/compile_output.txt"
 source_folders = os.listdir("src")
 main_path = main_root + main_name + ".c"
-total_dependancies = set([main_path])
 
 def in_firmware(line):
     if tivaware_location in line:
@@ -38,10 +40,16 @@ def in_firmware(line):
         return True
     return False
 
+
 def get_raw_filename(line):
     split_path = line.split("/")
-    fname = "src/" + split_path[-2] + "/" + split_path[-1].split(".")[0] + ".c"
+    folder = split_path[-2]
+    root_name = split_path[-1]
+    if folder == "driver":
+        folder = board
+    fname = "src/" + folder + "/" + root_name.split(".")[0] + ".c"
     return fname
+
 
 def get_dependancies_from_headers(file_to_check):
     # print("checking:",file_to_check)
@@ -62,7 +70,7 @@ def get_dependancies_from_headers(file_to_check):
 
 
 def get_dependancies_from_makerules(file_to_check):
-        # print("checking:",file_to_check)
+    # print("checking:",file_to_check)
     file_dependancies = set()
     command_string = f"{compiler} -MM {file_to_check} -I{tivaware_location} >{tmp_filename}"
     os.system(command_string)
@@ -78,47 +86,51 @@ def get_dependancies_from_makerules(file_to_check):
     # input()
     return file_dependancies
 
-
-
 # new plan is to generate the dependancies until no more can be generated and
 # then build the sources list and rule from the set.
-method = get_dependancies_from_headers
 
-previous_dependancy_length = -1
-new_depedancy_length = 0
-loop_counter = 0
-while new_depedancy_length > previous_dependancy_length and loop_counter<1000:
-    previous_dependancy_length = new_depedancy_length
-    new_dependancies = set()
-    for file_ in total_dependancies:
-        new_dependancies |= method(file_)
-    total_dependancies |= new_dependancies
-    new_depedancy_length = len(total_dependancies)
-    loop_counter += 1
 
-if loop_counter > 999:
-    raise ValueError("Dependancy finder has broken, 1000 searches performed")
-# print(total_dependancies)
-total_dependancies.remove(main_path)
+def get_total_dependancies(method=get_dependancies_from_headers):
+    total_dependancies = set([main_path])
+    previous_dependancy_length = -1
+    new_depedancy_length = 0
+    loop_counter = 0
+    while new_depedancy_length > previous_dependancy_length and loop_counter < 1000:
+        previous_dependancy_length = new_depedancy_length
+        new_dependancies = set()
+        for file_ in total_dependancies:
+            new_dependancies |= method(file_)
+        total_dependancies |= new_dependancies
+        new_depedancy_length = len(total_dependancies)
+        loop_counter += 1
+
+    if loop_counter > 999:
+        raise ValueError("Dependancy finder has broken, 1000 searches performed")
+    # print(total_dependancies)
+    total_dependancies.remove(main_path)
+    return total_dependancies
+
+
 # instead of trying to fill a string in a makefile (dumb), add a dependancy
 # file that's included at the top. (smort)
 
 # generate firmware sources & custom rule from set:
-firmware_sources = ""
-final_custom_rule = f"{main_root}{main_name}.o: "
-for source_file in total_dependancies:
-    firmware_sources += f"{source_file} "
-    final_custom_rule += f"{source_file[:-2]}.o "
+if __name__ == "__main__":
+    total_dependancies = get_total_dependancies()
+    firmware_sources = ""
+    final_custom_rule = f"{main_root}{main_name}.o: "
+    for source_file in total_dependancies:
+        firmware_sources += f"{source_file} "
+        final_custom_rule += f"{source_file[:-2]}.o "
 
-with open("builds/firmware_sources.mk", 'w') as fw_srcs_mkfile:
-    fw_srcs_mkfile.write(f"FW_SRCS={firmware_sources}")
+    with open("builds/firmware_sources.mk", 'w') as fw_srcs_mkfile:
+        fw_srcs_mkfile.write(f"FW_SRCS={firmware_sources}")
 
-# custom rule isn't neccisary, however, the ability to make it has been
-# left here for future reference. Also, uncomment the incliude line in
-# the makefile.
-with open("builds/custom_rule.mk", 'w') as custom_rule_mkfile:
-    custom_rule_mkfile.write(final_custom_rule)
+    # custom rule isn't neccisary, however, the ability to make it has been
+    # left here for future reference. Also, uncomment the incliude line in
+    # the makefile.
+    with open("builds/custom_rule.mk", 'w') as custom_rule_mkfile:
+        custom_rule_mkfile.write(final_custom_rule)
 
-make_command = f"make builds/{main_name}.out MAINFILE={main_name}"
-os.system(make_command)
-
+    make_command = f"make -f {makefile} builds/{main_name}.out MAINFILE={main_name}"
+    os.system(make_command)

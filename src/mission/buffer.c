@@ -10,8 +10,9 @@
 
 #include <inttypes.h>
 #include <stdio.h>
+#include <string.h>
 
-#include "../component/fram.h"
+#include "../driver/fram.h"
 #include "../utility/debug.h"
 #include "../utility/byte_plexing.h"
 
@@ -99,7 +100,7 @@ uint32_t buffer_get_free_length(){
 
 uint32_t buffer_get_block_used_length(uint32_t block_number){
 	uint8_t used_length;
-	FRAM_read(buffer_status.as_struct.current_block_address*BLOCK_SIZE, &used_length, 1);
+	FRAM_read(block_number*BLOCK_SIZE, &used_length, 1);
 	return (uint32_t) used_length;
 }
 
@@ -154,6 +155,7 @@ uint32_t buffer_write_reserved(uint32_t block_number, uint8_t write_start_positi
 	// implicit else
 	uint32_t start_address;
 	start_address = block_number * BLOCK_SIZE + write_start_position;
+	// debug_printf("BUFFER.C: write reserved to buffer address: %u", start_address);
 	FRAM_write(start_address, data, data_len);
 	return data_len;
 }
@@ -213,4 +215,46 @@ void buffer_retrieve_block(uint16_t block_num, uint8_t block_buffer[], uint8_t *
 void buffer_free_block(uint32_t block_address){
 	uint8_t free_data[] = {0x00};
 	FRAM_write(block_address*BLOCK_SIZE, free_data, 1);
+}
+
+
+uint32_t buffer_read_length(uint16_t start_block_number, uint8_t start_block_position, uint8_t* output, uint32_t length_to_read){
+	uint32_t approx_number_blocks, total_read, current_block_number, remaining_length;
+	uint8_t length_in_block, data_length;
+	uint8_t block_buffer[BLOCK_SIZE];
+
+	if (start_block_position < BUFFER_DATA_START_INDEX){
+		start_block_position = BUFFER_DATA_START_INDEX;
+	}
+
+	approx_number_blocks = length_to_read/BLOCK_SIZE + 1;
+	total_read = 0;
+	for (current_block_number = start_block_number; current_block_number <=( start_block_number + approx_number_blocks); current_block_number++){
+		// got to peel off the first 20 or so bytes, python would be memes: block_buffer[DSI: length_in_block]
+		// as both are from 0 and the last entry (index length_in_block) one isn't included
+		// might be a +- 1 error
+		remaining_length = length_to_read - total_read;
+		debug_printf("BUFFER.C: remaining lenth: %d", remaining_length);
+		// retrieve the block
+		buffer_retrieve_block((uint16_t) current_block_number, block_buffer, &length_in_block);
+		debug_printf("BUFFER.C: read block of length %d", length_in_block);
+		// remove the header from the length
+		length_in_block -= start_block_position;
+		// 
+		if (length_in_block > remaining_length){
+			length_in_block = remaining_length;
+		}
+		debug_printf("BUFFER.C: read addresses: output start %p, out cur %p\nBUFFER.C: block_buffer addresses: bb start %p, bb cur %p", &output, &output[total_read -1], &block_buffer, &block_buffer[start_block_position]);
+		memcpy((uint8_t*) &output[total_read], (uint8_t*) &block_buffer[start_block_position], length_in_block);
+		// update total read
+		total_read += length_in_block;
+		if (total_read >= length_to_read){
+			break;
+		}
+		// support for offset starts
+		if (start_block_position != BUFFER_DATA_START_INDEX){
+			start_block_number = BUFFER_DATA_START_INDEX;
+		}
+	}
+	return total_read;
 }

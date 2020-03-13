@@ -8,8 +8,8 @@
  * @{
  */
 
-#include "board.h"
-#include "uart.h"
+#include "../driver/board.h"
+#include "../driver/uart.h"
 
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"

@@ -8,8 +8,8 @@
  * @{
  */
 
-#include "board.h"
-#include "gpio.h"
+#include "../driver/board.h"
+#include "../driver/gpio.h"
 
 #include "inc/hw_memmap.h"
 

@@ -9,7 +9,7 @@
 
 #include "../driver/board.h"
 #include "../driver/spi.h"
-#include "fram.h"
+#include "../driver/fram.h"
 
 #include <string.h>
 

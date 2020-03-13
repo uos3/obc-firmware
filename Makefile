@@ -44,21 +44,10 @@ OUTDIR?=builds
 HEAPSIZE = 0x2000
 # 2KB Stack
 STACKSIZE = 0x800
-
-#
-# Include the common make definitions.
+# VERBOSE_ON="yes"
 
 include builds/firmware_sources.mk
 
-# FW_SRCS=src/component/led.c \
-#  src/driver/board.c \
-#  src/driver/gpio.c \
-#  src/driver/delay.c \
-#  src/driver/board.c \
-#  src/driver/watchdog_ext.c \
-#  src/driver/uart.c \
-#  src/driver/rtc.c \
-#  src/driver/wdt.c \
 
 BOARD_INCLUDE="-DBOARD_INCLUDE=\"../driver/board.h\""
 
@@ -176,7 +165,6 @@ IPATH=${ROOT}
 	@${AR} -cr ${@} ${^}
 
 ${OUTDIR}/${MAINFILE}.out: src/main/${MAINFILE}.o
-# builds/demo_antenna.out: src/main/demo_antenna.o
 	@if [ 'x${VERBOSE_ON}' = x ];                                            \
 	 then                                                                 \
 	     echo "  LD    ${@} ${LNK_SCP}";echo "${LNK_SCP}"; \
@@ -196,51 +184,6 @@ ${OUTDIR}/${MAINFILE}.out: src/main/${MAINFILE}.o
 	@rm -f ${@}.axf;
 	@$(MAKE) -s clean;
 
-
-%.o: %.c
-	@if [ 'x${VERBOSE_ON}' = x ];                          \
-	 then                                                 \
-	     echo "  CC    ${<}";                             \
-	 else                                                 \
-	     echo ${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}; \
-	 fi
-	@${CC} ${CFLAGS} ${BOARD_INCLUDE} -D${COMPILER} -o ${@} ${<}
-#
-%.o: %.S
-	@if [ 'x${VERBOSE_ON}' = x ];                               \
-	 then                                                    \
-	     echo "  AS    ${<}";                                \
-	 else                                                    \
-	     echo ${CC} ${AFLAGS} -D${COMPILER} -o ${@} -c ${<}; \
-	 fi
-	@${CC} ${AFLAGS} -D${COMPILER} -o ${@} -c ${<}
-
-#
-# The rule for creating an object library.
-#
-%.a:
-	@if [ 'x${VERBOSE_ON}' = x ];     \
-	 then                          \
-	     echo "  AR    ${@}";      \
-	 else                          \
-	     echo ${AR} -cr ${@} ${^}; \
-	 fi
-	@${AR} -cr ${@} ${^}
-
-
-# src/main/demo_antenna.o: src/utility/debug.o \
-#  src/component/led.o \
-#  src/driver/board.o \
-#  src/driver/gpio.o \
-#  src/driver/delay.o \
-#  src/driver/board.o \
-#  src/driver/watchdog_ext.o \
-#  src/driver/uart.o \
-#  src/driver/rtc.o \
-#  src/driver/wdt.o 
-
-include builds/custom_rule.mk
-
 #
 # The rule to create the target directory.
 #
@@ -250,9 +193,9 @@ ${OUTDIR}:
 
 ${OUTDIR}/${MAINFILE}.out: $(patsubst %.c,%.o,${FW_SRCS})
 ${OUTDIR}/${MAINFILE}.out: ${ROOT}/driverlib/gcc/libdriver.a
-${OUTDIR}/${MAINFILE}.out: src/driver/tm4c_startup_${COMPILER}.o
-${OUTDIR}/${MAINFILE}.out: src/driver/tm4c123g.ld
-SCATTERgcc=src/driver/tm4c123g.ld
+${OUTDIR}/${MAINFILE}.out: src/tobc/tm4c_startup_${COMPILER}.o
+${OUTDIR}/${MAINFILE}.out: src/tobc/tm4c123g.ld
+SCATTERgcc=src/tobc/tm4c123g.ld
 ENTRY_SYM=ResetISR
 CFLAGSgcc=-DTARGET_IS_TM4C123_RB1
 

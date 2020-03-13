@@ -7,10 +7,10 @@
  *
  * @{
  */
-#include "board.h"
-#include "delay.h"
-#include "wdt.h"
-#include "watchdog_ext.h"
+#include "../driver/board.h"
+#include "../driver/delay.h"
+#include "../driver/wdt.h"
+#include "../driver/watchdog_ext.h"
 
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
