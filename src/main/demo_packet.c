@@ -26,6 +26,7 @@ void packet_transmit_buffer(){
 
 void print_transport_header(transport_header_struct header){
 	// debug_print("printing transport header");
+	debug_print("| seqeunce num | type | S | E | I | D |");
 	debug_printf("| %12d | % 4d | %1d | %1d | %1d | %1d |", 
 		header.sequence_number, 
 		header.info.packet_type, 
@@ -38,6 +39,7 @@ void print_transport_header(transport_header_struct header){
 }
 
 void print_app_header(app_header_struct_t header){
+	debug_print("| application length | whofor | U | R | C | N |");
 	debug_printf("| % 18u | % 6d | %1d | %1d | %1d | %1d |",
 		header.length,
 		header.info.whofor,
@@ -127,16 +129,18 @@ int main(){
 	uint8_t app_position;
 	app_position = 0;
 	app_header_t first_app_header;
-	// first_app_header = (buffer_status.recieve_start_block, app_position);
+	first_app_header = packet_get_app_header_from_buffer(buffer_status.as_struct.recieve_block_start, 0);
+	data_length = first_app_header.as_struct.length;
 	// should just be able to print it?
-	debug_printf("length: %u", data_length);
-	debug_enable_newline();
+	debug_printf("Application layer found length: %u", data_length);
+	print_app_header(first_app_header.as_struct);
+
+	debug_print("Reading the data");
+	data = malloc(data_length);
+	packet_get_app_data_from_buffer(buffer_status.as_struct.recieve_block_start, 0, data, first_app_header);
 	debug_printl(data, data_length);
-	app_header_t apph;
-	debug_hex(data, sizeof(app_header_t));
-	memcpy(apph.as_bytes, data, sizeof(app_header_t));
-	print_app_header(apph.as_struct);
 	free(data);
+
 
 	debug_print("=== end demo ===");
 	debug_end();
