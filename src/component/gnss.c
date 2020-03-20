@@ -8,7 +8,7 @@
 #include "../driver/uart.h"
 #include "../utility/debug.h"
 #include "gnss.h"
-#include "rtc.h"
+#include "../driver/rtc.h"
 
 #define CRC32_POLYNOMIAL 0xEDB88320L
 
@@ -29,12 +29,14 @@ execution time - milliseconds (850ms to 900ms)
 The elevation mask has been set to -15 degrees
 -------------------------------------------------------------*/
 
-void GNSS_Init(void){
+void GNSS_Init(void)
+{
     UART_init(UART_GNSS, 9600);
 }
 
 //Returns all zeros if unsuccessful
-int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint16_t *week_num, uint32_t *week_seconds){
+int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint16_t *week_num, uint32_t *week_seconds)
+{
 
     RTC_init(); //not really needed here, should be deleted?
     //Will timeout after 5 seconds if driver hangs
@@ -72,88 +74,106 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
     bool command_wait = true;
     uint16_t hash_count = 0;
 
-    while  (!RTC_timerElapsed_ms(start_timestamp, timeout)){
+    while (!RTC_timerElapsed_ms(start_timestamp, timeout))
+    {
         char c;
-        if(!UART_getc_nonblocking(UART_GNSS, &c)){continue;}
-        if(c =='#' && hash_count < 2){
+        if (!UART_getc_nonblocking(UART_GNSS, &c))
+        {
+            continue;
+        }
+        if (c == '#' && hash_count < 2)
+        {
             hash_count++;
             continue;
         }
-        if(hash_count < 2){
+        if (hash_count < 2)
+        {
             continue;
         }
-        if(c == '*'){
+        if (c == '*')
+        {
             star_trigger = true;
         }
-        if(hash_count == 2 && star_trigger != true){
+        if (hash_count == 2 && star_trigger != true)
+        {
             append(crc_string, c);
         }
-        if(hash_count == 2 && star_trigger == true){
-            if(c != '*'){
+        if (hash_count == 2 && star_trigger == true)
+        {
+            if (c != '*')
+            {
                 append(crc_str, c);
             }
         }
-        if(c == ';'){
+        if (c == ';')
+        {
             command_wait = false;
             var_counter = 1;
         }
-        if(command_wait == true){
+        if (command_wait == true)
+        {
 
-            if(c==','){
+            if (c == ',')
+            {
                 var_counter++;
-
             }
-            if(var_counter==6 && c != ','){
+            if (var_counter == 6 && c != ',')
+            {
                 append(week_no, c);
-
             }
-            if(var_counter==7 && c != ','){
+            if (var_counter == 7 && c != ',')
+            {
                 append(seconds, c);
             }
-
         }
-        if(command_wait == false){
+        if (command_wait == false)
+        {
             append(received_Message, c);
-            if (c == '\r'){
+            if (c == '\r')
+            {
                 //Will not be able to get stuck in this loop, always a '\0' character
                 int i = 0;
-                while(received_Message[i] != '\0'){
-                    if(RTC_timerElapsed_ms(start_timestamp, timeout)){
+                while (received_Message[i] != '\0')
+                {
+                    if (RTC_timerElapsed_ms(start_timestamp, timeout))
+                    {
                         return 1;
-                        }
-                    if(received_Message[i] == ','){
+                    }
+                    if (received_Message[i] == ',')
+                    {
                         var_counter++;
                         i++;
                         continue;
                     }
-                    switch(var_counter){
-                        case 3 :
-                            append(lat_str, received_Message[i]);
-                            break;
-                        case 4 :
-                            append(long_str, received_Message[i]);
-                            break;
-                        case 5 :
-                            append(alt_str, received_Message[i]);
-                            break;
-                        case 8 :
-                            append(lat_sd_str, received_Message[i]);
-                            break;
-                        case 9 :
-                            append(long_sd_str, received_Message[i]);
-                            break;
-                        case 10 :
-                            append(alt_sd_str, received_Message[i]);
-                            break;
-                        default :
-                            break;
+                    switch (var_counter)
+                    {
+                    case 3:
+                        append(lat_str, received_Message[i]);
+                        break;
+                    case 4:
+                        append(long_str, received_Message[i]);
+                        break;
+                    case 5:
+                        append(alt_str, received_Message[i]);
+                        break;
+                    case 8:
+                        append(lat_sd_str, received_Message[i]);
+                        break;
+                    case 9:
+                        append(long_sd_str, received_Message[i]);
+                        break;
+                    case 10:
+                        append(alt_sd_str, received_Message[i]);
+                        break;
+                    default:
+                        break;
                     }
                     i++;
                 }
 
                 adjust_decimal(longlat_factor, long_str);
                 adjust_decimal(longlat_factor, lat_str);
-                adjust_decimal(alt_factor , alt_str);
+                adjust_decimal(alt_factor, alt_str);
                 adjust_decimal(seconds_factor, seconds);
 
                 *longitude = (int32_t)(atoi(long_str));
@@ -164,16 +184,21 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
                 compress(alt_sd, alt_sd_str);
 
                 *week_num = (uint16_t)atoi(week_no);
-                *week_seconds  = (uint32_t)atoi(seconds);
+                *week_seconds = (uint32_t)atoi(seconds);
 
                 unsigned long iLen = strlen(crc_string);
-                unsigned long CRC = CalculateBlockCRC32(iLen, (unsigned char*)crc_string);
+                unsigned long CRC = CalculateBlockCRC32(iLen, (unsigned char *)crc_string);
 
                 sprintf(crc_hex, "%lx", CRC);
 
-                for(int crc_count = 0; crc_count < 8; crc_count++){
-                    if(RTC_timerElapsed_ms(start_timestamp, timeout)){return 1;}
-                    if(crc_hex[crc_count] != crc_str[crc_count]){
+                for (int crc_count = 0; crc_count < 8; crc_count++)
+                {
+                    if (RTC_timerElapsed_ms(start_timestamp, timeout))
+                    {
+                        return 1;
+                    }
+                    if (crc_hex[crc_count] != crc_str[crc_count])
+                    {
                         return 1;
                     }
                 }
@@ -181,32 +206,43 @@ int GNSS_getData(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8
             }
         }
     }
-  return 1;
+    return 1;
 }
 
-void append(char *append_str, char append_c){
+void append(char *append_str, char append_c)
+{
     size_t len = strlen(append_str);
     append_str[len] = append_c;
-    append_str[len+1] = '\0';
+    append_str[len + 1] = '\0';
 }
 
-void compress(uint8_t *s_d, char s_d_str[]){
+void compress(uint8_t *s_d, char s_d_str[])
+{
     double intermed;
-    intermed = log10(atof(s_d_str))* 100;
+    intermed = log10(atof(s_d_str)) * 100;
     *s_d = (uint8_t)intermed;
 }
 
-void adjust_decimal(uint32_t factor, char *to_adjust){
-    uint32_t adjustment_counter = 0, decimal_counter = 0, len_counter =0;
-    while(to_adjust[len_counter] != '\0'){
+void adjust_decimal(uint32_t factor, char *to_adjust)
+{
+    uint32_t adjustment_counter = 0, decimal_counter = 0, len_counter = 0;
+    while (to_adjust[len_counter] != '\0')
+    {
         len_counter++;
     }
-    for(decimal_counter = 0; decimal_counter < len_counter; decimal_counter++){
-        if(to_adjust[decimal_counter] == '.'){
-            if((decimal_counter + factor) > len_counter){return;}
-            for(adjustment_counter = decimal_counter; adjustment_counter <= (decimal_counter + factor) ; adjustment_counter++){
+    for (decimal_counter = 0; decimal_counter < len_counter; decimal_counter++)
+    {
+        if (to_adjust[decimal_counter] == '.')
+        {
+            if ((decimal_counter + factor) > len_counter)
+            {
+                return;
+            }
+            for (adjustment_counter = decimal_counter; adjustment_counter <= (decimal_counter + factor); adjustment_counter++)
+            {
                 to_adjust[adjustment_counter] = to_adjust[adjustment_counter + 1];
-                if(adjustment_counter == (decimal_counter + factor)){
+                if (adjustment_counter == (decimal_counter + factor))
+                {
                     to_adjust[adjustment_counter + 1] = '.';
                     return;
                 }
@@ -215,8 +251,8 @@ void adjust_decimal(uint32_t factor, char *to_adjust){
     }
 }
 
-
-int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint16_t *week_num, uint32_t *week_seconds, uint64_t *ex_time){
+int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude, uint8_t *long_sd, uint8_t *lat_sd, uint8_t *alt_sd, uint16_t *week_num, uint32_t *week_seconds, uint64_t *ex_time)
+{
 
     RTC_init();
 
@@ -246,7 +282,6 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
     *week_num = 0;
     *week_seconds = 0;
 
-
     uint32_t longlat_factor = 6, alt_factor = 1, seconds_factor = 2;
 
     RTC_getTime_ms(&start_timestamp);
@@ -255,109 +290,127 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
     bool command_wait = true;
     uint16_t hash_count = 0;
 
-    while  (!RTC_timerElapsed_ms(start_timestamp, timeout)){
+    while (!RTC_timerElapsed_ms(start_timestamp, timeout))
+    {
         char c;
-        if(!UART_getc_nonblocking(UART_GNSS, &c)){
-            #ifdef DEBUG_MODE
-                UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3001*\r\n");
-            #endif
+        if (!UART_getc_nonblocking(UART_GNSS, &c))
+        {
+#ifdef DEBUG_MODE
+            UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3001*\r\n");
+#endif
             continue;
         }
-        //char c = UART_getc(UART_GNSS);
-        #ifdef DEBUG_MODE
-            UART_putc(UART_INTERFACE, c); // DING
-        #endif
-        if(c =='#' && hash_count < 2){
-            #ifdef DEBUG_MODE
-                UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3002*\r\n");
-            #endif
+//char c = UART_getc(UART_GNSS);
+#ifdef DEBUG_MODE
+        UART_putc(UART_INTERFACE, c); // DING
+#endif
+        if (c == '#' && hash_count < 2)
+        {
+#ifdef DEBUG_MODE
+            UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3002*\r\n");
+#endif
             hash_count++;
             continue;
         }
-        if(hash_count < 2){
-            #ifdef DEBUG_MODE
-                UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3003*\r\n");
-            #endif
+        if (hash_count < 2)
+        {
+#ifdef DEBUG_MODE
+            UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3003*\r\n");
+#endif
             continue;
         }
-        if(c == '*'){
+        if (c == '*')
+        {
             star_trigger = true;
         }
 
-        if(hash_count == 2 && star_trigger != true){
+        if (hash_count == 2 && star_trigger != true)
+        {
             /*if(c=='"'){
                 append(crc_string, '\\');
             }*/
             append(crc_string, c);
         }
-        if(hash_count == 2 && star_trigger == true){
-            if(c != '*'){
+        if (hash_count == 2 && star_trigger == true)
+        {
+            if (c != '*')
+            {
                 append(crc_str, c);
             }
         }
-        if(c == ';'){
+        if (c == ';')
+        {
             command_wait = false;
             var_counter = 1;
         }
-        if(command_wait == true){
+        if (command_wait == true)
+        {
 
-            if(c==','){
+            if (c == ',')
+            {
                 var_counter++;
-
             }
-            if(var_counter==6 && c != ','){
+            if (var_counter == 6 && c != ',')
+            {
                 append(week_no, c);
                 //UART_puts(UART_CAMERA, "\r\nWeek no\r\n");
                 //UART_puts(UART_CAMERA, c);
             }
-            if(var_counter==7 && c != ','){
+            if (var_counter == 7 && c != ',')
+            {
                 append(seconds, c);
             }
-
         }
-        if(command_wait == false){
+        if (command_wait == false)
+        {
             append(received_Message, c);
 #ifdef DEBUG_MODE
-    UART_puts(UART_INTERFACE, "\r\n**Step Reached!!*3011*\r\n");
+            UART_puts(UART_INTERFACE, "\r\n**Step Reached!!*3011*\r\n");
 #endif
-            if (c == '\r'){
+            if (c == '\r')
+            {
                 //Will not be able to get stuck in this loop, always a '\0' character
                 int i = 0;
-                while(received_Message[i] != '\0'){
-                    if(RTC_timerElapsed_ms(start_timestamp, timeout)){
-                        return 1;}
-                    if(received_Message[i] == ','){
+                while (received_Message[i] != '\0')
+                {
+                    if (RTC_timerElapsed_ms(start_timestamp, timeout))
+                    {
+                        return 1;
+                    }
+                    if (received_Message[i] == ',')
+                    {
                         var_counter++;
                         i++;
                         continue;
                     }
-                    switch(var_counter){
-                        case 3 :
-                            //UART_puts(UART_CAMERA, "\n\rlong\n\r");
-                            append(lat_str, received_Message[i]);
-                            break;
-                        case 4 :
-                            //UART_puts(UART_CAMERA, "\n\rlat\n\r");
-                            append(long_str, received_Message[i]);
-                            break;
-                        case 5 :
-                            //UART_puts(UART_CAMERA, "\n\ralt\n\r");
-                            append(alt_str, received_Message[i]);
-                            break;
-                        case 8 :
-                            //UART_puts(UART_CAMERA, "\n\rlongsd\n\r");
-                            append(lat_sd_str, received_Message[i]);
-                            break;
-                        case 9 :
-                            //UART_puts(UART_CAMERA, "\n\rlatsd\n\r");
-                            append(long_sd_str, received_Message[i]);
-                            break;
-                        case 10 :
-                            //UART_puts(UART_CAMERA, "\n\raltsd\n\r");
-                            append(alt_sd_str, received_Message[i]);
-                            break;
-                        default :
-                            break;
+                    switch (var_counter)
+                    {
+                    case 3:
+                        //UART_puts(UART_CAMERA, "\n\rlong\n\r");
+                        append(lat_str, received_Message[i]);
+                        break;
+                    case 4:
+                        //UART_puts(UART_CAMERA, "\n\rlat\n\r");
+                        append(long_str, received_Message[i]);
+                        break;
+                    case 5:
+                        //UART_puts(UART_CAMERA, "\n\ralt\n\r");
+                        append(alt_str, received_Message[i]);
+                        break;
+                    case 8:
+                        //UART_puts(UART_CAMERA, "\n\rlongsd\n\r");
+                        append(lat_sd_str, received_Message[i]);
+                        break;
+                    case 9:
+                        //UART_puts(UART_CAMERA, "\n\rlatsd\n\r");
+                        append(long_sd_str, received_Message[i]);
+                        break;
+                    case 10:
+                        //UART_puts(UART_CAMERA, "\n\raltsd\n\r");
+                        append(alt_sd_str, received_Message[i]);
+                        break;
+                    default:
+                        break;
                     }
                     i++;
                 }
@@ -378,7 +431,7 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
 
                 adjust_decimal(longlat_factor, long_str);
                 adjust_decimal(longlat_factor, lat_str);
-                adjust_decimal(alt_factor , alt_str);
+                adjust_decimal(alt_factor, alt_str);
                 adjust_decimal(seconds_factor, seconds);
 
                 /*UART_puts(UART_CAMERA, "\n\r");
@@ -400,7 +453,6 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
 
                 //UART_puts(UART_CAMERA, crc_string);
 
-
                 *longitude = (int32_t)(atoi(long_str));
                 *latitude = (int32_t)(atoi(lat_str));
                 *altitude = (int32_t)(atoi(alt_str));
@@ -415,15 +467,17 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
                 UART_puts(UART_INTERFACE, "\n\r");
 #endif
                 *week_num = (uint16_t)atoi(week_no);
-                *week_seconds  = (uint32_t)atoi(seconds);
+                *week_seconds = (uint32_t)atoi(seconds);
 
                 unsigned long iLen = strlen(crc_string);
-                unsigned long CRC = CalculateBlockCRC32(iLen, (unsigned char*)crc_string);
+                unsigned long CRC = CalculateBlockCRC32(iLen, (unsigned char *)crc_string);
 
                 sprintf(crc_hex, "%lx", CRC);
 
-                for(int crc_count = 0; crc_count < 8; crc_count++){
-                    if(crc_hex[crc_count] != crc_str[crc_count]){
+                for (int crc_count = 0; crc_count < 8; crc_count++)
+                {
+                    if (crc_hex[crc_count] != crc_str[crc_count])
+                    {
 #ifdef DEBUG_MODE
                         UART_puts(UART_INTERFACE, "\r\n**FAILED!!*3901*\r\n");
 #endif
@@ -431,8 +485,8 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
                     }
                 }
 #ifdef DEBUG_MODE
-    UART_puts(UART_INTERFACE, "\r\nSUCCESS\r\n");
-    UART_puts(UART_INTERFACE, crc_hex);
+                UART_puts(UART_INTERFACE, "\r\nSUCCESS\r\n");
+                UART_puts(UART_INTERFACE, crc_hex);
 #endif
                 RTC_getTime_ms(&current_time);
                 *ex_time = current_time - start_timestamp;
@@ -448,18 +502,18 @@ int GNSS_getData_Timed(int32_t *longitude, int32_t *latitude, int32_t *altitude,
 
 /*CALCULATES CRC FOR GNSS*/
 
-unsigned long CalculateBlockCRC32(unsigned long ulCount, /* Number of bytes in the data block */unsigned char *ucBuffer ) /* Data block */
+unsigned long CalculateBlockCRC32(unsigned long ulCount, /* Number of bytes in the data block */ unsigned char *ucBuffer) /* Data block */
 {
     unsigned long ulTemp1;
     unsigned long ulTemp2;
     unsigned long ulCRC = 0;
-    while ( ulCount-- != 0 )
+    while (ulCount-- != 0)
     {
-    ulTemp1 = ( ulCRC >> 8 ) & 0x00FFFFFFL;
-    ulTemp2 = CRC32Value( ((int) ulCRC ^ *ucBuffer++ ) & 0xff );
-    ulCRC = ulTemp1 ^ ulTemp2;
+        ulTemp1 = (ulCRC >> 8) & 0x00FFFFFFL;
+        ulTemp2 = CRC32Value(((int)ulCRC ^ *ucBuffer++) & 0xff);
+        ulCRC = ulTemp1 ^ ulTemp2;
     }
-    return( ulCRC );
+    return (ulCRC);
 }
 
 unsigned long CRC32Value(int i)
@@ -467,12 +521,14 @@ unsigned long CRC32Value(int i)
     int j;
     unsigned long ulCRC;
     ulCRC = i;
-    for ( j = 8 ; j > 0; j-- )
+    for (j = 8; j > 0; j--)
     {
-        if ( ulCRC & 1 ){
-            ulCRC = ( ulCRC >> 1 ) ^ CRC32_POLYNOMIAL;
+        if (ulCRC & 1)
+        {
+            ulCRC = (ulCRC >> 1) ^ CRC32_POLYNOMIAL;
         }
-        else{
+        else
+        {
             ulCRC >>= 1;
         }
     }
