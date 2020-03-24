@@ -234,20 +234,28 @@ uint32_t buffer_read_length(uint16_t start_block_number, uint8_t start_block_pos
 		// as both are from 0 and the last entry (index length_in_block) one isn't included
 		// might be a +- 1 error
 		remaining_length = length_to_read - total_read;
-		debug_printf("BUFFER.C: remaining lenth: %d", remaining_length);
+		// debug_printf("BUFFER.C: remaining lenth: %d", remaining_length);
 		// retrieve the block
 		buffer_retrieve_block((uint16_t) current_block_number, block_buffer, &length_in_block);
-		debug_printf("BUFFER.C: read block of length %d", length_in_block);
+		// debug_printf("BUFFER.C: read block of length %d", length_in_block);
 		// remove the header from the length
+		// debug_print("BUFFER.C: block contents:");
+		// debug_printl(&block_buffer[BUFFER_DATA_START_INDEX], length_in_block-BUFFER_DATA_START_INDEX);
 		length_in_block -= start_block_position;
 		// 
 		if (length_in_block > remaining_length){
 			length_in_block = remaining_length;
 		}
-		debug_printf("BUFFER.C: read addresses: output start %p, out cur %p\nBUFFER.C: block_buffer addresses: bb start %p, bb cur %p", &output, &output[total_read -1], &block_buffer, &block_buffer[start_block_position]);
 		memcpy((uint8_t*) &output[total_read], (uint8_t*) &block_buffer[start_block_position], length_in_block);
 		// update total read
+		debug_printf("BUFFER.C: total read % 3d\tlength in block % 3d\tremaining length % 3d\tlength to read\t% 3d, calced\t% 3d",
+			total_read,
+			length_in_block,
+			remaining_length, 
+			length_to_read, 
+			remaining_length + total_read);
 		total_read += length_in_block;
+
 		if (total_read >= length_to_read){
 			break;
 		}
