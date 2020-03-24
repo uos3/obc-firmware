@@ -2,9 +2,11 @@
 # Author: Richard A
 # Last modified: 2020 02 12
 # Status: Functional
-# script to build firmware from dynamic dependancies. Prevents everything
-# from being compiled, allows different demo dependancies to have 
-# actual meaning.
+"""
+    script to build firmware from dynamic dependancies. Prevents everything
+    from being compiled, allows different demo dependancies to have actual
+    meaning.
+"""
 
 import os, sys
 
