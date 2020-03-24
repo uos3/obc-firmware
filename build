@@ -11,16 +11,32 @@ import os, sys
 main_name = "demo_blink"
 driver = "tobc"
 makefile = "Makefile"
+
+action = "make"
+
+
+def get_main_name_from_arg(arg):
+    if "/" in arg:
+        arg = arg.split("/")[-1]
+    if "." in arg:
+        arg = arg.split(".")[0]
+    return arg
+
+
 if __name__ == "__main__":
+    # decides action to take if an arg is supplied, default is make
     if len(sys.argv) > 1:
-        main_name = sys.argv[1]
-        if "." in main_name:
-            main_name = main_name.split(".")[0]
+        # first arg is main name or action. first, strip paths.
+        main_name = get_main_name_from_arg(sys.argv[1])
+        # case where clean is supplied
+        if main_name == "clean":
+            action = "clean"
+
+    # case where driver is also supplied
     if len(sys.argv) > 2:
         driver = sys.argv[2]
-        makefile = F"{driver}.mk"
-    print(f"=== building {main_name} ===")
-    print(f"using driver: {driver}")
+        makefile = f"{driver}.mk"
+
 
 compiler = "arm-none-eabi-gcc"
 main_root = "src/main/"
@@ -106,17 +122,15 @@ def get_total_dependancies(method=get_dependancies_from_headers):
         loop_counter += 1
 
     if loop_counter > 999:
-        raise ValueError("Dependancy finder has broken, 1000 searches performed")
+        raise \
+            ValueError("Dependancy finder has broken, 1000 searches performed")
     # print(total_dependancies)
     total_dependancies.remove(main_path)
     return total_dependancies
 
 
-# instead of trying to fill a string in a makefile (dumb), add a dependancy
-# file that's included at the top. (smort)
-
-# generate firmware sources & custom rule from set:
-if __name__ == "__main__":
+def action_make():
+    print(f"=== making {main_name} for {driver} ===")
     total_dependancies = get_total_dependancies()
     firmware_sources = ""
     final_custom_rule = f"{main_root}{main_name}.o: "
@@ -133,5 +147,35 @@ if __name__ == "__main__":
     with open("builds/custom_rule.mk", 'w') as custom_rule_mkfile:
         custom_rule_mkfile.write(final_custom_rule)
 
-    make_command = f"make -f {makefile} builds/{main_name}.out MAINFILE={main_name}"
+    make_command = \
+        f"make -f {makefile} builds/{main_name}.bin MAINFILE={main_name}"
     os.system(make_command)
+
+
+def action_clean():
+    print("=== cleaning source folder ===")
+    commands = [
+        "rm -rf src/*/*.o",
+        "rm -rf src/*/*.d",
+        "rm builds/*.bin",
+        "rm builds/*.mk"
+        ]
+    for command in commands:
+        os.system(command)
+
+
+action_map = {
+    "make": action_make,
+    "clean": action_clean
+}
+
+# instead of trying to fill a string in a makefile (dumb), add a dependancy
+# file that's included at the top. (smort)
+
+# generate firmware sources & custom rule from set:
+if __name__ == "__main__":
+    if action in action_map.keys():
+        action_map[action]()
+        print("=== done ===")
+    else:
+        print("ERROR: no action specified")

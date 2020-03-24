@@ -164,7 +164,7 @@ IPATH=${ROOT}
 	 fi
 	@${AR} -cr ${@} ${^}
 
-${OUTDIR}/${MAINFILE}.out: src/main/${MAINFILE}.o
+${OUTDIR}/${MAINFILE}.bin: src/main/${MAINFILE}.o
 	@if [ 'x${VERBOSE_ON}' = x ];                                            \
 	 then                                                                 \
 	     echo "  LD    ${@} ${LNK_SCP}";echo "${LNK_SCP}"; \
@@ -191,10 +191,10 @@ ${OUTDIR}:
 	@mkdir -p ${OUTDIR}
 
 
-${OUTDIR}/${MAINFILE}.out: $(patsubst %.c,%.o,${FW_SRCS})
-${OUTDIR}/${MAINFILE}.out: ${ROOT}/driverlib/gcc/libdriver.a
-${OUTDIR}/${MAINFILE}.out: src/driver-tobc/tm4c_startup_${COMPILER}.o
-${OUTDIR}/${MAINFILE}.out: src/driver-tobc/tm4c123g.ld
+${OUTDIR}/${MAINFILE}.bin: $(patsubst %.c,%.o,${FW_SRCS})
+${OUTDIR}/${MAINFILE}.bin: ${ROOT}/driverlib/gcc/libdriver.a
+${OUTDIR}/${MAINFILE}.bin: src/driver-tobc/tm4c_startup_${COMPILER}.o
+${OUTDIR}/${MAINFILE}.bin: src/driver-tobc/tm4c123g.ld
 SCATTERgcc=src/driver-tobc/tm4c123g.ld
 ENTRY_SYM=ResetISR
 CFLAGSgcc=-DTARGET_IS_TM4C123_RB1
@@ -204,6 +204,6 @@ clean:
 	@rm -rf src/*/*.d
 
 clean-builds:
-	@rm builds/*.out
+	@rm builds/*.bin
 	@rm builds/*.mk
 
