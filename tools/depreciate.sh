@@ -38,4 +38,5 @@ dest_path="${software_root_dir}${file_directory}${depfname}/"
 # echo $dest_path
 
 git mv $source_path $dest_path
+git commit -m "depreciated $source_path"
 # echo "done"
