@@ -9,7 +9,7 @@
 import os, sys
 
 main_name = "demo_blink"
-board = "tobc"
+driver = "tobc"
 makefile = "Makefile"
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -17,10 +17,10 @@ if __name__ == "__main__":
         if "." in main_name:
             main_name = main_name.split(".")[0]
     if len(sys.argv) > 2:
-        board = sys.argv[2]
-        makefile = F"{board}.mk"
+        driver = sys.argv[2]
+        makefile = F"{driver}.mk"
     print(f"=== building {main_name} ===")
-    print(f"using board: {board}")
+    print(f"using driver: {driver}")
 
 compiler = "arm-none-eabi-gcc"
 main_root = "src/main/"
@@ -29,6 +29,7 @@ tivaware_location = "../TivaWare_C_Series-2.1.4.178"
 tmp_filename = "/tmp/compile_output.txt"
 source_folders = os.listdir("src")
 main_path = main_root + main_name + ".c"
+
 
 def in_firmware(line):
     if tivaware_location in line:
@@ -46,7 +47,7 @@ def get_raw_filename(line):
     folder = split_path[-2]
     root_name = split_path[-1]
     if folder == "driver":
-        folder = board
+        folder = "driver-"+driver
     fname = "src/" + folder + "/" + root_name.split(".")[0] + ".c"
     return fname
 
