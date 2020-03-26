@@ -5,12 +5,12 @@
 Header files for the system interface. The build script allows for the choice
 of the corresponding systems:
 
-### linux
+### driver-linux
 
 For execution on GNU linux. Allows testing of high-level MCU-only code without
 having to flash to the TOBC.
 
-### TOBC
+### driver-tobc
 
 The hardware UoS3 ARM-based TOBC board.
 
