@@ -23,6 +23,7 @@
 char line_end[] = "\r\n";
 char no_line_end[] = "";
 char *line_end_ptr;
+int do_command_confirm = 0;
 
 
 void debug_init(){
@@ -158,21 +159,36 @@ void debug_flush_uart(){
 	}
 }
 
+
+bool debug_command_confirm(char* output){
+	char happy_with_buffer[2];
+	debug_printf("| you have entered: '%s'. is this correct? (y/n)", output);
+	// debug_hex(output, recieved);
+	debug_get_string(happy_with_buffer, 2);
+	debug_printf("| entered %s", happy_with_buffer);
+	if (happy_with_buffer[0] == 'y'){
+		return true;
+	}
+	return false;
+}
+
+
 uint32_t debug_get_command(char* output, uint32_t max_output_length){
 	uint32_t recieved = 0;
-	char happy_with_buffer[2];
+
 	bool happy_with_output = false;
 	debug_flush_uart();
 	while(!happy_with_output){
 		debug_printf("| Enter a command: ");
 		recieved = debug_get_string(output, max_output_length);
-		debug_printf("| you have entered: '%s'. is this correct? (y/n)", output);
-		// debug_hex(output, recieved);
-		debug_get_string(happy_with_buffer, 2);
-		debug_printf("| entered %s", happy_with_buffer);
-		if (happy_with_buffer[0] == 'y'){
+		if (do_command_confirm==1){
+			happy_with_output = debug_command_confirm(output);
+		}
+		else{
+			debug_printf("| you have entered: '%s'", output);
 			happy_with_output = true;
 		}
+		Delay_ms(100);
 	}
 	return recieved;
 }
