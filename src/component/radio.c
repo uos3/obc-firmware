@@ -1,3 +1,6 @@
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_gpio.h"
@@ -8,7 +11,6 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 
-#include <stdint.h>
 #include "../driver/board.h"
 #include "radio.h"
 #define minRxPktLen 127    //(bytes) needs updating when packet structures fixed, not including preamble, sync words etc

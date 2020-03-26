@@ -10,48 +10,48 @@
 // #include "camera.h"
 
 // reset command, and reset response. reset response cannot be read
-static uint8_t CAMERA_RESET_CMD[] = {0x56, 0x00, 0x26, 0x00};
-static uint8_t CAMERA_RESET_RES[] = {0x76, 0x00, 0x26, 0x00};
+static uint8_t RESET_CMD[] = {0x56, 0x00, 0x26, 0x00};
+static uint8_t RESET_RES[] = {0x76, 0x00, 0x26, 0x00};
 // actually occurs instead of teh reset
-static uint8_t CAMERA_INIT_END[] = {0x0D, 0x0A, 0x49, 0x6E, 0x69, 0x74, 0x20, 0x65, 0x6E, 0x64, 0x0D, 0x0A};
+static uint8_t INIT_END[] = {0x0D, 0x0A, 0x49, 0x6E, 0x69, 0x74, 0x20, 0x65, 0x6E, 0x64, 0x0D, 0x0A};
 
 // command to take and response to picture taking
-static uint8_t CAMERA_TAKE_PICTURE_CMD[] = {0x56, 0x00, 0x36, 0x01, 0x00};
-static uint8_t CAMERA_TAKE_PICTURE_RES[] = {0x76, 0x00, 0x36, 0x00, 0x00};
+static uint8_t TAKE_PICTURE_CMD[] = {0x56, 0x00, 0x36, 0x01, 0x00};
+static uint8_t TAKE_PICTURE_RES[] = {0x76, 0x00, 0x36, 0x00, 0x00};
 
 // read JPEG size
-static uint8_t CAMERA_GET_SIZE_CMD[] = {0x56, 0x00, 0x34, 0x01, 0x00};
-static uint8_t CAMERA_GET_SIZE_RES[] = {0x76, 0x00, 0x34, 0x00, 0x04, 0x00};
+static uint8_t GET_SIZE_CMD[] = {0x56, 0x00, 0x34, 0x01, 0x00};
+static uint8_t GET_SIZE_RES[] = {0x76, 0x00, 0x34, 0x00, 0x04, 0x00};
 
 // next is initial address (4 bytes) then data length (4 bytes) then interval (2 bytes)
-static uint8_t CAMERA_GET_PAGE_CMD[] = {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A};
-static uint8_t CAMERA_GET_PAGE_RES[] = {0x76, 0x00, 0x32, 0x00, 0x00};
+static uint8_t GET_PAGE_CMD[] = {0x56, 0x00, 0x32, 0x0C, 0x00, 0x0A};
+static uint8_t GET_PAGE_RES[] = {0x76, 0x00, 0x32, 0x00, 0x00};
 
-// static uint8_t CAMERA_GET_PAGE_LEN[] = {0x00, 0x00, 0x08, 0x00};
-// static uint8_t CAMERA_GET_PAGE_INTERVAL[] = {0x00, 0x0A};
+// static uint8_t GET_PAGE_LEN[] = {0x00, 0x00, 0x08, 0x00};
+// static uint8_t GET_PAGE_INTERVAL[] = {0x00, 0x0A};
 
-static uint8_t CAMERA_JPEG_HEADER[] = {0xFF, 0xD8};
-static uint8_t CAMERA_JPEG_FOOTER[] = {0xFF, 0xD9};
+static uint8_t JPEG_HEADER[] = {0xFF, 0xD8};
+static uint8_t JPEG_FOOTER[] = {0xFF, 0xD9};
 
 // this flushes the buffer among other things
-static uint8_t CAMERA_STOP_TAKING_CMD[] = {0x56, 0x00, 0x36, 0x01, 0x03};
-static uint8_t CAMERA_STOP_TAKING_RES[] = {0x76, 0x00, 0x36, 0x00, 0x00};
+static uint8_t STOP_TAKING_CMD[] = {0x56, 0x00, 0x36, 0x01, 0x03};
+static uint8_t STOP_TAKING_RES[] = {0x76, 0x00, 0x36, 0x00, 0x00};
 
 // one byte for the 
-static uint8_t CAMERA_SET_RESOLUTION_CMD[] = {0x56, 0x00, 0x54, 0x01};
-static uint8_t CAMERA_SET_RESOLUTION_RES[] = {0x76, 0x00, 0x54, 0x00, 0x00};
+static uint8_t SET_RESOLUTION_CMD[] = {0x56, 0x00, 0x54, 0x01};
+static uint8_t SET_RESOLUTION_RES[] = {0x76, 0x00, 0x54, 0x00, 0x00};
 
 // resolution settings
-#define CAMERA_RESOLUTION_160x120 0x22
-#define CAMERA_RESOLUTION_320x240 0x11
-#define CAMERA_RESOLUTION_640x480 0x00
-#define CAMERA_RESOLUTION_800x600 0x1D
-#define CAMERA_RESOLUTION_1024x768 0x1C
-#define CAMERA_RESOLUTION_1280x960 0x1B
-#define CAMERA_RESOLUTION_1600x1200 0x21
+#define RESOLUTION_160x120 0x22
+#define RESOLUTION_320x240 0x11
+#define RESOLUTION_640x480 0x00
+#define RESOLUTION_800x600 0x1D
+#define RESOLUTION_1024x768 0x1C
+#define RESOLUTION_1280x960 0x1B
+#define RESOLUTION_1600x1200 0x21
 
 
-#define CAMERA_TIMEOUT 2000
+#define TIMEOUT 2000
 
 /* 
 	--------------------------------------------------------------------------
@@ -73,7 +73,7 @@ bool camera_getbytes(uint8_t result_buffer[], uint32_t expected_length){
 	uint8_t current_byte;
 
 	RTC_getTime_ms(timer_start_time);
-	while (!RTC_timerElapsed_ms(timer_start_time, CAMERA_TIMEOUT)){
+	while (!RTC_timerElapsed_ms(timer_start_time, TIMEOUT)){
 	// while the timer has not expired
 		while(UART_charsAvail(UART_CAMERA)){
 			// while there are characters available
@@ -99,7 +99,7 @@ bool camera_getb_timeout(uint8_t result_byte){
 	uint32_t collected_length = 0;
 
 	RTC_getTime_ms(timer_start_time);
-	while (!RTC_timerElapsed_ms(timer_start_time, CAMERA_TIMEOUT)){
+	while (!RTC_timerElapsed_ms(timer_start_time, TIMEOUT)){
 	// while the timer has not expired
 		while(!UART_charsAvail(UART_CAMERA)){
 			// while there aren't characters; do nothing.
@@ -119,11 +119,11 @@ bool camera_awaitbytes(uint8_t expected_data[], uint32_t expected_length){
 	uint8_t current_byte;
 	uint32_t collected_length = 0;
 	uint8_t buffer[expected_length];
-	#ifdef CAMERA_FUNC_TEST
+	#ifdef FUNC_TEST
 		debug_print("\t| listening for bytes...");
 	#endif
 	RTC_getTime_ms(&timer_start_time);
-	while (!RTC_timerElapsed_ms(timer_start_time, CAMERA_TIMEOUT))	{
+	while (!RTC_timerElapsed_ms(timer_start_time, TIMEOUT))	{
 		// if there are no characters (this check important, without it, values are just spat out)
 		// wait for the first letter
 		while(UART_charsAvail(UART_CAMERA)){
@@ -133,18 +133,18 @@ bool camera_awaitbytes(uint8_t expected_data[], uint32_t expected_length){
 					// increase buffer
 					buffer[collected_length] = current_byte;
 					collected_length++;
-					#ifdef CAMERA_FUNC_TEST
+					#ifdef FUNC_TEST
 						debug_printf( "\t| 0x%02X ", current_byte);
 					#endif
 				}
 				else{
-					#ifdef CAMERA_FUNC_TEST
+					#ifdef FUNC_TEST
 						debug_printf("\t| 0x%02X (incorrect, resetting)", current_byte);
 					#endif
 					collected_length = 0;
 				}
 				if (collected_length == expected_length){
-					#ifdef CAMERA_FUNC_TEST
+					#ifdef FUNC_TEST
 						debug_print("\t| listening done (and expected was recieved)");
 					#endif
 					return true;
@@ -152,7 +152,7 @@ bool camera_awaitbytes(uint8_t expected_data[], uint32_t expected_length){
 			}
 		}
 	}
-	#ifdef CAMERA_FUNC_TEST
+	#ifdef FUNC_TEST
 		debug_print("\t| listening done (timeout occured)");
 	#endif
 	return false;
@@ -176,7 +176,7 @@ void camera_send(int8_t data[], uint32_t data_len){
 bool camera_cmd_noopts(uint8_t command, uint8_t response[]){
 	uint32_t cmd_size = sizeof(command); // this might not work, requires testing
 	uint32_t res_size = sizeof(response);
-	#ifdef CAMERA_FUNC_TEST
+	#ifdef FUNC_TEST
 		debug_printf("response size: %d", size);
 	#endif
 	camera_send(command, cmd_size);
@@ -198,7 +198,7 @@ bool camera_cmd_withopts(uint8_t command[], uint8_t response[], uint8_t options,
 	bool: true if the response was recieved, false if not.
 */
 bool camera_stop(){
-	return camera_cmd_noopts(CAMERA_STOP_TAKING_CMD, CAMERA_STOP_TAKING_RES);
+	return camera_cmd_noopts(STOP_TAKING_CMD, STOP_TAKING_RES);
 }
 
 /*
@@ -208,7 +208,7 @@ bool camera_stop(){
 	bool: true if the response was recieved, false if not.
 */
 bool camera_reset(){
-	return camera_cmd_noopts(CAMERA_RESET_CMD, CAMERA_RESET_RES);
+	return camera_cmd_noopts(RESET_CMD, RESET_RES);
 }
 
 /*
@@ -221,5 +221,5 @@ bool camera_reset(){
 	bool; true if the response was recieved, false if not.
 */
 bool camera_set_resolution(uint8_t resolution_setting){
-	return camera_cmd_withopts(CAMERA_SET_RESOLUTION_CMD, CAMERA_SET_RESOLUTION_RES, &resolution_setting, 1);
+	return camera_cmd_withopts(SET_RESOLUTION_CMD, SET_RESOLUTION_RES, &resolution_setting, 1);
 }
