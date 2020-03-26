@@ -6,7 +6,9 @@
  * @{
  */
 
-#include "../firmware.h"
+// #include "../firmware.h"
+#include <stdint.h>
+#include "shake.h"
 
 /*
  * Copyright (c) 2015 Markku-Juhani O. Saarinen

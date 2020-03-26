@@ -1,6 +1,7 @@
 *~
 *.swp
-builds/
+builds/*
+!builds/FILE_STRUCT
 .vscode/
 *.d
 *.o

@@ -14,7 +14,8 @@
 #ifndef __UTIL_SHAKE_H__
 #define __UTIL_SHAKE_H__
 
-#include "../firmware.h"
+// #include "../firmware.h"
+#include <stdint.h>
 
 /* Shake Context */
 typedef struct {

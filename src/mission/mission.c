@@ -12,8 +12,6 @@
  * @{
  */
 
-#include "../firmware.h"
-#include "mission.h"
 #include <string.h>
 
 #include "driverlib/sysctl.h"
@@ -21,8 +19,20 @@
 #include "driverlib/gpio.h"
 #include "driverlib/timer.h"
 #include "inc/hw_memmap.h"
- 
-#include "../board/memory_map.h"
+
+#include "../driver/board.h"
+#include "../driver/eeprom.h"
+#include "../driver/delay.h"
+
+#include "../component/cc112x.h"
+#include "../component/cc112x_spi.h"
+#include "../component/radio.h"
+
+#include "../utility/circ_queue.h"
+
+
+#include "mission.h"
+#include "configuration.h"
 
 #define TELEMETRY_SIZE 107      //104 (tel) + 2 (timestamp) + 1 (id)
 #define BATTERY_VOLTAGE 7.8     //COMMENT WHEN USING EPS!!!
