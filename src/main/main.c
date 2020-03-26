@@ -1,4 +1,4 @@
-#include "../firmware.h"
+// #include "../firmware.h"
 #include "../mission/mission.h"
 
 int main(void){
