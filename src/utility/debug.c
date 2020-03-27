@@ -124,6 +124,10 @@ uint32_t debug_get_string(char* output, uint32_t max_output_length){
 				end_flag = true;
 				break;
 			}
+			if (current_character == '\n'){
+				end_flag = true;
+				break;
+			}
 			output[recieved] = current_character;
 			recieved ++;
 		}
