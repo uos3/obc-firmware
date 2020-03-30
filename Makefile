@@ -122,6 +122,7 @@ ifneq ($(TESTVERBOSE_ON),)
   CFLAGS += -DTEST_VERBOSE=true
 endif
 
+# CFLAGS += $(WARNINGS)
 # FW_SRCS+= $(wildcard ./src/driver/*.c) liblabrador_ldpc.a
 
 #
