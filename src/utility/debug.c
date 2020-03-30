@@ -217,3 +217,16 @@ void debug_countdown(int total_countdown_time_ms, uint32_t n_intervals){
 	line_end_ptr = (char*) &line_end;
 	debug_print("");
 }
+
+void debug_marker(char* string){
+	debug_disable_newline();
+	debug_print("DEMO: ");
+	debug_print(string);
+	debug_print("...");
+	debug_enable_newline();
+}
+
+void debug_done(){
+	debug_print(" done");
+}
+

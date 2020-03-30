@@ -51,7 +51,11 @@ uint32_t debug_get_command(char* output, uint32_t max_output_length);
 
 int debug_parse_int(char* buffer, int n_characters);
 
-
 void debug_countdown(int total_countdown_time_ms, uint32_t n_intervals);
+
+void debug_marker(char* string);
+
+void debug_done();
+
 
 #endif /*  __DEBUG_H__ */
