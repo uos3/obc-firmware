@@ -30,9 +30,9 @@ int main(){
 	task_0.period_s=2;
 
 	task_t task_1;
-	task_0.function = &task_1_fn;
-	task_0.priority=2;
-	task_0.period_s=2;
+	task_1.function = &task_1_fn;
+	task_1.priority=2;
+	task_1.period_s=2;
 
 	mode_t test_mode;
 	test_mode.available_tasks[0] = task_0;
@@ -52,7 +52,7 @@ int main(){
 			debug_marker("sorting tasks in the queue");
 			task_handling_sort_task_queue();
 			debug_done();
-			highest_priority_task = task_handling_pop_top_task();
+			highest_priority_task = task_handling_pop_next_task();
 			highest_priority_task.function();
 		}
 		Delay_ms(1000);

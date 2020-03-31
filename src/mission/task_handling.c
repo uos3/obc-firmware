@@ -89,7 +89,7 @@ void task_handling_sort_task_queue(){
 	}
 }
 
-task_t task_handling_pop_top_task(){
+task_t task_handling_pop_next_task(){
 	task_t top_task;
 	top_task = task_queue[0];
 	for (int i = 1; i<tasks_in_queue; i++){
