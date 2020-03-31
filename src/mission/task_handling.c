@@ -22,30 +22,13 @@ void add_task_to_queue(int task_number){
 	debug_printf("task_handling.c: Added task %d to queue", task_number);
 }
 
-
-void add_task0_isr(){
-	add_task_to_queue(0);
-}
-
-void add_task1_isr(){
-	add_task_to_queue(1);
-}
-
-void add_task2_isr(){
-	add_task_to_queue(2);
-}
-
-void add_task3_isr(){
-	add_task_to_queue(3);
-}
-
-void add_task4_isr(){
-	add_task_to_queue(4);
-}
-
-void add_task5_isr(){
-	add_task_to_queue(5);
-}
+/* unfortunately, this does have to exist */
+void add_task0_isr() {add_task_to_queue(0);}
+void add_task1_isr() {add_task_to_queue(1);}
+void add_task2_isr() {add_task_to_queue(2);}
+void add_task3_isr() {add_task_to_queue(3);}
+void add_task4_isr() {add_task_to_queue(4);}
+void add_task5_isr() {add_task_to_queue(5);}
 
 void (*add_task_isr_list[])(void) = {
 	add_task0_isr,
@@ -58,7 +41,9 @@ void (*add_task_isr_list[])(void) = {
 
 
 void task_handling_switch_to_mode(mode_t* new_mode){
-	int timer_no;
+	/*
+		assigns the mission timers to new functionality specified in the mode
+	*/
 	uint64_t period;
 	void (*function)(void);
 	// clean timers from previous mode
@@ -66,7 +51,6 @@ void task_handling_switch_to_mode(mode_t* new_mode){
 	// re-assign and enable the timers
 	current_mode = new_mode;
 	for (int task_no = 0; task_no < current_mode->number_of_tasks; task_no++){
-		timer_no = task_no;
 		period = current_mode->available_tasks[task_no].period_s;
 		function = add_task_isr_list[task_no];
 		timers_setup_timer(task_no, period, function);
