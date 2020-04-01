@@ -1,7 +1,7 @@
 #include "../driver/timers.h"
 #include "../utility/debug.h"
 
-#include "task_handling.h"
+#include "mode_base.h"
 
 mode_t* current_mode;
 task_t task_queue[max_queue_length];
@@ -40,7 +40,7 @@ void (*add_task_isr_list[])(void) = {
 };
 
 
-void task_handling_switch_to_mode(mode_t* new_mode){
+void mode_switch_to_mode(mode_t* new_mode){
 	/*
 		assigns the mission timers to new functionality specified in the mode
 	*/
@@ -59,7 +59,7 @@ void task_handling_switch_to_mode(mode_t* new_mode){
 	current_mode->init_fn();
 }
 
-void task_handling_sort_task_queue(){
+void mode_sort_task_queue(){
 	task_t tmp;
 	// a sort. Not efficient, but works.
 	for (int i = 0; i<tasks_in_queue; i++){
@@ -73,7 +73,7 @@ void task_handling_sort_task_queue(){
 	}
 }
 
-task_t task_handling_pop_next_task(){
+task_t mode_pop_next_task(){
 	task_t top_task;
 	top_task = task_queue[0];
 	for (int i = 1; i<tasks_in_queue; i++){

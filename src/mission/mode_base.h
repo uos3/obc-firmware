@@ -1,5 +1,5 @@
-#ifndef TASK_HANDLING_H
-#define TASK_HANDLING_H
+#ifndef MODE_BASE_H
+#define MODE_BASE_H
 
 #include <stdint.h>
 #define MAX_TASKS 7
@@ -24,11 +24,11 @@ typedef struct mode_t{
 }mode_t;
 
 
-void task_handling_switch_to_mode(mode_t* new_mode);
+void mode_switch_to_mode(mode_t* new_mode);
 
-void task_handling_sort_task_queue();
+void mode_sort_task_queue();
 
-task_t task_handling_pop_top_task();
+task_t mode_pop_top_task();
 
 int get_no_tasks_in_queue();
 
