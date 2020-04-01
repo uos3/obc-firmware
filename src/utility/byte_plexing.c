@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 
 void data_split_32(int32_t data, uint8_t *split){
     split[0] = ((uint32_t)data & 0x000000ff);
@@ -59,4 +60,13 @@ void flip_endian(uint8_t* value_to_flip_ptr,  uint32_t length){
     for (int i = 0; i< length; i++){
         value_to_flip_ptr[length-1 -i] = original_copy[i];
     }
+}
+
+bool copy_to_array(void* array_start_addr, size_t array_max_length, int* offset, void* value_addr, size_t value_size) {
+    if ((*offset + value_size)> array_max_length){
+        return false;
+    }
+    memcpy(array_start_addr + *offset, value_addr, value_size);
+    *offset += value_size;
+    return true;
 }

@@ -51,4 +51,17 @@ uint32_t data_combine_u24(uint8_t *split_data);
 */
 void flip_endian(uint8_t* value_to_flip_ptr,  uint8_t length);
 
+/*
+	copies "value_size" bytes from contents of "variable_ptr" to "dest_array".
+	the offset gives the byte-wise index to deposit the data. Increases the
+	value of offset after the copy operation, ie
+		offset = offset+value_addr
+	and as such `offset` can be used to write the next value to the array:
+		copy_to_array(array, &offset, &value1, 4, 32)
+		copy_to_array(array, &offset, &value2, 4, 32)
+
+	returns true on successful write, false if max size is exceeded.
+*/
+bool copy_to_array(void* array_start_addr, size_t array_max_length, int* offset, void* value_addr, size_t value_size);
+
 #endif /* __BYTE_PLEXING__ */

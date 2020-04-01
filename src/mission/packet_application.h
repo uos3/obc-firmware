@@ -9,6 +9,24 @@
 #define APPLICATION_INFO_LEN 1
 #define APPLICATION_HEADER_LEN APPLICATION_LEN_LEN+APPLICATION_INFO_LEN // 
 
+#define WHOFOR_UART_GNSS 0x0
+#define WHOFOR_UART_CAMERA 0x1
+#define WHOFOR_UART_EPS 0x2
+#define WHOFOR_UART_DEBUG6 0x3
+#define WHOFOR_UART_DEBUG4 0x4
+#define WHOFOR_UART_PREPROG 0x7
+
+#define WHOFOR_SPI_RADIORX 0x8
+#define WHOFOR_SPI_RADIOTX 0x9
+#define WHOFOR_SPI_FRAM 0xA
+#define WHOFOR_SPI_PREPROG 0xB
+
+#define WHOFOR_I2C_TEMP 0xC
+#define WHOFOR_I2C_IMU 0xD
+#define WHOFOR_I2C_PREPROG 0xE
+
+#define WHOFOR_OBC_PREPROG 0xF
+
 
 // pack 1 sets the correct length for structs, no more 4+1 = 8
 #pragma pack(1)
