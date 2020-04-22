@@ -18,7 +18,7 @@
 #include "../driver/watchdog_ext.h"
 #include "../driver/wdt.h"
 #include "../driver/rtc.h"
-#include "../driver/fram.h"
+// #include "../driver/fram.h"
 
 #include "../component/led.h"
 
