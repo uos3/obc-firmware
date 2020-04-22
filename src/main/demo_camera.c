@@ -106,8 +106,8 @@ uint8_t await_response(uint8_t *expected_result, unsigned int result_length){
 	RTC_getTime_ms(&timer_start_time);
 	while (!RTC_timerElapsed_ms(timer_start_time, CAMERA_TIMEOUT))	{
 		// if there are no characters (this check important, without it, values are just spat out)
-		while(!UART_charsAvail(UART_CAMERA)){
-			// pass
+		if(!UART_charsAvail(UART_CAMERA)){
+			continue;
 		}
 		// if there is atleast 1 character
 		if (UART_getc_nonblocking(UART_CAMERA, &current_byte)){
@@ -166,7 +166,8 @@ void change_resolution(){
 	#ifdef CAMERA_FUNC_TEST
 		debug_print("--- Sending Resolution command ---");
 	#endif
-	send_to_camera(CAMERA_SET_RESOLUTION_160x120, sizeof(CAMERA_SET_RESOLUTION_160x120));
+	send_to_camera(CAMERA_SET_RESOLUTION_1600x1200, sizeof(CAMERA_SET_RESOLUTION_1600x1200));
+	// send_to_camera(CAMERA_SET_RESOLUTION_160x120, sizeof(CAMERA_SET_RESOLUTION_160x120));
 	await_response(CAMERA_SET_RESOLUTION_RES, sizeof(CAMERA_SET_RESOLUTION_RES));
 }
 
@@ -272,7 +273,7 @@ uint32_t pull_camera_page(uint8_t *page_buffer, uint32_t page_length){
 		// if there are no characters (this check important, without it, values are just spat out)
 		if (!UART_charsAvail(UART_CAMERA))
 		{
-			// pass
+			continue;
 		}
 		// if there is atleast 1 character
 		else if (UART_getc_nonblocking(UART_CAMERA, &current_byte))
