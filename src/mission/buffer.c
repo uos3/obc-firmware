@@ -248,13 +248,13 @@ uint32_t buffer_read_length(uint16_t start_block_number, uint8_t start_block_pos
 		}
 		memcpy((uint8_t*) &output[total_read], (uint8_t*) &block_buffer[start_block_position], length_in_block);
 		// update total read
-		debug_printf("BUFFER.C: total read % 3d\tlength in block % 3d\tremaining length % 3d\tlength to read\t% 3d, calced\t% 3d",
-			total_read,
-			length_in_block,
-			remaining_length, 
-			length_to_read, 
-			remaining_length + total_read);
-		total_read += length_in_block;
+		// debug_printf("BUFFER.C: total read % 3d\tlength in block % 3d\tremaining length % 3d\tlength to read\t% 3d, calced\t% 3d",
+		// 	total_read,
+		// 	length_in_block,
+		// 	remaining_length, 
+		// 	length_to_read, 
+		// 	remaining_length + total_read);
+		// total_read += length_in_block;
 
 		if (total_read >= length_to_read){
 			break;
