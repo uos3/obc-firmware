@@ -380,10 +380,16 @@ uint8_t demo_retrieve_picture(uint32_t jpeg_size)
 	return 0x00;
 }
 
-void dump_image_from_buffer(){
-	uint8_t retrieved_page[2048];
-	uint32_t read_length;
-	buffer_read_length(0, 0, retrieved_page, 2048);
+void dump_image_from_buffer(uint32_t jpeg_size){
+	uint32_t buffer_data_size = BLOCK_SIZE - BUFFER_DATA_START_INDEX;
+	uint8_t retrieved_page[buffer_data_size];
+	uint32_t read_length = 0;
+	uint32_t total_read = 0;
+	while (total_read < jpeg_size) {
+		read_length = buffer_read_length(0, 0, retrieved_page, buffer_data_size);
+		UART_putb(UART_DEBUG_4, retrieved_page, read_length);
+		total_read += read_length;
+	}
 }
 
 // main
@@ -440,6 +446,8 @@ int main(void)
 	demo_retrieve_picture(jpeg_size);
 
 	camera_stop_taking();
+
+	dump_image_from_buffer(jpeg_size);
 
 #ifdef CAMERA_FUNC_TEST
 	debug_print("=== end demo ===");
