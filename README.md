@@ -31,7 +31,7 @@ cd <PARENT OF THIS REPO>
 mkdir tivaware_tm4c_<VERSION NUMBER> && cd tivaware_tm4c_<VERSION NUMBER>
 unzip <PATH TO DOWNLOADED SW-TM4C-<VERSION NUMBER>.exe> .
 make
-cd ../uos3-obc-fw
+cd ../obc-firmware
 ln -s ../tivaware_tm4c_<VERSION NUMBER> tivaware
 ```
 
