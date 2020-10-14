@@ -186,7 +186,7 @@ The following naming conventions apply for the software:
        `do`. Verbs _should_ be shortened to less than 4 characters when
        possible.
 
- - Variables and function arguments __must__ follow the `lower_camel_case`
+ - Variables and function arguments __must__ follow the `lower_snake_case`
    naming scheme.
      - Pointers __must__:
         - be prefixed with `p_`. Double pointers __must__ be prefixed with 
@@ -199,7 +199,7 @@ The following naming conventions apply for the software:
         - `_inout` for both inputs and outputs
      - If a quantity has an associated unit it __must__ be suffixed with that
        unit:
-        - Units __shall__ form a single 'word' in `lower_camel_case`, for
+        - Units __shall__ form a single 'word' in `lower_snake_case`, for
           instance use `ms` for meters/second not `m_s`. 
         - Units with powers __shall__ omit the power: `mss` for
           meters/second^2.
