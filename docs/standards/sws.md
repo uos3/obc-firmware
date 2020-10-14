@@ -223,7 +223,12 @@ The following naming conventions apply for the software:
     - Constants and defines __must__ be prefixed with the module name, such as
       `GNSS_NMEA_LENGTH_BYTES`.
     - Constants and defines __shall__ follow the same rules as variables and 
-      function arguments with regards to units, however they shall be in `UPPER_SNAKE_CASE`.
+      function arguments with regards to units, however they shall be in
+      `UPPER_SNAKE_CASE`.
+    - Defines _should_ be used over constants. This is because defines do not
+      add to the symbol count and memory usage of the software.
+    - Define values __must__ be wrapped in brackets to avoid evaluation issues,
+      for instance `#define MY_DEF (12)` over `#define MY_DEF 12`.
     
 
 ## Error Handling
