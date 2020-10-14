@@ -1,0 +1,7 @@
+*link:
+--entry ResetISR --gc-sections 
+
+*lib:
+-lm -lc
+
+#*startfile:
