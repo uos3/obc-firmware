@@ -1,0 +1,11 @@
+.vscode/*
+# Make sure the workspace dictionary still remains
+!.vscode/spellright.dict
+# Keep code snippets around too
+!.vscode/snippets.code-snippets
+
+# Can't include tivaware libs in here due to license agreement
+tivaware
+
+# Don't push build files
+build

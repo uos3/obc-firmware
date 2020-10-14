@@ -8,7 +8,7 @@ Task Ref: `UT_2.0.1`
 
 - __`2019-12-10 - Richard Abrams GDP201920`__
     
-    Creation
+    - Creation
 
 - __`2020-03-11 - Richard Abrams GDP201920`__
 
@@ -24,12 +24,12 @@ Task Ref: `UT_2.0.1`
 The following points apply in general to the entire software repository,
 including this document.
 
-- Terms such as “__must__”, “_should_” and respective negatives are to be interpreted
-  as outlined in [RFC2119](https://tools.ietf.org/html/rfc2119).
+- Terms such as “__must__”, “_should_” and respective negatives are to be 
+  interpreted as outlined in [RFC2119](https://tools.ietf.org/html/rfc2119).
 - Semantic version numbering is to be used for files, with version number 
   included in a comment at the top of the file. See [semver](semver.org) for 
   instruction.
-- __TODO__ The OBC firmware is stored on GitHub under the 
+- The OBC firmware is stored on GitHub under the 
   [UoS3 Project](https://github.com/uos3/obc-firmware).
 
 ## Principles
@@ -93,16 +93,16 @@ With that said, lets dive in.
 
 ## Language
 
-The language used for the OBC firmware is __`C99`__, and __must__ be compiled with
-GCC using the ARM embedded tool chain provided 
+The language used for the OBC firmware is __`C99`__, and __must__ be compiled 
+with GCC using the ARM embedded tool chain provided 
 [here](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads).
 
 ## Version Control
 
 Git is being used as the version control tool for the software repository. Any
 source other than that in the main 
-[__TODO__ GitHub repository](https://github.com/uos3/obc-firmware) __shall 
-not__ be considered a more complete/up-to-date version of the source code.
+[GitHub repository](https://github.com/uos3/obc-firmware) __shall not__ be 
+considered a more complete/up-to-date version of the source code.
 
 You __must__ ensure that any changes are committed and pushed into the remote
 repository. Shared devices (such as the Raspberry Pi) __must not__ be used to
@@ -123,7 +123,108 @@ small bash scripts.
 
 ## Module Structure
 
-TODO
+The code base and functionality of the software is divided into modules. One
+definition of a module, and the one that is used here, is given by:
+
+> A module
+>  1. encapsulates code and data to implement a particular functionality,
+>  2. has an interface that lets clients access its functionality in a 
+>    uniform manner,
+>  3. is easily pluggable with another module that expects its interface,
+>  4. is usually packaged in a single unit so that it can be easily deployed,
+
+In the case of this software these points can be explained to mean:
+
+1. A module deals with a single functionality of the vehicle, such as the GNSS
+   module.
+2. Has public functions available for use by other modules,
+3. Creates a level of abstraction over its internal functioning so that the
+   user does not have to think of these problems.
+4. Is compiled as a static library and linked into other modules through the
+   build system.
+
+
+
+A module should be contained within a single folder which is named after the
+module itself. The module folder _should_ contain at least:
+
+- `CMakeLists.txt` - CMake listing for the module which should create a new 
+  library using the module name.
+- `<ModuleName>_public.h` - declarations of functions and defines available for 
+  use by other modules.
+- `<ModuleName>_public.c` - implementations of public functions and static 
+  definitions.
+
+In addition, the module may contain:
+
+- `<ModuleName>_private.h` - declarations of private functions and defines for
+  use within the module itself.
+- `<ModuleName>_private.c` - implementations of private functions and static 
+  definitions.
+
+By convention an external module _MUST NOT_ import or use a module's private 
+items. 
+
+Any long functions (>100 lines) should be kept in their own file following the 
+`<ModuleName>_<function_name>.c` convention.
+
+## Naming Conventions
+
+The following naming conventions apply for the software:
+
+ - Modules __shall__ follow the `UpperCamelCase` naming scheme. 
+    - Abbreviations _should_ have their first letter capitalised and all 
+      subsequent letters are lower case, such as `Gnss` or `Imu`.
+    - Module names _should not_ be shortened, for instance `Buffer` is
+      preferred over `Buf`.
+
+ - Functions __shall__ follow the `<ModuleName>_<function_name>` naming scheme,
+   that is the module name in `UpperCamelCase`, followed by the function name
+   in `lower_snake_case`. For example `Gnss_get_data` or `Imu_init`.
+     - Initialisation functions __shall__ be called `init`.
+     - Functions names _should_ start with a verb, such as `get`, `calc`, or
+       `do`. Verbs _should_ be shortened to less than 4 characters when
+       possible.
+
+ - Variables and function arguments __must__ follow the `lower_camel_case`
+   naming scheme.
+     - Pointers __must__:
+        - be prefixed with `p_`. Double pointers __must__ be prefixed with 
+          `pp_`. Higher orders of pointers _should not_ be used.
+        - have the declaring asterisk in contact with the variable name, not
+          the type: `int *p_number`, __NOT__ `int* p_number`.
+     - Function arguments __must__ be suffixed depending on their use:
+        - `_in` for inputs
+        - `_out` for outputs
+        - `_inout` for both inputs and outputs
+     - If a quantity has an associated unit it __must__ be suffixed with that
+       unit:
+        - Units __shall__ form a single 'word' in `lower_camel_case`, for
+          instance use `ms` for meters/second not `m_s`. 
+        - Units with powers __shall__ omit the power: `mss` for
+          meters/second^2.
+        - The definition comment of the variable/argument shall specify in 
+          words the units, for example:
+          ```c
+          /**
+           * @brief The velocity
+           *
+           * @units meters/second
+           */
+          float velocity_ms = 0.0;
+          ```
+     - For example:
+        - `p_output_data_out` for a pointer to some output data which will be
+          written to by the function.
+        - `elapsed_time_us` for an elapsed time in microseconds.
+
+ - Constants and preprocessor definitions __must__ follow the
+   `UPPER_SNAKE_CASE` naming scheme.
+    - Constants and defines __must__ be prefixed with the module name, such as
+      `GNSS_NMEA_LENGTH_BYTES`.
+    - Constants and defines __shall__ follow the same rules as variables and 
+      function arguments with regards to units, however they shall be in `UPPER_SNAKE_CASE`.
+    
 
 ## Error Handling
 
