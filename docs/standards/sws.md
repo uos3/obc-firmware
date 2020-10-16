@@ -229,7 +229,91 @@ The following naming conventions apply for the software:
       add to the symbol count and memory usage of the software.
     - Define values __must__ be wrapped in brackets to avoid evaluation issues,
       for instance `#define MY_DEF (12)` over `#define MY_DEF 12`.
-    
+
+## Commenting
+
+Comments _should_ explain code, not describe it. For example:
+
+```c
+/* Calculate the angular rate so we can determine when the s/c has despun */
+float angular_rate_rads = angular_change_rad / sample_time_s;
+```
+
+should be prefered over
+
+```c
+/* get the angular rate */
+float angular_rate_rads = angular_change_rad / sample_time_s;
+```
+
+Long comments are not to be discouraged. If you need a paragraph to explain why 
+you're doing something it's likely a very complicated and should be explained 
+in depth so that:
+
+1. You can check you're doing the right thing
+2. Other people can verify that the code is doing what it's supposed to as a 
+   part of a review
+3. Future maintainers can understand the purpose of the code.
+
+When numerical protection is needed 
+([see Numerical Protection](#numerical-protection)) a comment explaining the 
+need for the proection and the solution should be included, for example:
+
+```c
+/* ---- NUMERICAL PROTECTION ----
+ *
+ * To prevent a division by zero here sample time is compared to the do
+ */
+float angular_rate_rads = angular_change_rad / sample_time_s;
+```
+
+
+## File Format
+
+C source code and header files _should_ use the following format:
+
+```c
+/**
+ *  File header comment 
+ */
+
+/* -------------------------------------------------------------------------
+ * INCLUDES
+ * ------------------------------------------------------------------------- */
+
+/* Standard library includes */
+#include <stdio.h>
+
+/* TivaWare includes */
+#include "inc/tm4c123gh6pm.h"
+
+/* Internal includes */
+#include "driver/spi/spi_public.h"
+
+/* -------------------------------------------------------------------------
+ * DEFINES
+ * ------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------
+ * GLOBALS
+ * ------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------
+ * ENUMS
+ * ------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------
+ * STRUCTS
+ * ------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------
+ * FUNCTIONS
+ * ------------------------------------------------------------------------- */
+```
+
+Files __shall__ follow the LF (line feed) end of line sequence, for compatability
+with Linux. Windows editors should be set to use the LF line ending sequence.
+
 
 ## Error Handling
 
