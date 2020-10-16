@@ -52,7 +52,7 @@ This document provides a series of standards for writing code in the
 
     ```c
     float angular_rate_rads = fabs(sample_time_s) < FLT_EPSILON
-        ? p_status_report.f_division_by_zero = true, 0.0
+        ? p_status_report_inout.f_division_by_zero = true, 0.0
         : angular_change_rad / sample_time_s;
     ```
 
@@ -62,7 +62,7 @@ This document provides a series of standards for writing code in the
     float angular_rate_rads;
 
     if (fabs(sample_time_s) < FLT_EPSILON) {
-        p_status_report.f_division_by_zero = true;
+        p_status_report_inout.f_division_by_zero = true;
         angular_rate_rads = 0.0;
     }
     else {
@@ -232,6 +232,8 @@ The following naming conventions apply for the software:
 
 ## Commenting
 
+### General Comments
+
 Comments _should_ explain code, not describe it. For example:
 
 ```c
@@ -239,13 +241,12 @@ Comments _should_ explain code, not describe it. For example:
 float angular_rate_rads = angular_change_rad / sample_time_s;
 ```
 
-should be prefered over
+should be preferred over
 
 ```c
 /* get the angular rate */
 float angular_rate_rads = angular_change_rad / sample_time_s;
 ```
-
 Long comments are not to be discouraged. If you need a paragraph to explain why 
 you're doing something it's likely a very complicated and should be explained 
 in depth so that:
@@ -255,20 +256,105 @@ in depth so that:
    part of a review
 3. Future maintainers can understand the purpose of the code.
 
-When numerical protection is needed 
-([see Numerical Protection](#numerical-protection)) a comment explaining the 
-need for the proection and the solution should be included, for example:
+### Block Title Comments
+
+Two levels of block title comments are used:
 
 ```c
+/* -------------------------------------------------------------------------
+ * SECTION TITLE
+ * ------------------------------------------------------------------------- */
+
+/* ---- SUBSECTION TITLE ---- */
+```
+
+Section titles _should_ be reserved for use outside of a function body, i.e.
+for separating the includes and defines sections of a source file. If you find
+yourself needing more than two levels of section titles it is likely you need
+to refactor into functions or rethink the design of the function itself.
+
+### Documentation Comments
+
+The doxygen javadoc comment style __shall__ be used for all documentation
+comments. If using the [Doxygen Documentation Generator](https://marketplace.visualstudio.com/items?itemName=cschlosser.doxdocgen)
+VSCode extension these comments are automatically inserted when writing `/**`
+and pressing enter. This is the recommended way of creating documentation 
+comments. If in doubt follow the doxygen guidelines.
+
+Files shall start with a doxygen file header comment, for example:
+
+```c
+/**
+ * @ingroup demo
+ * 
+ * @file demo_launchpad_blinky.c
+ * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
+ * 
+ * @brief TM4C Launchpad Blinky Demo
+ * 
+ * This demo file is used to verify the build system functionality with the
+ * TM4C launchpad. It will toggle the onboard LED if SW1 is pressed, and keep
+ * the LED on if SW2 is pressed. If buttons are released the LED is turned off.
+ * 
+ * Originally written by Yusef Karim, adapted for UoS3.
+ * 
+ * @version 0.1
+ * @date 2020-10-02
+ * @copyright Copyright (c) UoS3 2020
+ */
+```
+
+In files which define a module (for instance the module `_public.h` header) a
+doxygen group __shall__ be defined for that module, for instance:
+
+```c
+/* (At end of header comment:)
+ * @defgroup demo_launchpad_blinky Demo Launchpad Blinky
+ * @{
+ */
+```
+
+The group __must__ also be closed at the end of the file, with a comment
+including the group name:
+
+```c
+/** @} */ /* End of demo_launchpad_blinky */
+```
+
+All other files in that module shall include the `@ingroup` directive in their
+header comment, including the opening/closing markers as described in
+[doxygen/Grouping](https://www.doxygen.nl/manual/grouping.html).
+
+### Numerical Protection Comments
+
+When numerical protection is needed 
+([see Numerical Protection](#numerical-protection)) a comment explaining the 
+need for the protection and the solution should be included, for example:
+
+```c
+float angular_rate_rads;
+
 /* ---- NUMERICAL PROTECTION ----
  *
- * To prevent a division by zero here sample time is compared to the do
+ * To prevent a division by zero here sample time is compared to the floating 
+ * point epsilon value. If the sample time is close to zero the angular rate is
+ * patched to zero in order to avoid large spikes in the angular rate signal.
+ *
+ * In addition the division by zero flag is raised in the status report.
  */
-float angular_rate_rads = angular_change_rad / sample_time_s;
+if (fabs(sample_time_s) < FLT_EPSILON) {
+    p_status_report_inout.f_division_by_zero = true;
+    angular_rate_rads = 0.0;
+}
+else {
+    angular_rate_rads = angular_change_rad / sample_time_s;
+}
 ```
 
 
 ## File Format
+
+### File Structure
 
 C source code and header files _should_ use the following format:
 
@@ -311,8 +397,11 @@ C source code and header files _should_ use the following format:
  * ------------------------------------------------------------------------- */
 ```
 
-Files __shall__ follow the LF (line feed) end of line sequence, for compatability
-with Linux. Windows editors should be set to use the LF line ending sequence.
+### Line Ending
+
+Files __shall__ follow the LF (line feed) end of line sequence, for 
+compatibility with Linux. Windows editors should be set to use the LF line 
+ending sequence.
 
 
 ## Error Handling

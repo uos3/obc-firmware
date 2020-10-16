@@ -43,6 +43,7 @@ extensions:
 - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
 - [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
 - [CMake](https://marketplace.visualstudio.com/items?itemName=twxs.cmake)
+- [Doxygen Documentation Generator](https://marketplace.visualstudio.com/items?itemName=cschlosser.doxdocgen)
 - [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
 - [Rewrap](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap)
 - [Spell Right](https://marketplace.visualstudio.com/items?itemName=ban.spellright)
