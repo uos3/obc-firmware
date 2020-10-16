@@ -1,7 +1,10 @@
 /**
- * __DEMO__ - Not for flight usage
+ * @ingroup demo
  * 
- * # TM4C Launchpad Blinky Demo
+ * @file demo_launchpad_blinky.c
+ * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
+ * 
+ * @brief TM4C Launchpad Blinky Demo
  * 
  * This demo file is used to verify the build system functionality with the
  * TM4C launchpad. It will toggle the onboard LED if SW1 is pressed, and keep
@@ -9,10 +12,12 @@
  * 
  * Originally written by Yusef Karim, adapted for UoS3.
  * 
- * File version: 0.1.0
- * Last modified: 2020-10-02
- * Author: Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
- * Status: In pogress
+ * @version 0.1
+ * @date 2020-10-02
+ * @copyright Copyright (c) UoS3 2020
+ * 
+ * @defgroup demo_launchpad_blinky Demo Launchpad Blinky
+ * @{
  */
 
 /* -------------------------------------------------------------------------   
@@ -26,29 +31,31 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
-/* 
+/**
+ * @brief Division required for PLL based clock
+ * 
  * Using the 400MHz PLL we get the bus frequency by dividing
  * 400MHz / (SYSDIV2+1). Therefore, 400MHz/(4+1) = 80 MHz bus frequency
  */
 #define SYSDIV2 (4)
 
-/* 
- * Pin used for SW1
+/** 
+ * @brief GPIO pin used for SW1
  */
 #define GPIO_SW1 (0x10);
 
-/* 
- * Pin used for SW2
+/** 
+ * @brief GPIO pin used for SW2
  */
 #define GPIO_SW2 (0x01);
 
-/* 
- * Pin used for the RED led 
+/** 
+ * @brief GPIO pin used for the red LED
  */
 #define GPIO_LED_RED (0x02);
 
-/* 
- * Pin used for the BLUE led 
+/** 
+ * @brief GPIO pin used for the blue LED
  */
 #define GPIO_LED_BLUE (0x04);
 
@@ -56,8 +63,8 @@
  * GLOBALS
  * ------------------------------------------------------------------------- */
 
-/* 
- * Store the SW1 and SW2 input values.
+/**
+ * @brief Input values for switch 1 and 2
  */
 unsigned long SW1, SW2;
 
@@ -66,23 +73,23 @@ unsigned long SW1, SW2;
  * FUNCTION PRE-DECLARATIONS
  * ------------------------------------------------------------------------- */
 
-/*
- * Initialise GPIO Port F, which contains the LED and switch pins.
+/**
+ * @brief Initialise GPIO Port F, which contains the LED and switch pins.
  */
 void PortF_init(void);
 
-/*
- * Initialise the PLL to enable system clock.
+/**
+ * @brief Initialise the PLL to enable system clock.
  */
 void Pll_init(void);
 
-/*
- * Initialise the systick.
+/**
+ * @brief Initialise the systick.
  */
 void SysTick_init(void);
 
-/*
- * TODO
+/**
+ * @brief Wait the given number of milliseconds based on the SysTick.
  */
 void SysTick_wait_ms(unsigned long ms);
 
@@ -90,8 +97,10 @@ void SysTick_wait_ms(unsigned long ms);
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-/*
- *  Main entry point for the programme
+/**
+ * @brief Main entry point for the programme.
+ * 
+ * This runs the main programme, as described in the file header.
  */
 int main(void) {
     
@@ -195,3 +204,5 @@ void SysTick_wait_ms(unsigned long ms)
         while((NVIC_ST_CTRL_R&0x00010000) == 0){}
     }
 }
+
+/** @} */ /* End of demo_launchpad_blinky */
