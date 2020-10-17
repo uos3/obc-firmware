@@ -1,6 +1,6 @@
 # CMakeLists.txt for demonstration files
 
-# Launchpad hello world executable
+# Launchpad blinky demo
 add_executable(demo_launchpad_blinky
     ${STARTUP_SOURCE}
     demo_launchpad_blinky.c

@@ -7,38 +7,38 @@ Task Ref: `UT_2.0.1`
 ## Changelog
 
 - __`2019-12-10 - Richard Abrams GDP201920`__
-    
-    - Creation
+  
+  - Creation
 
 - __`2020-03-11 - Richard Abrams GDP201920`__
 
-    - Struct/header standard
-    - Removed “usage” section prototype, this is now in the Software Manual 
+  - Struct/header standard
+  - Removed “usage” section prototype, this is now in the Software Manual
       document
 - __`2020-10-02 - Duncan Hamill GDP202021`__
 
-    - Significant update and expansion of SWS
+  - Significant update and expansion of SWS
 
 ## Preface
 
 The following points apply in general to the entire software repository,
 including this document.
 
-- Terms such as “__must__”, “_should_” and respective negatives are to be 
+- Terms such as “__must__”, “_should_” and respective negatives are to be
   interpreted as outlined in [RFC2119](https://tools.ietf.org/html/rfc2119).
-- Semantic version numbering is to be used for files, with version number 
-  included in a comment at the top of the file. See [semver](semver.org) for 
+- Semantic version numbering is to be used for files, with version number
+  included in a comment at the top of the file. See [semver](semver.org) for
   instruction.
-- The OBC firmware is stored on GitHub under the 
+- The OBC firmware is stored on GitHub under the
   [UoS3 Project](https://github.com/uos3/obc-firmware).
 
 ## Principles
 
-This document provides a series of standards for writing code in the 
+This document provides a series of standards for writing code in the
 `uos3-obc-fw` repository. The standard follows 3 main principles:
 
 1. __Safety is critical to the mission__
-    
+
     Mission safety cannot be comprised in any way, so operations that may
     result in errors __must__ be guarded against and justified. Therefore a
     standardised result system is used, which is detailed in [the error
@@ -127,9 +127,10 @@ The code base and functionality of the software is divided into modules. One
 definition of a module, and the one that is used here, is given by:
 
 > A module
+>
 >  1. encapsulates code and data to implement a particular functionality,
 >  2. has an interface that lets clients access its functionality in a 
->    uniform manner,
+>     uniform manner,
 >  3. is easily pluggable with another module that expects its interface,
 >  4. is usually packaged in a single unit so that it can be easily deployed,
 
@@ -399,10 +400,9 @@ C source code and header files _should_ use the following format:
 
 ### Line Ending
 
-Files __shall__ follow the LF (line feed) end of line sequence, for 
-compatibility with Linux. Windows editors should be set to use the LF line 
+Files __shall__ follow the LF (line feed) end of line sequence, for
+compatibility with Linux. Windows editors should be set to use the LF line
 ending sequence.
-
 
 ## Error Handling
 
