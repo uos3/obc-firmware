@@ -194,6 +194,7 @@ The following naming conventions apply for the software:
           `pp_`. Higher orders of pointers _should not_ be used.
         - have the declaring asterisk in contact with the variable name, not
           the type: `int *p_number`, __NOT__ `int* p_number`.
+     - Unions __must__ be prefixed with `u_`.
      - Function arguments __must__ be suffixed depending on their use:
         - `_in` for inputs
         - `_out` for outputs
@@ -249,8 +250,8 @@ should be preferred over
 float angular_rate_rads = angular_change_rad / sample_time_s;
 ```
 Long comments are not to be discouraged. If you need a paragraph to explain why 
-you're doing something it's likely a very complicated and should be explained 
-in depth so that:
+you're doing something it's likely a very complicated procedure and should be
+explained in depth so that:
 
 1. You can check you're doing the right thing
 2. Other people can verify that the code is doing what it's supposed to as a 
@@ -282,7 +283,7 @@ VSCode extension these comments are automatically inserted when writing `/**`
 and pressing enter. This is the recommended way of creating documentation 
 comments. If in doubt follow the doxygen guidelines.
 
-Files shall start with a doxygen file header comment, for example:
+Files __shall__ start with a doxygen file header comment, for example:
 
 ```c
 /**
@@ -407,3 +408,80 @@ ending sequence.
 ## Error Handling
 
 TODO
+
+## Numerical Protection
+
+In keeping with the safety focus of the software numerical protection __shall__
+be used when necessary. This is to prevent:
+
+- Division by zero
+- Out of bounds access of an array
+- Underflow/overflow of data types
+- Null pointer dereferencing (segfault)
+- Union undefined behaviour
+- Floating point resolution issues (`0.1 + 0.2 != 0.3`)
+
+In order to catch the following operations __shall__ have a numerical
+protection comment which explains the possible numerical issue, the protection 
+mechanism used, and the impact of that mechanism.
+
+- All division operations - to prevent division by zero. 
+- All array access/pointer indexing operations - to prevent out of bounds
+  access.
+- All mutating operations (i.e. addition, subtraction, multiplication, bit
+  shifting, etc.) - to prevent underflow/overflow.
+- All pointer dereferencing - to prevent segmentation faults
+- All union access - to prevent undefined behaviour
+- All floating point comparisons - to prevent resolution issues
+
+Some examples of numerical protection mechanisms and comments:
+
+```c
+
+/* ---- NUMERICAL PROTECTION ----
+ *
+ * To prevent a division by zero here sample time is compared to the floating 
+ * point epsilon value. If the sample time is close to zero the angular rate is
+ * patched to zero in order to avoid large spikes in the angular rate signal.
+ *
+ * In addition the division by zero flag is raised in the status report.
+ */
+if (fabs(sample_time_s) < FLT_EPSILON) {
+    p_status_report_inout.f_division_by_zero = true;
+    angular_rate_rads = 0.0;
+}
+else {
+    angular_rate_rads = angular_change_rad / sample_time_s;
+}
+
+/* ---- NUMERICAL PROTECTION ----
+ * 
+ * To prevent out of bounds access on the array the indexing variable is 
+ * limited to the defined length of the array.
+ */
+for (i = 0; i < ARRAY_LENGTH; i++) {
+    /* ---- NUMERICAL PROTECTION ----
+     * 
+     * No protection against overflow is required here as the type of the 
+     * array element (int32_t) is capable of storing the maximum value that 
+     * could be written to the array (ARRAY_LENGTH + 42, where ARRAY_LENGTH = 
+     * 6, and 6 + 42 < INT32_MAX(2,147,483,647))
+     */
+    array[i] = i + 42;
+}
+```
+
+While this system may seem verbose and unnecessary, it is in fact critical to
+ensuring that the software is written in a safe and robust way. These issues
+are unlikely to be detected at compile time and could easily be missed in the
+test campaigns. Therefore they are only likely to be found at writing or code
+review.
+
+It is possible for almost any statement in the software to result in numerical
+issues that could affect the spacecraft's safety. It is therefore critical that
+the developer properly consider the implications of each statement they write.
+
+By enforcing the use of numerical protection comments and protection mechanisms
+the developer and reviewer can be sure that they have considered every
+possibility. The detail in the comments also ensures that future maintainers
+are able to understand the possible problems and chosen solutions.
