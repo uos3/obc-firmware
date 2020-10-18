@@ -13,13 +13,16 @@ repository, it can be found [here](docs/standards/sws.md).
 
 Developing this repository requires the following software:
 
+- `gcc-arm-none-eabi` - the GCC cross-compiler for ARM targets
 - CMake - used as the build system
-- lm4flash - used to develop for the TM4C launchpad
+- lm4flash - used to flash the TM4C launchpad
+- Python 3 - used for build script
 
-On ubuntu the following command should install these:
+On ubuntu the following command should install these (except python3, be
+careful as you probably already have it installed):
 
 ```shell
-sudo apt install cmake lm4flash
+sudo apt install gcc-arm-none-eabi cmake lm4flash
 ```
 
 You must also get a copy of the TivaWare drivers from [the
@@ -55,3 +58,23 @@ setting `Todo-tree > Regex` to:
 ```regex
 ((//|#|<!--|;|/\*|\s?\*|^)\s*($TAGS)|^\s*- \[ \])
 ```
+
+### Building the firmware
+
+To build the firmware a build script is provided at `./build`. To use it, check
+that the script is executable with
+
+```shell
+chmod +x ./build
+```
+
+then run 
+
+```shell
+./build --help
+```
+
+to see help information.
+
+The build files will be output into a `builds` directory, subsequently divided
+into `release` and `debug` mode builds. 

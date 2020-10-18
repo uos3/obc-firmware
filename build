@@ -1,0 +1,254 @@
+#!/usr/bin/python3
+'''
+---- UoS3 OBC Firmware Build Script ----
+
+This script will build the OBC Firmware and manages the storage of completed
+builds. Under the hood CMake is used to generate make files followed by running
+the make file itself.
+
+There are two targets that can be used for the OBC Firmware: the TM4C and
+Linux. In the TM4C builds the tivaware libraries are included and linked, while
+on Linux no additional libraries are linked. There are also two different build
+profiles, debug and release. The release profile disables all UART logging and
+should be the one used to flash the flight version of the software.
+
+Author: Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
+Version: 0.1
+Date: 2020-10-18
+Copyright (c) UoS3 2020
+'''
+
+import sys
+import os
+import argparse
+import subprocess
+import shutil
+from pathlib import Path
+from datetime import datetime
+
+class TermCols:
+    '''Terminal colour codes'''
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def error(msg, code=1):
+    '''Print error message and exit with an error code'''
+    print(f'[{TermCols.FAIL}ERR{TermCols.ENDC}] {msg}')
+    sys.exit(code)
+
+def info(msg):
+    '''Print an information message to the screen'''
+    print(f'[---] {msg}')
+
+def ok(msg):
+    '''Print a success message to the screen'''
+    print(f'[{TermCols.OKGREEN} OK{TermCols.ENDC}] {msg}')
+
+# Timestamp format
+TIMESTAMP_FORMAT = '%Y%m%d_%H%M%S'
+INFO_DATE_FORMAT = '%Y-%m-%d'
+INFO_TIME_FORMAT = '%H:%M:%S'
+
+def main():
+    '''
+    Run the main build script.
+
+    Takes command line arguments, creates build directories, and stores
+    finished builds.
+    '''
+
+    # Get the command line args
+    args = parse_args()
+
+    # Check for valid target mode
+    if args.target not in ['linux', 'tm4c']:
+        error(f'Invalid build target "{args.target}", only "linux" and "tm4c" are supported.')
+
+    info(
+        f'Building OBC Firmware for the {args.target.upper()} target in {"RELEASE" if args.release else "DEBUG"} mode')
+    if args.clean:
+        info('Build will be made from clean')
+
+    # Get the build timestamp
+    timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
+
+    info(f'Build timestamp: {timestamp}')
+
+    # Get the root directory
+    root_dir = Path('/')
+    for part in Path(os.getcwd()).parts:
+        root_dir = root_dir.joinpath(part)
+        if part == 'obc-firmware':
+            break
+
+    # Get the profile directory
+    prof_dir = Path(root_dir, 'builds')
+    if args.release:
+        prof_dir = prof_dir.joinpath('release')
+    else:
+        prof_dir = prof_dir.joinpath('debug')
+
+    # Get the cmake dir
+    cmake_dir = Path(prof_dir, 'cmake')
+
+    # Get the build dir
+    build_dir = Path(prof_dir, f'build_{timestamp}')
+
+    info('Creating build directories:')
+    info(f'    {prof_dir}')
+    info(f'    {cmake_dir}')
+    info(f'    {build_dir} (will be created if binaries were built)')
+
+    # Create build and cmake directories
+    cmake_dir.mkdir(parents=True, exist_ok=True)
+
+    ok(f'Build directories created')
+
+    # If a clean build remove all contents of the cmake folder
+    if args.clean:
+        clean_dir(cmake_dir)
+
+    # Run the build process
+    build(cmake_dir, args.release, args.target)
+
+    # Copy binaries into the build dir
+    copy_bins(cmake_dir, build_dir)
+
+    # Write build info file
+    write_build_info_file(build_dir, 'release' if args.release else 'debug', args.target, timestamp)
+
+    ok('Build complete')
+
+def parse_args():
+    '''
+    Parse command line arguments
+    '''
+
+    # Create argparser
+    parser = argparse.ArgumentParser(description='Build the OBC firmware.')
+    parser.add_argument(
+        '-c', '--clean',
+        help='Clean the build dir before building',
+        action='store_true'
+    )
+    parser.add_argument(
+        '-r', '--release',
+        help='Enable the release build profile',
+        action='store_true'
+    )
+    parser.add_argument(
+        '-t', '--target',
+        help='Specify the target for the build, one of "linux" (default) or "tm4c"',
+        default='linux'
+    )
+
+    # Parse the arguments
+    return parser.parse_args()
+
+def clean_dir(directory):
+    '''
+    Remove all files and folders in the given directory.
+    '''
+
+    info(f'Cleaning {directory}')
+    
+    for file in os.listdir(directory):
+        file = os.path.join(directory, file)
+        try:
+            shutil.rmtree(file)
+        except OSError:
+            os.remove(file)
+
+    ok(f'{directory} cleaned')
+
+def build(directory, release, target):
+    '''
+    Run the build process (CMake then make) in the given directory.
+    '''
+
+    # Move into the given dir
+    os.chdir(directory)
+
+    info('Running CMake')
+
+    # Run cmake
+    cmake = subprocess.run([
+        'cmake', 
+        f'-DCMAKE_BUILD_TYPE={"Release" if release else "Debug"}',
+        f'-DUOS3_TARGET_TM4C={"ON" if target == "tm4c" else "OFF"}',
+        '../../../'])
+    
+    # If cmake failed return an error
+    if cmake.returncode != 0:
+        error('CMake execution failed')
+    else:
+        ok('CMake executed successfully, running make')
+
+    # Run make
+    make = subprocess.run(['make'])
+
+    # Check make status
+    if make.returncode != 0:
+        error('make execution failed')
+    else:
+        ok('make execution successful, moving build files')
+
+def copy_bins(source_dir, dest_dir):
+    '''
+    Copy all binaries in the source directory to the destination directory.
+    '''
+
+    # Get list of all binaries in the cmake dir
+    bins = list(source_dir.glob('src/**/*.bin'))
+
+    # If there are binaries to build copy them into a build_TIMESTAMP folder
+    if len(bins) > 0:
+        info('Binaries were built, copying to build directory:')
+        dest_dir.mkdir()
+
+        for bin_path in bins:
+            shutil.copy2(bin_path, dest_dir)
+            info(f'    {bin_path}')
+
+        ok('Binaries copied')
+    else:
+        info('No binaries to copy')
+
+def write_build_info_file(dest_dir, profile, target, timestamp):
+    '''
+    Write a build info file into the destination directory
+    '''
+
+    # Get uname and git-log info
+    uname = subprocess.run(['uname', '-a'], check=True, capture_output=True)
+    git = subprocess.run(['git', 'log', '--format=oneline', '-n 1'], check=True, capture_output=True)
+
+    # Create the file
+    with open(dest_dir.joinpath('build_info.txt'), 'w+') as f:
+        # Head line
+        f.write('UoS3 OBC Firmware Build Information\n\n')
+
+        # Date and time
+        date = datetime.strptime(timestamp, TIMESTAMP_FORMAT)
+        f.write(f'    date: {date.strftime(INFO_DATE_FORMAT)}\n')
+        f.write(f'    time: {date.strftime(INFO_TIME_FORMAT)}\n\n')
+
+        # uname
+        f.write(f'    uname: {uname.stdout.decode("utf-8")}\n')
+
+        # git
+        f.write(f'    git: {git.stdout.decode("utf-8")}\n')
+
+        # profile and target
+        f.write(f'    profile: {profile}\n')
+        f.write(f'    target: {target}\n\n')
+
+if __name__ == '__main__':
+    main()

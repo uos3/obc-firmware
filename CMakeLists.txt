@@ -2,32 +2,64 @@
 # Minimum CMake version here is the one that ships with Ubuntu 20.04
 cmake_minimum_required(VERSION 3.16.3)
 
+# Project declaration
 project(obc_firmware)
 
-# CMake file for the TM4C123G, used to specify the custom link script
-include(${PROJECT_SOURCE_DIR}/src/link/tm4c123g.cmake)
+# Option to switch between TM4C build and Linux build
+option(UOS3_TARGET_TM4C "If set the build shall target the TM4C" OFF)
 
-# Include the tivaware files. Must setup the tivaware symbolic link first, see
-# readme for info.
-set(TIVAWARE_PATH "${PROJECT_SOURCE_DIR}/tivaware")
-include_directories(${TIVAWARE_PATH})
+# If building for the TM4C
+if(${UOS3_TARGET_TM4C})
+    message("")
+    message("OBC Firmware building for: TM4C")
+    message("")
 
-# Single TIVAWARE_LIBS var so linking to tivaware is easy
-set(TIVAWARE_LIBS
-    ${TIVAWARE_PATH}/driverlib/gcc/libdriver.a
-)
+    # CMake file for the TM4C123G, used to specify the custom link script
+    include(${PROJECT_SOURCE_DIR}/src/link/tm4c123g.cmake)
 
-# Set the standard link set, which is Startup + Tivaware
-set(STANDARD_LINK_LIBS
-    ${TIVAWARE_LIBS}
-)
+    # Include the tivaware files. Must setup the tivaware symbolic link first, 
+    # see readme for info.
+    set(TIVAWARE_PATH "${PROJECT_SOURCE_DIR}/tivaware")
+    include_directories(${TIVAWARE_PATH})
 
-# Set the startup source file location. This must be inclued in the source list
-# for all executables that should be run on the TM4C, otherwise the ResetISR
-# will not be set and the app won't be able to start.
-set(STARTUP_SOURCE
-    ${PROJECT_SOURCE_DIR}/src/tm4c_startup_gcc.c
-)
+    # Single TIVAWARE_LIBS var so linking to tivaware is easy
+    set(TIVAWARE_LIBS
+        ${TIVAWARE_PATH}/driverlib/gcc/libdriver.a
+    )
+
+    # Set the standard link set, which is Startup + Tivaware
+    set(STANDARD_LINK_LIBS
+        ${TIVAWARE_LIBS}
+    )
+
+    # Set the startup source file location. This must be inclued in the source
+    # list for all executables that should be run on the TM4C, otherwise the 
+    # ResetISR will not be set and the app won't be able to start.
+    set(STARTUP_SOURCE
+        ${PROJECT_SOURCE_DIR}/src/tm4c_startup_gcc.c
+    )
+
+# If building on linux
+elseif(UNIX)
+    message("")
+    message("OBC Firmware building for: UNIX")
+    message("")
+
+    # Set tivaware libs, startup source, and standard link libs as empty, this 
+    # will result in them not being linked.
+    set(TIVAWARE_PATH "")
+    set(TIVAWARE_LIBS )
+    set(STANDARD_LINK_LIBS )
+    set(STARTUP_SOURCE )
+
+# If anything else throw an error
+else()
+    message(FATAL_ERROR "OBC Firmware only supports Unix and TM4C targets, please recompile on either Linux or cross-compile for the TOBC MCU")
+endif()
+
+# Set the executable suffix to be ".bin", this is used to move all the binaries
+# into a single build folder
+set(CMAKE_EXECUTABLE_SUFFIX ".bin")
 
 # Add subdirectories, each managed by its own CMakeLists.txt.
 # The ordering here is important as subdirs which have dependencies on other
