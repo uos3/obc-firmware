@@ -399,6 +399,26 @@ C source code and header files _should_ use the following format:
  * ------------------------------------------------------------------------- */
 ```
 
+### Header File Include Guards
+
+Header files __shall__ contain include guards in the following format:
+
+```c
+/**
+ *  File header comment 
+ */
+
+#ifndef H_FILENAME_H
+#define H_FILENAME_H
+
+/* ... */
+
+#endif /* H_FILENAME_H */
+```
+
+where `FILENAME` is a direct upper-case conversion of the file name, for
+instance `MyModule_a_long_file_name.h` becomes `MYMODULE_A_LONG_FILE_NAME`.
+
 ### Line Ending
 
 Files __shall__ follow the LF (line feed) end of line sequence, for
