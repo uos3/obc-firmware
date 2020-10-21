@@ -121,8 +121,9 @@ def main():
     # Copy binaries into the build dir
     copy_bins(cmake_dir, build_dir)
 
-    # Write build info file
-    write_build_info_file(build_dir, 'release' if args.release else 'debug', args.target, timestamp)
+    # If the build directory exists write build info file
+    if build_dir.exists():
+        write_build_info_file(build_dir, 'release' if args.release else 'debug', args.target, timestamp)
 
     ok('Build complete')
 

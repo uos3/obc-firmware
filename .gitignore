@@ -10,3 +10,4 @@ tivaware
 # Don't push build files
 !./build
 builds
+build
