@@ -29,7 +29,8 @@
 #include <stdbool.h>
 
 /* Internal includes */
-#include "system/data_pool/DataPool_struct.h"
+// #include "system/data_pool/DataPool_struct.h"
+#include "system/data_pool/DataPool_generated.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS

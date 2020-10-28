@@ -18,6 +18,7 @@
  * ------------------------------------------------------------------------- */
 
 /* Standard library includes */
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -37,7 +38,17 @@ int32_t main(void) {
     printf("DataPool_init() = %d\n", dp_init_ret);
 
     /* Get value of the init key */
-    printf("DP_U8_INITIALISED = %d\n", DP.INITIALISED);
+    DataPoolId dp_init_id = DataPool_get_id_from_symbol("DP_INITIALISED");
+    if (dp_init_id == 0) {
+        printf("Invalid DP SYMBOL\n");
+        exit(1);
+    }
+    bool init = false;
+    if (!DataPool_get_bool(dp_init_id, &init)) {
+        printf("Invalid DP ID\n");
+        exit(1);
+    }
+    printf("%s (%d): %d\n", "INITIALISED", dp_init_id, init);
 
     return 0;
 }
