@@ -32,5 +32,15 @@ else()
         ${STANDARD_LINK_LIBS}
         DataPool
     )
+
+    # EventManager demo
+    add_executable(demo_event_manager
+        ${STARTUP_SOURCE}
+        demo_event_manager.c
+    )
+    target_link_libraries(demo_event_manager
+        ${STANDARD_LINK_LIBS}
+        EventManager
+    )
 endif()
 

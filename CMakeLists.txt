@@ -67,5 +67,5 @@ include_directories(src/)
 # Add subdirectories, each managed by its own CMakeLists.txt.
 # The ordering here is important as subdirs which have dependencies on other
 # must be added AFTER those dependencies have been made.
-add_subdirectory(src/mission)
+add_subdirectory(src/system)
 add_subdirectory(src/demo)

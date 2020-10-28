@@ -98,8 +98,12 @@ def main():
     # Get the cmake dir
     cmake_dir = Path(prof_dir, 'cmake')
 
-    # Get the build dir
-    build_dir = Path(prof_dir, f'build_{timestamp}')
+    # Get the build dir, which is a timestamped folder in release mode or
+    # builds/debug/bin in debug mode
+    if args.release:
+        build_dir = Path(prof_dir, f'build_{timestamp}')
+    else:
+        build_dir = Path(prof_dir, 'bin')
 
     info('Creating build directories:')
     info(f'    {prof_dir}')
@@ -212,7 +216,8 @@ def copy_bins(source_dir, dest_dir):
     # If there are binaries to build copy them into a build_TIMESTAMP folder
     if len(bins) > 0:
         info('Binaries were built, copying to build directory:')
-        dest_dir.mkdir()
+        if not dest_dir.exists():
+            dest_dir.mkdir()
 
         for bin_path in bins:
             shutil.copy2(bin_path, dest_dir)

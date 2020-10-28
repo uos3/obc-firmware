@@ -22,7 +22,7 @@
 #include <string.h>
 
 /* Internal includes */
-#include "mission/data_pool/DataPool_public.h"
+#include "system/data_pool/DataPool_public.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS

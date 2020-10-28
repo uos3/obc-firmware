@@ -1,5 +1,5 @@
 /**
- * @ingroup mission
+ * @ingroup system
  * 
  * @file DataPool_public.h
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
@@ -29,7 +29,7 @@
 #include <stdbool.h>
 
 /* Internal includes */
-#include "mission/data_pool/DataPool_struct.h"
+#include "system/data_pool/DataPool_struct.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
