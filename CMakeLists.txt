@@ -8,6 +8,9 @@ project(obc_firmware)
 # Option to switch between TM4C build and Linux build
 option(UOS3_TARGET_TM4C "If set the build shall target the TM4C" OFF)
 
+# Option to enable test building or not
+option(UOS3_BUILD_TESTS "If set cmocka tests will be build" OFF)
+
 # If building for the TM4C
 if(${UOS3_TARGET_TM4C})
     message("")
@@ -69,3 +72,12 @@ include_directories(src/)
 # must be added AFTER those dependencies have been made.
 add_subdirectory(src/system)
 add_subdirectory(src/demo)
+
+# Build the tests if required
+if(${UOS3_BUILD_TESTS})
+    message("")
+    message("OBC Firmware building tests")
+    message("")
+
+    add_subdirectory(src/test)
+endif()

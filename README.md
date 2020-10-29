@@ -17,13 +17,19 @@ Developing this repository requires the following software:
 - CMake - used as the build system
 - lm4flash - used to flash the TM4C launchpad
 - Python 3 - used for build script
+- cmocka - framework used to test the software
 
-On ubuntu the following command should install these (except python3, be
-careful as you probably already have it installed):
+On ubuntu the following command should install most of these:
 
 ```shell
 sudo apt install gcc-arm-none-eabi cmake lm4flash
 ```
+
+For `python3`, be careful as you probably already have it installed.
+
+cmocka must be installed from source. Download version 1.1.5 from 
+[here](https://cmocka.org/files/1.1/) (cmocka-1.1.5.tar.xz for ubuntu), extract
+it and follow the instructions under `INSTALL.md`.
 
 You must also get a copy of the TivaWare drivers from [the
 website](https://www.ti.com/tool/SW-TM4C). Extract these one level up from this

@@ -225,4 +225,4 @@ bool EventManager_cleanup_events();
 
 #endif /* H_EVENTMANAGER_PUBLIC_H */
 
-/** @} */ /* End of data_pool */
+/** @} */ /* End of event_manager */

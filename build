@@ -119,8 +119,12 @@ def main():
     if args.clean:
         clean_dir(cmake_dir)
 
+        # If debug also clean the bin folder
+        if not args.release:
+            clean_dir(build_dir)
+
     # Run the build process
-    build(cmake_dir, args.release, args.target)
+    build(cmake_dir, args.release, args.target, args.tests)
 
     # Copy binaries into the build dir
     copy_bins(cmake_dir, build_dir)
@@ -153,6 +157,11 @@ def parse_args():
         help='Specify the target for the build, one of "linux" (default) or "tm4c"',
         default='linux'
     )
+    parser.add_argument(
+        '--tests',
+        help='Build the cmocka tests as well. Requires a cmocka installation.',
+        action='store_true'
+    )
 
     # Parse the arguments
     return parser.parse_args()
@@ -173,7 +182,7 @@ def clean_dir(directory):
 
     ok(f'{directory} cleaned')
 
-def build(directory, release, target):
+def build(directory, release, target, tests):
     '''
     Run the build process (CMake then make) in the given directory.
     '''
@@ -188,6 +197,7 @@ def build(directory, release, target):
         'cmake', 
         f'-DCMAKE_BUILD_TYPE={"Release" if release else "Debug"}',
         f'-DUOS3_TARGET_TM4C={"ON" if target == "tm4c" else "OFF"}',
+        f'-DUOS3_BUILD_TESTS={"ON" if tests else "OFF"}',
         '../../../'])
     
     # If cmake failed return an error

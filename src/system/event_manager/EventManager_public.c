@@ -91,11 +91,6 @@ bool EventManager_shrink_lists() {
 
             /* Update the size */
             EVENTMANAGER.size_of_lists = new_list_size;
-
-            printf(
-                "Event list size decreased when num_raised_events = %d\n", 
-                EVENTMANAGER.num_raised_events
-            );
         }
     }
 
@@ -195,9 +190,6 @@ bool EventManager_raise_event(Event event_in) {
 
         /* Update the size of the list */
         EVENTMANAGER.size_of_lists = new_list_size;
-
-        // TODO: REMOVE
-        printf("Event list size increased\n");
     }
 
     /* Raise a new event */
@@ -290,7 +282,7 @@ bool EventManager_cleanup_events() {
 
         /* If the event has been raised for more than two cycles add it to the
          * stale events array */
-        if (EVENTMANAGER.p_num_cycles_events_raised[i] > 2) {
+        if (EVENTMANAGER.p_num_cycles_events_raised[i] >= 2) {
             p_stale_events[stale_len] = EVENTMANAGER.p_raised_events[i];
             stale_len++;
         }
