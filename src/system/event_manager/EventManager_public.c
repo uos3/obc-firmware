@@ -19,6 +19,7 @@
 
 /* Standard library includes */
 #include <stdlib.h>
+#include <stdio.h> // TODO: remove once logging added
 #include <stdbool.h>
 #include <string.h>
 
@@ -46,6 +47,58 @@ EventManager EVENTMANAGER;
  * @return false An error occured.
  */
 bool EventManager_shrink_lists() {
+    /* Check if the lists need to be shrunk */
+    if (
+        EVENTMANAGER.num_raised_events * EVENTMANAGER_SHRINK_LIST_MULTIPLIER
+        <=
+        EVENTMANAGER.size_of_lists
+    ) {
+        /* Get new list size */
+        uint8_t new_list_size = 
+            EVENTMANAGER.size_of_lists / EVENTMANAGER_SHRUNK_LIST_SIZE_DIVISOR;
+
+        /* If the new size is less than the min size clamp to the min size.
+         * By preventing the lists getting too small the number of reallocs
+         * required is reduced. */
+        if (new_list_size < EVENTMANAGER_MIN_LIST_SIZE) {
+            new_list_size = EVENTMANAGER_MIN_LIST_SIZE;
+        }
+
+        /* If a reallocation is required.
+         * This is done since the new list size could be clamped, and want to
+         * avoid reallocating to the same size. */
+        if (new_list_size != EVENTMANAGER.size_of_lists) {
+            /* Realloc the lists */
+            EVENTMANAGER.p_raised_events = (Event *)realloc(
+                (void *)EVENTMANAGER.p_raised_events,
+                new_list_size * sizeof(Event)
+            );
+            EVENTMANAGER.p_num_cycles_events_raised = (uint8_t *)realloc(
+                (void *)EVENTMANAGER.p_num_cycles_events_raised,
+                new_list_size * sizeof(uint8_t)
+            );
+
+            /* Check reallocation succeeded */
+            if (
+                EVENTMANAGER.p_raised_events == NULL
+                ||
+                EVENTMANAGER.p_num_cycles_events_raised == NULL
+            ) {
+                // TODO: log error
+                printf("Error reallocating memory for EVENTMANAGER\n");
+                return false;
+            }
+
+            /* Update the size */
+            EVENTMANAGER.size_of_lists = new_list_size;
+
+            printf(
+                "Event list size decreased when num_raised_events = %d\n", 
+                EVENTMANAGER.num_raised_events
+            );
+        }
+    }
+
     return true;
 }
 
@@ -63,8 +116,8 @@ bool EventManager_init() {
     EVENTMANAGER.p_raised_events = (Event *)malloc(
         EVENTMANAGER_MIN_LIST_SIZE * sizeof(Event)
     );
-    EVENTMANAGER.p_num_cycles_events_raised = (Event *)malloc(
-        EVENTMANAGER_MIN_LIST_SIZE * sizeof(Event)
+    EVENTMANAGER.p_num_cycles_events_raised = (uint8_t *)malloc(
+        EVENTMANAGER_MIN_LIST_SIZE * sizeof(uint8_t)
     );
 
     /* Check allocation was successful */
@@ -120,13 +173,13 @@ bool EventManager_raise_event(Event event_in) {
         }
 
         /* Reallocate the lists */
-        EVENTMANAGER.p_raised_events = (void *)realloc(
-            EVENTMANAGER.p_raised_events, 
+        EVENTMANAGER.p_raised_events = (Event *)realloc(
+            (void *)EVENTMANAGER.p_raised_events, 
             new_list_size * sizeof(Event)
         );
-        EVENTMANAGER.p_num_cycles_events_raised = (void *)realloc(
-            EVENTMANAGER.p_num_cycles_events_raised, 
-            new_list_size * sizeof(Event)
+        EVENTMANAGER.p_num_cycles_events_raised = (uint8_t *)realloc(
+            (void *)EVENTMANAGER.p_num_cycles_events_raised, 
+            new_list_size * sizeof(uint8_t)
         );
 
         /* Check reallocation succeeded */
@@ -136,7 +189,7 @@ bool EventManager_raise_event(Event event_in) {
             EVENTMANAGER.p_num_cycles_events_raised == NULL
         ) {
             // TODO: log error
-            printf("Error allocating memory for EVENTMANAGER\n");
+            printf("Error reallocating memory for EVENTMANAGER\n");
             return false;
         }
 
@@ -158,5 +211,104 @@ bool EventManager_raise_event(Event event_in) {
     EVENTMANAGER.num_raised_events += 1;
 
     /* Return success */
+    return true;
+}
+
+bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
+    /* By default set the is_raised to false, to prevent attempting to remove a
+     * non-raised event later on. */
+    *p_is_raised_out = false;
+
+    /* First use is_raised to check if the event was raised. */
+    *p_is_raised_out = true;
+    // TODO: temp while this func is being written
+    // if (!EventManager_is_event_raised(event_in, p_is_raised_out)) {
+    //     /* An error occured, return false */
+    //     return false;
+    // }
+
+    /* If raised, remove the event from the event list */
+    if (*p_is_raised_out) {
+        /* First have to find the position of the event in the list.
+         * 
+         * ---- NUMERICAL PROTECTION ----
+         * The event must be in the list since it is raised, so there is no
+         * need to check for the event not being in the list.
+         */
+        uint8_t event_idx = 0;
+        for (uint8_t i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
+            if (EVENTMANAGER.p_raised_events[i] == event_in) {
+                event_idx = i;
+                break;
+            }
+        }
+
+        /* Iterate through the list and move all events after the polled event
+         * to the left. This has to be done for both the events themsevles and
+         * the counters for the number of cycles each event has been raised.
+         */
+        for (uint8_t i = event_idx; i < EVENTMANAGER.num_raised_events; ++i) {
+            /* Set the current value to the next value */
+            EVENTMANAGER.p_raised_events[i] 
+                = EVENTMANAGER.p_raised_events[i + 1];
+            EVENTMANAGER.p_num_cycles_events_raised[i]
+                = EVENTMANAGER.p_num_cycles_events_raised[i + 1];
+        }
+
+        /* Set the final elements to 0 */
+        EVENTMANAGER.p_raised_events[EVENTMANAGER.num_raised_events] = 0;
+        EVENTMANAGER.p_num_cycles_events_raised[EVENTMANAGER.num_raised_events]
+             = 0;
+
+        /* Reduce the number of raised events by 1 */
+        EVENTMANAGER.num_raised_events -= 1;
+
+        /* Reduce the size of the lists if required by the new size */
+        if (!EventManager_shrink_lists()) {
+            /* Error occured */
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool EventManager_cleanup_events() {
+
+    /* Allocate an array to store events that have gone stale (not been polled
+     * for 2 cycles ) and need to be removed */
+    Event *p_stale_events = (Event *)malloc(
+        EVENTMANAGER.num_raised_events * sizeof(Event)
+    );
+    uint8_t stale_len = 0;
+
+    /* Loop through events */
+    for (uint8_t i = 0; i < EVENTMANAGER.num_raised_events; i++) {
+        /* Increment the number of cycles for this event, as this function is
+         * to be called at the end of each cycle. */
+        EVENTMANAGER.p_num_cycles_events_raised[i] += 1;
+
+        /* If the event has been raised for more than two cycles add it to the
+         * stale events array */
+        if (EVENTMANAGER.p_num_cycles_events_raised[i] > 2) {
+            p_stale_events[stale_len] = EVENTMANAGER.p_raised_events[i];
+            stale_len++;
+        }
+    }
+
+    /* If there are stale events poll them */
+    if (stale_len > 0) {
+        bool is_raised = false;
+
+        for (uint8_t i = 0; i < stale_len; i++) {
+            if (!EventManager_poll_event(p_stale_events[i], &is_raised)) {
+                return false;
+            }
+        }
+    }
+
+    /* Free the stale events array */
+    free(p_stale_events);
+
     return true;
 }

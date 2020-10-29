@@ -59,6 +59,22 @@
  */
 #define EVENTMANAGER_MIN_LIST_SIZE (8)
 
+/**
+ * @brief The multipler used to determine if the lists need to be shrunk.
+ * 
+ * If (num raised events) * (this multiplier) <= (list size) then the lists 
+ * will be shrunk.
+ */
+#define EVENTMANAGER_SHRINK_LIST_MULTIPLIER (4)
+
+/**
+ * @brief The divisor to use to calculate the new size of the lists when
+ * shrinking.
+ * 
+ * The new shrunk list size will be (list size) / (this divisor).
+ */
+#define EVENTMANAGER_SHRUNK_LIST_SIZE_DIVISOR (2)
+
 /* -------------------------------------------------------------------------   
  * TYPES
  * ------------------------------------------------------------------------- */
