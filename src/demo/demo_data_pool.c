@@ -37,18 +37,74 @@ int32_t main(void) {
     int32_t dp_init_ret = DataPool_init();
     printf("DataPool_init() = %d\n", dp_init_ret);
 
-    /* Get value of the init key */
-    DataPoolId dp_init_id = DataPool_get_id_from_symbol("DP_INITIALISED");
-    if (dp_init_id == 0) {
-        printf("Invalid DP SYMBOL\n");
+    /* Get a member of the data pool */
+    bool dp_is_init = DP.INITIALISED;
+
+    /* Get the same member by the ID (which we know should be 1) */
+    bool *p_dp_is_init = NULL;
+    DataPool_DataType data_type;
+    size_t data_size;
+    if (!DataPool_get(
+        (DataPool_Id)0x0001,
+        (void **)&p_dp_is_init,
+        &data_type,
+        &data_size
+    )) {
         exit(1);
     }
-    bool init = false;
-    if (!DataPool_get_bool(dp_init_id, &init)) {
-        printf("Invalid DP ID\n");
+
+    /* Print these out */
+    printf("dp_is_init = %d\n", dp_is_init);
+    printf("p_dp_is_init = %p\n", p_dp_is_init);
+    printf("*p_dp_is_init = %d\n", *p_dp_is_init);
+    printf(
+        "data_type = %d (== DATAPOOL_DATATYPE_BOOL = %d)\n", 
+        data_type,
+        data_type == DATAPOOL_DATATYPE_BOOL
+    );
+    printf("data_size = %ld\n", data_size);
+
+    /* Try with something that should be zero */
+    bool *p_em_is_init = NULL;
+    if (!DataPool_get(
+        (DataPool_Id)0x0201,
+        (void **)&p_em_is_init,
+        &data_type,
+        &data_size
+    )) {
         exit(1);
     }
-    printf("%s (%d): %d\n", "INITIALISED", dp_init_id, init);
+    printf("em_is_init = %d\n", DP.EVENTMANAGER.INITIALISED);
+    printf("p_em_is_init = %p\n", p_em_is_init);
+    printf("*p_em_is_init = %d\n", *p_em_is_init);
+    printf(
+        "data_type = %d (== DATAPOOL_DATATYPE_BOOL = %d)\n", 
+        data_type,
+        data_type == DATAPOOL_DATATYPE_BOOL
+    );
+    printf("data_size = %ld\n", data_size);
+
+    /* Finally print out some DP names */
+    char *p_symbol;
+    if (!DataPool_get_symbol_str(
+        (DataPool_Id)0x0001,
+        &p_symbol
+    )) {
+        exit(1);
+    }
+    printf("%s\n", p_symbol);
+
+    free(p_symbol);
+
+    if (!DataPool_get_symbol_str(
+        (DataPool_Id)0x0201,
+        &p_symbol
+    )) {
+        exit(1);
+    }
+    printf("%s\n", p_symbol);
+
+    free(p_symbol);
 
     return 0;
 }

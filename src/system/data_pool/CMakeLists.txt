@@ -2,7 +2,7 @@
 
 # Generate the datapool files using the python tool
 execute_process(
-    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/dp_generation_test.py "${CMAKE_CURRENT_SOURCE_DIR}"
+    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/DataPool_generate.py
 )
 
 # Library declaration

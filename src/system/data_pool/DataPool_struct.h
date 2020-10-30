@@ -24,20 +24,36 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+/* Internal includes */
+#include "system/event_manager/EventManager_dp_struct.h"
+
 /* -------------------------------------------------------------------------
  * DATAPOOL STRUCT
  * ------------------------------------------------------------------------- */
 
 /**
  * @brief The DataPool structure definition.
+ * 
+ * ---- BLOCK ASSIGNMENTS ----
+ * DataPool: 0
+ * EventManager: 1
  */
 typedef struct _DataPool {
 
     /**
      * @brief Flag set to true if the DataPool has been initialised, false if
      * otherwise. 
+     * 
+     * @dp 1
      */
     bool INITIALISED;
+
+    /**
+     * @brief DataPool parameters for the event manager.
+     * 
+     * @dp_module EventManager
+     */
+    EventManager_Dp EVENTMANAGER;
 } DataPool;
 
 
