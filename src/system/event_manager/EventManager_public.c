@@ -39,13 +39,6 @@ EventManager EVENTMANAGER;
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-/**
- * @brief If the current number of raised events is less than 1/4 the allocated 
- * list size the lists shall be shrunk by 1/2.
- * 
- * @return true The lists were successfully shrunk.
- * @return false An error occured.
- */
 bool EventManager_shrink_lists() {
     /* Check if the lists need to be shrunk */
     if (
@@ -203,6 +196,51 @@ bool EventManager_raise_event(Event event_in) {
     EVENTMANAGER.num_raised_events += 1;
 
     /* Return success */
+    return true;
+}
+
+bool EventManager_is_event_raised(Event event_in, bool *p_is_raised_out) {
+    /* Set the default flag to false for checking if an event is raised */
+    *p_is_raised_out = false;
+    
+    /* Check to see if the event is in the array of currently raised
+     * events */
+    int i;
+    for (i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
+        if (EVENTMANAGER.p_raised_events[i] == event_in) {
+            /* If the event to check is in the array of currently raised
+             * events, set p_is_raised_out to true */
+            *p_is_raised_out = true;
+            break;
+        }
+    }
+
+    return true;
+}
+
+bool EventManager_clear_all_events() {
+    memset(
+        EVENTMANAGER.p_raised_events, 
+        0, 
+        EVENTMANAGER.num_raised_events * sizeof(Event)
+    );
+    
+    /* Sets the new size of the list to 0 */
+    size_t new_list_size = 0;
+
+    /* Reallocate the lists */
+    EVENTMANAGER.p_raised_events = (void *)realloc(
+        EVENTMANAGER.p_raised_events, 
+        new_list_size * sizeof(Event)
+    );
+    EVENTMANAGER.p_num_cycles_events_raised = (void *)realloc(
+        EVENTMANAGER.p_num_cycles_events_raised, 
+        new_list_size * sizeof(Event)
+    );
+
+    /* Update the size of the list */
+    EVENTMANAGER.size_of_lists = new_list_size;
+
     return true;
 }
 
