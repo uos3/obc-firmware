@@ -32,13 +32,15 @@ DataPool parameters marked with `@dp_module ModuleName` indicate that the
 member stores the DP parameters for the given module. The module name given
 must match the one given in the block assignments listing in the documentation
 string for the DataPool struct itself.
+
+TODO: This script has limited error reporting and logging, this should be 
+      expanded.
 '''
 
 import os
 import re
 import math
 from datetime import datetime
-from pprint import pprint
 from pathlib import Path
 
 def main():
