@@ -38,6 +38,8 @@ jobs:
       # Use tmate to login remotely
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
+        with:
+          sudo: false
           
       # Run build script
       - name: Build (linux, debug, test)
