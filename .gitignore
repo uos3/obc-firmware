@@ -11,6 +11,3 @@ tivaware
 !./build
 builds
 build
-
-# Ignore session keys
-**/*.pkl
