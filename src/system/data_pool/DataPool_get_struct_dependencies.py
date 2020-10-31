@@ -31,6 +31,7 @@ def main():
             match.group(1) for match in include_regex.finditer(dp_struct_f.read())
         ]
 
+    # Print out the dependencies as absolute paths so CMake doesn't get confused.
     for include in includes:
         print(src_dir.joinpath(include))
 
