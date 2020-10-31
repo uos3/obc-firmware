@@ -32,14 +32,12 @@ DataPool parameters marked with `@dp_module ModuleName` indicate that the
 member stores the DP parameters for the given module. The module name given
 must match the one given in the block assignments listing in the documentation
 string for the DataPool struct itself.
-
-TODO: This script has limited error reporting and logging, this should be 
-      expanded.
 '''
 
 import os
 import re
 import math
+from warnings import warn
 from datetime import datetime
 from pathlib import Path
 
@@ -53,6 +51,10 @@ def main():
         root_dir = root_dir.joinpath(part)
         if part == 'obc-firmware':
             break
+
+    # Check root dir was found
+    if root_dir == Path('/'):
+        raise RuntimeError('Could not find the obc-firmware directory')
 
     # Change into src
     src_dir = root_dir.joinpath('src')
@@ -89,6 +91,9 @@ def parse_dp_struct(dp_struct_text):
         match.group(1) for match in include_regex.finditer(dp_struct_text)
     ]
 
+    if len(includes) == 0:
+        warn(RuntimeWarning('No include headers were found'))
+
     print('Will search the following included headers:')
     for include in includes:
         print(f'    {include}')
@@ -97,7 +102,12 @@ def parse_dp_struct(dp_struct_text):
     included_structs = {}
     for include in includes:
         with open(include) as included_f:
-            for name, text in get_structs(included_f.read()).items():
+            structs = get_structs(included_f.read())
+
+            if len(structs) == 0:
+                warn(RuntimeWarning(f'No structs found in {include}'))
+
+            for name, text in structs.items():
                 included_structs[name] = text
 
     # Run the main regex over the file, this matches:
@@ -113,13 +123,21 @@ def parse_dp_struct(dp_struct_text):
     )
     matches = [match for match in regex.finditer(dp_struct_text)]
 
+    if len(matches) == 0:
+        raise RuntimeError('Could not match any parameters in DataPool_struct.h')
+
     # Get the match associated with the datapool, which has a symbol `struct
     # _DataPool`
-    (dp_comment, dp_comment_idx) = [
+    datapool_struct_match =  [
         (match.group(1), idx)
         for (idx, match) in enumerate(matches)
         if match.group(3) == 'struct _DataPool'
-    ][0]
+    ]
+
+    if len(datapool_struct_match) == 0:
+        raise RuntimeError('Could not find `struct _DataPool` definition in DataPool_struct.h')
+    
+    (dp_comment, dp_comment_idx) = datapool_struct_match[0]
 
     # Pop the DP comment off the matches list
     matches.pop(dp_comment_idx)
@@ -168,6 +186,10 @@ def parse_block_assignments(text):
 
     # Find all matches
     matches = [match for match in regex.finditer(text)]
+
+    if len(matches) == 0:
+        raise RuntimeError(
+            'Could not find block assignments in DataPool documentation comment')
 
     # Parse into the dict
     for match in matches:
@@ -230,6 +252,8 @@ def parse_dp_matches(matches, included_structs, block_assignments):
                 mod_struct,
                 match.group(3)
             ))
+
+            continue
         
         # If not a module run the brief and dp regexes too
         brief = brief_regex.search(match.group(1))
@@ -246,15 +270,30 @@ def parse_dp_matches(matches, included_structs, block_assignments):
                 brief_text = re.sub(r'\n', '', brief_text)
                 # Trim the text of leading/trailing whitespace
                 brief_text = brief_text.strip()
+            else:
+                brief_text = ''
+                warn(RuntimeWarning(f'DP.{match.group(3)} is missing a brief'))
+
+            block_index = int(dp.group(1))
+
+            # If the index is greater than 512 raise error
+            if block_index > 512:
+                raise ValueError(
+                    f'Root DataPool struct is assigned 1 block (512 parameters) but parameter DP.{match.group(3)} has an index of {block_index}.'
+                )
 
             # Add the parameter to the data pool, noting that this is in the
             # DataPool module itself so the block ID is 0.
             datapool[f'DP.{match.group(3)}'] = {
                 'block_id': 0,
-                'block_index': int(dp.group(1)),
+                'block_index': block_index,
                 'data_type': match.group(2),
                 'brief': brief_text
             }
+        else:
+            warn(RuntimeWarning(
+                f'DP.{match.group(3)} is missing either a @dp_module or @dp decorator.'
+            ))
 
     return datapool
 
@@ -292,6 +331,11 @@ def parse_module_struct(block_ids, text, symbol):
                 brief_text = re.sub(r'\n', '', brief_text)
                 # Trim the text of leading/trailing whitespace
                 brief_text = brief_text.strip()
+            else:
+                brief_text = ''
+                warn(RuntimeWarning(
+                    f'DP.{symbol}.{match.group(3)} is missing a brief'
+                ))
 
             # DP index
             dp_idx = int(dp.group(1))
@@ -305,7 +349,7 @@ def parse_module_struct(block_ids, text, symbol):
             # then raise an error
             if block_id_idx > len(block_ids):
                 raise ValueError(
-                    f'{symbol} is assigned {len(block_ids)} blocks but has more than {len(block_ids)*512} members'
+                    f'DP.{symbol} is assigned {len(block_ids)} blocks but has more than {len(block_ids)*512} members'
                 )
 
             # Add the parameter to the data pool, noting that this is in the
@@ -316,6 +360,10 @@ def parse_module_struct(block_ids, text, symbol):
                 'data_type': match.group(2),
                 'brief': brief_text
             }
+        else:
+            warn(RuntimeWarning(
+                f'DP.{symbol}.{match.group(3)} is missing either a @dp_module or @dp decorator.'
+            ))
 
     return mod_dp
 
@@ -337,7 +385,7 @@ def get_structs(text):
         flags=re.MULTILINE|re.S
     )
     matches = [match for match in regex.finditer(text)]
-
+    
     # Gather the structs in a dict, where key is the struct name and value is
     # the struct text.
     for match in matches:
