@@ -45,6 +45,7 @@ jobs:
       - name: Build (linux, debug, test)
         run: |
           cd /__w/obc-firmware/obc-firmware/obc-firmware
+          ls -la
           chmod +x ./build
           ./build -t linux --test
 
