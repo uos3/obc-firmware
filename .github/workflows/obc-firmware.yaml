@@ -1,0 +1,45 @@
+name: OBC-Firmware
+
+# Run the action on pushes/pull requests to GDP202021
+on: 
+  push:
+    branches:
+      - GDP202021
+  
+  pull_request:
+    branches:
+      - GDP202021
+
+jobs:
+  build:
+    name: Build and Test All Modules
+    container: duncanrhamill/obc-fw-ubuntu
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: obc-firmware
+
+      # # Install cmocka and xz
+      # - name: Install requirements
+      #   run: |
+      #     apt-get update
+      #     apt install -y xz-utils cmake git
+      #     wget https://cmocka.org/files/1.1/cmocka-1.1.5.tar.xz
+      #     ls -la
+      #     tar -xf "cmocka-1.1.5.tar.xz"
+      #     cd cmocka-1.1.5
+      #     mkdir build && cd build
+      #     cmake ../ -DCMAKE_INSTALL_PREFIX=/usr
+      #     make install
+      #     cd /github/workspace/obc-firmware
+          
+      # Run build script
+      - name: Build (linux, debug, test)
+        run: |
+          chmod +x ./build
+          ./build -t linux --test
+
+      # Run all modules test
+      - name: Run all modules test
+        run: ./builds/debug/bin/test_all_modules.bin
