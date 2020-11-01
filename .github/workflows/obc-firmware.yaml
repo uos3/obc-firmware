@@ -18,8 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        # with:
-        #   path: obc-firmware
+        with:
+          path: obc-firmware
 
       # # Install cmocka and xz
       # - name: Install requirements
@@ -44,8 +44,7 @@ jobs:
       # Run build script
       - name: Build (linux, debug, test)
         run: |
-          pwd
-          ls -la
+          cd obc-firmware
           chmod +x ./build
           ./build -t linux --test
 

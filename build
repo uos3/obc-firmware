@@ -81,12 +81,13 @@ def main():
 
     info(f'Build timestamp: {timestamp}')
 
-    # Get the root directory
+    # Get the root directory (the last directory in the path called obc-firmware)
     root_dir = Path('/')
+    current_path = root_dir
     for part in Path(os.getcwd()).parts:
-        root_dir = root_dir.joinpath(part)
+        current_path = current_path.joinpath(part)
         if part == 'obc-firmware':
-            break
+            root_dir = current_path
 
     # Get the profile directory
     prof_dir = Path(root_dir, 'builds')

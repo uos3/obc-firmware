@@ -9,10 +9,11 @@ from pathlib import Path
 def main():
     # Get the root dir of OBC-Firmware
     root_dir = Path('/')
+    current_path = root_dir
     for part in Path(os.getcwd()).parts:
-        root_dir = root_dir.joinpath(part)
+        current_path = current_path.joinpath(part)
         if part == 'obc-firmware':
-            break
+            root_dir = current_path
 
     # Check root dir was found
     if root_dir == Path('/'):
