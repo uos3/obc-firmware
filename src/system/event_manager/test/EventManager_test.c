@@ -81,6 +81,25 @@ static void EventManager_test_raise_event(void **state) {
 }
 
 /**
+ * @brief Test that _is_event_raised works correctly.
+ * 
+ * @param state 
+ */
+static void EventManager_test_is_event_raised(void **state) {
+    (void) state;
+
+    /* Check that no event is raised at the start */
+    bool is_raised = true;
+    assert_true(EventManager_is_event_raised((Event)1, &is_raised));
+    assert_false(is_raised);
+
+    /* Raise an event and check it is raised */
+    assert_true(EventManager_raise_event((Event)1));
+    assert_true(EventManager_is_event_raised((Event)1, &is_raised));
+    assert_true(is_raised);
+}
+
+/**
  * @brief Test that _poll_event works correctly.
  * 
  * @param state cmocka state
@@ -185,6 +204,11 @@ const struct CMUnitTest eventmanager_tests[] = {
     ),
     cmocka_unit_test_setup_teardown(
         EventManager_test_raise_event,
+        EventManager_test_setup,
+        EventManager_test_teardown
+    ),
+    cmocka_unit_test_setup_teardown(
+        EventManager_test_is_event_raised,
         EventManager_test_setup,
         EventManager_test_teardown
     ),

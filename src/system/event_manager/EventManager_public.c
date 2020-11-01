@@ -203,8 +203,7 @@ bool EventManager_is_event_raised(Event event_in, bool *p_is_raised_out) {
     /* Set the default flag to false for checking if an event is raised */
     *p_is_raised_out = false;
     
-    /* Check to see if the event is in the array of currently raised
-     * events */
+    /* Check to see if the event is in the array of currently raised events */
     int i;
     for (i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
         if (EVENTMANAGER.p_raised_events[i] == event_in) {
@@ -245,17 +244,11 @@ bool EventManager_clear_all_events() {
 }
 
 bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
-    /* By default set the is_raised to false, to prevent attempting to remove a
-     * non-raised event later on. */
-    *p_is_raised_out = false;
-
     /* First use is_raised to check if the event was raised. */
-    *p_is_raised_out = true;
-    // TODO: temp while this func is being written
-    // if (!EventManager_is_event_raised(event_in, p_is_raised_out)) {
-    //     /* An error occured, return false */
-    //     return false;
-    // }
+    if (!EventManager_is_event_raised(event_in, p_is_raised_out)) {
+        /* An error occured, return false */
+        return false;
+    }
 
     /* If raised, remove the event from the event list */
     if (*p_is_raised_out) {
