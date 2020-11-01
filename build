@@ -193,21 +193,29 @@ def build(directory, release, target, tests):
     info('Running CMake')
 
     # Run cmake
-    cmake = subprocess.run([
+    cmake = subprocess.Popen([
         'cmake', 
         f'-DCMAKE_BUILD_TYPE={"Release" if release else "Debug"}',
         f'-DUOS3_TARGET_TM4C={"ON" if target == "tm4c" else "OFF"}',
         f'-DUOS3_BUILD_TESTS={"ON" if tests else "OFF"}',
-        '../../../'])
+        '../../../'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+
+    # Get the output
+    out, err = cmake.communicate()
+    out = out.decode('UTF-8')
+    err = err.decode('UTF-8')
     
     # If cmake failed return an error
     if cmake.returncode != 0:
-        error('CMake execution failed')
+        error(f'CMake execution failed:\n\n{out}\n\n{err}')
     else:
-        ok('CMake executed successfully, running make')
+        ok(f'CMake executed successfully:\n\n{out}\n\n{err}')
+        info('Running make')
 
     # Run make
-    make = subprocess.run(['make'])
+    make = subprocess.run(['make'], shell=True)
 
     # Check make status
     if make.returncode != 0:
