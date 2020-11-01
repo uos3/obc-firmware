@@ -48,6 +48,10 @@ elseif(UNIX)
     message("OBC Firmware building for: UNIX")
     message("")
 
+    # Set the C/CXX compilers
+    set(CMAKE_C_COMPILER gcc)
+    set(CMAKE_CXX_COMPILER g++)
+
     # Set tivaware libs, startup source, and standard link libs as empty, this 
     # will result in them not being linked.
     set(TIVAWARE_PATH "")
