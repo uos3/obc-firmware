@@ -20,26 +20,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           path: obc-firmware
-
-      # # Install cmocka and xz
-      # - name: Install requirements
-      #   run: |
-      #     apt-get update
-      #     apt install -y xz-utils cmake git
-      #     wget https://cmocka.org/files/1.1/cmocka-1.1.5.tar.xz
-      #     ls -la
-      #     tar -xf "cmocka-1.1.5.tar.xz"
-      #     cd cmocka-1.1.5
-      #     mkdir build && cd build
-      #     cmake ../ -DCMAKE_INSTALL_PREFIX=/usr
-      #     make install
-      #     cd /github/workspace/obc-firmware
-
-      # Use tmate to login remotely
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
-      #   with:
-      #     sudo: false
           
       # Run build script
       - name: Build (linux, debug, test)
@@ -50,4 +30,6 @@ jobs:
 
       # Run all modules test
       - name: Run all modules test
-        run: ./builds/debug/bin/test_all_modules.bin
+        run: |
+          cd obc-firmware
+          ./builds/debug/bin/test_all_modules.bin
