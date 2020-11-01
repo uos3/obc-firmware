@@ -44,6 +44,8 @@ jobs:
       # Run build script
       - name: Build (linux, debug, test)
         run: |
+          pwd
+          ls -la
           chmod +x ./build
           ./build -t linux --test
 
