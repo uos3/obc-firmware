@@ -19,11 +19,11 @@
 
 /* Standard library includes */
 #include <stdlib.h>
-#include <stdio.h> // TODO: remove once logging added
 #include <stdbool.h>
 #include <string.h>
 
 /* Internal includes */
+#include "util/debug/Debug_public.h"
 #include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -77,8 +77,7 @@ bool EventManager_shrink_lists() {
                 ||
                 EVENTMANAGER.p_num_cycles_events_raised == NULL
             ) {
-                // TODO: log error
-                printf("Error reallocating memory for EVENTMANAGER\n");
+                DEBUG_ERR("Error reallocating memory for EVENTMANAGER");
                 return false;
             }
 
@@ -114,8 +113,7 @@ bool EventManager_init() {
         ||
         EVENTMANAGER.p_num_cycles_events_raised == NULL
     ) {
-        // TODO: log error
-        printf("Error allocating memory for EVENTMANAGER\n");
+        DEBUG_ERR("Error allocating memory for EVENTMANAGER");
         return false;
     }
 
@@ -142,8 +140,7 @@ void EventManager_destroy() {
 bool EventManager_raise_event(Event event_in) {
     /* Check that init has been called */
     if (EVENTMANAGER.initialised == false) {
-        // TODO: log error
-        printf("Attempted to raise event when EVENTMANAGER not initialised\n");
+        DEBUG_ERR("Attempted to raise event when EVENTMANAGER not initialised");
         return false;
     }
 
@@ -155,8 +152,7 @@ bool EventManager_raise_event(Event event_in) {
 
         /* If the new size is greater than the max size raise an error */
         if (new_list_size > EVENTMANAGER_MAX_LIST_SIZE) {
-            // TODO: log error
-            printf("Maximum number of events reached\n");
+            DEBUG_ERR("Maximum number of events reached");
             return false;
         }
 
@@ -176,8 +172,7 @@ bool EventManager_raise_event(Event event_in) {
             ||
             EVENTMANAGER.p_num_cycles_events_raised == NULL
         ) {
-            // TODO: log error
-            printf("Error reallocating memory for EVENTMANAGER\n");
+            DEBUG_ERR("Error reallocating memory for EVENTMANAGER");
             return false;
         }
 

@@ -23,6 +23,7 @@
 #include <stdio.h>
 
 /* Internal includes */
+#include "util/debug/Debug_public.h"
 #include "system/data_pool/DataPool_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -31,11 +32,14 @@
 
 int32_t main(void) {
 
-    printf("Initialising DataPool\n");
+    /* Init the debug system */
+    Debug_init();
+
+    DEBUG_INF("Initialising DataPool");
 
     /* Initialise the datapool */
     int32_t dp_init_ret = DataPool_init();
-    printf("DataPool_init() = %d\n", dp_init_ret);
+    DEBUG_INF("DataPool_init() = %d\n", dp_init_ret);
 
     /* Get a member of the data pool */
     bool dp_is_init = DP.INITIALISED;
@@ -54,15 +58,15 @@ int32_t main(void) {
     }
 
     /* Print these out */
-    printf("dp_is_init = %d\n", dp_is_init);
-    printf("p_dp_is_init = %p\n", p_dp_is_init);
-    printf("*p_dp_is_init = %d\n", *p_dp_is_init);
-    printf(
-        "data_type = %d (== DATAPOOL_DATATYPE_BOOL = %d)\n", 
+    DEBUG_INF("dp_is_init = %d", dp_is_init);
+    DEBUG_INF("p_dp_is_init = %p", (void *)p_dp_is_init);
+    DEBUG_INF("*p_dp_is_init = %d", *p_dp_is_init);
+    DEBUG_INF(
+        "data_type = %d (== DATAPOOL_DATATYPE_BOOL = %d)", 
         data_type,
         data_type == DATAPOOL_DATATYPE_BOOL
     );
-    printf("data_size = %ld\n", data_size);
+    DEBUG_INF("data_size = %ld\n", data_size);
 
     /* Try with something that should be zero */
     bool *p_em_is_init = NULL;
@@ -74,17 +78,17 @@ int32_t main(void) {
     )) {
         exit(1);
     }
-    printf("em_is_init = %d\n", DP.EVENTMANAGER.INITIALISED);
-    printf("p_em_is_init = %p\n", p_em_is_init);
-    printf("*p_em_is_init = %d\n", *p_em_is_init);
-    printf(
-        "data_type = %d (== DATAPOOL_DATATYPE_BOOL = %d)\n", 
+    DEBUG_INF("em_is_init = %d", DP.EVENTMANAGER.INITIALISED);
+    DEBUG_INF("p_em_is_init = %p", (void *)p_em_is_init);
+    DEBUG_INF("*p_em_is_init = %d", *p_em_is_init);
+    DEBUG_INF(
+        "data_type = %d (== DATAPOOL_DATATYPE_BOOL = %d)", 
         data_type,
         data_type == DATAPOOL_DATATYPE_BOOL
     );
-    printf("data_size = %ld\n", data_size);
+    DEBUG_INF("data_size = %ld\n", data_size);
 
-    /* Finally print out some DP names */
+    /* Print out some DP names */
     char *p_symbol;
     if (!DataPool_get_symbol_str(
         (DataPool_Id)0x0001,
@@ -92,7 +96,7 @@ int32_t main(void) {
     )) {
         exit(1);
     }
-    printf("%s\n", p_symbol);
+    DEBUG_INF("%s", p_symbol);
 
     free(p_symbol);
 
@@ -102,9 +106,13 @@ int32_t main(void) {
     )) {
         exit(1);
     }
-    printf("%s\n", p_symbol);
+    DEBUG_INF("%s", p_symbol);
 
     free(p_symbol);
+
+    /* Access an invalid DP id */
+    DEBUG_INF("Trying invalid DP ID");
+    DataPool_get((DataPool_Id)0x0000, NULL, NULL, NULL);
 
     return 0;
 }

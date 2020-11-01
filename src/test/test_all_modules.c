@@ -21,6 +21,7 @@
 #include <cmocka.h>
 
 /* Internal includes */
+#include "util/debug/test/Debug_test.c"
 #include "system/event_manager/test/EventManager_test.c"
 
 /* -------------------------------------------------------------------------   
@@ -29,7 +30,14 @@
 
 int main(void) {
 
-    int ret;
+    int ret = 0;
+
+    /* Debug tests */
+    ret |= cmocka_run_group_tests_name(
+        "Debug", 
+        debug_tests, 
+        NULL, NULL
+    );
 
     /* EventManager tests */
     ret |= cmocka_run_group_tests_name(

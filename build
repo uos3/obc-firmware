@@ -125,7 +125,7 @@ def main():
             clean_dir(build_dir)
 
     # Run the build process
-    build(cmake_dir, args.release, args.target, args.tests)
+    build(cmake_dir, root_dir, args.release, args.target, args.tests)
 
     # Copy binaries into the build dir
     copy_bins(cmake_dir, build_dir)
@@ -183,7 +183,7 @@ def clean_dir(directory):
 
     ok(f'{directory} cleaned')
 
-def build(directory, release, target, tests):
+def build(directory, root_dir, release, target, tests):
     '''
     Run the build process (CMake then make) in the given directory.
     '''
@@ -213,6 +213,13 @@ def build(directory, release, target, tests):
         error(f'CMake execution failed:\n\n{out}\n\n{err}')
     else:
         ok(f'CMake executed successfully:\n\n{out}\n\n{err}')
+
+    # Copy compile_commands.json to the build dir so that VSCode can use the
+    # same defines as used in the most recent build
+    shutil.copy2(
+        directory.joinpath('compile_commands.json'),
+        root_dir.joinpath('builds')
+    )
 
     info('Running make')
 

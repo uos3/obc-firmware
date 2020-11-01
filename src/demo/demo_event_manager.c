@@ -23,6 +23,7 @@
 #include <stdio.h>
 
 /* Internal includes */
+#include "util/debug/Debug_public.h"
 #include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -31,7 +32,10 @@
 
 int main() {
 
-    printf("EventManager demo\n");
+    /* Init debug system */
+    Debug_init();
+
+    DEBUG_INF("EventManager demo");
 
     /* Init event manager */
     if (!EventManager_init()) {
@@ -46,18 +50,19 @@ int main() {
     }
 
     /* Print events */
-    printf("Events: [");
+    DEBUG_INF("Events:");
+    printf("   [");
     for (int i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
         printf("%d ", EVENTMANAGER.p_raised_events[i]);
     }
     printf("]\n");
 
     /* Print size of lists */
-    printf("List size: %ld\n", EVENTMANAGER.size_of_lists);
+    DEBUG_INF("List size: %ld", EVENTMANAGER.size_of_lists);
 
 
     /* Poll many off the list to verify that the lists will shrink */
-    printf("Polling 30 events\n");
+    DEBUG_INF("Polling 30 events");
     bool is_raised = false;
     for (int event = 1; event < 30; event++) {
         if (!EventManager_poll_event(event, &is_raised)) {
@@ -66,14 +71,15 @@ int main() {
     }
 
     /* Print events */
-    printf("Events: [");
+    DEBUG_INF("Events:");
+    printf("   [");
     for (int i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
         printf("%d ", EVENTMANAGER.p_raised_events[i]);
     }
     printf("]\n");
 
     /* Print size of lists */
-    printf("List size: %ld\n", EVENTMANAGER.size_of_lists);
+    DEBUG_INF("List size: %ld\n", EVENTMANAGER.size_of_lists);
 
     if (!EventManager_raise_event(256)) {
         exit(1);   
@@ -81,20 +87,21 @@ int main() {
 
     /* Clean up events three times to check that the stale events are polled */
     for (int i = 0; i < 3; i++) {
-        printf("Cleaning events\n");
+        DEBUG_INF("Cleaning events");
         if (!EventManager_cleanup_events()) {
             exit(1);
         }
 
         /* Print events */
-        printf("Events: [");
+        DEBUG_INF("Events:");
+        printf("   [");
         for (int i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
             printf("%d ", EVENTMANAGER.p_raised_events[i]);
         }
         printf("]\n");
 
         /* Print size of lists */
-        printf("List size: %ld\n", EVENTMANAGER.size_of_lists);
+        DEBUG_INF("List size: %ld", EVENTMANAGER.size_of_lists);
     }
 
     /* Destroy event manager */

@@ -434,6 +434,7 @@ f'''
 #include <stddef.h>
 
 /* Internal includes */
+#include "util/debug/Debug_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/data_pool/DataPool_generated.h"
 
@@ -457,6 +458,7 @@ bool DataPool_get(
     ])}
     
     default:
+        DEBUG_ERR("Invalid DP ID: %d", id_in);
         return false;
     }}
 }}
@@ -475,6 +477,7 @@ bool DataPool_get_symbol_str(
     ])}
 
     default:
+        DEBUG_ERR("Invalid DP ID: %d", id_in);
         return false;
     }}
 }}

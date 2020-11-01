@@ -11,11 +11,25 @@ option(UOS3_TARGET_TM4C "If set the build shall target the TM4C" OFF)
 # Option to enable test building or not
 option(UOS3_BUILD_TESTS "If set cmocka tests will be build" OFF)
 
+# Export compile commands so VSCode can use the right definitions
+set(CMAKE_EXPORT_COMPILE_COMMANDS "1")
+
+# Use the C99 standard
+set(CMAKE_C_STANDARD 99)
+
+# Set all warnings on
+
+# Use pedantic
+set(CMAKE_C_FLAGS "-Wall -pedantic")
+
 # If building for the TM4C
 if(${UOS3_TARGET_TM4C})
     message("")
     message("OBC Firmware building for: TM4C")
     message("")
+
+    # Set the tm4c define
+    add_definitions(-DTARGET_TM4C)
 
     # CMake file for the TM4C123G, used to specify the custom link script
     include(${PROJECT_SOURCE_DIR}/src/link/tm4c123g.cmake)
@@ -33,6 +47,7 @@ if(${UOS3_TARGET_TM4C})
     # Set the standard link set, which is Startup + Tivaware
     set(STANDARD_LINK_LIBS
         ${TIVAWARE_LIBS}
+        Debug
     )
 
     # Set the startup source file location. This must be inclued in the source
@@ -48,6 +63,9 @@ elseif(UNIX)
     message("OBC Firmware building for: UNIX")
     message("")
 
+    # Set the unix define
+    add_definitions(-DTARGET_UNIX)
+
     # Set the C/CXX compilers
     set(CMAKE_C_COMPILER gcc)
     set(CMAKE_CXX_COMPILER g++)
@@ -56,7 +74,9 @@ elseif(UNIX)
     # will result in them not being linked.
     set(TIVAWARE_PATH "")
     set(TIVAWARE_LIBS )
-    set(STANDARD_LINK_LIBS )
+    set(STANDARD_LINK_LIBS 
+        Debug
+    )
     set(STARTUP_SOURCE )
 
 # If anything else throw an error
@@ -71,9 +91,13 @@ set(CMAKE_EXECUTABLE_SUFFIX ".bin")
 # Set src as an include directory
 include_directories(src/)
 
+# Set debug mode define if needed
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG_MODE")
+
 # Add subdirectories, each managed by its own CMakeLists.txt.
 # The ordering here is important as subdirs which have dependencies on other
 # must be added AFTER those dependencies have been made.
+add_subdirectory(src/util)
 add_subdirectory(src/system)
 add_subdirectory(src/demo)
 
