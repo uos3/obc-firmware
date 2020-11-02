@@ -84,3 +84,24 @@ to see help information.
 
 The build files will be output into a `builds` directory, subsequently divided
 into `release` and `debug` mode builds. 
+
+## Testing
+
+Most (TODO: all) modules provide unit tests using the `cmocka` unit test
+framework. These tests are collected into a binary `test_all_modules.bin`,
+which is run as a part of the GitHub actions CI system, and should be run by
+the developer before any commit to ensure no regression takes place. 
+
+To build these tests use `./build --tests`. Currently this test has not been
+proven to work on the TM4C, though this will be done soon.
+
+In addition `valgrind` should be used to verify that there are no memory leaks
+and that the total heap size is kept small. 
+
+```shell
+valgrind --tool=memcheck --leak-check=full <PATH_TO_BIN>
+valgrind --tool=massif --stacks=yes <PATH_TO_BIN>
+```
+
+You can use [massif-visualizer](https://stackoverflow.com/questions/1623771/valgrind-massif-tool-output-graphical-interface)
+to see the memory graphs in a nice format.

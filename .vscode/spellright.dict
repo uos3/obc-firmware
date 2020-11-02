@@ -34,3 +34,4 @@ GLOBALS
 DP
 uint
 cmocka
+CI

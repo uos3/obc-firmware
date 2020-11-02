@@ -12,3 +12,6 @@ tivaware
 builds
 # TODO: Possibly remove this for hosting built docs?
 docs/**/build
+
+# Ignore massif files
+**/massif.out.*
