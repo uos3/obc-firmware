@@ -38,7 +38,7 @@
 #include <stdbool.h>
 
 /* Internal includes */
-
+#include "system/event_manager/EventManager_events.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -90,6 +90,45 @@
 typedef uint16_t Event;
 
 /* -------------------------------------------------------------------------   
+ * ENUMS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Possible errors that can occur in the EventManager.
+ */
+typedef enum _EventManager_ErrorCode {
+    /**
+     * @brief No error.
+     */
+    EVENTMANAGER_ERROR_NONE = 0,
+
+    /**
+     * @brief The maximum number of events has been reached and no more events
+     * will be raised until an event is polled.
+     */
+    EVENTMANAGER_ERROR_MAX_EVENTS_REACHED,
+
+    /**
+     * @brief There was insufficient memory to increase the size of the event 
+     * lists.
+     */
+    EVENTMANAGER_ERROR_OUT_OF_MEMORY,
+
+    /**
+     * @brief A call to realloc() failed while trying to shrink the lists. This
+     * indicates memory corruption. 
+     */
+    EVENTMANAGER_ERROR_SHRINK_REALLOC_FAILED,
+
+    /**
+     * @brief An EventManager function was called when the EventManager wasn't
+     * initialised. Make sure to call EventManager_init() before using the
+     * EventManager.
+     */
+    EVENTMANAGER_ERROR_NOT_INITIALISED
+} EventManager_ErrorCode;
+
+/* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */
 
@@ -113,11 +152,6 @@ typedef uint16_t Event;
  */
 typedef struct _EventManager {
     /**
-     * @brief Flag which is true when the EventManager has been initialised.
-     */
-    bool initialised;
-
-    /**
      * @brief A pointer to the dynamically allocated list of raised events.
      */
     Event *p_raised_events;
@@ -127,16 +161,6 @@ typedef struct _EventManager {
      * cycles that an event has been raised for. Used in event clearup.
      */
     uint8_t *p_num_cycles_events_raised;
-
-    /**
-     * @brief The number of currently raised events.
-     */
-    uint8_t num_raised_events;
-
-    /**
-     * @brief The current size of the dynamically allocated lists.
-     */
-    size_t size_of_lists;
 } EventManager;
 
 // TODO: REMOVE
@@ -212,15 +236,6 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out);
  * @return false An error occured.
  */
 bool EventManager_clear_all_events();
-
-/**
- * @brief Get the number of currently raised events.
- * 
- * @param p_num_raised_events_out Pointer to the number of raised events.
- * @return true The function executed successfully.
- * @return false The function failed to execute.
- */
-bool EventManager_get_num_raised_events(uint8_t *p_num_raised_events_out);
 
 /**
  * @brief Clean up events that have been raised for two or more cycles.

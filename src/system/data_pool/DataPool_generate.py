@@ -531,7 +531,7 @@ typedef uint16_t DataPool_Id;
  * @brief Types of data that are contained in the DataPool.
  */
 typedef enum _DataPool_DataType {{
-    {newline.join(data_type_map.values())}
+    {f',{newline}    '.join(data_type_map.values())}
 }} DataPool_DataType;
 
 /* -------------------------------------------------------------------------   

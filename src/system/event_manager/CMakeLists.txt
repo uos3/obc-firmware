@@ -6,4 +6,5 @@ add_library(EventManager
 )
 target_link_libraries(EventManager
     ${STANDARD_LINK_LIBS}
+    DataPool
 )

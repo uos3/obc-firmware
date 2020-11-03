@@ -24,6 +24,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -32,8 +33,11 @@
 
 int main() {
 
-    /* Init debug system */
+    /* Init system */
     Debug_init();
+    if (!DataPool_init()) {
+        exit(1);
+    }
 
     DEBUG_INF("EventManager demo");
 
@@ -52,13 +56,13 @@ int main() {
     /* Print events */
     DEBUG_INF("Events:");
     printf("   [");
-    for (int i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
+    for (int i = 0; i < DP.EVENTMANAGER.NUM_RAISED_EVENTS; ++i) {
         printf("%d ", EVENTMANAGER.p_raised_events[i]);
     }
     printf("]\n");
 
     /* Print size of lists */
-    DEBUG_INF("List size: %ld", EVENTMANAGER.size_of_lists);
+    DEBUG_INF("List size: %ld", DP.EVENTMANAGER.EVENT_LIST_SIZE);
 
 
     /* Poll many off the list to verify that the lists will shrink */
@@ -73,13 +77,13 @@ int main() {
     /* Print events */
     DEBUG_INF("Events:");
     printf("   [");
-    for (int i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
+    for (int i = 0; i < DP.EVENTMANAGER.NUM_RAISED_EVENTS; ++i) {
         printf("%d ", EVENTMANAGER.p_raised_events[i]);
     }
     printf("]\n");
 
     /* Print size of lists */
-    DEBUG_INF("List size: %ld\n", EVENTMANAGER.size_of_lists);
+    DEBUG_INF("List size: %ld\n", DP.EVENTMANAGER.EVENT_LIST_SIZE);
 
     if (!EventManager_raise_event(256)) {
         exit(1);   
@@ -95,13 +99,13 @@ int main() {
         /* Print events */
         DEBUG_INF("Events:");
         printf("   [");
-        for (int i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
+        for (int i = 0; i < DP.EVENTMANAGER.NUM_RAISED_EVENTS; ++i) {
             printf("%d ", EVENTMANAGER.p_raised_events[i]);
         }
         printf("]\n");
 
         /* Print size of lists */
-        DEBUG_INF("List size: %ld", EVENTMANAGER.size_of_lists);
+        DEBUG_INF("List size: %ld", DP.EVENTMANAGER.EVENT_LIST_SIZE);
     }
 
     /* Destroy event manager */

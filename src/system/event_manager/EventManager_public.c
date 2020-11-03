@@ -24,6 +24,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -40,15 +41,26 @@ EventManager EVENTMANAGER;
  * ------------------------------------------------------------------------- */
 
 bool EventManager_shrink_lists() {
+    /* Check that init has been called */
+    if (!DP.EVENTMANAGER.INITIALISED) {
+        /* Debug log */
+        DEBUG_ERR("Attempted to raise event when EVENTMANAGER not initialised");
+        
+        /* Raise erorr code, don't raise event as the EM isn't init */
+        DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_NOT_INITIALISED;
+        return false;
+    }
+
     /* Check if the lists need to be shrunk */
     if (
-        EVENTMANAGER.num_raised_events * EVENTMANAGER_SHRINK_LIST_MULTIPLIER
+        DP.EVENTMANAGER.NUM_RAISED_EVENTS * EVENTMANAGER_SHRINK_LIST_MULTIPLIER
         <=
-        EVENTMANAGER.size_of_lists
+        DP.EVENTMANAGER.EVENT_LIST_SIZE
     ) {
         /* Get new list size */
         uint8_t new_list_size = 
-            EVENTMANAGER.size_of_lists / EVENTMANAGER_SHRUNK_LIST_SIZE_DIVISOR;
+            DP.EVENTMANAGER.EVENT_LIST_SIZE 
+            / EVENTMANAGER_SHRUNK_LIST_SIZE_DIVISOR;
 
         /* If the new size is less than the min size clamp to the min size.
          * By preventing the lists getting too small the number of reallocs
@@ -60,7 +72,7 @@ bool EventManager_shrink_lists() {
         /* If a reallocation is required.
          * This is done since the new list size could be clamped, and want to
          * avoid reallocating to the same size. */
-        if (new_list_size != EVENTMANAGER.size_of_lists) {
+        if (new_list_size != DP.EVENTMANAGER.EVENT_LIST_SIZE) {
             /* Realloc the lists */
             EVENTMANAGER.p_raised_events = (Event *)realloc(
                 (void *)EVENTMANAGER.p_raised_events,
@@ -77,12 +89,18 @@ bool EventManager_shrink_lists() {
                 ||
                 EVENTMANAGER.p_num_cycles_events_raised == NULL
             ) {
+                /* Debug log */
                 DEBUG_ERR("Error reallocating memory for EVENTMANAGER");
+
+                /* Set the shrink realloc error and raise the error event */
+                DP.EVENTMANAGER.ERROR_CODE 
+                    = EVENTMANAGER_ERROR_SHRINK_REALLOC_FAILED;
+                EventManager_raise_event(EVT_EVENTMANAGER_ERROR);
                 return false;
             }
 
             /* Update the size */
-            EVENTMANAGER.size_of_lists = new_list_size;
+            DP.EVENTMANAGER.EVENT_LIST_SIZE = new_list_size;
         }
     }
 
@@ -113,46 +131,75 @@ bool EventManager_init() {
         ||
         EVENTMANAGER.p_num_cycles_events_raised == NULL
     ) {
+        /* Debug log */
         DEBUG_ERR("Error allocating memory for EVENTMANAGER");
+
+        /* Since the event manager itself isn't allocated we just set the error
+         * code in the data pool and return false, rather than raising the
+         * eventmanager error event. */
+        DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_OUT_OF_MEMORY;
         return false;
     }
 
     /* Set the size and counter members */
-    EVENTMANAGER.size_of_lists = EVENTMANAGER_MIN_LIST_SIZE;
-    EVENTMANAGER.num_raised_events = 0;
+    DP.EVENTMANAGER.EVENT_LIST_SIZE = EVENTMANAGER_MIN_LIST_SIZE;
+    DP.EVENTMANAGER.NUM_RAISED_EVENTS = 0;
 
     /* Set the initialised member */
-    EVENTMANAGER.initialised = true;
+    DP.EVENTMANAGER.INITIALISED = true;
 
     /* Return success */
     return true;
 }
 
 void EventManager_destroy() {
-    /* Free the lists */
-    free(EVENTMANAGER.p_raised_events);
-    free(EVENTMANAGER.p_num_cycles_events_raised);
+    /* If the event manager is intiailised destroy it */
+    if (DP.EVENTMANAGER.INITIALISED) {
+        /* Free the lists */
+        free(EVENTMANAGER.p_raised_events);
+        free(EVENTMANAGER.p_num_cycles_events_raised);
 
-    /* Zero the manager */
-    memset(&EVENTMANAGER, 0, sizeof(EVENTMANAGER));
+        /* Zero the manager */
+        memset(&EVENTMANAGER, 0, sizeof(EVENTMANAGER));
+    }
+    /* Otherwise warn that destroy was called twice */
+    else {
+        DEBUG_WRN(
+            "EventManager_destroy() was called when the EventManager wasn't \
+            initialised."
+        );
+    }
+
 }
 
 bool EventManager_raise_event(Event event_in) {
     /* Check that init has been called */
-    if (EVENTMANAGER.initialised == false) {
+    if (DP.EVENTMANAGER.INITIALISED == false) {
+        /* Debug log */
         DEBUG_ERR("Attempted to raise event when EVENTMANAGER not initialised");
+        
+        /* Raise erorr code, don't raise event as the EM isn't init */
+        DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_NOT_INITIALISED;
         return false;
     }
 
     /* Increase list size if the number of raised events has reached the
      * current size of the list. */
-    if (EVENTMANAGER.num_raised_events >= EVENTMANAGER.size_of_lists - 1) {
+    if (DP.EVENTMANAGER.NUM_RAISED_EVENTS 
+        >= 
+        DP.EVENTMANAGER.EVENT_LIST_SIZE - 1
+    ) {
         /* Calculate the new size of the list */
-        size_t new_list_size = EVENTMANAGER.size_of_lists * 2;
+        size_t new_list_size = DP.EVENTMANAGER.EVENT_LIST_SIZE * 2;
 
         /* If the new size is greater than the max size raise an error */
         if (new_list_size > EVENTMANAGER_MAX_LIST_SIZE) {
+            /* Debug log */
             DEBUG_ERR("Maximum number of events reached");
+
+            /* Raise the error code and flag */
+            DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_MAX_EVENTS_REACHED;
+            DP.EVENTMANAGER.MAX_EVENTS_REACHED = true;
             return false;
         }
 
@@ -172,35 +219,49 @@ bool EventManager_raise_event(Event event_in) {
             ||
             EVENTMANAGER.p_num_cycles_events_raised == NULL
         ) {
+            /* Debug log */
             DEBUG_ERR("Error reallocating memory for EVENTMANAGER");
+
+            /* Raise error code */
+            DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_OUT_OF_MEMORY;
             return false;
         }
 
         /* Update the size of the list */
-        EVENTMANAGER.size_of_lists = new_list_size;
+        DP.EVENTMANAGER.EVENT_LIST_SIZE = new_list_size;
     }
 
     /* Raise a new event */
-    EVENTMANAGER.p_raised_events[EVENTMANAGER.num_raised_events] = event_in;
+    EVENTMANAGER.p_raised_events[DP.EVENTMANAGER.NUM_RAISED_EVENTS] = event_in;
 
     /* Set number of cycles for this event to zero */
-    EVENTMANAGER.p_num_cycles_events_raised[EVENTMANAGER.num_raised_events] 
+    EVENTMANAGER.p_num_cycles_events_raised[DP.EVENTMANAGER.NUM_RAISED_EVENTS] 
         = 0;
 
     /* Increment number of events */
-    EVENTMANAGER.num_raised_events += 1;
+    DP.EVENTMANAGER.NUM_RAISED_EVENTS += 1;
 
     /* Return success */
     return true;
 }
 
 bool EventManager_is_event_raised(Event event_in, bool *p_is_raised_out) {
+    /* If not initialised error */
+    if (!DP.EVENTMANAGER.INITIALISED) {
+        /* Debug log */
+        DEBUG_ERR("Attempted to raise event when EVENTMANAGER not initialised");
+        
+        /* Raise erorr code, don't raise event as the EM isn't init */
+        DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_NOT_INITIALISED;
+        return false;
+    }
+
     /* Set the default flag to false for checking if an event is raised */
     *p_is_raised_out = false;
     
     /* Check to see if the event is in the array of currently raised events */
     int i;
-    for (i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
+    for (i = 0; i < DP.EVENTMANAGER.NUM_RAISED_EVENTS; ++i) {
         if (EVENTMANAGER.p_raised_events[i] == event_in) {
             /* If the event to check is in the array of currently raised
              * events, set p_is_raised_out to true */
@@ -213,35 +274,43 @@ bool EventManager_is_event_raised(Event event_in, bool *p_is_raised_out) {
 }
 
 bool EventManager_clear_all_events() {
+    /* If not initialised error */
+    if (!DP.EVENTMANAGER.INITIALISED) {
+        /* Debug log */
+        DEBUG_ERR("Attempted to raise event when EVENTMANAGER not initialised");
+        
+        /* Raise erorr code, don't raise event as the EM isn't init */
+        DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_NOT_INITIALISED;
+        return false;
+    }
+
     memset(
         EVENTMANAGER.p_raised_events, 
         0, 
-        EVENTMANAGER.num_raised_events * sizeof(Event)
+        DP.EVENTMANAGER.NUM_RAISED_EVENTS * sizeof(Event)
     );
     
-    /* Sets the new size of the list to 0 */
-    size_t new_list_size = 0;
-
-    /* Reallocate the lists */
-    EVENTMANAGER.p_raised_events = (void *)realloc(
-        EVENTMANAGER.p_raised_events, 
-        new_list_size * sizeof(Event)
-    );
-    EVENTMANAGER.p_num_cycles_events_raised = (void *)realloc(
-        EVENTMANAGER.p_num_cycles_events_raised, 
-        new_list_size * sizeof(Event)
-    );
-
-    /* Update the size of the list */
-    EVENTMANAGER.size_of_lists = new_list_size;
+    /* Shrink the lists */
+    if (!EventManager_shrink_lists()) {
+        return false;
+    }
 
     return true;
 }
 
 bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
-    /* First use is_raised to check if the event was raised. */
+    /* If not initialised error */
+    if (!DP.EVENTMANAGER.INITIALISED) {
+        /* Debug log */
+        DEBUG_ERR("Attempted to raise event when EVENTMANAGER not initialised");
+        
+        /* Raise erorr code, don't raise event as the EM isn't init */
+        DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_NOT_INITIALISED;
+        return false;
+    }
+
+    /* Get whether or not the event is raised */
     if (!EventManager_is_event_raised(event_in, p_is_raised_out)) {
-        /* An error occured, return false */
         return false;
     }
 
@@ -254,7 +323,7 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
          * need to check for the event not being in the list.
          */
         uint8_t event_idx = 0;
-        for (uint8_t i = 0; i < EVENTMANAGER.num_raised_events; ++i) {
+        for (uint8_t i = 0; i < DP.EVENTMANAGER.NUM_RAISED_EVENTS; ++i) {
             if (EVENTMANAGER.p_raised_events[i] == event_in) {
                 event_idx = i;
                 break;
@@ -265,7 +334,11 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
          * to the left. This has to be done for both the events themsevles and
          * the counters for the number of cycles each event has been raised.
          */
-        for (uint8_t i = event_idx; i < EVENTMANAGER.num_raised_events; ++i) {
+        for (
+            uint8_t i = event_idx; 
+            i < DP.EVENTMANAGER.NUM_RAISED_EVENTS; 
+            ++i
+        ) {
             /* Set the current value to the next value */
             EVENTMANAGER.p_raised_events[i] 
                 = EVENTMANAGER.p_raised_events[i + 1];
@@ -274,12 +347,13 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
         }
 
         /* Set the final elements to 0 */
-        EVENTMANAGER.p_raised_events[EVENTMANAGER.num_raised_events] = 0;
-        EVENTMANAGER.p_num_cycles_events_raised[EVENTMANAGER.num_raised_events]
-             = 0;
+        EVENTMANAGER.p_raised_events[DP.EVENTMANAGER.NUM_RAISED_EVENTS] = 0;
+        EVENTMANAGER.p_num_cycles_events_raised[
+            DP.EVENTMANAGER.NUM_RAISED_EVENTS
+        ] = 0;
 
         /* Reduce the number of raised events by 1 */
-        EVENTMANAGER.num_raised_events -= 1;
+        DP.EVENTMANAGER.NUM_RAISED_EVENTS -= 1;
 
         /* Reduce the size of the lists if required by the new size */
         if (!EventManager_shrink_lists()) {
@@ -292,16 +366,25 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
 }
 
 bool EventManager_cleanup_events() {
+    /* If not initialised error */
+    if (!DP.EVENTMANAGER.INITIALISED) {
+        /* Debug log */
+        DEBUG_ERR("Attempted to raise event when EVENTMANAGER not initialised");
+        
+        /* Raise erorr code, don't raise event as the EM isn't init */
+        DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_NOT_INITIALISED;
+        return false;
+    }
 
     /* Allocate an array to store events that have gone stale (not been polled
      * for 2 cycles ) and need to be removed */
     Event *p_stale_events = (Event *)malloc(
-        EVENTMANAGER.num_raised_events * sizeof(Event)
+        DP.EVENTMANAGER.NUM_RAISED_EVENTS * sizeof(Event)
     );
     uint8_t stale_len = 0;
 
     /* Loop through events */
-    for (uint8_t i = 0; i < EVENTMANAGER.num_raised_events; i++) {
+    for (uint8_t i = 0; i < DP.EVENTMANAGER.NUM_RAISED_EVENTS; i++) {
         /* Increment the number of cycles for this event, as this function is
          * to be called at the end of each cycle. */
         EVENTMANAGER.p_num_cycles_events_raised[i] += 1;

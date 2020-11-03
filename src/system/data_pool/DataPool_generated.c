@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2020-11-01
+ * @date 2020-11-03
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -55,6 +55,38 @@ bool DataPool_get(
         *p_data_size_out = sizeof(bool);
         return true;
 
+
+    /* DP.EVENTMANAGER.ERROR_CODE */
+    case 0x0202:
+        *pp_data_out = &DP.EVENTMANAGER.ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_EVENTMANAGER_ERRORCODE;
+        *p_data_size_out = sizeof(EventManager_ErrorCode);
+        return true;
+
+
+    /* DP.EVENTMANAGER.MAX_EVENTS_REACHED */
+    case 0x0203:
+        *pp_data_out = &DP.EVENTMANAGER.MAX_EVENTS_REACHED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.EVENTMANAGER.NUM_RAISED_EVENTS */
+    case 0x0204:
+        *pp_data_out = &DP.EVENTMANAGER.NUM_RAISED_EVENTS;
+        *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
+        *p_data_size_out = sizeof(uint8_t);
+        return true;
+
+
+    /* DP.EVENTMANAGER.EVENT_LIST_SIZE */
+    case 0x0205:
+        *pp_data_out = &DP.EVENTMANAGER.EVENT_LIST_SIZE;
+        *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
+        *p_data_size_out = sizeof(uint8_t);
+        return true;
+
     
     default:
         DEBUG_ERR("Invalid DP ID: %d", id_in);
@@ -79,6 +111,30 @@ bool DataPool_get_symbol_str(
     /* DP.EVENTMANAGER.INITIALISED */
     case 0x0201:
         *pp_symbol_str_out = strdup("DP.EVENTMANAGER.INITIALISED");
+        return true;
+
+
+    /* DP.EVENTMANAGER.ERROR_CODE */
+    case 0x0202:
+        *pp_symbol_str_out = strdup("DP.EVENTMANAGER.ERROR_CODE");
+        return true;
+
+
+    /* DP.EVENTMANAGER.MAX_EVENTS_REACHED */
+    case 0x0203:
+        *pp_symbol_str_out = strdup("DP.EVENTMANAGER.MAX_EVENTS_REACHED");
+        return true;
+
+
+    /* DP.EVENTMANAGER.NUM_RAISED_EVENTS */
+    case 0x0204:
+        *pp_symbol_str_out = strdup("DP.EVENTMANAGER.NUM_RAISED_EVENTS");
+        return true;
+
+
+    /* DP.EVENTMANAGER.EVENT_LIST_SIZE */
+    case 0x0205:
+        *pp_symbol_str_out = strdup("DP.EVENTMANAGER.EVENT_LIST_SIZE");
         return true;
 
 

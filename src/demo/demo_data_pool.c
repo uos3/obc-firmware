@@ -69,22 +69,22 @@ int32_t main(void) {
     DEBUG_INF("data_size = %ld\n", data_size);
 
     /* Try with something that should be zero */
-    bool *p_em_is_init = NULL;
+    bool *p_em_error_code = NULL;
     if (!DataPool_get(
         (DataPool_Id)0x0201,
-        (void **)&p_em_is_init,
+        (void **)&p_em_error_code,
         &data_type,
         &data_size
     )) {
         exit(1);
     }
-    DEBUG_INF("em_is_init = %d", DP.EVENTMANAGER.INITIALISED);
-    DEBUG_INF("p_em_is_init = %p", (void *)p_em_is_init);
-    DEBUG_INF("*p_em_is_init = %d", *p_em_is_init);
+    DEBUG_INF("em_error_code = %d", DP.EVENTMANAGER.ERROR_CODE);
+    DEBUG_INF("p_em_error_code = %p", (void *)p_em_error_code);
+    DEBUG_INF("*p_em_error_code = %d", *p_em_error_code);
     DEBUG_INF(
-        "data_type = %d (== DATAPOOL_DATATYPE_BOOL = %d)", 
+        "data_type = %d (== DATAPOOL_DATATYPE_EVENTMANAGER_ERRORCODE = %d)", 
         data_type,
-        data_type == DATAPOOL_DATATYPE_BOOL
+        data_type == DATAPOOL_DATATYPE_EVENTMANAGER_ERRORCODE
     );
     DEBUG_INF("data_size = %ld\n", data_size);
 

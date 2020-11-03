@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2020-11-01
+ * @date 2020-11-03
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -46,7 +46,9 @@ typedef uint16_t DataPool_Id;
  * @brief Types of data that are contained in the DataPool.
  */
 typedef enum _DataPool_DataType {
-    DATAPOOL_DATATYPE_BOOL
+    DATAPOOL_DATATYPE_BOOL,
+    DATAPOOL_DATATYPE_EVENTMANAGER_ERRORCODE,
+    DATAPOOL_DATATYPE_UINT8_T
 } DataPool_DataType;
 
 /* -------------------------------------------------------------------------   
