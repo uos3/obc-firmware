@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2020-11-03
+ * @date 2020-11-05
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -83,8 +83,8 @@ bool DataPool_get(
     /* DP.EVENTMANAGER.EVENT_LIST_SIZE */
     case 0x0205:
         *pp_data_out = &DP.EVENTMANAGER.EVENT_LIST_SIZE;
-        *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
-        *p_data_size_out = sizeof(uint8_t);
+        *p_data_type_out = DATAPOOL_DATATYPE_UINT16_T;
+        *p_data_size_out = sizeof(uint16_t);
         return true;
 
     

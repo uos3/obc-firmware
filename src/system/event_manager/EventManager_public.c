@@ -189,7 +189,13 @@ bool EventManager_raise_event(Event event_in) {
         >= 
         DP.EVENTMANAGER.EVENT_LIST_SIZE - 1
     ) {
-        /* Calculate the new size of the list */
+        /* Calculate the new size of the list 
+         *
+         * ---- NUMERICAL PROTECTION ----
+         * This operation could cause EVENT_LIST_SIZE to overflow. Therefore
+         * the maximum list size must be set lower than the maximum value
+         * representable by EVENT_LIST_SIZE data type.
+         */
         size_t new_list_size = DP.EVENTMANAGER.EVENT_LIST_SIZE * 2;
 
         /* If the new size is greater than the max size raise an error */

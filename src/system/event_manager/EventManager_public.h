@@ -50,6 +50,11 @@
  * Implicitly this is also the limit on the number of events that can be raised
  * at any one time.
  * 
+ * This value must be less than the maximum size representable by the
+ * DP.EVENTMANAGER.EVENT_LIST_SIZE datatype. This is currently 16 bits, or
+ * ~65k, so a value of 256 will not lead to an overflow. See numerical
+ * proection comment in EventManager_raise_event().
+ * 
  * TODO: This value is currently arbitrary. 
  */
 #define EVENTMANAGER_MAX_LIST_SIZE (256)
