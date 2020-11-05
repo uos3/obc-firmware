@@ -83,8 +83,8 @@ bool DataPool_get(
     /* DP.EVENTMANAGER.EVENT_LIST_SIZE */
     case 0x0205:
         *pp_data_out = &DP.EVENTMANAGER.EVENT_LIST_SIZE;
-        *p_data_type_out = DATAPOOL_DATATYPE_UINT16_T;
-        *p_data_size_out = sizeof(uint16_t);
+        *p_data_type_out = DATAPOOL_DATATYPE_SIZE_T;
+        *p_data_size_out = sizeof(size_t);
         return true;
 
     

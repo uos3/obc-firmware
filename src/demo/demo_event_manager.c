@@ -31,7 +31,7 @@
  * MAIN
  * ------------------------------------------------------------------------- */
 
-int main() {
+int main(void) {
 
     /* Init system */
     Debug_init();
@@ -48,7 +48,7 @@ int main() {
 
     /* Raise an event */
     for (int event = 1; event < 32; ++event) {
-        if (!EventManager_raise_event(event)) {
+        if (!EventManager_raise_event((Event)event)) {
             Debug_exit(1);   
         }
     }
@@ -69,7 +69,7 @@ int main() {
     DEBUG_INF("Polling 30 events");
     bool is_raised = false;
     for (int event = 1; event < 30; event++) {
-        if (!EventManager_poll_event(event, &is_raised)) {
+        if (!EventManager_poll_event((Event)event, &is_raised)) {
             Debug_exit(1);   
         }
     }

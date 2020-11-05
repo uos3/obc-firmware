@@ -213,6 +213,8 @@ static void EventManager_test_errors(void **state) {
  * @param state cmocka state
  */
 static int EventManager_test_setup(void **state) {
+    (void) state;
+
     /* Init DataPool */
     assert_true(DataPool_init());
     
@@ -229,6 +231,8 @@ static int EventManager_test_setup(void **state) {
  * @param state cmocka state
  */
 static int EventManager_test_teardown(void **state) {
+    (void) state;
+    
     if (DP.EVENTMANAGER.ERROR_CODE != EVENTMANAGER_ERROR_NONE) {
         DEBUG_ERR(
             "DP.EVENTMANAGER.ERROR_CODE = %d", 

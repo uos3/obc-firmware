@@ -53,6 +53,8 @@ static void Debug_test_all_log(void **state) {
  * @param state cmocka state
  */
 static int Debug_test_setup(void **state) {
+    (void) state;
+    
     if (!Debug_init()) {
         return -1;
     }

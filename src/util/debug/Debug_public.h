@@ -49,7 +49,7 @@ typedef enum _Debug_Level {
  * @return true Debug initialisation succeeded.
  * @return false Failed
  */
-bool Debug_init();
+bool Debug_init(void);
 
 #ifdef TARGET_UNIX
 /**

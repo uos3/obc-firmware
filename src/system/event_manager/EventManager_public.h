@@ -182,7 +182,7 @@ extern EventManager EVENTMANAGER;
  * @return true The lists were successfully shrunk.
  * @return false An error occured.
  */
-bool EventManager_shrink_lists();
+bool EventManager_shrink_lists(void);
 
 /**
  * @brief Initialise the event manager to it's default state.
@@ -190,13 +190,13 @@ bool EventManager_shrink_lists();
  * @return true Initialisation succeeded.
  * @return false Initialisation failed.
  */
-bool EventManager_init();
+bool EventManager_init(void);
 
 /**
  * @brief Destroy the event manager by deallocating all memory associated with
  * it.
  */
-void EventManager_destroy();
+void EventManager_destroy(void);
 
 /**
  * @brief Raise the given event.
@@ -240,7 +240,7 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out);
  * @return true All events were cleared.
  * @return false An error occured.
  */
-bool EventManager_clear_all_events();
+bool EventManager_clear_all_events(void);
 
 /**
  * @brief Clean up events that have been raised for two or more cycles.
@@ -250,7 +250,7 @@ bool EventManager_clear_all_events();
  * @return true Cleanup executed successfully.
  * @return false Cleanup failed.
  */
-bool EventManager_cleanup_events();
+bool EventManager_cleanup_events(void);
 
 #endif /* H_EVENTMANAGER_PUBLIC_H */
 

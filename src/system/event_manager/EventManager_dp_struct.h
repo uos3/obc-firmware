@@ -63,12 +63,12 @@ typedef struct _EventManager_Dp {
      * @brief The current size of the allocated event lists.
      * 
      * This value must be capable of storing the value of
-     * EVENTMANAGER_MAX_LIST_SIZE, which currently is 256. Therefore a 16 bit
-     * value is used here.
+     * EVENTMANAGER_MAX_LIST_SIZE, which currently is 256. Therefore size_t,
+     * which is 32 bits on the TM4C, is sufficient.
      * 
      * @dp 5
      */
-    uint16_t EVENT_LIST_SIZE;
+    size_t EVENT_LIST_SIZE;
 
 
 } EventManager_Dp;

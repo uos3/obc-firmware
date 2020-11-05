@@ -59,7 +59,7 @@ static const char *Debug_level_colours[] = {
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-bool Debug_init() {
+bool Debug_init(void) {
 
     /* If on UNIX set the init time */
     #ifdef TARGET_UNIX
@@ -83,7 +83,7 @@ void Debug_log_unix(
     /* Calculate time since init */
     struct timespec now;
     clock_gettime(CLOCK_MONOTONIC_RAW, &now);
-    uint64_t delta_ms = 
+    int64_t delta_ms = 
         (now.tv_sec - DEBUG_INIT_TIME.tv_sec) * 1000
         + (now.tv_nsec - DEBUG_INIT_TIME.tv_nsec) / 1000000;
 

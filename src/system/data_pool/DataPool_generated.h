@@ -49,7 +49,7 @@ typedef enum _DataPool_DataType {
     DATAPOOL_DATATYPE_BOOL,
     DATAPOOL_DATATYPE_EVENTMANAGER_ERRORCODE,
     DATAPOOL_DATATYPE_UINT8_T,
-    DATAPOOL_DATATYPE_UINT16_T
+    DATAPOOL_DATATYPE_SIZE_T
 } DataPool_DataType;
 
 /* -------------------------------------------------------------------------   

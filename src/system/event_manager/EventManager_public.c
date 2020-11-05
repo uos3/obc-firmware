@@ -40,7 +40,7 @@ EventManager EVENTMANAGER;
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-bool EventManager_shrink_lists() {
+bool EventManager_shrink_lists(void) {
     /* Check that init has been called */
     if (!DP.EVENTMANAGER.INITIALISED) {
         /* Debug log */
@@ -58,7 +58,7 @@ bool EventManager_shrink_lists() {
         DP.EVENTMANAGER.EVENT_LIST_SIZE
     ) {
         /* Get new list size */
-        uint8_t new_list_size = 
+        size_t new_list_size = 
             DP.EVENTMANAGER.EVENT_LIST_SIZE 
             / EVENTMANAGER_SHRUNK_LIST_SIZE_DIVISOR;
 
@@ -107,7 +107,7 @@ bool EventManager_shrink_lists() {
     return true;
 }
 
-bool EventManager_init() {
+bool EventManager_init(void) {
     /* Zero the manager */
     memset(&EVENTMANAGER, 0, sizeof(EVENTMANAGER));
 
@@ -152,7 +152,7 @@ bool EventManager_init() {
     return true;
 }
 
-void EventManager_destroy() {
+void EventManager_destroy(void) {
     /* If the event manager is intiailised destroy it */
     if (DP.EVENTMANAGER.INITIALISED) {
         /* Free the lists */
@@ -245,7 +245,7 @@ bool EventManager_raise_event(Event event_in) {
         = 0;
 
     /* Increment number of events */
-    DP.EVENTMANAGER.NUM_RAISED_EVENTS += 1;
+    DP.EVENTMANAGER.NUM_RAISED_EVENTS++;
 
     /* Return success */
     return true;
@@ -279,7 +279,7 @@ bool EventManager_is_event_raised(Event event_in, bool *p_is_raised_out) {
     return true;
 }
 
-bool EventManager_clear_all_events() {
+bool EventManager_clear_all_events(void) {
     /* If not initialised error */
     if (!DP.EVENTMANAGER.INITIALISED) {
         /* Debug log */
@@ -359,7 +359,7 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
         ] = 0;
 
         /* Reduce the number of raised events by 1 */
-        DP.EVENTMANAGER.NUM_RAISED_EVENTS -= 1;
+        DP.EVENTMANAGER.NUM_RAISED_EVENTS--;
 
         /* Reduce the size of the lists if required by the new size */
         if (!EventManager_shrink_lists()) {
@@ -371,7 +371,7 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
     return true;
 }
 
-bool EventManager_cleanup_events() {
+bool EventManager_cleanup_events(void) {
     /* If not initialised error */
     if (!DP.EVENTMANAGER.INITIALISED) {
         /* Debug log */
@@ -393,7 +393,7 @@ bool EventManager_cleanup_events() {
     for (uint8_t i = 0; i < DP.EVENTMANAGER.NUM_RAISED_EVENTS; i++) {
         /* Increment the number of cycles for this event, as this function is
          * to be called at the end of each cycle. */
-        EVENTMANAGER.p_num_cycles_events_raised[i] += 1;
+        EVENTMANAGER.p_num_cycles_events_raised[i]++;
 
         /* If the event has been raised for more than two cycles add it to the
          * stale events array */
