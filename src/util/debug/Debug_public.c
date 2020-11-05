@@ -26,6 +26,15 @@
 #include <time.h>
 #endif
 
+/* External includes */
+#ifdef TARGET_TM4C
+#include "inc/hw_memmap.h"
+#include "driverlib/pin_map.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/gpio.h"
+#include "driverlib/uart.h"
+#endif
+
 /* Internal includes */
 #include "util/debug/Debug_public.h"
 
@@ -64,6 +73,48 @@ bool Debug_init(void) {
     /* If on UNIX set the init time */
     #ifdef TARGET_UNIX
     clock_gettime(CLOCK_MONOTONIC_RAW, &DEBUG_INIT_TIME);
+    #endif
+    /* If on TM4C */
+    #ifdef TARGET_TM4C
+
+    /* Note: UART1 is used here since this is the one that's connected to pins
+     * on the launchpad, this should be changed when building for the TM4C. 
+     */
+
+    /* Set the system clock
+     * TODO: This is to be done in system init, not here.
+     */
+    SysCtlClockSet(
+        SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ
+    );
+
+    /* Enable the GPIO for the LED, so we can signal the device is booted and
+     * debug initialised */
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2);
+
+    /* Enable the GPIO peripheral for UART1 and UART1 itself */
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+
+    /* Configure the GPIO for UART output */
+    GPIOPinConfigure(GPIO_PB0_U1RX);
+    GPIOPinConfigure(GPIO_PB1_U1TX);
+    GPIOPinTypeUART(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+
+    /* Configure the UART for 115,200, 8-N-1 operation. */
+    UARTConfigSetExpClk(
+        UART1_BASE, 
+        SysCtlClockGet(), 
+        115200,
+        (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE)
+    );
+
+    /* Turn the LED on to show the device is ready */
+    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
+
+    UARTCharPutNonBlocking(UART1_BASE, '\r\n');
+    UARTCharPutNonBlocking(UART1_BASE, '\r\n');
     #endif
 
     return true;
@@ -116,7 +167,38 @@ void Debug_log_tm4c(
     const char *p_fmt, 
     ...
 ) {
-    /* TODO */
+
+    va_list args;
+    va_start(args, p_fmt);
+
+    /* String to print into */
+    unsigned char str[512] = {0};
+
+    /* TODO: Get the time from the RTC */
+
+    /* Remove the file path up to src/ */
+    char *p_file_stripped = strstr(p_file, "src");
+
+    /* Put the the prefix into the string */
+    sprintf(
+        str,
+        "[---------- %s%s\x1b[0m] %s:%d ",
+        Debug_level_colours[level], 
+        Debug_level_names[level],
+        p_file_stripped,
+        line
+    );
+
+    /* Add the message */
+    vsprintf(&str[0] + strlen(str), p_fmt, args);
+
+    /* Add the carriage return/newline */
+    sprintf(&str[0] + strlen(str), "\r\n");
+
+    /* Iterate over the string and print the characters to the UART */
+    for (size_t i = 0; i < strlen(str); ++i) {
+        UARTCharPut(UART1_BASE, str[i]);
+    }
 }
 #endif
 
@@ -125,6 +207,7 @@ void Debug_exit(int error_code) {
     exit(error_code);
     #endif
     #ifdef TARGET_TM4C
+    (void) error_code;
     __asm("BKPT");
     #endif
 }

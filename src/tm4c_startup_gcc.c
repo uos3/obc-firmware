@@ -340,11 +340,11 @@ NmiSR(void)
 static void
 FaultISR(void)
 {
-    //
-    // Enter an infinite loop.
-    //
+    /* Raise a breakpoint so GDB can catch it 
+     */
     while(1)
     {
+        __asm("BKPT");
     }
 }
 

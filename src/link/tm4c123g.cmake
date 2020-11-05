@@ -22,7 +22,10 @@ set(HEAPSIZE "0x2000")
 set(STACKSIZE "0x800")
 
 set(CPU "-mcpu=cortex-m4")
-set(FPU "-mfpu=fpv4-sp-d16 -mfloat-abi=softfp")
+# mfloat-abi=hard uses hardware floating point and hardware floating point call
+# standard, which is the default for tivaware. In order to link the firmware
+# against tivaware this is required.
+set(FPU "-mfpu=fpv4-sp-d16 -mfloat-abi=hard")
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -mthumb ${CPU}  ${FPU} -MD")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
   -mthumb ${CPU} ${FPU} \

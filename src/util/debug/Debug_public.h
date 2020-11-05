@@ -77,7 +77,9 @@ void Debug_log_unix(
 /**
  * @brief Log a message on the TM4C to UART TBD.
  * 
- * TODO: Determine correct UART.
+ * This function logs to UART1, which is the UART device connected to the
+ * breakout pins on the TM4C launchpad. This should be changed to the correct
+ * debug UART on the TOBC.
  * 
  * NOTE: Use the provided debug macros (DEBUG_INF for example) rather than this
  * function. 

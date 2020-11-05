@@ -71,7 +71,7 @@ int main(void) {
     /* Try with something that should be zero */
     bool *p_em_error_code = NULL;
     if (!DataPool_get(
-        (DataPool_Id)0x0201,
+        (DataPool_Id)0x0202,
         (void **)&p_em_error_code,
         &data_type,
         &data_size
