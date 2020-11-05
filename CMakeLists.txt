@@ -14,13 +14,21 @@ option(UOS3_BUILD_TESTS "If set cmocka tests will be build" OFF)
 # Export compile commands so VSCode can use the right definitions
 set(CMAKE_EXPORT_COMPILE_COMMANDS "1")
 
-# Use the C99 standard
-set(CMAKE_C_STANDARD 99)
-
-# Set all warnings on
-
-# Use pedantic
-set(CMAKE_C_FLAGS "-Wall -pedantic")
+# Set C flags to use all warnings and the GNU-99 standard.
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}\
+    -std=gnu99 \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Wswitch-default \
+    -Wswitch-enum \
+    -Wduplicated-cond \
+    -Wconversion \
+    -Wlogical-op \
+    -Wstrict-prototypes \
+    -Wmissing-prototypes \
+    -Wmissing-declarations \
+")
 
 # If building for the TM4C
 if(${UOS3_TARGET_TM4C})
@@ -33,7 +41,7 @@ if(${UOS3_TARGET_TM4C})
     # binaries to be flashed onto the TM4C (".bin")
     set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 
-    # Set the tm4c define
+    # Set the tm4c define which is used by platform dependent code.
     add_definitions(-DTARGET_TM4C)
 
     # CMake file for the TM4C123G, used to specify the custom link script

@@ -36,20 +36,20 @@ int main() {
     /* Init system */
     Debug_init();
     if (!DataPool_init()) {
-        exit(1);
+        Debug_exit(1);
     }
 
     DEBUG_INF("EventManager demo");
 
     /* Init event manager */
     if (!EventManager_init()) {
-        exit(1);   
+        Debug_exit(1);   
     }
 
     /* Raise an event */
     for (int event = 1; event < 32; ++event) {
         if (!EventManager_raise_event(event)) {
-            exit(1);   
+            Debug_exit(1);   
         }
     }
 
@@ -70,7 +70,7 @@ int main() {
     bool is_raised = false;
     for (int event = 1; event < 30; event++) {
         if (!EventManager_poll_event(event, &is_raised)) {
-            exit(1);   
+            Debug_exit(1);   
         }
     }
 
@@ -86,14 +86,14 @@ int main() {
     DEBUG_INF("List size: %ld\n", DP.EVENTMANAGER.EVENT_LIST_SIZE);
 
     if (!EventManager_raise_event(256)) {
-        exit(1);   
+        Debug_exit(1);   
     }
 
     /* Clean up events three times to check that the stale events are polled */
     for (int i = 0; i < 3; i++) {
         DEBUG_INF("Cleaning events");
         if (!EventManager_cleanup_events()) {
-            exit(1);
+            Debug_exit(1);
         }
 
         /* Print events */

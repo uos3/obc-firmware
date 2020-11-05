@@ -51,6 +51,7 @@ typedef enum _Debug_Level {
  */
 bool Debug_init();
 
+#ifdef TARGET_UNIX
 /**
  * @brief Log a message on unix to stdout.
  * 
@@ -70,7 +71,9 @@ void Debug_log_unix(
     const char *p_fmt, 
     ...
 );
+#endif
 
+#ifdef TARGET_TM4C
 /**
  * @brief Log a message on the TM4C to UART TBD.
  * 
@@ -92,6 +95,17 @@ void Debug_log_tm4c(
     const char *p_fmt, 
     ...
 );
+#endif
+
+/**
+ * @brief Exit execution.
+ * 
+ * Under Unix this will call `exit()`, however under the TM4C this will put a 
+ * breakpoint.
+ * 
+ * @param error_code The code to exit with.
+ */
+void Debug_exit(int error_code);
 
 /* -------------------------------------------------------------------------   
  * MACROS

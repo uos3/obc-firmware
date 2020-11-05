@@ -69,6 +69,7 @@ bool Debug_init() {
     return true;
 }
 
+#ifdef TARGET_UNIX
 void Debug_log_unix(
     uint8_t level, 
     const char *p_file, 
@@ -105,7 +106,9 @@ void Debug_log_unix(
     /* Print newline */
     printf("\n");
 }
+#endif
 
+#ifdef TARGET_TM4C
 void Debug_log_tm4c(
     uint8_t level, 
     const char *p_file, 
@@ -114,4 +117,14 @@ void Debug_log_tm4c(
     ...
 ) {
     /* TODO */
+}
+#endif
+
+void Debug_exit(int error_code) {
+    #ifdef TARGET_UNIX
+    exit(error_code);
+    #endif
+    #ifdef TARGET_TM4C
+    __asm("BKPT");
+    #endif
 }

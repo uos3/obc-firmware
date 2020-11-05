@@ -25,6 +25,7 @@
  * ------------------------------------------------------------------------- */
 
 #include <stdint.h>
+#include <stdlib.h>
 #include "inc/tm4c123gh6pm.h"
 
 /* -------------------------------------------------------------------------   
@@ -108,6 +109,8 @@ int main(void) {
     Pll_init();
     SysTick_init();
     PortF_init();
+
+    // int *p_dummy = (int *)malloc(sizeof(int));
 
     /* Main loop */
     while (1) {

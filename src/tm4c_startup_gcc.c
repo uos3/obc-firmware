@@ -15,11 +15,12 @@
  */
 
 
+
 //*****************************************************************************
 //
 // startup_gcc.c - Startup code for use with GNU tools.
 //
-// Copyright (c) 2012-2020 Texas Instruments Incorporated.  All rights reserved.
+// Copyright (c) 2011-2017 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
 // 
 // Texas Instruments (TI) is supplying this software for use solely and
@@ -35,7 +36,7 @@
 // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
 // DAMAGES, FOR ANY REASON WHATSOEVER.
 // 
-// This is part of revision 2.2.0.295 of the EK-TM4C123GXL Firmware Package.
+// This is part of revision 2.1.4.178 of the DK-TM4C123G Firmware Package.
 //
 //*****************************************************************************
 
@@ -65,7 +66,7 @@ extern int main(void);
 // Reserve space for the system stack.
 //
 //*****************************************************************************
-static uint32_t pui32Stack[128];
+extern char *__StackTop;
 
 //*****************************************************************************
 //
@@ -73,10 +74,14 @@ static uint32_t pui32Stack[128];
 // ensure that it ends up at physical address 0x0000.0000.
 //
 //*****************************************************************************
-__attribute__ ((section(".isr_vector")))
+/* GCC Pedantic warning is suppressed here due to the stack pointer cast */
+#pragma GCC diagnostic push // Save GCC Warnings state
+#pragma GCC diagnostic ignored "-Wpedantic" // Disable pendantic flag
+
+__attribute__ ((section(".intvecs")))
 void (* const g_pfnVectors[])(void) =
 {
-    (void (*)(void))((uint32_t)pui32Stack + sizeof(pui32Stack)),
+    (void (*)(void))&__StackTop,
                                             // The initial stack pointer
     ResetISR,                               // The reset handler
     NmiSR,                                  // The NMI handler
@@ -234,6 +239,8 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler                       // PWM 1 Fault
 };
 
+#pragma GCC diagnostic pop // Restore GCC Warnings state
+
 //*****************************************************************************
 //
 // The following are constructs created by the linker, indicating where the
@@ -241,11 +248,11 @@ void (* const g_pfnVectors[])(void) =
 // for the "data" segment resides immediately following the "text" segment.
 //
 //*****************************************************************************
-extern uint32_t _ldata;
-extern uint32_t _data;
-extern uint32_t _edata;
-extern uint32_t _bss;
-extern uint32_t _ebss;
+extern uint32_t __data_load__;
+extern uint32_t __data_start__;
+extern uint32_t __data_end__;
+extern uint32_t __bss_start__;
+extern uint32_t __bss_end__;
 
 //*****************************************************************************
 //
@@ -265,8 +272,8 @@ ResetISR(void)
     //
     // Copy the data segment initializers from flash to SRAM.
     //
-    pui32Src = &_ldata;
-    for(pui32Dest = &_data; pui32Dest < &_edata; )
+    pui32Src = &__data_load__;
+    for(pui32Dest = &__data_start__; pui32Dest < &__data_end__; )
     {
         *pui32Dest++ = *pui32Src++;
     }
@@ -274,8 +281,8 @@ ResetISR(void)
     //
     // Zero fill the bss segment.
     //
-    __asm("    ldr     r0, =_bss\n"
-          "    ldr     r1, =_ebss\n"
+    __asm("    ldr     r0, =__bss_start__\n"
+          "    ldr     r1, =__bss_end__\n"
           "    mov     r2, #0\n"
           "    .thumb_func\n"
           "zero_loop:\n"
@@ -295,7 +302,7 @@ ResetISR(void)
     // this project.
     //
     HWREG(NVIC_CPAC) = ((HWREG(NVIC_CPAC) &
-                         ~(NVIC_CPAC_CP10_M | NVIC_CPAC_CP11_M)) |
+                        (uint32_t)~(NVIC_CPAC_CP10_M | NVIC_CPAC_CP11_M)) |
                         NVIC_CPAC_CP10_FULL | NVIC_CPAC_CP11_FULL);
 
     //
@@ -328,6 +335,7 @@ NmiSR(void)
 // interrupt.  This simply enters an infinite loop, preserving the system state
 // for examination by a debugger.
 //
+// FIXME: This is a bad idea in flight, we need to reboot with a root cause.
 //*****************************************************************************
 static void
 FaultISR(void)

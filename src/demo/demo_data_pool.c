@@ -30,7 +30,7 @@
  * MAIN
  * ------------------------------------------------------------------------- */
 
-int32_t main(void) {
+int main(void) {
 
     /* Init the debug system */
     Debug_init();
@@ -54,7 +54,7 @@ int32_t main(void) {
         &data_type,
         &data_size
     )) {
-        exit(1);
+        Debug_exit(1);
     }
 
     /* Print these out */
@@ -76,7 +76,7 @@ int32_t main(void) {
         &data_type,
         &data_size
     )) {
-        exit(1);
+        Debug_exit(1);
     }
     DEBUG_INF("em_error_code = %d", DP.EVENTMANAGER.ERROR_CODE);
     DEBUG_INF("p_em_error_code = %p", (void *)p_em_error_code);
@@ -94,7 +94,7 @@ int32_t main(void) {
         (DataPool_Id)0x0001,
         &p_symbol
     )) {
-        exit(1);
+        Debug_exit(1);
     }
     DEBUG_INF("%s", p_symbol);
 
@@ -104,7 +104,7 @@ int32_t main(void) {
         (DataPool_Id)0x0201,
         &p_symbol
     )) {
-        exit(1);
+        Debug_exit(1);
     }
     DEBUG_INF("%s", p_symbol);
 
