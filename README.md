@@ -13,16 +13,17 @@ repository, it can be found [here](docs/standards/sws.md).
 
 Developing this repository requires the following software:
 
+- `build-essential` - generic build utilities for GNU.
 - `gcc-arm-none-eabi` - the GCC cross-compiler for ARM targets
 - CMake - used as the build system
-- lm4flash - used to flash the TM4C launchpad
+- `lm4flash` - used to flash the TM4C launchpad
 - Python 3 - used for build script
 - cmocka - framework used to test the software
 
 On ubuntu the following command should install most of these:
 
 ```shell
-sudo apt install gcc-arm-none-eabi cmake lm4flash
+sudo apt install build-essential gcc-arm-none-eabi cmake lm4flash
 ```
 
 For `python3`, be careful as you probably already have it installed.
@@ -105,3 +106,21 @@ valgrind --tool=massif --stacks=yes <PATH_TO_BIN>
 
 You can use [massif-visualizer](https://stackoverflow.com/questions/1623771/valgrind-massif-tool-output-graphical-interface)
 to see the memory graphs in a nice format.
+
+## Flashing
+
+The `./flash` script can be used to flash specific ELF files to a TM4C, either
+a launchpad or the TOBC itself. Make the script executable with
+
+```shell
+chmod +x ./flash
+```
+
+the run using
+
+```shell
+./flash <PATH_TO_ELF>
+```
+
+You can use `./flash --help` to see help information. The script expects ELF
+files that have been built using `./build -t tm4c`.

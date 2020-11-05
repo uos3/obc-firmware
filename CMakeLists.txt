@@ -28,6 +28,11 @@ if(${UOS3_TARGET_TM4C})
     message("OBC Firmware building for: TM4C")
     message("")
 
+    # Set the executable suffix to be ".elf", this is to differentiate them
+    # from those that can actually be executed on the host system (".exe") and
+    # binaries to be flashed onto the TM4C (".bin")
+    set(CMAKE_EXECUTABLE_SUFFIX ".elf")
+
     # Set the tm4c define
     add_definitions(-DTARGET_TM4C)
 
@@ -44,7 +49,7 @@ if(${UOS3_TARGET_TM4C})
         ${TIVAWARE_PATH}/driverlib/gcc/libdriver.a
     )
 
-    # Set the standard link set, which is Startup + Tivaware
+    # Set the standard link set
     set(STANDARD_LINK_LIBS
         ${TIVAWARE_LIBS}
         Debug
@@ -62,6 +67,10 @@ elseif(UNIX)
     message("")
     message("OBC Firmware building for: UNIX")
     message("")
+
+    # Set the executable suffix to be ".exe", this is to show that they can be
+    # executed on the host system.
+    set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 
     # Set the unix define
     add_definitions(-DTARGET_UNIX)
@@ -83,10 +92,6 @@ elseif(UNIX)
 else()
     message(FATAL_ERROR "OBC Firmware only supports Unix and TM4C targets, please recompile on either Linux or cross-compile for the TOBC MCU")
 endif()
-
-# Set the executable suffix to be ".bin", this is used to move all the binaries
-# into a single build folder
-set(CMAKE_EXECUTABLE_SUFFIX ".bin")
 
 # Set src as an include directory
 include_directories(src/)

@@ -1,0 +1,109 @@
+#!/usr/bin/python3
+'''
+---- UoS3 OBC Firmware Flash Script ----
+
+This script will flash the given binary onto the TM4C.
+
+Author: Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
+Version: 0.1
+Date: 2020-11-05
+Copyright (c) UoS3 2020
+'''
+
+import sys
+import argparse
+import subprocess
+from pathlib import Path
+
+class TermCols:
+    '''Terminal colour codes'''
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def error(msg, code=1):
+    '''Print error message and exit with an error code'''
+    print(f'[{TermCols.FAIL}ERR{TermCols.ENDC}] {msg}')
+    sys.exit(code)
+
+def info(msg):
+    '''Print an information message to the screen'''
+    print(f'[---] {msg}')
+
+def ok(msg):
+    '''Print a success message to the screen'''
+    print(f'[{TermCols.OKGREEN} OK{TermCols.ENDC}] {msg}')
+
+def main():
+    '''
+    Run the main flash script.
+    '''
+
+    # Get the command line args
+    args = parse_args()
+
+    # Get the path and check it exists
+    elf_path = Path(args.elf)
+    if not elf_path.exists():
+        error(f'{elf_path} does not exist.')
+
+    # Check it's got an .elf extension
+    if not elf_path.suffix == '.elf':
+        error(f'Expected a .elf file, found {elf_path}')
+
+    # Get the binary path by replacing .elf with .bin
+    bin_path = elf_path.with_suffix('.bin')
+
+    info('Converting ELF file to binary format')
+
+    # Convert the file from elf to binary format using the right objcopy.
+    objcopy = subprocess.run([
+        'arm-none-eabi-objcopy',
+        '-O',
+        'binary',
+        elf_path,
+        bin_path
+    ])
+
+    if objcopy.returncode != 0:
+        error('Could not convert from ELF to binary format')
+    else:
+        ok('ELF converted to binary format')
+
+    info(f'Flashing {bin_path} using lm4flash')
+    
+    # Flash the binary
+    lm4flash = subprocess.run([
+        'lm4flash',
+        bin_path
+    ])
+
+    if lm4flash.returncode != 0:
+        error('Could not flash the binary')
+    else:
+        ok('Binary flashed')
+    
+
+def parse_args():
+    '''
+    Parse command line arguments
+    '''
+
+    # Create argparser
+    parser = argparse.ArgumentParser(description='Build the OBC firmware.')
+    parser.add_argument(
+        'elf',
+        help='The path to the ELF image to flash'
+    )
+
+    # Parse the arguments
+    return parser.parse_args()
+
+if __name__ == '__main__':
+    main()

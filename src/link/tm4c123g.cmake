@@ -31,10 +31,3 @@ set(CMAKE_EXE_LINKER_FLAGS "-T${PROJECT_SOURCE_DIR}/src/link/tm4c123g.ld -specs=
 add_definitions(-DPART_TM4C123GH6PM)
 add_definitions(-DTARGET_IS_TM4C123_RA1)
 add_definitions(-Dgcc)
-
-# TODO: This shouldn't be used but is kept for reference
-set(FLASH_EXECUTABLE "lm4flash")
-ADD_CUSTOM_TARGET("flash" DEPENDS demo_launchpad_blinky
-  COMMAND ${CMAKE_OBJCOPY} -O binary src/demo/demo_launchpad_blinky demo_launchpad_blinky.bin 
-  COMMAND ${FLASH_EXECUTABLE} demo_launchpad_blinky.bin
-)

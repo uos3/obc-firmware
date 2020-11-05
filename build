@@ -247,18 +247,22 @@ def copy_bins(source_dir, dest_dir):
     Copy all binaries in the source directory to the destination directory.
     '''
 
-    # Get list of all binaries in the cmake dir
-    bins = list(source_dir.glob('src/**/*.bin'))
+    # Get list of all elfs in the cmake dir
+    elfs = list(source_dir.glob('src/**/*.elf'))
+    exes = list(source_dir.glob('src/**/*.exe'))
 
     # If there are binaries to build copy them into a build_TIMESTAMP folder
-    if len(bins) > 0:
+    if len(elfs) > 0 or len(exes) > 0:
         info('Binaries were built, copying to build directory:')
         if not dest_dir.exists():
             dest_dir.mkdir()
 
-        for bin_path in bins:
-            shutil.copy2(bin_path, dest_dir)
-            info(f'    {bin_path}')
+        for elf_path in elfs:
+            shutil.copy2(elf_path, dest_dir)
+            info(f'    {elf_path}')
+        for exe_path in exes:
+            shutil.copy2(exe_path, dest_dir)
+            info(f'    {exe_path}')
 
         ok('Binaries copied')
     else:
