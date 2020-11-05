@@ -19,6 +19,7 @@ Developing this repository requires the following software:
 - `lm4flash` - used to flash the TM4C launchpad
 - Python 3 - used for build script
 - cmocka - framework used to test the software
+- OpenOCD - debugging host which allows GDB to be used to debug the software
 
 On ubuntu the following command should install most of these:
 
@@ -31,6 +32,8 @@ For `python3`, be careful as you probably already have it installed.
 cmocka must be installed from source. Download version 1.1.5 from 
 [here](https://cmocka.org/files/1.1/) (cmocka-1.1.5.tar.xz for ubuntu), extract
 it and follow the instructions under `INSTALL.md`.
+
+OpenOCD can be installed from [here](http://openocd.org/getting-openocd/).
 
 You must also get a copy of the TivaWare drivers from [the
 website](https://www.ti.com/tool/SW-TM4C). Extract these one level up from this
@@ -124,3 +127,19 @@ the run using
 
 You can use `./flash --help` to see help information. The script expects ELF
 files that have been built using `./build -t tm4c`.
+
+## Debugging
+
+OpenOCD and GDB can be used to debug the software. To use these in one terminal
+start OpenOCD (`openocd`) with the launchpad connected over USB to the debug 
+port. Then in another terminal use
+
+```shell
+arm-none-eabi-gdb -x openocd.gdb <PATH_TO_ELF>.elf
+```
+
+to start the GDB session. The software will immediately run. Make sure to use
+the ELF file not a binary, as GDB and OpenOCD will handle the flashing process
+for you. You can put breakpoints in the code using `__asm("BKPT")`. Make sure
+to remove these before testing without the debugging setup as they will halt 
+execution.

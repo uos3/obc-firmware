@@ -36,3 +36,5 @@ uint
 cmocka
 CI
 TOBC
+OCD
+GDB
