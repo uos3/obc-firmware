@@ -32,4 +32,4 @@ jobs:
       - name: Run all modules test
         run: |
           cd obc-firmware
-          ./builds/debug/bin/test_all_modules.bin
+          ./builds/debug/bin/test_all_modules.exe
