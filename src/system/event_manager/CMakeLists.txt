@@ -3,6 +3,7 @@
 # Library declaration
 add_library(EventManager
     EventManager_public.c
+    EventManager_private.c
 )
 target_link_libraries(EventManager
     ${STANDARD_LINK_LIBS}

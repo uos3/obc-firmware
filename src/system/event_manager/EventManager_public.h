@@ -176,15 +176,6 @@ extern EventManager EVENTMANAGER;
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief If the current number of raised events is less than 1/4 the allocated 
- * list size the lists shall be shrunk by 1/2.
- * 
- * @return true The lists were successfully shrunk.
- * @return false An error occured.
- */
-bool EventManager_shrink_lists(void);
-
-/**
  * @brief Initialise the event manager to it's default state.
  * 
  * @return true Initialisation succeeded.
