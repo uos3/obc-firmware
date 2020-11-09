@@ -4,7 +4,7 @@
  * @file EventManager_dp_struct.h
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Provides DataPool parameters for the EventManager
- * @version 0.1
+ * @version 1.0
  * @date 2020-10-30
  * 
  * @copyright Copyright (c) 2020

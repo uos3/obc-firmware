@@ -4,7 +4,7 @@
  * @file EventManager_test.c
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Test functionality of the EventManager module.
- * @version 0.1
+ * @version 1.0
  * @date 2020-10-29
  * 
  * @copyright Copyright (c) 2020
@@ -29,6 +29,7 @@
 #include "util/debug/Debug_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
+#include "system/event_manager/EventManager_private.h"
 
 /* -------------------------------------------------------------------------   
  * TESTS

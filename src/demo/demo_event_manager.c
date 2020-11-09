@@ -26,6 +26,9 @@
 #include "util/debug/Debug_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
+/* It is bad practice to include a module's private header but since this is a
+ * demo (and partial test) we need access to the EVENTMANAGER global. */
+#include "system/event_manager/EventManager_private.h"
 
 /* -------------------------------------------------------------------------   
  * MAIN

@@ -7,7 +7,7 @@
  * 
  * See corresponding header file for more information.
  * 
- * @version 0.1
+ * @version 1.0
  * @date 2020-10-28
  * 
  * @copyright Copyright (c) 2020
@@ -28,15 +28,6 @@
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "system/event_manager/EventManager_private.h"
-
-/* -------------------------------------------------------------------------   
- * GLOBALS
- * ------------------------------------------------------------------------- */
-
-/**
- * @brief The global EventManager instance
- */
-EventManager EVENTMANAGER;
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS

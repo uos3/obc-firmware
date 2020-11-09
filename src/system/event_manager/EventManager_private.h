@@ -5,7 +5,7 @@
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Provides private functions for the EventManager
  * 
- * @version 0.1
+ * @version 1.0
  * @date 2020-11-09
  * 
  * @copyright Copyright (c) UoS3 2020
@@ -13,6 +13,16 @@
 
 #ifndef H_EVENTMANAGER_PRIVATE_H
 #define H_EVENTMANAGER_PRIVATE_H
+
+
+/* -------------------------------------------------------------------------   
+ * GLOBALS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief The global EventManager instance
+ */
+extern EventManager EVENTMANAGER;
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS

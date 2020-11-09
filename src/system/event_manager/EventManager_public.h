@@ -17,7 +17,7 @@
  *   allowable at one time. 
  * TODO: More detailed reasoning behind 2 cycles.
  * 
- * @version 0.1
+ * @version 1.0
  * @date 2020-10-28
  * 
  * @copyright Copyright (c) UoS3 2020
@@ -167,9 +167,6 @@ typedef struct _EventManager {
      */
     uint8_t *p_num_cycles_events_raised;
 } EventManager;
-
-// TODO: REMOVE
-extern EventManager EVENTMANAGER;
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
