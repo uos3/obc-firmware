@@ -24,7 +24,7 @@ Developing this repository requires the following software:
 On ubuntu the following command should install most of these:
 
 ```shell
-sudo apt install build-essential gcc-arm-none-eabi cmake lm4flash
+sudo apt install build-essential gcc-arm-none-eabi cmake lm4flash openocd
 ```
 
 For `python3`, be careful as you probably already have it installed.
@@ -32,8 +32,6 @@ For `python3`, be careful as you probably already have it installed.
 cmocka must be installed from source. Download version 1.1.5 from 
 [here](https://cmocka.org/files/1.1/) (cmocka-1.1.5.tar.xz for ubuntu), extract
 it and follow the instructions under `INSTALL.md`.
-
-OpenOCD can be installed from [here](http://openocd.org/getting-openocd/).
 
 You must also get a copy of the TivaWare drivers from [the
 website](https://www.ti.com/tool/SW-TM4C). Extract these one level up from this
