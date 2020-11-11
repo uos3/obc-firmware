@@ -18,6 +18,10 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
+/* Standard libary includes */
+#include <stdint.h>
+#include <stdbool.h>
+
 /* External includes */
 #ifdef TARGET_TM4C
 #include "driverlib/sysctl.h"

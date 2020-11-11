@@ -2,3 +2,6 @@
 
 # Board module
 add_subdirectory(board)
+
+# I2c module
+add_subdirectory(i2c)
