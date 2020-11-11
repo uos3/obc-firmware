@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2020-11-09
+ * @date 2020-11-11
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -43,6 +43,14 @@ bool DataPool_get(
     /* DP.INITIALISED */
     case 0x0001:
         *pp_data_out = &DP.INITIALISED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.BOARD_INITIALISED */
+    case 0x0002:
+        *pp_data_out = &DP.BOARD_INITIALISED;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
         return true;
@@ -105,6 +113,12 @@ bool DataPool_get_symbol_str(
     /* DP.INITIALISED */
     case 0x0001:
         *pp_symbol_str_out = strdup("DP.INITIALISED");
+        return true;
+
+
+    /* DP.BOARD_INITIALISED */
+    case 0x0002:
+        *pp_symbol_str_out = strdup("DP.BOARD_INITIALISED");
         return true;
 
 

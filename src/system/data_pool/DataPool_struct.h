@@ -49,6 +49,17 @@ typedef struct _DataPool {
     bool INITIALISED;
 
     /**
+     * @brief Flag set to true if the Board driver has been initialised, false
+     * otherwise. 
+     * 
+     * Note: This is located in the DataPool struct itself because Board is a
+     * small module with only one global flag.
+     * 
+     * @dp 2
+     */
+    bool BOARD_INITIALISED;
+
+    /**
      * @brief DataPool parameters for the event manager.
      * 
      * @dp_module EventManager

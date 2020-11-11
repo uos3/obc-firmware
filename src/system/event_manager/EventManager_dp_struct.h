@@ -19,6 +19,7 @@
 
 /* Standard library includes */
 #include <stdbool.h>
+#include <stdlib.h>
 
 /* Internal includes */
 #include "system/event_manager/EventManager_public.h"

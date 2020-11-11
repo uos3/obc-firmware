@@ -68,8 +68,8 @@ def main():
     args = parse_args()
 
     # Check for valid target mode
-    if args.target not in ['linux', 'tm4c']:
-        error(f'Invalid build target "{args.target}", only "linux" and "tm4c" are supported.')
+    if args.target not in ['linux', 'tobc', 'launchpad']:
+        error(f'Invalid build target "{args.target}", only "linux", "tobc", and "launchpad" are supported.')
 
     info(
         f'Building OBC Firmware for the {args.target.upper()} target in {"RELEASE" if args.release else "DEBUG"} mode')
@@ -155,7 +155,7 @@ def parse_args():
     )
     parser.add_argument(
         '-t', '--target',
-        help='Specify the target for the build, one of "linux" (default) or "tm4c"',
+        help='Specify the target for the build, one of "linux" (default), "tobc" or "launchpad',
         default='linux'
     )
     parser.add_argument(
@@ -197,7 +197,8 @@ def build(directory, root_dir, release, target, tests):
     cmake = subprocess.Popen([
         'cmake', 
         f'-DCMAKE_BUILD_TYPE={"Release" if release else "Debug"}',
-        f'-DUOS3_TARGET_TM4C={"ON" if target == "tm4c" else "OFF"}',
+        f'-DUOS3_TARGET_TOBC={"ON" if target == "tobc" else "OFF"}',
+        f'-DUOS3_TARGET_LAUNCHPAD={"ON" if target == "launchpad" else "OFF"}',
         f'-DUOS3_BUILD_TESTS={"ON" if tests else "OFF"}',
         '../../../'],
         stdout=subprocess.PIPE,

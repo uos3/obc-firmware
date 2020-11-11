@@ -24,6 +24,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "drivers/board/Board_public.h"
 #include "system/data_pool/DataPool_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -32,14 +33,11 @@
 
 int main(void) {
 
-    /* Init the debug system */
-    Debug_init();
-
-    DEBUG_INF("Initialising DataPool");
-
     /* Initialise the datapool */
     int32_t dp_init_ret = DataPool_init();
-    DEBUG_INF("DataPool_init() = %d\n", dp_init_ret);
+    if (!dp_init_ret) {
+        Debug_exit(1);
+    }
 
     /* Get a member of the data pool */
     bool dp_is_init = DP.INITIALISED;
@@ -56,8 +54,19 @@ int main(void) {
     )) {
         Debug_exit(1);
     }
+    
+    /* Init the board */
+    if (!Board_init()) {
+        Debug_exit(1);
+    }
+
+    /* Init the debug system */
+    if (!Debug_init()) {
+        Debug_exit(1);
+    }
 
     /* Print these out */
+    DEBUG_INF("DataPool_init() = %d\n", dp_init_ret);
     DEBUG_INF("dp_is_init = %d", dp_is_init);
     DEBUG_INF("p_dp_is_init = %p", (void *)p_dp_is_init);
     DEBUG_INF("*p_dp_is_init = %d", *p_dp_is_init);

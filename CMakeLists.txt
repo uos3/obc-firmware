@@ -5,8 +5,19 @@ cmake_minimum_required(VERSION 3.16.3)
 # Project declaration
 project(obc_firmware)
 
-# Option to switch between TM4C build and Linux build
-option(UOS3_TARGET_TM4C "If set the build shall target the TM4C" OFF)
+# Target options
+option(UOS3_TARGET_TOBC "If set the build shall target the TOBC board" OFF)
+option(UOS3_TARGET_LAUNCHPAD "If set the build shall target the TM4C Launchpad board" OFF)
+
+# If either of those are set add defines and set the TARGET_TM4C, so that
+# there's a simple way of telling if we're running on a TM4C or not
+if(${UOS3_TARGET_TOBC})
+    set(UOS3_TARGET_TM4C ON)
+    add_definitions(-DTARGET_TM4C_TOBC)
+elseif(${UOS3_TARGET_LAUNCHPAD})
+    set(UOS3_TARGET_TM4C ON)
+    add_definitions(-DTARGET_TM4C_LAUNCHPAD)
+endif()
 
 # Option to enable test building or not
 option(UOS3_BUILD_TESTS "If set cmocka tests will be build" OFF)
@@ -57,12 +68,6 @@ if(${UOS3_TARGET_TM4C})
         ${TIVAWARE_PATH}/driverlib/gcc/libdriver.a
     )
 
-    # Set the standard link set
-    set(STANDARD_LINK_LIBS
-        ${TIVAWARE_LIBS}
-        Debug
-    )
-
     # Set the startup source file location. This must be inclued in the source
     # list for all executables that should be run on the TM4C, otherwise the 
     # ResetISR will not be set and the app won't be able to start.
@@ -91,15 +96,19 @@ elseif(UNIX)
     # will result in them not being linked.
     set(TIVAWARE_PATH "")
     set(TIVAWARE_LIBS )
-    set(STANDARD_LINK_LIBS 
-        Debug
-    )
     set(STARTUP_SOURCE )
 
 # If anything else throw an error
 else()
     message(FATAL_ERROR "OBC Firmware only supports Unix and TM4C targets, please recompile on either Linux or cross-compile for the TOBC MCU")
 endif()
+
+# Set the standard link set
+set(STANDARD_LINK_LIBS
+    ${TIVAWARE_LIBS}
+    Debug
+    Board
+)
 
 # Set src as an include directory
 include_directories(src/)
@@ -110,7 +119,9 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG_MODE")
 # Add subdirectories, each managed by its own CMakeLists.txt.
 # The ordering here is important as subdirs which have dependencies on other
 # must be added AFTER those dependencies have been made.
+add_subdirectory(src/system/data_pool)
 add_subdirectory(src/util)
+add_subdirectory(src/drivers)
 add_subdirectory(src/system)
 add_subdirectory(src/demo)
 

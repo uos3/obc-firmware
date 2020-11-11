@@ -36,6 +36,7 @@
 #endif
 
 /* Internal includes */
+#include "system/data_pool/DataPool_public.h"
 #include "util/debug/Debug_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -81,12 +82,14 @@ bool Debug_init(void) {
      * on the launchpad, this should be changed when building for the TM4C. 
      */
 
-    /* Set the system clock
-     * TODO: This is to be done in system init, not here.
-     */
-    SysCtlClockSet(
-        SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ
-    );
+    /* Check the system clock has been init */
+    if (!DP.BOARD_INITIALISED) {
+        /* Can't print a debug statement here since the debug system relies on
+         * the clock being setup.
+         * 
+         * FIXME: Trigger hardfault? */
+        return false;
+    }
 
     /* Enable the GPIO for the LED, so we can signal the device is booted and
      * debug initialised */
@@ -112,9 +115,6 @@ bool Debug_init(void) {
 
     /* Turn the LED on to show the device is ready */
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
-
-    UARTCharPutNonBlocking(UART1_BASE, '\r\n');
-    UARTCharPutNonBlocking(UART1_BASE, '\r\n');
     #endif
 
     return true;
@@ -172,7 +172,7 @@ void Debug_log_tm4c(
     va_start(args, p_fmt);
 
     /* String to print into */
-    unsigned char str[512] = {0};
+    char str[512] = {0};
 
     /* TODO: Get the time from the RTC */
 
@@ -182,7 +182,7 @@ void Debug_log_tm4c(
     /* Put the the prefix into the string */
     sprintf(
         str,
-        "[---------- %s%s\x1b[0m] %s:%d ",
+        "[---------- %s%s\x1b[0m] %s:%ld ",
         Debug_level_colours[level], 
         Debug_level_names[level],
         p_file_stripped,

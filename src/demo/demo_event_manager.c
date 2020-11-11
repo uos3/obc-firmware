@@ -24,6 +24,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "drivers/board/Board_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 /* It is bad practice to include a module's private header but since this is a
@@ -37,8 +38,13 @@
 int main(void) {
 
     /* Init system */
-    Debug_init();
     if (!DataPool_init()) {
+        Debug_exit(1);
+    }
+    if (!Board_init()) {
+        Debug_exit(1);
+    }
+    if (!Debug_init()) {
         Debug_exit(1);
     }
 
