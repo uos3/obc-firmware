@@ -61,7 +61,7 @@ typedef enum _I2c_ErrorCode {
     /**
      * @brief The I2C driver has not been initialised.
      */
-    I2C_NOT_INITIALISED,
+    I2C_ERROR_NOT_INITIALISED,
 
     /**
      * @brief Failed to enable an I2C peripheral.
@@ -72,7 +72,25 @@ typedef enum _I2c_ErrorCode {
      * @brief Failed to enable a GPIO peripheral.
      * 
      */
-    I2C_ERROR_GPIO_PERIPH_ENABLE_FAILED
+    I2C_ERROR_GPIO_PERIPH_ENABLE_FAILED,
+
+    /**
+     * @brief Indicates that no action has been queued for the given device
+     */
+    I2C_ERROR_NO_ACTION_FOR_DEVICE,
+
+    /**
+     * @brief Error indicating that a user attempted to read recieved bytes
+     * from a device that had sent data. 
+     */
+    I2C_ERROR_GET_RECVED_BYTES_FROM_SEND,
+
+    /**
+     * @brief Attempted to get the recieved bytes from a non successful action.
+     * Use I2c_get_device_action_status to check that the action was successful
+     * before calling I2c_get_device_recved_bytes.
+     */
+    I2C_ERROR_GET_RECVED_BYTES_ON_NON_SUCCESS_ACTION
 
 } I2c_ErrorCode;
 
@@ -142,7 +160,7 @@ I2c_ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in);
  * 
  * @return I2c_ErrorCode Return code.
  */
-I2c_ErrorCode I2c_step();
+I2c_ErrorCode I2c_step(void);
 
 /**
  * @brief Send the given bytes to the I2C device.

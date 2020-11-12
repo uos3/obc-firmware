@@ -15,6 +15,6 @@
 
 # Duncan
 
-- I2c_step
-- I2c_get_device_recved_bytes
-- I2c_get_device_action_failure_cause
+- I2c_step - done
+- I2c_get_device_recved_bytes - done
+- I2c_get_device_action_failure_cause - done

@@ -95,3 +95,13 @@ I2c_Module I2C_MODULES[I2C_NUM_MODULES] = {
         false
     }
 };
+
+/* -------------------------------------------------------------------------   
+ * FUNCTIONS
+ * ------------------------------------------------------------------------- */
+
+bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in) {
+    return (p_a_in->module == p_b_in->module) 
+        && 
+        (p_a_in->address == p_b_in->address);
+}

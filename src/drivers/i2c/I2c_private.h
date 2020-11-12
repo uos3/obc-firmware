@@ -327,5 +327,14 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in);
  */
 I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in);
 
+/**
+ * @brief Returns true if both devices have the same module and address.
+ * 
+ * @param p_a_in The first device
+ * @param p_b_in The second device
+ * @return bool True if the devices are the same, false otherwise.
+ */
+bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in);
+
 
 #endif /* H_I2C_PRIVATE_H */

@@ -4,6 +4,7 @@
  * @file EventManager_events.h
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Provides possible events for the EventManager.
+ * 
  * @version 1.0
  * @date 2020-11-02
  * 
@@ -19,6 +20,8 @@
 
 /* Internal includes */
 #include "system/event_manager/EventManager_public.h"
+#include "system/event_manager/EventManager_blocks.h"
+#include "drivers/i2c/I2c_events.h"
 
 /* -------------------------------------------------------------------------   
  * EVENTS
@@ -36,7 +39,7 @@
  * DP.EVENTMANAGER.MAX_EVENTS_REACHED flag will be raised. This event will not
  * be raised.
  */
-#define EVT_EVENTMANAGER_ERROR                                 ((Event)0x0001)
+#define EVT_EVENTMANAGER_ERROR ((Event)(EVENTMANAGER_BLOCK_EVENTMANAGER | 1))
 
 
 #endif /* H_EVENTMANAGER_EVENTS_H */
