@@ -5,6 +5,8 @@
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Provides EventManager system module.
  * 
+ * Task ref: [UT_2.9.1]
+ * 
  * The EventManager provides the following functionality:
  * - Raise events
  * - See if an event has been raised

@@ -5,6 +5,8 @@
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief I2C driver for the firmware.
  * 
+ * Task ref: [UT_2.8.7]
+ * 
  * I2C, like all other IO drivers, uses an internal state rather than the
  * DataPool for storing data. Users of the I2C driver are responsible for
  * handling I2C errors (either themselves or by propagating to FDIR system).

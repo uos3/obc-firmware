@@ -4,6 +4,9 @@
  * @file Debug_public.h
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Provides debug logging functionality to the software.
+ * 
+ * Task ref: [UT_2.12.1]
+ * 
  * @version 0.1
  * @date 2020-11-01
  * 

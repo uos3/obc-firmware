@@ -5,6 +5,8 @@
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Main driver providing basic TM4C123GPMH board support.
  * 
+ * Task ref: [UT_2.8.1]
+ * 
  * This driver is responsible for setting up the system clock on
  * initialisation.
  * 
