@@ -1,9 +1,11 @@
 /**
  * @ingroup i2c
  * 
- * @file I2c_public.h
+ * @file I2c_public_tm4c.h
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief I2C driver for the firmware.
+ * 
+ * This file implements the I2C driver for TM4C targets.
  * 
  * See I2c_public.h for more information.
  * 
@@ -23,14 +25,12 @@
 #include <stdbool.h>
 
 /* External includes */
-#ifdef TARGET_TM4C
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/i2c.h"
 #include "driverlib/gpio.h"
 
 #include "inc/hw_memmap.h"
-#endif
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"

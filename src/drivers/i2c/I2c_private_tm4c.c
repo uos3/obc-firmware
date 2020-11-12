@@ -1,9 +1,11 @@
 /**
  * @ingroup i2c
  * 
- * @file I2c_private.h
+ * @file I2c_private_tm4c.h
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Private source for the I2C driver.
+ * 
+ * This file implements the I2C driver for TM4C targets.
  * 
  * @version 0.1
  * @date 2020-11-11
@@ -20,14 +22,12 @@
 #include <stdbool.h>
 
 /* External includes */
-#ifdef TARGET_TM4C
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/i2c.h"
 #include "driverlib/gpio.h"
 
 #include "inc/hw_memmap.h"
-#endif
 
 /* Internal includes */
 #include "drivers/i2c/I2c_private.h"
