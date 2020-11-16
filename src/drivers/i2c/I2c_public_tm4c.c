@@ -3,6 +3,7 @@
  * 
  * @file I2c_public_tm4c.h
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
+ *         Leon Galanakis (lg5g16@soton.ac.uk)
  * @brief I2C driver for the firmware.
  * 
  * This file implements the I2C driver for TM4C targets.
@@ -266,6 +267,187 @@ I2c_ErrorCode I2c_step(void) {
     return I2C_ERROR_NONE;
 }
 
+I2c_ErrorCode I2c_device_send_bytes(
+    I2c_Device *p_device_in,
+    uint8_t *p_data_in,
+    size_t length_in
+) {
+    /* Check the I2C is initialised */
+    if (!I2C.initialised) {
+        DEBUG_ERR("Attempted to send byte(s) to I2C when it is not
+                 initialised."
+                 );
+        return I2C_ERROR_NOT_INITIALISED;
+    }
+
+    /* Raise an error if the length of the data is zero, as we cannot
+     * send zero bytes. */
+    if (length_in == 0) {
+        DEBUG_ERR("Attempted to send zero bytes.");
+        return I2C_ERROR_ZERO_LENGTH_SEND;
+    }
+
+    /* Will be true if an empty space in the action array is found and the
+     * action was queued for execution. */
+    bool action_queued = false;
+
+    /* Loop through searching for an empty action in the list */
+    for (int i = 0; i < I2C_MAX_NUM_ACTIONS; ++i) {
+        if (I2C.action_types[i] == I2C_ACTION_TYPE_NONE) {
+            /* Send bytes in single byte mode if length_in == 1 */
+            if (length_in == 1) {
+                I2C.action_types[i] = I2C_ACTION_TYPE_SINGLE_SEND;
+                I2C.u_actions[i].single_send.step = 0;
+                I2C.u_actions[i].single_send.error = I2C_ERROR_NONE;
+                I2C.u_actions[i].single_send.status
+                    = I2C_ACTION_STATUS_IN_PROGRESS;
+                I2C.u_actions[i].single_send.device = *p_device_in;
+                I2C.u_actions[i].single_send.byte = *p_data_in;
+            }
+
+            /* Send bytes in multi byte mode if length_in > 1 */
+            else {
+                I2C.action_types[i] = I2C_ACTION_TYPE_BURST_SEND;
+                I2C.u_actions[i].burst_send.step = 0;
+                I2C.u_actions[i].burst_send.error = I2C_ERROR_NONE;
+                I2C.u_actions[i].burst_send.status
+                    = I2C_ACTION_STATUS_IN_PROGRESS;
+                I2C.u_actions[i].burst_send.device = *p_device_in;
+                I2C.u_actions[i].burst_send.length = length_in;
+
+                /* Allocate memory for the bytes */
+                I2C.u_actions[i].burst_send.p_bytes 
+                    = (uint8_t *)malloc(length_in);
+
+                /* Check that memory allocation was successful */
+                if (I2C.u_actions[i].burst_send.p_bytes == NULL) {
+                    DEBUG_ERR(
+                        "Failed to allocate memory for burst send action."
+                    );
+                    return I2C_ERROR_MEMORY_ALLOC_FAILED;
+                }
+
+                /* Copy the input data into the action structure */
+                memcpy(
+                    (void *)I2C.u_actions[i].burst_send.p_bytes,
+                    (void *)p_data_in,
+                    length_in
+                );
+            }
+
+            /* Set to true if an empty space is found in the action array,
+             * allowing an action to be queued */
+            action_queued = true;
+
+            break;
+        }
+    }
+
+    /* If the action was not queued raise an error */
+    if (!action_queued) {
+        DEBUG_ERR(
+            "Failed to queue a send action as the maximum number of actions has
+             been reached."
+        );
+        return I2C_ERROR_MAX_ACTIONS_REACHED;
+    }
+
+    return I2C_ERROR_NONE;
+}
+
+I2c_ErrorCode I2c_device_receive_bytes(
+    I2c_Device *p_device_in,
+    uint8_t reg_in,
+    size_t length_in
+) {
+    /* Check the I2C is initialised */
+    if (!I2C.initialised) {
+        DEBUG_ERR("Attempted to receive byte(s) to I2C when it is not
+                 initialised."
+                 );
+        return I2C_ERROR_NOT_INITIALISED;
+    }
+
+    /* Raise an error if the length of the data is zero, as we cannot
+     * receive zero bytes. */
+    if (length_in == 0) {
+        DEBUG_ERR("Attempted to receive zero bytes.");
+        return I2C_ERROR_ZERO_LENGTH_RECEIVE;
+    }
+
+    /* Will be true if an empty space in the action array is found and the
+     * action was queued for execution. */
+    bool action_queued = false;
+
+    /* Loop through searching for an empty action in the list */
+    for (int i = 0; i < I2C_MAX_NUM_ACTIONS; ++i) {
+        if (I2C.action_types[i] == I2C_ACTION_TYPE_NONE) {
+            /* Receive bytes in single byte mode if length_in == 1 */
+            if (length_in == 1) {
+                I2C.action_types[i] = I2C_ACTION_TYPE_SINGLE_RECV;
+                I2C.u_actions[i].single_recv.step = 0;
+                I2C.u_actions[i].single_recv.error = I2C_ERROR_NONE;
+                I2C.u_actions[i].single_recv.status
+                    = I2C_ACTION_STATUS_IN_PROGRESS;
+                I2C.u_actions[i].single_recv.device = *p_device_in;
+                I2C.u_actions[i].single_recv.reg = reg_in;
+                /*TODO: What about single_recv.byte ? */
+            }
+
+            /* Send bytes in multi byte mode if length_in > 1 */
+            else {
+                I2C.action_types[i] = I2C_ACTION_TYPE_BURST_RECV;
+                I2C.u_actions[i].burst_recv.step = 0;
+                I2C.u_actions[i].burst_recv.error = I2C_ERROR_NONE;
+                I2C.u_actions[i].burst_recv.status
+                    = I2C_ACTION_STATUS_IN_PROGRESS;
+                I2C.u_actions[i].burst_recv.device = *p_device_in;
+                I2C.u_actions[i].burst_recv.reg = reg_in;
+                I2C.u_actions[i].burst_recv.length = length_in;
+
+                /* Allocate memory for the bytes */
+                I2C.u_actions[i].burst_recv.p_bytes 
+                    = (uint8_t *)malloc(length_in);
+
+                /* Check that memory allocation was successful */
+                if (I2C.u_actions[i].burst_recv.p_bytes == NULL) {
+                    DEBUG_ERR(
+                        "Failed to allocate memory for burst receive action."
+                    );
+                    return I2C_ERROR_MEMORY_ALLOC_FAILED;
+                    /* TODO: Same error as memory alloc fail for send/recv? */
+                }
+
+                /* Copy the input data into the action structure */
+                memcpy(
+                    (void *)I2C.u_actions[i].burst_recv.p_bytes,
+                    (void *)reg_in,
+                    length_in
+                    /* TODO: Fix this, it should not be reg_in, but there
+                     * is no p_data_in for burst receive? */
+                );
+            }
+
+            /* Set to true if an empty space is found in the action array,
+             * allowing an action to be queued */
+            action_queued = true;
+
+            break;
+        }
+    }
+
+    /* If the action was not queued raise an error */
+    if (!action_queued) {
+        DEBUG_ERR(
+            "Failed to queue a receive action as the maximum number of actions
+             has been reached."
+        );
+        return I2C_ERROR_MAX_ACTIONS_REACHED;
+    }
+
+    return I2C_ERROR_NONE;
+}
+
 I2c_ErrorCode I2c_get_device_recved_bytes(
     I2c_Device *p_device_in,
     uint8_t **pp_bytes_out
@@ -345,9 +527,10 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                          * allocate enough space for the number of bytes they
                          * requested.
                          */
-                        strcpy(
-                            (char *)(*pp_bytes_out), 
-                            (char *)(p_br_action->p_bytes)
+                        memcpy(
+                            (void *)(*pp_bytes_out), 
+                            (void *)(p_br_action->p_bytes),
+                            p_br_action->length
                         );
                         return I2C_ERROR_NONE;
                     }

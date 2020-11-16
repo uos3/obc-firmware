@@ -192,7 +192,7 @@ typedef struct _I2c_ActionBurstSend {
     /**
      * @brief Pointer to an array of bytes to send to the device.
      */
-    uint8_t *p_byte;
+    uint8_t *p_bytes;
 
     /**
      * @brief The length of the byte array to send 

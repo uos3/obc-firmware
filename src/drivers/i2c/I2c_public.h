@@ -3,6 +3,7 @@
  * 
  * @file I2c_public.h
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
+ *         Leon Galanakis (lg5g16@soton.ac.uk)
  * @brief I2C driver for the firmware.
  * 
  * Task ref: [UT_2.8.7]
@@ -90,7 +91,29 @@ typedef enum _I2c_ErrorCode {
      * Use I2c_get_device_action_status to check that the action was successful
      * before calling I2c_get_device_recved_bytes.
      */
-    I2C_ERROR_GET_RECVED_BYTES_ON_NON_SUCCESS_ACTION
+    I2C_ERROR_GET_RECVED_BYTES_ON_NON_SUCCESS_ACTION,
+
+    /**
+     * @brief Attempted to send 0 bytes.
+     */
+    I2C_ERROR_ZERO_LENGTH_SEND,
+
+    /**
+     * @brief Failed to allocate memory. 
+     */
+    I2C_ERROR_MEMORY_ALLOC_FAILED,
+
+    /**
+     * @brief A new action could not be queued as the maximum number of actions
+     * has been reached. 
+     */
+    I2C_ERROR_MAX_ACTIONS_REACHED,
+
+    /**
+     * @brief A new action could not be queued as the maximum number of actions
+     * has been reached. 
+     */
+    I2C_ERROR_ZERO_LENGTH_RECEIVE
 
 } I2c_ErrorCode;
 
