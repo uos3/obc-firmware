@@ -81,6 +81,12 @@ typedef enum _I2c_ErrorCode {
     I2C_ERROR_NO_ACTION_FOR_DEVICE,
 
     /**
+     * @brief Attempted to check the TivaWare error status of an action which
+     * is of type NONE. 
+     */
+    I2C_ERROR_CHECK_ON_NONE_ACTION,
+
+    /**
      * @brief Error indicating that a user attempted to read recieved bytes
      * from a device that had sent data. 
      */
@@ -129,7 +135,30 @@ typedef enum _I2c_ErrorCode {
     /**
      * @brief A master I2C module is busy.
      */
-    I2C_ERROR_MODULE_MASTER_BUSY
+    I2C_ERROR_MODULE_MASTER_BUSY,
+
+    /**
+     * @brief Failed to acknowledge the address of an I2C device, is the device
+     * address correct?
+     */
+    I2C_ERROR_ADDRESS_ACK_FAILED,
+
+    /**
+     * @brief Failed to acknowledge data sent to the master. The slave could be
+     * unresponsive. 
+     */
+    I2C_ERROR_DATA_ACK_FAILED,
+
+    /**
+     * @brief The arbitration of the bus has been lost. This could indicate
+     * that a slave is in error. 
+     */
+    I2C_ERROR_ARBITRATION_LOST,
+
+    /**
+     * @brief An unkown TivaWare library error has occured 
+     */
+    I2C_ERROR_UNKNOWN_TIVAWARE_ERROR
 
 } I2c_ErrorCode;
 

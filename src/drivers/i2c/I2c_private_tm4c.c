@@ -112,12 +112,14 @@ I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
      *      - Set the slave device address
      *      - Put the data onto the bus
      *      - Control for single command
-     * 1. Wait for master to become non-busy
+     * 1. Wait for master to become non-busy:
      *      - If the number of busy checks is greater than 3 error
      *      - Try to check master not busy for 5 times
      *      - If busy return out to step, waiting on not busy, increment number
      *        of busy checks
-     * 2. Finished
+     * 2. Finished:
+     *      - Check no error occured
+     *      - Mark as successful if not
      */
 
     /* Get a pointer to the I2C module this device is associated with */
@@ -200,21 +202,74 @@ I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
             __attribute__ ((fallthrough));
         case 2:
             
-            /* Set the action status as successful */
-            p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
+            /* Check for errors */
+            p_action_in->error 
+                = I2c_check_master_error(p_i2c_module->base_i2c);
 
-            break;
+            /* If no error return success, otherwise return failure */
+            if (p_action_in->error == I2C_ERROR_NONE) {
+                p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
+                return I2C_ERROR_NONE;
+            }
+            else {
+                p_action_in->status = I2C_ACTION_STATUS_FAILURE;
+                return p_action_in->error;
+            }
+            
         default:
             DEBUG_ERR("Reached unexpected step of single send action");
             return I2C_ERROR_UNEXPECTED_ACTION_STEP;
 
     }
 
-    return I2C_ERROR_NONE;
+}
+
+I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
+    /*
+     * Steps for this action:
+     * 
+     * 0. Setup:
+     *      - Set the slave device address
+     *      - Put the data onto the bus
+     *      - Control for burst send start
+     * 1. Burst send:
+     *      - 
+     */
+}
+
+I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
+
 }
 
 bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in) {
     return (p_a_in->module == p_b_in->module) 
         && 
         (p_a_in->address == p_b_in->address);
+}
+
+I2c_ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in) {
+    /* Read error code from I2C module */
+    uint32_t i2c_error = I2CMasterErr(i2c_base_addr_in);
+
+    /* Return the translated error code */
+    switch (i2c_error) {
+        case I2C_MASTER_ERR_NONE:
+            return I2C_ERROR_NONE;
+
+        /* Address acknowledge failed */
+        case I2C_MASTER_ERR_ADDR_ACK:
+            return I2C_ERROR_ADDRESS_ACK_FAILED;
+
+        /* Data acknowledge failed */
+        case I2C_MASTER_ERR_DATA_ACK:
+            return I2C_ERROR_DATA_ACK_FAILED;
+
+        /* Arbitration lost */
+        case I2C_MASTER_ERR_ARB_LOST:
+            return I2C_ERROR_ARBITRATION_LOST;
+        
+        /* Unknown */
+        default:
+            return I2C_ERROR_UNKNOWN_TIVAWARE_ERROR;
+    }
 }

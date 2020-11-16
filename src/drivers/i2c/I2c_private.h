@@ -362,5 +362,13 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in);
  */
 bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in);
 
+/**
+ * @brief Check the I2C master for the given module base address for errors.
+ * 
+ * @param i2c_base_addr_in The base address of the I2C module.
+ * @return I2c_ErrorCode Return code.
+ */
+I2c_ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in);
+
 
 #endif /* H_I2C_PRIVATE_H */
