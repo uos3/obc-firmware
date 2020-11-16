@@ -118,10 +118,11 @@ def main():
 
     # If a clean build remove all contents of the cmake folder
     if args.clean:
-        clean_dir(cmake_dir)
+        if cmake_dir.exists():
+            clean_dir(cmake_dir)
 
         # If debug also clean the bin folder
-        if not args.release:
+        if not args.release and build_dir.exists():
             clean_dir(build_dir)
 
     # Run the build process

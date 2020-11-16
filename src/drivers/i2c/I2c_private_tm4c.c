@@ -146,6 +146,15 @@ I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
             /* Increment the setp index */
             p_action_in->step++;
         
+            /* 
+             * This GCC attribute prevents the fallthrough warning for this
+             * case. Usually fallthrough in switches is bad, but here we
+             * actually want this so that we do not interrupt the function when
+             * it has the possibility to actually make progress. Therefore this
+             * attribute is used to keep the fallthrough warning enabled but to
+             * say that here it is ok
+             */
+            __attribute__ ((fallthrough));
         case 1:
             /* Check that the number of checks is less than the limit */
             if (
@@ -188,6 +197,7 @@ I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
             /* Increment step */
             p_action_in->step++;
 
+            __attribute__ ((fallthrough));
         case 2:
             
             /* Set the action status as successful */
