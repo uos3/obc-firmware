@@ -26,10 +26,20 @@ jobs:
         run: |
           cd obc-firmware
           chmod +x ./build
-          ./build -t linux --test
+          ./build -c -t linux --test
 
       # Run all modules test
       - name: Run all modules test
         run: |
           cd obc-firmware
           ./builds/debug/bin/test_all_modules.exe
+
+      - name: Build (launchpad, debug)
+        run: |
+          cd obc-firmware
+          ./build -c -t launchpad
+
+      - name: Build (tobc, debug)
+        run: |
+          cd obc-firmware
+          ./build -c -t tobc
