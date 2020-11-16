@@ -274,9 +274,9 @@ I2c_ErrorCode I2c_device_send_bytes(
 ) {
     /* Check the I2C is initialised */
     if (!I2C.initialised) {
-        DEBUG_ERR("Attempted to send byte(s) to I2C when it is not
-                 initialised."
-                 );
+        DEBUG_ERR(
+            "Attempted to send byte(s) to I2C when it is not initialised."
+        );
         return I2C_ERROR_NOT_INITIALISED;
     }
 
@@ -346,8 +346,8 @@ I2c_ErrorCode I2c_device_send_bytes(
     /* If the action was not queued raise an error */
     if (!action_queued) {
         DEBUG_ERR(
-            "Failed to queue a send action as the maximum number of actions has
-             been reached."
+            "Failed to queue a send action as the maximum number of actions\
+             has been reached."
         );
         return I2C_ERROR_MAX_ACTIONS_REACHED;
     }
@@ -355,16 +355,16 @@ I2c_ErrorCode I2c_device_send_bytes(
     return I2C_ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_device_receive_bytes(
+I2c_ErrorCode I2c_device_recv_bytes(
     I2c_Device *p_device_in,
     uint8_t reg_in,
     size_t length_in
 ) {
     /* Check the I2C is initialised */
     if (!I2C.initialised) {
-        DEBUG_ERR("Attempted to receive byte(s) to I2C when it is not
-                 initialised."
-                 );
+        DEBUG_ERR(
+            "Attempted to send byte(s) to I2C when it is not initialised."
+        );
         return I2C_ERROR_NOT_INITIALISED;
     }
 
@@ -428,7 +428,7 @@ I2c_ErrorCode I2c_device_receive_bytes(
     /* If the action was not queued raise an error */
     if (!action_queued) {
         DEBUG_ERR(
-            "Failed to queue a receive action as the maximum number of actions
+            "Failed to queue a receive action as the maximum number of actions\
              has been reached."
         );
         return I2C_ERROR_MAX_ACTIONS_REACHED;
@@ -465,7 +465,8 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                     /* Return an error since we can't recieve bytes on a send
                      * action */
                     DEBUG_ERR(
-                        "Attempted to get recieved bytes from a send action on device (%d, %d).",
+                        "Attempted to get recieved bytes from a send action on\
+                         device (%d, %d).",
                         p_device_in->module,
                         p_device_in->address
                     );
@@ -489,7 +490,8 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                     /* If the status is not success return an error */
                     else {
                         DEBUG_ERR(
-                            "Tried to get the recieved bytes on a non successful action for device (%d, %d)",
+                            "Tried to get the recieved bytes on a non\
+                            successful action for device (%d, %d)",
                             p_device_in->module,
                             p_device_in->address
                         );
@@ -526,7 +528,8 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                     /* If the status is not success return an error */
                     else {
                         DEBUG_ERR(
-                            "Tried to get the recieved bytes on a non successful action for device (%d, %d)",
+                            "Tried to get the recieved bytes on a non\
+                             successful action for device (%d, %d)",
                             p_device_in->module,
                             p_device_in->address
                         );

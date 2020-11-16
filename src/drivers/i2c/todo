@@ -1,13 +1,13 @@
 # Leon
 
-- I2c_device_send_bytes
+- I2c_device_send_bytes - done
     - check global I2C has been initialised
     - check there's enough space for the action
     - build a I2c_ActionSingleSend structure
     - place it into the I2C global
     - set the action type for the same index
     - return true
-- I2c_device_recv_bytes
+- I2c_device_recv_bytes - done
 - I2c_get_device_action_status
     - check global I2C has been initialised
     - iterate through I2C.actions that are not NONE and get status if the

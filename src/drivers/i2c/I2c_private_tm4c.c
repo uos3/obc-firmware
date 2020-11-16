@@ -100,6 +100,12 @@ I2c_Module I2C_MODULES[I2C_NUM_MODULES] = {
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
+I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
+    /*
+     * 
+     */
+}
+
 bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in) {
     return (p_a_in->module == p_b_in->module) 
         && 
