@@ -33,13 +33,15 @@ jobs:
         run: |
           cd obc-firmware
           ./builds/debug/bin/test_all_modules.exe
+    
+      # # TODO: This requires setting up the tivaware libs on the github end,
+      # # which we can't do because of license agreements.
+      # - name: Build (launchpad, debug)
+      #   run: |
+      #     cd obc-firmware
+      #     ./build -c -t launchpad
 
-      - name: Build (launchpad, debug)
-        run: |
-          cd obc-firmware
-          ./build -c -t launchpad
-
-      - name: Build (tobc, debug)
-        run: |
-          cd obc-firmware
-          ./build -c -t tobc
+      # - name: Build (tobc, debug)
+      #   run: |
+      #     cd obc-firmware
+      #     ./build -c -t tobc
