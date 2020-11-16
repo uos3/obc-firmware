@@ -47,6 +47,7 @@
  * before an error will be issued.
  * 
  * TODO: This value is arbitrary
+ * TODO: This should be in the configuration file
  */
 #define I2C_MAX_NUM_I2C_PERIPH_READY_CHECKS (10)
 
@@ -55,8 +56,27 @@
  * before an error will be issued.
  * 
  * TODO: This value is arbitrary
+ * TODO: This should be in the configuration file
  */
 #define I2C_MAX_NUM_GPIO_PERIPH_READY_CHECKS (10)
+
+/**
+ * @brief The maximum number of major loop checks on whether or not the master
+ * module is busy.
+ * 
+ * TODO: Possibly need separate values for each action type?
+ * TODO: This should be in the configuration file
+ */
+#define I2C_MAX_NUM_MASTER_BUSY_MAJOR_CHECKS (3)
+
+/**
+ * @brief The maximum number of minor loop checks on whether or not the master
+ * module is busy.
+ * 
+ * TODO: Possibly need separate values for each action type?
+ * TODO: This should be in the configuration file
+ */
+#define I2C_MAX_NUM_MASTER_BUSY_MINOR_CHECKS (5)
 
 /* -------------------------------------------------------------------------   
  * ENUMS
@@ -124,6 +144,12 @@ typedef struct _I2c_ActionSingleSend {
      * @brief The byte to send to the device.
      */
     uint8_t byte;
+
+    /**
+     * @brief The number of checks (major loop attempts) made on the I2C master
+     * module. 
+     */
+    uint32_t num_master_busy_checks;
     
 } I2c_ActionSingleSend;
 

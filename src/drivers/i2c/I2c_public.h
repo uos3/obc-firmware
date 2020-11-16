@@ -118,7 +118,18 @@ typedef enum _I2c_ErrorCode {
      * @brief A new action could not be queued as the maximum number of actions
      * has been reached. 
      */
-    I2C_ERROR_ZERO_LENGTH_RECEIVE
+    I2C_ERROR_ZERO_LENGTH_RECEIVE,
+
+    /**
+     * @brief An unexpected action step index was found while executing an
+     * action.
+     */
+    I2C_ERROR_UNEXPECTED_ACTION_STEP,
+
+    /**
+     * @brief A master I2C module is busy.
+     */
+    I2C_ERROR_MODULE_MASTER_BUSY
 
 } I2c_ErrorCode;
 
@@ -196,6 +207,9 @@ I2c_ErrorCode I2c_step(void);
  * This function will send bytes to the I2C device in single byte mode when
  * length_in == 1, and multi byte mode when length_in > 1.
  * 
+ * The user must call I2c_clear_device_action for this device before attempting
+ * another operation on the device.
+ * 
  * @param p_device_in The device to send the data to.
  * @param p_data_in A pointer to an array of bytes to send.
  * @param length_in The length of the byte array.
@@ -211,6 +225,9 @@ I2c_ErrorCode I2c_device_send_bytes(
  * @brief Recieve bytes from the I2C device.
  * 
  * This function requests bytes stored in reg_in from the given device.
+ * 
+ * The user must call I2c_clear_device_action for this device before attempting
+ * another operation on the device.
  * 
  * @param p_device_in The device to recieve from.
  * @param reg_in The register to read from the device.
@@ -264,6 +281,19 @@ I2c_ErrorCode I2c_get_device_action_failure_cause(
     I2c_Device *p_device_in,
     I2c_ErrorCode *p_error_out
 );
+
+/**
+ * @brief Clear the action for the given device.
+ * 
+ * This function should be called after the information stored in the action
+ * (for instance received bytes) has been retrieved by the user. Failing to
+ * call this function may result in too many actions remaining and an error in
+ * the future.
+ * 
+ * @param p_device_in The device to clear.
+ * @return I2c_ErrorCode Return code.
+ */
+I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in);
 
 #endif /* H_I2C_PUBLIC_H */
 

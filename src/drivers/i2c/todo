@@ -12,9 +12,13 @@
     - check global I2C has been initialised
     - iterate through I2C.actions that are not NONE and get status if the
       devices match
+- I2c_action_single_recv
+- I2c_clear_device_action
 
 # Duncan
 
 - I2c_step - done
 - I2c_get_device_recved_bytes - done
 - I2c_get_device_action_failure_cause - done
+- I2c_action_burst_send
+- I2c_action_burst_recv

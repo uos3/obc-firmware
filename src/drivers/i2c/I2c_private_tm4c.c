@@ -30,6 +30,7 @@
 #include "inc/hw_memmap.h"
 
 /* Internal includes */
+#include "util/debug/Debug_public.h"
 #include "drivers/i2c/I2c_private.h"
 
 /* -------------------------------------------------------------------------   
@@ -101,9 +102,105 @@ I2c_Module I2C_MODULES[I2C_NUM_MODULES] = {
  * ------------------------------------------------------------------------- */
 
 I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
+    /* No need to check for initialisation as this is done in the step 
+     * function */
+    
     /*
+     * Steps required for this action:
      * 
+     * 0. Setup:
+     *      - Set the slave device address
+     *      - Put the data onto the bus
+     *      - Control for single command
+     * 1. Wait for master to become non-busy
+     *      - If the number of busy checks is greater than 3 error
+     *      - Try to check master not busy for 5 times
+     *      - If busy return out to step, waiting on not busy, increment number
+     *        of busy checks
+     * 2. Finished
      */
+
+    /* Get a pointer to the I2C module this device is associated with */
+    I2c_Module *p_i2c_module = &I2C_MODULES[p_action_in->device.module];
+
+    /* Switch based on the current step index */
+    switch (p_action_in->step) {
+        case 0:
+            /* Set the I2C module to use the device's slave address in send
+             * mode (false) */
+            I2CMasterSlaveAddrSet(
+                p_i2c_module->base_i2c, 
+                p_action_in->device.address, 
+                false
+            );
+
+            /* Place the byte onto the bus */
+            I2CMasterDataPut(p_i2c_module->base_i2c, p_action_in->byte);
+
+            /* Instruct the module to perform the single send */
+            I2CMasterControl(
+                p_i2c_module->base_i2c, 
+                I2C_MASTER_CMD_SINGLE_SEND
+            );
+
+            /* Increment the setp index */
+            p_action_in->step++;
+        
+        case 1:
+            /* Check that the number of checks is less than the limit */
+            if (
+                p_action_in->num_master_busy_checks 
+                >= 
+                I2C_MAX_NUM_MASTER_BUSY_MAJOR_CHECKS
+            ) {
+                DEBUG_ERR(
+                   "I2C master module %d has been busy for %d major loops, now\
+                    considered unresponsive.",
+                    p_action_in->device.module,
+                    p_action_in->num_master_busy_checks
+                );
+                p_action_in->status = I2C_ACTION_STATUS_FAILURE;
+                p_action_in->error = I2C_ERROR_MODULE_MASTER_BUSY;
+                return I2C_ERROR_MODULE_MASTER_BUSY;
+            }
+
+            /* Check for master busy in the minor loop */
+            bool master_busy = true;
+            for (int i = 0; i < I2C_MAX_NUM_MASTER_BUSY_MINOR_CHECKS; ++i) {
+                master_busy = I2CMasterBusy(p_i2c_module->base_i2c);
+
+                /* If the master is already not busy exit before the end of the
+                 * loop */
+                if (!master_busy) {
+                    break;
+                }
+            }
+
+            /* If the master is busy exit and return to main loop control,
+             * otherwise carry on to next step */
+            if (master_busy) {
+                DEBUG_DBG(
+                    "I2C master module %d still busy after minor check.",
+                    p_action_in->device.module
+                );
+            }
+
+            /* Increment step */
+            p_action_in->step++;
+
+        case 2:
+            
+            /* Set the action status as successful */
+            p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
+
+            break;
+        default:
+            DEBUG_ERR("Reached unexpected step of single send action");
+            return I2C_ERROR_UNEXPECTED_ACTION_STEP;
+
+    }
+
+    return I2C_ERROR_NONE;
 }
 
 bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in) {

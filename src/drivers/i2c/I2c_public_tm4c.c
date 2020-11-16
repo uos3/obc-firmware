@@ -303,6 +303,7 @@ I2c_ErrorCode I2c_device_send_bytes(
                     = I2C_ACTION_STATUS_IN_PROGRESS;
                 I2C.u_actions[i].single_send.device = *p_device_in;
                 I2C.u_actions[i].single_send.byte = *p_data_in;
+                I2C.u_actions[i].single_send.num_master_busy_checks = 0;
             }
 
             /* Send bytes in multi byte mode if length_in > 1 */
