@@ -99,9 +99,14 @@ typedef enum _I2c_ErrorCode {
     I2C_ERROR_ZERO_LENGTH_SEND,
 
     /**
-     * @brief Failed to allocate memory. 
+     * @brief Failed to allocate memory for send action. 
      */
-    I2C_ERROR_MEMORY_ALLOC_FAILED,
+    I2C_ERROR_MEMORY_ALLOC_FOR_SEND_FAILED,
+
+    /**
+     * @brief Failed to allocate memory for recieve action. 
+     */
+    I2C_ERROR_MEMORY_ALLOC_FOR_RECV_FAILED,
 
     /**
      * @brief A new action could not be queued as the maximum number of actions

@@ -324,7 +324,7 @@ I2c_ErrorCode I2c_device_send_bytes(
                     DEBUG_ERR(
                         "Failed to allocate memory for burst send action."
                     );
-                    return I2C_ERROR_MEMORY_ALLOC_FAILED;
+                    return I2C_ERROR_MEMORY_ALLOC_FOR_SEND_FAILED;
                 }
 
                 /* Copy the input data into the action structure */
@@ -391,7 +391,6 @@ I2c_ErrorCode I2c_device_receive_bytes(
                     = I2C_ACTION_STATUS_IN_PROGRESS;
                 I2C.u_actions[i].single_recv.device = *p_device_in;
                 I2C.u_actions[i].single_recv.reg = reg_in;
-                /*TODO: What about single_recv.byte ? */
             }
 
             /* Send bytes in multi byte mode if length_in > 1 */
@@ -414,18 +413,8 @@ I2c_ErrorCode I2c_device_receive_bytes(
                     DEBUG_ERR(
                         "Failed to allocate memory for burst receive action."
                     );
-                    return I2C_ERROR_MEMORY_ALLOC_FAILED;
-                    /* TODO: Same error as memory alloc fail for send/recv? */
+                    return I2C_ERROR_MEMORY_ALLOC_FOR_RECV_FAILED;
                 }
-
-                /* Copy the input data into the action structure */
-                memcpy(
-                    (void *)I2C.u_actions[i].burst_recv.p_bytes,
-                    (void *)reg_in,
-                    length_in
-                    /* TODO: Fix this, it should not be reg_in, but there
-                     * is no p_data_in for burst receive? */
-                );
             }
 
             /* Set to true if an empty space is found in the action array,
