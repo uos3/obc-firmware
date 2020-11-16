@@ -149,7 +149,7 @@ typedef struct _I2c_ActionSingleSend {
      * @brief The number of checks (major loop attempts) made on the I2C master
      * module. 
      */
-    uint32_t num_master_busy_checks;
+    uint32_t num_master_busy_major_checks;
     
 } I2c_ActionSingleSend;
 
@@ -201,6 +201,14 @@ typedef struct _I2c_ActionBurstSend {
     uint8_t step;
 
     /**
+     * @brief The current substep of the action state machine.
+     * 
+     * Some steps in this state machine require substeps (notably the main send
+     * step). 
+     */
+    uint8_t substep;
+
+    /**
      * @brief The current status of this action.
      */
     I2c_ActionStatus status;
@@ -224,6 +232,17 @@ typedef struct _I2c_ActionBurstSend {
      * @brief The length of the byte array to send 
      */
     size_t length;
+
+    /**
+     * @brief Counter for the number of bytes already sent.
+     */
+    size_t num_bytes_sent;
+
+    /**
+     * @brief The number of checks (major loop attempts) made on the I2C master
+     * module. 
+     */
+    uint32_t num_master_busy_major_checks;
     
 } I2c_ActionBurstSend;
 
@@ -370,5 +389,23 @@ bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in);
  */
 I2c_ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in);
 
+/**
+ * @brief Waits for the master to not be busy in a burst send action.
+ * 
+ * If an exit is requested the return value of this function should be
+ * propagated up to the caller's parent.
+ * 
+ * @param p_action_in Pointer to the action.
+ * @param p_i2c_module_in Pointer to the I2C module associated with this
+ *        action's device.
+ * @param p_exit_action_out Pointer to a boolean which will be set to true if
+ *        the action should exit back to the major loop control. 
+ * @return I2c_ErrorCode 
+ */
+I2c_ErrorCode I2c_burst_send_wait_master_not_busy(
+    I2c_ActionBurstSend *p_action_in,
+    I2c_Module *p_i2c_module_in,
+    bool *p_exit_action_out
+);
 
 #endif /* H_I2C_PRIVATE_H */
