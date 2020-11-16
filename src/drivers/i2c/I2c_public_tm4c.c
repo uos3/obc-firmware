@@ -121,7 +121,10 @@ I2c_ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
              */
             if (!enabled) {
                 /* TODO: Mark the module as disabled? */
-                DEBUG_ERR("Could not enable GPIO module %d", p_modules_in[i]);
+                DEBUG_ERR(
+                    "Could not enable GPIO module for I2C module %d", 
+                    p_modules_in[i]
+                );
                 return I2C_ERROR_GPIO_PERIPH_ENABLE_FAILED;
             }
         }
@@ -144,13 +147,17 @@ I2c_ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
         /* Enable the master mode */
         I2CMasterEnable(p_module->base_i2c);
 
-        /* Note: In the previous code a FIFO flush was done here, however the
+        /* 
+         * Note: In the previous code a FIFO flush was done here, however the
          * TM4C123s have no FIFOs on the I2C, so this was removed. 
          */
 
         /* Set the module to be initialised */
         p_module->initialised = true;
     }
+
+    /* Mark the I2C driver as initialised */
+    I2C.initialised = true;
 
     /* Return success */
     return I2C_ERROR_NONE;
