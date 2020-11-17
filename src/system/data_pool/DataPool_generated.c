@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2020-11-16
+ * @date 2020-11-17
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -95,6 +95,46 @@ bool DataPool_get(
         *p_data_size_out = sizeof(size_t);
         return true;
 
+
+    /* DP.IMU.INITIALISED */
+    case 0x0401:
+        *pp_data_out = &DP.IMU.INITIALISED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.IMU.ERROR */
+    case 0x0402:
+        *pp_data_out = &DP.IMU.ERROR;
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_ERRORCODE;
+        *p_data_size_out = sizeof(Imu_ErrorCode);
+        return true;
+
+
+    /* DP.IMU.GYROSCOPE_DATA */
+    case 0x0403:
+        *pp_data_out = &DP.IMU.GYROSCOPE_DATA;
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_GYRODATA;
+        *p_data_size_out = sizeof(Imu_GyroData);
+        return true;
+
+
+    /* DP.IMU.MAGNETOMETER_DATA */
+    case 0x0404:
+        *pp_data_out = &DP.IMU.MAGNETOMETER_DATA;
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_MAGNEDATA;
+        *p_data_size_out = sizeof(Imu_MagneData);
+        return true;
+
+
+    /* DP.IMU.TEMPERATURE_DATA */
+    case 0x0405:
+        *pp_data_out = &DP.IMU.TEMPERATURE_DATA;
+        *p_data_type_out = DATAPOOL_DATATYPE_INT16_T;
+        *p_data_size_out = sizeof(int16_t);
+        return true;
+
     
     default:
         DEBUG_ERR("Invalid DP ID: %d", id_in);
@@ -149,6 +189,36 @@ bool DataPool_get_symbol_str(
     /* DP.EVENTMANAGER.EVENT_LIST_SIZE */
     case 0x0205:
         *pp_symbol_str_out = strdup("DP.EVENTMANAGER.EVENT_LIST_SIZE");
+        return true;
+
+
+    /* DP.IMU.INITIALISED */
+    case 0x0401:
+        *pp_symbol_str_out = strdup("DP.IMU.INITIALISED");
+        return true;
+
+
+    /* DP.IMU.ERROR */
+    case 0x0402:
+        *pp_symbol_str_out = strdup("DP.IMU.ERROR");
+        return true;
+
+
+    /* DP.IMU.GYROSCOPE_DATA */
+    case 0x0403:
+        *pp_symbol_str_out = strdup("DP.IMU.GYROSCOPE_DATA");
+        return true;
+
+
+    /* DP.IMU.MAGNETOMETER_DATA */
+    case 0x0404:
+        *pp_symbol_str_out = strdup("DP.IMU.MAGNETOMETER_DATA");
+        return true;
+
+
+    /* DP.IMU.TEMPERATURE_DATA */
+    case 0x0405:
+        *pp_symbol_str_out = strdup("DP.IMU.TEMPERATURE_DATA");
         return true;
 
 

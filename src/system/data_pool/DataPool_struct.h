@@ -26,6 +26,7 @@
 
 /* Internal includes */
 #include "system/event_manager/EventManager_dp_struct.h"
+#include "components/imu/Imu_dp_struct.h"
 
 /* -------------------------------------------------------------------------
  * DATAPOOL STRUCT
@@ -37,6 +38,7 @@
  * ---- BLOCK ASSIGNMENTS ----
  * DataPool: 0
  * EventManager: 1
+ * Imu: 2
  */
 typedef struct _DataPool {
 
@@ -65,6 +67,13 @@ typedef struct _DataPool {
      * @dp_module EventManager
      */
     EventManager_Dp EVENTMANAGER;
+
+    /**
+     * @brief DataPool parameters for the Imu component.
+     * 
+     * @dp_module Imu
+     */
+    Imu_Dp IMU;
 } DataPool;
 
 

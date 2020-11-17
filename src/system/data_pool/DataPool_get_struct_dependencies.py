@@ -33,8 +33,10 @@ def main():
         ]
 
     # Print out the dependencies as absolute paths so CMake doesn't get confused.
-    for include in includes:
-        print(src_dir.joinpath(include))
+    print(' '.join([str(src_dir.joinpath(include)) for include in includes]))
+    
+    # for include in includes:
+    #     print(src_dir.joinpath(include))
 
     return 0
 

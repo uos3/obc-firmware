@@ -346,6 +346,13 @@ def parse_module_struct(block_ids, text, symbol):
             # index.
             block_id_idx = math.floor(dp_idx/512)
 
+            # Check if dp_idx is shared by another member
+            if dp_idx in [member['block_index'] for member in mod_dp.values()]:
+                collision = [key for key in mod_dp if mod_dp[key]['block_index'] == dp_idx][0]
+                raise ValueError(
+                    f'DP.{symbol}.{match.group(3)} and {collision} share the same index within the same module ({dp_idx})'
+                )
+
             # If the index is greater than the length of the assigned blocks
             # then raise an error
             if block_id_idx > len(block_ids):
@@ -357,7 +364,7 @@ def parse_module_struct(block_ids, text, symbol):
             # DataPool module itself so the block ID is 0.
             mod_dp[f'DP.{symbol}.{match.group(3)}'] = {
                 'block_id': block_ids[block_id_idx],
-                'block_index': int(dp.group(1)),
+                'block_index': dp_idx,
                 'data_type': match.group(2),
                 'brief': brief_text
             }

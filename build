@@ -246,16 +246,18 @@ def build(directory, root_dir, release, target, tests, features):
     cmake_cmd.append('../../../')
 
     # Run cmake
-    cmake = subprocess.Popen(
-        cmake_cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+    cmake = subprocess.run(
+        cmake_cmd
+        # stdout=subprocess.PIPE,
+        # stderr=subprocess.PIPE
     )
 
     # Get the output
-    out, err = cmake.communicate()
-    out = out.decode('UTF-8')
-    err = err.decode('UTF-8')
+    # out, err = cmake.communicate()
+    # out = out.decode('UTF-8')
+    # err = err.decode('UTF-8')
+    out = ''
+    err = ''
     
     # If cmake failed return an error
     if cmake.returncode != 0:
@@ -273,16 +275,18 @@ def build(directory, root_dir, release, target, tests, features):
     info('Running make')
 
     # Run make
-    make = subprocess.Popen(
-        ['make'],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+    make = subprocess.run(
+        ['make']
+        # stdout=subprocess.PIPE,
+        # stderr=subprocess.PIPE
     )
 
     # Get the output
-    out, err = make.communicate()
-    out = out.decode('UTF-8')
-    err = err.decode('UTF-8')
+    # out, err = make.communicate()
+    # out = out.decode('UTF-8')
+    # err = err.decode('UTF-8')
+    out = ''
+    err = ''
 
     # Check make status
     if make.returncode != 0:

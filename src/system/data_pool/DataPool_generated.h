@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2020-11-16
+ * @date 2020-11-17
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -28,6 +28,7 @@
 
 /* Internal includes */
 #include "system/event_manager/EventManager_dp_struct.h"
+#include "components/imu/Imu_dp_struct.h"
 
 /* -------------------------------------------------------------------------
  * TYPES
@@ -49,7 +50,11 @@ typedef enum _DataPool_DataType {
     DATAPOOL_DATATYPE_BOOL,
     DATAPOOL_DATATYPE_EVENTMANAGER_ERRORCODE,
     DATAPOOL_DATATYPE_UINT8_T,
-    DATAPOOL_DATATYPE_SIZE_T
+    DATAPOOL_DATATYPE_SIZE_T,
+    DATAPOOL_DATATYPE_IMU_ERRORCODE,
+    DATAPOOL_DATATYPE_IMU_GYRODATA,
+    DATAPOOL_DATATYPE_IMU_MAGNEDATA,
+    DATAPOOL_DATATYPE_INT16_T
 } DataPool_DataType;
 
 /* -------------------------------------------------------------------------   
