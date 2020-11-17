@@ -6,11 +6,18 @@ This script will build the OBC Firmware and manages the storage of completed
 builds. Under the hood CMake is used to generate make files followed by running
 the make file itself.
 
-There are two targets that can be used for the OBC Firmware: the TM4C and
-Linux. In the TM4C builds the tivaware libraries are included and linked, while
-on Linux no additional libraries are linked. There are also two different build
-profiles, debug and release. The release profile disables all UART logging and
-should be the one used to flash the flight version of the software.
+There are three targets that can be used for the OBC Firmware: the TOBC, 
+launchpad, and Linux. In the TM4C targets the tivaware libraries are included 
+and linked, while on Linux no additional libraries are linked. There are also 
+two different build profiles, debug and release. The release profile disables 
+all UART logging and should be the one used to flash the flight version of the 
+software.
+
+The build script also supports optional features of the sofware through the -f
+flag. These can be used to selectively enable functionality such as IMU
+calibration. Use the --list-features option to show a list of all available
+features. Under the hood these work by passing a definition to CMake which is
+then used to perform different actions within CMakeLists.txt.
 
 Author: Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
 Version: 0.1
@@ -56,6 +63,14 @@ TIMESTAMP_FORMAT = '%Y%m%d_%H%M%S'
 INFO_DATE_FORMAT = '%Y-%m-%d'
 INFO_TIME_FORMAT = '%H:%M:%S'
 
+# Possible features
+FEATURES = {
+    'imu_calib': {
+        'cmake_opt': 'UOS3_IMU_CALIB',
+        'help': 'Enables calibration features of the IMU component'
+    }
+}
+
 def main():
     '''
     Run the main build script.
@@ -66,6 +81,11 @@ def main():
 
     # Get the command line args
     args = parse_args()
+
+    # If the list_features flag is set print them and then exit
+    if args.list_features:
+        list_features()
+        exit(0)
 
     # Check for valid target mode
     if args.target not in ['linux', 'tobc', 'launchpad']:
@@ -126,7 +146,7 @@ def main():
             clean_dir(build_dir)
 
     # Run the build process
-    build(cmake_dir, root_dir, args.release, args.target, args.tests)
+    build(cmake_dir, root_dir, args.release, args.target, args.tests, args.features)
 
     # Copy binaries into the build dir
     copy_bins(cmake_dir, build_dir)
@@ -164,6 +184,16 @@ def parse_args():
         help='Build the cmocka tests as well. Requires a cmocka installation.',
         action='store_true'
     )
+    parser.add_argument(
+        '-f', '--features',
+        help='Enable optional features of the software.',
+        nargs='*'
+    )
+    parser.add_argument(
+        '--list-features',
+        help='Show the list of possible features. This will not build anything.',
+        action='store_true'
+    )
 
     # Parse the arguments
     return parser.parse_args()
@@ -184,7 +214,7 @@ def clean_dir(directory):
 
     ok(f'{directory} cleaned')
 
-def build(directory, root_dir, release, target, tests):
+def build(directory, root_dir, release, target, tests, features):
     '''
     Run the build process (CMake then make) in the given directory.
     '''
@@ -194,16 +224,33 @@ def build(directory, root_dir, release, target, tests):
 
     info('Running CMake')
 
-    # Run cmake
-    cmake = subprocess.Popen([
+    # Get feature enable flags
+    feature_defines = []
+    if features is not None:
+        for feature in features:
+            if feature in FEATURES.keys():
+                feature_defines.append(f'-D{FEATURES[feature]["cmake_opt"]}=ON')
+            else:
+                error(f'Unkown feature {feature}. Use --list-features to show possible options.')
+
+    cmake_cmd = [
         'cmake', 
         f'-DCMAKE_BUILD_TYPE={"Release" if release else "Debug"}',
         f'-DUOS3_TARGET_TOBC={"ON" if target == "tobc" else "OFF"}',
         f'-DUOS3_TARGET_LAUNCHPAD={"ON" if target == "launchpad" else "OFF"}',
-        f'-DUOS3_BUILD_TESTS={"ON" if tests else "OFF"}',
-        '../../../'],
+        f'-DUOS3_BUILD_TESTS={"ON" if tests else "OFF"}'
+    ]
+    cmake_cmd.extend(feature_defines)
+    cmake_cmd.append('../../../')
+
+    print(cmake_cmd)
+
+    # Run cmake
+    cmake = subprocess.Popen(
+        cmake_cmd,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE)
+        stderr=subprocess.PIPE
+    )
 
     # Get the output
     out, err = cmake.communicate()
@@ -298,6 +345,20 @@ def write_build_info_file(dest_dir, profile, target, timestamp):
         # profile and target
         f.write(f'    profile: {profile}\n')
         f.write(f'    target: {target}\n\n')
+
+def list_features():
+    '''
+    Print a table of possible features
+    '''
+
+    # Get maximum length feature name
+    longest_name = max(FEATURES.keys(), key=len)
+    name_len = len(longest_name)
+
+    print('Possible software features:')
+
+    for name, info in FEATURES.items():
+        print(f'    {name: >{name_len}} ({info["cmake_opt"]}) - {info["help"]}')
 
 if __name__ == '__main__':
     main()
