@@ -233,6 +233,8 @@ def build(directory, root_dir, release, target, tests, features):
             else:
                 error(f'Unkown feature {feature}. Use --list-features to show possible options.')
 
+    info(f'Enabled feature CMake options: {feature_defines}')
+
     cmake_cmd = [
         'cmake', 
         f'-DCMAKE_BUILD_TYPE={"Release" if release else "Debug"}',
@@ -242,8 +244,6 @@ def build(directory, root_dir, release, target, tests, features):
     ]
     cmake_cmd.extend(feature_defines)
     cmake_cmd.append('../../../')
-
-    print(cmake_cmd)
 
     # Run cmake
     cmake = subprocess.Popen(
