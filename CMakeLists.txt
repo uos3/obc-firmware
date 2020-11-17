@@ -123,6 +123,7 @@ add_subdirectory(src/system/data_pool)
 add_subdirectory(src/util)
 add_subdirectory(src/drivers)
 add_subdirectory(src/system)
+add_subdirectory(src/components)
 add_subdirectory(src/demo)
 
 # Build the tests if required
