@@ -126,4 +126,4 @@ int main(void) {
     return 0;
 }
 
-/** @} */ /* End of demo_launchpad_blinky */
+/** @} */ /* End of demo_data_pool */

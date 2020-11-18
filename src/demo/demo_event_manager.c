@@ -120,3 +120,5 @@ int main(void) {
     /* Destroy event manager */
     EventManager_destroy();
 }
+
+/** @} */ /* End of demo_event_manager */
