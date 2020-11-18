@@ -242,6 +242,19 @@ bool EventManager_clear_all_events(void);
  */
 bool EventManager_cleanup_events(void);
 
+#ifdef DEBUG_MODE
+/**
+ * @brief Print a list of events into the given string pointer. 
+ * 
+ * The pointer will be allocated sufficient memory to store the entire list. 
+ * The user must free the pointer after it has been used.
+ * 
+ * @param pp_str_out Pointer to a char array to place the list into
+ * @return bool True if successful, false otherwise.
+ */
+void EventManager_get_event_list_string(char **pp_str_out);
+#endif
+
 #endif /* H_EVENTMANAGER_PUBLIC_H */
 
 /** @} */ /* End of event_manager */

@@ -108,6 +108,8 @@ set(STANDARD_LINK_LIBS
     ${TIVAWARE_LIBS}
     Debug
     Board
+    DataPool
+    EventManager
 )
 
 # Set src as an include directory

@@ -24,6 +24,4 @@ add_library(DataPool
     DataPool_public.c
     DataPool_generated.c
 )
-target_link_libraries(DataPool
-    ${STANDARD_LINK_LIBS}
-)
+# DataPool doesn't link to anything else

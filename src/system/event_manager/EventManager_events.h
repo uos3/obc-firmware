@@ -22,6 +22,7 @@
 #include "system/event_manager/EventManager_public.h"
 #include "system/event_manager/EventManager_blocks.h"
 #include "drivers/i2c/I2c_events.h"
+#include "components/imu/Imu_events.h"
 
 /* -------------------------------------------------------------------------   
  * EVENTS

@@ -22,6 +22,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#ifdef DEBUG_MODE
+#include <stdio.h>
+#endif
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
@@ -99,6 +102,8 @@ void EventManager_destroy(void) {
 }
 
 bool EventManager_raise_event(Event event_in) {
+    DEBUG_TRC("Raise event 0x%04X", event_in);
+
     /* Check that init has been called */
     if (DP.EVENTMANAGER.INITIALISED == false) {
         /* Debug log */
@@ -292,6 +297,8 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
             /* Error occured */
             return false;
         }
+
+        DEBUG_TRC("Polled event 0x%04X", event_in);
     }
 
     return true;
@@ -337,6 +344,10 @@ bool EventManager_cleanup_events(void) {
             if (!EventManager_poll_event(p_stale_events[i], &is_raised)) {
                 return false;
             }
+            DEBUG_TRC(
+                "Event 0x%04X was polled as part of cleanup", 
+                p_stale_events[i]
+            );
         }
     }
 
@@ -345,3 +356,35 @@ bool EventManager_cleanup_events(void) {
 
     return true;
 }
+
+#ifdef DEBUG_MODE
+void EventManager_get_event_list_string(char **pp_str_out) {
+    /* Events will be listed like [0x0000, 0x0001, 0x0002], so the length to
+     * allocate for the string is 8*NUM_RAISED_EVENTS + 1 for the null byte */
+    *pp_str_out = (char *)malloc(
+        sizeof(char) * ((8 * DP.EVENTMANAGER.NUM_RAISED_EVENTS) + 1)
+    );
+    /* Char buf for easy concat of the event IDs */
+    char buf[9] = {0};
+
+    /* Print the opening bracket */
+    sprintf(*pp_str_out, "[");
+
+    /* Loop through all events except the last one */
+    for (int i = 0; i < DP.EVENTMANAGER.NUM_RAISED_EVENTS - 1; ++i) {
+        /* Format the event ID and concat with the string */
+        sprintf((char *)buf, "0x%04X, ", EVENTMANAGER.p_raised_events[i]);
+        strcat(*pp_str_out, (char *)buf);
+    }
+
+    /* Print the last one with the end bracket too */
+    sprintf(
+        (char *)buf, 
+        "0x%04X]", 
+        EVENTMANAGER.p_raised_events[DP.EVENTMANAGER.NUM_RAISED_EVENTS - 1]
+    );
+
+    /* Concat the last one */
+    strcat(*pp_str_out, (char *)buf);
+}
+#endif

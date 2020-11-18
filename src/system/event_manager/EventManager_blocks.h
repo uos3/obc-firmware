@@ -26,11 +26,16 @@
 /**
  * @brief Block assignment for the EventManager module.
  */
-#define EVENTMANAGER_BLOCK_EVENTMANAGER (1)
+#define EVENTMANAGER_BLOCK_EVENTMANAGER (1<<9)
 
 /**
  * @brief Block assignment for the I2c module.
  */
-#define EVENTMANAGER_BLOCK_I2C (2)
+#define EVENTMANAGER_BLOCK_I2C (2<<9)
+
+/**
+ * @brief Event block for the Imu module.
+ */
+#define EVENTMANAGER_BLOCK_IMU (3<<9)
 
 #endif /* H_EVENTMANAGER_BLOCKS_H */
