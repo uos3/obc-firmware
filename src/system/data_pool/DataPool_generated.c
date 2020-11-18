@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2020-11-17
+ * @date 2020-11-18
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -112,24 +112,72 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.IMU.GYROSCOPE_DATA */
+    /* DP.IMU.STATE */
     case 0x0403:
+        *pp_data_out = &DP.IMU.STATE;
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_STATE;
+        *p_data_size_out = sizeof(Imu_State);
+        return true;
+
+
+    /* DP.IMU.SUBSTATE */
+    case 0x0404:
+        *pp_data_out = &DP.IMU.SUBSTATE;
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_SUBSTATE;
+        *p_data_size_out = sizeof(Imu_SubState);
+        return true;
+
+
+    /* DP.IMU.COMMAND */
+    case 0x0405:
+        *pp_data_out = &DP.IMU.COMMAND;
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_COMMAND;
+        *p_data_size_out = sizeof(Imu_Command);
+        return true;
+
+
+    /* DP.IMU.GYROSCOPE_DATA */
+    case 0x0406:
         *pp_data_out = &DP.IMU.GYROSCOPE_DATA;
-        *p_data_type_out = DATAPOOL_DATATYPE_IMU_GYRODATA;
-        *p_data_size_out = sizeof(Imu_GyroData);
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_VECINT16;
+        *p_data_size_out = sizeof(Imu_VecInt16);
+        return true;
+
+
+    /* DP.IMU.GYROSCOPE_DATA_VALID */
+    case 0x0407:
+        *pp_data_out = &DP.IMU.GYROSCOPE_DATA_VALID;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
         return true;
 
 
     /* DP.IMU.MAGNETOMETER_DATA */
-    case 0x0404:
+    case 0x0408:
         *pp_data_out = &DP.IMU.MAGNETOMETER_DATA;
-        *p_data_type_out = DATAPOOL_DATATYPE_IMU_MAGNEDATA;
-        *p_data_size_out = sizeof(Imu_MagneData);
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_VECINT16;
+        *p_data_size_out = sizeof(Imu_VecInt16);
+        return true;
+
+
+    /* DP.IMU.MAGNE_SENSE_ADJUST_DATA */
+    case 0x0409:
+        *pp_data_out = &DP.IMU.MAGNE_SENSE_ADJUST_DATA;
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_VECINT16;
+        *p_data_size_out = sizeof(Imu_VecInt16);
+        return true;
+
+
+    /* DP.IMU.MAGNETOMETER_DATA_VALID */
+    case 0x040a:
+        *pp_data_out = &DP.IMU.MAGNETOMETER_DATA_VALID;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
         return true;
 
 
     /* DP.IMU.TEMPERATURE_DATA */
-    case 0x0405:
+    case 0x040b:
         *pp_data_out = &DP.IMU.TEMPERATURE_DATA;
         *p_data_type_out = DATAPOOL_DATATYPE_INT16_T;
         *p_data_size_out = sizeof(int16_t);
@@ -204,20 +252,56 @@ bool DataPool_get_symbol_str(
         return true;
 
 
-    /* DP.IMU.GYROSCOPE_DATA */
+    /* DP.IMU.STATE */
     case 0x0403:
+        *pp_symbol_str_out = strdup("DP.IMU.STATE");
+        return true;
+
+
+    /* DP.IMU.SUBSTATE */
+    case 0x0404:
+        *pp_symbol_str_out = strdup("DP.IMU.SUBSTATE");
+        return true;
+
+
+    /* DP.IMU.COMMAND */
+    case 0x0405:
+        *pp_symbol_str_out = strdup("DP.IMU.COMMAND");
+        return true;
+
+
+    /* DP.IMU.GYROSCOPE_DATA */
+    case 0x0406:
         *pp_symbol_str_out = strdup("DP.IMU.GYROSCOPE_DATA");
         return true;
 
 
+    /* DP.IMU.GYROSCOPE_DATA_VALID */
+    case 0x0407:
+        *pp_symbol_str_out = strdup("DP.IMU.GYROSCOPE_DATA_VALID");
+        return true;
+
+
     /* DP.IMU.MAGNETOMETER_DATA */
-    case 0x0404:
+    case 0x0408:
         *pp_symbol_str_out = strdup("DP.IMU.MAGNETOMETER_DATA");
         return true;
 
 
+    /* DP.IMU.MAGNE_SENSE_ADJUST_DATA */
+    case 0x0409:
+        *pp_symbol_str_out = strdup("DP.IMU.MAGNE_SENSE_ADJUST_DATA");
+        return true;
+
+
+    /* DP.IMU.MAGNETOMETER_DATA_VALID */
+    case 0x040a:
+        *pp_symbol_str_out = strdup("DP.IMU.MAGNETOMETER_DATA_VALID");
+        return true;
+
+
     /* DP.IMU.TEMPERATURE_DATA */
-    case 0x0405:
+    case 0x040b:
         *pp_symbol_str_out = strdup("DP.IMU.TEMPERATURE_DATA");
         return true;
 
