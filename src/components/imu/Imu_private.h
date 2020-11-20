@@ -24,71 +24,59 @@
 #include <stdbool.h>
 
 /* Internal includes */
+#include "system/event_manager/EventManager_public.h"
+#include "drivers/i2c/I2c_public.h"
 #include "components/imu/Imu_public.h"
+
+/* -------------------------------------------------------------------------   
+ * GLOBALS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief The I2C device which represents the IMU.
+ * 
+ * The IMU is connected on module I2C2, with an address of 0x68.
+ */
+extern I2c_Device IMU_I2C_DEVICE;
+
+/* -------------------------------------------------------------------------   
+ * DEFINES
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief IMU register address for the Gyroscope X offset high byte. 
+ */
+#define IMU_REG_GYRO_X_OFFSET_H (0x13)
+
+/**
+ * @brief IMU register address for the Gyroscope X offset high byte. 
+ */
+#define IMU_REG_GYRO_Y_OFFSET_H (0x15)
+
+/**
+ * @brief IMU register address for the Gyroscope X offset high byte. 
+ */
+#define IMU_REG_GYRO_Z_OFFSET_H (0x17)
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief Setup the first execution of the SET_GYROSCOPE_OFFSETS state.
+ * @brief Setup the Imu module to begin executing the given state in the next
+ * cycle. 
  * 
- * This function will log an error message and set the appropriate value of
- * DP.IMU.ERROR if it returns false.
+ * The state and initial substate shall be set, followed by the raising of the
+ * EVT_IMU_STATE_CHANGE event, which will cause the system to not go to sleep,
+ * therefore ensuring the next cycle occures immediately rather than waiting
+ * for an interrupt.
  * 
+ * @param state The state to begin.
+ * @param initial_substate The initial substate that the module should be in
+ *        upon starting the new state.
  * @return bool True on success, false on failure.
  */
-bool Imu_begin_set_gyro_offsets(void);
-
-/**
- * @brief Setup the first execution of the SELF_TEST state.
- * 
- * This function will log an error message and set the appropriate value of
- * DP.IMU.ERROR if it returns false.
- * 
- * @return bool True on success, false on failure.
- */
-bool Imu_begin_self_test(void);
-
-/**
- * @brief Setup the first execution of the WAIT_NEW_COMMAND state.
- * 
- * This function will log an error message and set the appropriate value of
- * DP.IMU.ERROR if it returns false.
- * 
- * @return bool True on success, false on failure.
- */
-bool Imu_begin_wait_new_command(void);
-
-/**
- * @brief Setup the first execution of the READ_TEMPERATURE state.
- * 
- * This function will log an error message and set the appropriate value of
- * DP.IMU.ERROR if it returns false.
- * 
- * @return bool True on success, false on failure.
- */
-bool Imu_begin_read_temp(void);
-
-/**
- * @brief Setup the first execution of the READ_GYROSCOPE state.
- * 
- * This function will log an error message and set the appropriate value of
- * DP.IMU.ERROR if it returns false.
- * 
- * @return bool True on success, false on failure.
- */
-bool Imu_begin_read_gyro(void);
-
-/**
- * @brief Setup the first execution of the READ_MAGNETOMETER state.
- * 
- * This function will log an error message and set the appropriate value of
- * DP.IMU.ERROR if it returns false.
- * 
- * @return bool True on success, false on failure.
- */
-bool Imu_begin_read_magne(void);
+bool Imu_begin_state(Imu_State state, Imu_SubState initial_substate);
 
 /**
  * @brief Step the SET_GYROSCOPE_OFFSETS state machine.
@@ -139,6 +127,20 @@ bool Imu_step_read_gyro(void);
  * @return bool True on success, false on failure.
  */
 bool Imu_step_read_magne(void);
+
+/**
+ * @brief Wait for an I2C IO action to finish
+ * 
+ * @param p_finished_out True if the action finished.
+ * @param p_success_out True if the action was successful.
+ * @param failure_event The event to raise if the action was a failure.
+ * @return true True on function (not action) success, false on error.
+ */
+bool Imu_wait_i2c_action_finished(
+    bool *p_finished_out, 
+    bool *p_success_out,
+    Event failure_event
+);
 
 
 #endif /* H_IMU_PRIVATE_H */

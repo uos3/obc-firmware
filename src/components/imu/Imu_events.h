@@ -65,10 +65,20 @@
 #define EVT_IMU_READ_TEMP_FAILURE ((Event)(EVENTMANAGER_BLOCK_IMU | 7))
 
 /**
+ * @brief IMU set gyroscope offsets action completed successfully.
+ */
+#define EVT_IMU_SET_GYRO_OFFSETS_SUCCESS ((Event)(EVENTMANAGER_BLOCK_IMU |8))
+
+/**
+ * @brief IMU set gyroscope offsets action failed.
+ */
+#define EVT_IMU_SET_GYRO_OFFSETS_FAILURE ((Event)(EVENTMANAGER_BLOCK_IMU |9))
+
+/**
  * @brief Event used to signal a state change in the IMU. This is done so that
  * the new state will run it's first function in the next cycle without the
  * system going to sleep.
  */
-#define EVT_IMU_STATE_CHANGE ((Event)(EVENTMANAGER_BLOCK_IMU | 8))
+#define EVT_IMU_STATE_CHANGE ((Event)(EVENTMANAGER_BLOCK_IMU | 10))
 
 #endif /* H_IMU_EVENTS_H */

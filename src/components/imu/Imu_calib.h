@@ -23,6 +23,6 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
-#include "components/imu/Imu_private.h"
+#include "components/imu/Imu_public.h"
 
 #endif /* H_IMU_CALIB_H */

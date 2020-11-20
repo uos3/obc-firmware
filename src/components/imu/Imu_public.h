@@ -115,20 +115,39 @@ typedef enum _Imu_ErrorCode {
     IMU_ERROR_EVENTMANAGER_ERROR,
 
     /**
-     * @brief Unrecognised DP.IMU.STATE value.
+     * @brief Invalid DP.IMU.STATE value.
      */
-    IMU_ERROR_UNRECOGNISED_STATE,
+    IMU_ERROR_INVALID_STATE,
 
     /**
-     * @brief Unrecognised DP.IMU.SUBSTATE value.
+     * @brief Invalid DP.IMU.SUBSTATE value.
      */
-    IMU_ERROR_UNRECOGNISED_SUBSTATE,
+    IMU_ERROR_INVALID_SUBSTATE,
 
     /**
      * @brief Unrecognised DP.IMU.COMMAND value.
      * 
      */
-    IMU_ERROR_UNRECOGNISED_CMD
+    IMU_ERROR_UNRECOGNISED_CMD,
+
+    /**
+     * @brief Cannot issue a new command to the IMU since the IMU is not in the
+     * WAIT_NEW_COMMAND state. It could either not be initialised or is still
+     * finishing another command 
+     */
+    IMU_ERROR_CANNOT_ISSUE_NEW_COMMAND,
+
+    /**
+     * @brief There was an error in the I2C driver.
+     * 
+     * See the corresponding value of DP.IMU.I2C_ERROR for the root cause.
+     */
+    IMU_ERROR_I2C_ERROR,
+
+    /**
+     * @brief Unexpected value of an I2c_ActionStatus return.
+     */
+    IMU_ERROR_INVALID_I2C_ACTION_STATUS
 
 } Imu_ErrorCode;
 
@@ -224,19 +243,25 @@ typedef enum _Imu_SubState {
     IMU_SUBSTATE_NONE = 0,
 
     /**
-     * @brief Set Gyroscope X offset value substate.
+     * @brief Initial state for SET_GYROSCOPE_OFFSET, which sends the X values
+     * to the IMU. 
      */
-    IMU_SUBSTATE_SET_GYROSCOPE_X_OFFSET,
+    IMU_SUBSTATE_SET_GYRO_OFFSET_INIT,
 
     /**
-     * @brief Set Gyroscope Y offset value substate.
+     * @brief Wait for gyroscope X offset values to be recieved successfully.
      */
-    IMU_SUBSTATE_SET_GYROSCOPE_Y_OFFSET,
+    IMU_SUBSTATE_SET_GYRO_OFFSET_WAIT_X_COMPLETE,
 
     /**
-     * @brief Set Gyroscope Z offset value substate.
+     * @brief Wait for gyroscope Y offset values to be recieved successfully.
      */
-    IMU_SUBSTATE_SET_GYROSCOPE_Z_OFFSET,
+    IMU_SUBSTATE_SET_GYRO_OFFSET_WAIT_Y_COMPLETE,
+
+    /**
+     * @brief Wait for gyroscope Z offset values to be recieved successfully.
+     */
+    IMU_SUBSTATE_SET_GYRO_OFFSET_WAIT_Z_COMPLETE,
 
     /**
      * @brief Read Gyroscope X value state.

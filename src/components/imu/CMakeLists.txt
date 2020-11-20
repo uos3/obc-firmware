@@ -7,17 +7,16 @@ if (${UOS3_IMU_CALIB})
     add_definitions(-DF_IMU_CALIB)
 endif()
 
+# Standard source files for the IMU
+add_library(Imu
+    Imu_public.c
+    Imu_private.c
+    Imu_step_set_gyro_offsets.c
+)
+
+# If the calibration feature is enabled add the calib file
 if (${UOS3_IMU_CALIB})
-    add_library(Imu
-        Imu_public.c
-        Imu_private.c
-        Imu_calib.c
-    )
-else()
-    add_library(Imu
-        Imu_public.c
-        Imu_private.c
-    )
+    target_sources(Imu PRIVATE Imu_calib.c)
 endif()
 
 

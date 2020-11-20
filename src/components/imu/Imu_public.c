@@ -53,8 +53,11 @@ bool Imu_init(void) {
      * be set to use self-test since it's based on raw factory readings. */
 
     /* Call the begin function for the first state */
-    if (!Imu_begin_set_gyro_offsets()) {
-        /* Do not set DP.IMU.ERROR as Imu_begin_set_gyro_offsets will do this*/
+    if (!Imu_begin_state(
+        IMU_STATE_SET_GYROSCOPE_OFFSETS,
+        IMU_SUBSTATE_SET_GYRO_OFFSET_INIT
+    )) {
+        /* Do not set DP.IMU.ERROR as Imu_begin_state will do this*/
         return false;
     }
 
@@ -66,6 +69,16 @@ bool Imu_step(void) {
     if (!DP.IMU.INITIALISED) {
         DEBUG_ERR("Attempted to step Imu when not initialised");
         DP.IMU.ERROR = IMU_ERROR_NOT_INITIALISED;
+        return false;
+    }
+
+    /* Poll a possible state change event to avoid leaving it in the events
+     * queue up to the cleanup action */
+    bool state_change = false;
+    if (!EventManager_poll_event(
+        EVT_IMU_STATE_CHANGE,
+        &state_change
+    )) {
         return false;
     }
 
@@ -117,7 +130,10 @@ bool Imu_step(void) {
                     case IMU_CMD_READ_GYROSCOPE:
 
                         /* Begin the gyro state */
-                        if (!Imu_begin_read_gyro()) {
+                        if (!Imu_begin_state(
+                            IMU_STATE_READ_GYROSCOPE,
+                            IMU_SUBSTATE_READ_GYROSCOPE_X
+                        )) {
                             /* Error message and code set by the begin func */
                             return false;
                         }
@@ -126,7 +142,10 @@ bool Imu_step(void) {
                     case IMU_CMD_READ_MAGNETOMETER:
                         
                         /* Begin the magne state */
-                        if (!Imu_begin_read_magne()) {
+                        if (!Imu_begin_state(
+                            IMU_STATE_READ_MAGNETOMETER,
+                            IMU_SUBSTATE_READ_MAGNE_SENSE_ADJUST_X
+                        )) {
                             /* Error message and code set by the begin func */
                             return false;
                         }
@@ -135,7 +154,10 @@ bool Imu_step(void) {
                     case IMU_CMD_READ_TEMPERATURE:
                         
                         /* Begin the gyro state */
-                        if (!Imu_begin_read_temp()) {
+                        if (!Imu_begin_state(
+                            IMU_STATE_READ_TEMPERATURE,
+                            IMU_SUBSTATE_NONE
+                        )) {
                             /* Error message and code set by the begin func */
                             return false;
                         }
@@ -177,8 +199,8 @@ bool Imu_step(void) {
 
             break;
         default:
-            DEBUG_ERR("Unrecognised DP.IMU.STATE");
-            DP.IMU.ERROR = IMU_ERROR_UNRECOGNISED_STATE;
+            DEBUG_ERR("Invalid DP.IMU.STATE: %d", DP.IMU.STATE);
+            DP.IMU.ERROR = IMU_ERROR_INVALID_STATE;
             return false;
     }
 
@@ -186,6 +208,13 @@ bool Imu_step(void) {
 }
 
 bool Imu_new_command(Imu_Command command_in) {
+    /* If the IMU is not in wait new command mode return error */
+    if (DP.IMU.STATE != IMU_STATE_WAIT_NEW_COMMAND) {
+        DEBUG_ERR("Cannot issue new command since the IMU is not in the WAIT_NEW_COMMAND state");
+        DP.IMU.ERROR = IMU_ERROR_CANNOT_ISSUE_NEW_COMMAND;
+        return false;
+    }
+
     /* Set the command in the datapool and then raise the new command event */
     DP.IMU.COMMAND = command_in;
 

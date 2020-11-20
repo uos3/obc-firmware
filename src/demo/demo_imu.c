@@ -3,7 +3,7 @@
  * 
  * @file demo_imu.c
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
- * @brief Short demo designed to test the IMU capabilities.
+ * @brief Short demo designed to test the IMU capabilities. 
  * @version 0.1
  * @date 2020-10-28
  * 
@@ -60,6 +60,13 @@ int main(void) {
 
     DEBUG_INF("Begining main loop\n");
 
+    DEBUG_INF("State table:");
+    DEBUG_INF(
+        "| STATE | SUBSTATE | COMMAND | ERROR | EVENTS"
+    );
+    char *p_table_format = 
+        "|  0x%02X |     0x%02X |    0x%02X |  0x%02X | %s";
+
     /* 
      * Demo step is a counter used to:
      * 1. Read temperature
@@ -77,15 +84,55 @@ int main(void) {
         /* Do the demo actions */
         bool event_raised = false;
         switch (demo_step) {
-            /* Issue read temp command */
+            /* Wait for the set gyro offsets command to finish */
             case 0:
+                /* See if success */
+                if (!EventManager_poll_event(
+                    EVT_IMU_SET_GYRO_OFFSETS_SUCCESS, 
+                    &event_raised
+                )) {
+                    Debug_exit(1);
+                }
+
+                /* If success */
+                if (event_raised) {
+                    /* Print temp */
+                    DEBUG_INF("Gyro offsets set");
+
+                    /* Next step */
+                    demo_step++;
+                }
+                /* If not success */
+                else {
+                    /* See if failed */
+                    if (!EventManager_poll_event(
+                        EVT_IMU_SET_GYRO_OFFSETS_FAILURE, 
+                        &event_raised
+                    )) {
+                        Debug_exit(1);
+                    }
+
+                    /* If failed print error and exit */
+                    if (event_raised) {
+                        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR);
+                        Debug_exit(1);
+                    }
+                    /* Otherwise the read just isn't finished yet, so wait a
+                     * bit longer */
+                }
+                break;
+
+            /* Issue read temp command */
+            case 1:
                 DEBUG_INF("Issuing READ_TEMPERATURE command");
-                Imu_new_command(IMU_CMD_READ_TEMPERATURE);
+                if (!Imu_new_command(IMU_CMD_READ_TEMPERATURE)) {
+                    Debug_exit(1);
+                }
                 demo_step++;
                 break;
 
             /* Wait for read complete */
-            case 1:
+            case 2:
                 /* See if success */
                 if (!EventManager_poll_event(
                     EVT_IMU_READ_TEMP_SUCCESS, 
@@ -123,14 +170,16 @@ int main(void) {
                 break;
 
             /* Issue read gyro command */
-            case 2:
+            case 3:
                 DEBUG_INF("Issuing READ_GYROSCOPE command");
-                Imu_new_command(IMU_CMD_READ_GYROSCOPE);
+                if (!Imu_new_command(IMU_CMD_READ_GYROSCOPE)) {
+                    Debug_exit(1);
+                }
                 demo_step++;
                 break;
             
             /* Wait for read complete */
-            case 3:
+            case 4:
                 /* See if success */
                 if (!EventManager_poll_event(
                     EVT_IMU_READ_GYRO_SUCCESS, 
@@ -171,14 +220,16 @@ int main(void) {
                 break;
 
             /* Read magne */
-            case 4:
+            case 5:
                 DEBUG_INF("Issuing READ_MAGNETOMETER command");
-                Imu_new_command(IMU_CMD_READ_MAGNETOMETER);
+                if (!Imu_new_command(IMU_CMD_READ_MAGNETOMETER)) {
+                    Debug_exit(1);
+                }
                 demo_step++;
                 break;
 
             /* Wait for read complete */
-            case 5:
+            case 6:
                 /* See if success */
                 if (!EventManager_poll_event(
                     EVT_IMU_READ_MAGNE_SUCCESS, 
@@ -230,6 +281,13 @@ int main(void) {
         if (!Imu_step()) {
             DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR);
             Debug_exit(1);
+        }
+
+        if (!sleep) {
+            char *p_events = NULL;
+            EventManager_get_event_list_string(&p_events);
+            DEBUG_INF(p_table_format, DP.IMU.STATE, DP.IMU.SUBSTATE, DP.IMU.COMMAND, DP.IMU.ERROR, p_events);
+            free(p_events);
         }
 
         /* Call event cleanup */

@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2020-11-18
+ * @date 2020-11-19
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -52,6 +52,7 @@ typedef enum _DataPool_DataType {
     DATAPOOL_DATATYPE_UINT8_T,
     DATAPOOL_DATATYPE_SIZE_T,
     DATAPOOL_DATATYPE_IMU_ERRORCODE,
+    DATAPOOL_DATATYPE_I2C_ERRORCODE,
     DATAPOOL_DATATYPE_IMU_STATE,
     DATAPOOL_DATATYPE_IMU_SUBSTATE,
     DATAPOOL_DATATYPE_IMU_COMMAND,

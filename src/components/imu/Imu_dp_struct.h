@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 /* Internal includes */
+#include "drivers/i2c/I2c_public.h"
 #include "components/imu/Imu_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -44,23 +45,30 @@ typedef struct _Imu_Dp {
     Imu_ErrorCode ERROR;
 
     /**
-     * @brief IMU state machine state.
+     * @brief Stores errors from the I2C module.
      * 
      * @dp 3
+     */
+    I2c_ErrorCode I2C_ERROR;
+
+    /**
+     * @brief IMU state machine state.
+     * 
+     * @dp 4
      */
     Imu_State STATE;
 
     /**
      * @brief IMU state machine substate.
      * 
-     * @dp 4
+     * @dp 5
      */
     Imu_SubState SUBSTATE;
 
     /**
      * @brief Command the Imu module shall execute.
      * 
-     * @dp 5
+     * @dp 6
      */
     Imu_Command COMMAND;
 
@@ -70,7 +78,7 @@ typedef struct _Imu_Dp {
      * This value is only guarenteed to be valid when 
      * DP.IMU.GYROSCOPE_DATA_VALID is true.
      * 
-     * @dp 6
+     * @dp 7
      */
     Imu_VecInt16 GYROSCOPE_DATA;
 
@@ -86,7 +94,7 @@ typedef struct _Imu_Dp {
      * 
      * The value is true only when all data has been read successfully.
      * 
-     * @dp 7
+     * @dp 8
      */
     bool GYROSCOPE_DATA_VALID;
 
@@ -96,7 +104,7 @@ typedef struct _Imu_Dp {
      * This value is only guarenteed to be valid when 
      * DP.IMU.MAGNETOMETER_DATA_VALID is true.
      * 
-     * @dp 8
+     * @dp 9
      */
     Imu_VecInt16 MAGNETOMETER_DATA;
 
@@ -106,7 +114,7 @@ typedef struct _Imu_Dp {
      * This value is only guarenteed to be valid when 
      * DP.IMU.MAGNETOMETER_DATA_VALID is true.
      * 
-     * @dp 9
+     * @dp 10
      */
     Imu_VecInt16 MAGNE_SENSE_ADJUST_DATA;
 
@@ -122,7 +130,7 @@ typedef struct _Imu_Dp {
      * 
      * The value is true only when all data has been read successfully.
      * 
-     * @dp 10
+     * @dp 11
      */
     bool MAGNETOMETER_DATA_VALID;
 
@@ -132,7 +140,7 @@ typedef struct _Imu_Dp {
      * As this value only requires one I2C read it shall always be consistent,
      * therefore no _VALID flag is required.
      * 
-     * @dp 11
+     * @dp 12
      */
     int16_t TEMPERATURE_DATA;
 
