@@ -18,6 +18,9 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
+/* Standard library includes */
+#include <stdbool.h>
+
 /* Internal includes */
 #include "drivers/i2c/I2c_public.h"
 
