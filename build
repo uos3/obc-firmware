@@ -276,7 +276,7 @@ def build(directory, root_dir, release, target, tests, features):
 
     # Run make
     make = subprocess.run(
-        ['make']
+        ['make', '-j', '4']
         # stdout=subprocess.PIPE,
         # stderr=subprocess.PIPE
     )

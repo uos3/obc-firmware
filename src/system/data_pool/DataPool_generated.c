@@ -9,7 +9,11 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
+<<<<<<< Updated upstream
  * @date 2020-11-19
+=======
+ * @date 2020-11-20
+>>>>>>> Stashed changes
  * 
  * @copyright Copyright (c) UoS3 2020
  */

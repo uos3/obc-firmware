@@ -191,6 +191,12 @@ typedef struct _I2c_ActionSingleRecv {
      */
     uint8_t byte;
 
+    /**
+     * @brief The number of checks (major loop attempts) made on the I2C master
+     * module. 
+     */
+    uint32_t num_master_busy_major_checks;
+
 } I2c_ActionSingleRecv;
 
 typedef struct _I2c_ActionBurstSend {
@@ -260,6 +266,14 @@ typedef struct _I2c_ActionBurstRecv {
     uint8_t step;
 
     /**
+     * @brief The current substep of the action state machine.
+     * 
+     * Some steps in this state machine require substeps (notably the main send
+     * step). 
+     */
+    uint8_t substep;
+
+    /**
      * @brief The current status of this action.
      */
     I2c_ActionStatus status;
@@ -289,6 +303,12 @@ typedef struct _I2c_ActionBurstRecv {
      * @brief Pointer to the retrieved bytes from the device's register
      */
     uint8_t *p_bytes;
+
+    /**
+     * @brief The number of checks (major loop attempts) made on the I2C master
+     * module. 
+     */
+    uint32_t num_master_busy_major_checks;
 
 } I2c_ActionBurstRecv;
 
@@ -323,6 +343,20 @@ typedef struct _I2c {
      * @brief Array of actions to be performed. 
      */
     I2c_Action u_actions[I2C_MAX_NUM_ACTIONS];
+
+    /**
+     * @brief True if the indexed module is locked by a device.
+     * 
+     * See module_user to determine which device has locked the module.
+     */
+    bool module_locked[I2C_NUM_MODULES];
+
+    /**
+     * @brief Indicates which device has locked the module.
+     * 
+     * To check if the module is locked see module_locked.
+     */
+    I2c_Device module_user[I2C_NUM_MODULES];
 } I2c;
 
 /* -------------------------------------------------------------------------   
