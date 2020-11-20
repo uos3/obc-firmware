@@ -1,14 +1,16 @@
 /**
  * @ingroup i2c
  * 
- * @file 
- * @author 
- * @brief 
+ * @file I2c_action_burst_recv_tm4c.c
+ * @author Leon Galanakis (lg5g16@soton.ac.uk)
+ * @brief Private burst receive action function for the I2C Driver
  * 
+ * This file adds the action for burst receive for the I2C. It was created
+ * as a new file to avoid functions over 100 lines long, in line with the
+ * software writing standards.
  * 
- * 
- * @version 
- * @date 
+ * @version 0.1
+ * @date 2020-11-20
  * 
  * @copyright Copyright (c) 2020
  */
