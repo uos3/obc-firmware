@@ -156,7 +156,7 @@ bool Imu_step(void) {
                         /* Begin the gyro state */
                         if (!Imu_begin_state(
                             IMU_STATE_READ_TEMPERATURE,
-                            IMU_SUBSTATE_NONE
+                            IMU_SUBSTATE_READ_TEMP_INIT
                         )) {
                             /* Error message and code set by the begin func */
                             return false;

@@ -264,6 +264,16 @@ typedef enum _Imu_SubState {
     IMU_SUBSTATE_SET_GYRO_OFFSET_WAIT_Z_COMPLETE,
 
     /**
+     * @brief Initialise the read temperature state.
+     */
+    IMU_SUBSTATE_READ_TEMP_INIT,
+
+    /**
+     * @brief Waiting for the temperature read IO operation to complete.
+     */
+    IMU_SUBSTATE_READ_TEMP_WAIT_COMPLETE,
+
+    /**
      * @brief Read Gyroscope X value state.
      */
     IMU_SUBSTATE_READ_GYROSCOPE_X,

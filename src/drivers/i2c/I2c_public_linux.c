@@ -93,7 +93,7 @@ I2c_ErrorCode I2c_device_send_bytes(
     /* Raise action finished */
     if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
         DEBUG_ERR("Couldn't raise EVT_I2C_ACTION_FINISHED");
-        return I2C_ERROR_NONE;
+        return I2C_ERROR_EVENTMANAGER_ERROR;
     }
 
     return I2C_ERROR_NONE;
@@ -121,6 +121,12 @@ I2c_ErrorCode I2c_device_recv_bytes(
     }
 
     if (empty_found) {
+        /* Raise finished event since the work is done in get_recved_bytes */
+        if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+            DEBUG_ERR("Error raising EVT_I2C_ACTION_FINISHED");
+            return I2C_ERROR_EVENTMANAGER_ERROR;
+        }
+
         return I2C_ERROR_NONE;
     }
     else {
@@ -131,7 +137,7 @@ I2c_ErrorCode I2c_device_recv_bytes(
 
 I2c_ErrorCode I2c_get_device_recved_bytes(
     I2c_Device *p_device_in,
-    uint8_t **pp_bytes_out
+    uint8_t *p_bytes_out
 ) {
     /* In this linux dummy we read the required number of bytes from
      * /dev/urandom (random bytes) and output that */
@@ -158,7 +164,7 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
             }
 
             size_t bytes_read = fread(
-                *pp_bytes_out, 
+                p_bytes_out, 
                 I2C.u_actions[i].burst_recv.length,
                 1,
                 fp_random
@@ -184,6 +190,13 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
         DEBUG_ERR("Could not find read action on device");
         return I2C_ERROR_NO_ACTION_FOR_DEVICE;
     }
+
+    DEBUG_DBG(
+        "I2C recv (%02X, %02X): %s", 
+        p_device_in->module, 
+        p_device_in->address,
+        p_bytes_out
+    );
 
     return I2C_ERROR_NONE;
 }

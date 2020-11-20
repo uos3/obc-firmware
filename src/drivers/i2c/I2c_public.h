@@ -158,7 +158,12 @@ typedef enum _I2c_ErrorCode {
     /**
      * @brief An unkown TivaWare library error has occured 
      */
-    I2C_ERROR_UNKNOWN_TIVAWARE_ERROR
+    I2C_ERROR_UNKNOWN_TIVAWARE_ERROR,
+
+    /**
+     * @brief Error in the event manager.
+     */
+    I2C_ERROR_EVENTMANAGER_ERROR
 
 } I2c_ErrorCode;
 
@@ -282,7 +287,7 @@ I2c_ErrorCode I2c_device_recv_bytes(
  */
 I2c_ErrorCode I2c_get_device_recved_bytes(
     I2c_Device *p_device_in,
-    uint8_t **pp_bytes_out
+    uint8_t *p_bytes_out
 );
 
 /**

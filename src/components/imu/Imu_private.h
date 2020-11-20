@@ -45,18 +45,31 @@ extern I2c_Device IMU_I2C_DEVICE;
 
 /**
  * @brief IMU register address for the Gyroscope X offset high byte. 
+ * 
+ * From [REGMAP] p. 8.
  */
 #define IMU_REG_GYRO_X_OFFSET_H (0x13)
 
 /**
  * @brief IMU register address for the Gyroscope X offset high byte. 
+ * 
+ * From [REGMAP] p. 8.
  */
 #define IMU_REG_GYRO_Y_OFFSET_H (0x15)
 
 /**
  * @brief IMU register address for the Gyroscope X offset high byte. 
+ * 
+ * From [REGMAP] p. 8.
  */
 #define IMU_REG_GYRO_Z_OFFSET_H (0x17)
+
+/**
+ * @brief IMU register address for the temperature out high byte.
+ * 
+ * From [REGMAP] p. 8.
+ */
+#define IMU_REG_TEMP_OUT (0x41)
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
