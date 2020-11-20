@@ -133,6 +133,12 @@ typedef enum _I2c_ErrorCode {
     I2C_ERROR_UNEXPECTED_ACTION_STEP,
 
     /**
+     * @brief An unexpected action step index was found while executing an
+     * action.
+     */
+    I2C_ERROR_UNEXPECTED_ACTION_SUBSTEP,
+
+    /**
      * @brief A master I2C module is busy.
      */
     I2C_ERROR_MODULE_MASTER_BUSY,
