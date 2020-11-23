@@ -274,49 +274,60 @@ typedef enum _Imu_SubState {
     IMU_SUBSTATE_READ_TEMP_WAIT_COMPLETE,
 
     /**
-     * @brief Read Gyroscope X value state.
+     * @brief Initialise read gyroscope substate.
      */
-    IMU_SUBSTATE_READ_GYROSCOPE_X,
+    IMU_SUBSTATE_READ_GYROSCOPE_INIT,
 
     /**
-     * @brief Read Gyroscope Y value state.
+     * @brief Wait for gyroscope X value read complete substate.
      */
-    IMU_SUBSTATE_READ_GYROSCOPE_Y,
+    IMU_SUBSTATE_READ_GYROSCOPE_WAIT_X_COMPLETE,
 
     /**
-     * @brief Read Gyroscope Z value state.
+     * @brief Wait for gyroscope Y value read complete substate.
      */
-    IMU_SUBSTATE_READ_GYROSCOPE_Z,
+    IMU_SUBSTATE_READ_GYROSCOPE_WAIT_Y_COMPLETE,
 
     /**
-     * @brief Read Magnetometer sensitivity adjust X value state.
+     * @brief Wait for gyroscope Z value read complete substate.
      */
-    IMU_SUBSTATE_READ_MAGNE_SENSE_ADJUST_X,
+    IMU_SUBSTATE_READ_GYROSCOPE_WAIT_Z_COMPLETE,
 
     /**
-     * @brief Read Magnetometer sensitivity adjust Y value state.
+     * @brief Initialise read magnetometer substate.
+     * 
      */
-    IMU_SUBSTATE_READ_MAGNE_SENSE_ADJUST_Y,
+    IMU_SUBSTATE_READ_MAGNE_INIT,
 
     /**
-     * @brief Read Magnetometer sensitivity adjust Z value state.
+     * @brief Wait for magnetometer X sensitivity adjust read complete substate.
      */
-    IMU_SUBSTATE_READ_MAGNE_SENSE_ADJUST_Z,
+    IMU_SUBSTATE_READ_MAGNE_WAIT_SENSE_ADJUST_X_COMPLETE,
 
     /**
-     * @brief Read Magnetometer X value state.
+     * @brief Wait for magnetometer Y sensitivity adjust read complete substate.
      */
-    IMU_SUBSTATE_READ_MAGNE_X,
+    IMU_SUBSTATE_READ_MAGNE_WAIT_SENSE_ADJUST_Y_COMPLETE,
 
     /**
-     * @brief Read Magnetometer Y value state.
+     * @brief Wait for magnetometer Z sensitivity adjust read complete substate.
      */
-    IMU_SUBSTATE_READ_MAGNE_Y,
+    IMU_SUBSTATE_READ_MAGNE_WAIT_SENSE_ADJUST_Z_COMPLETE,
 
     /**
-     * @brief Read Magnetometer Z value state.
+     * @brief Wait for magnetometer X value read complete substate.
      */
-    IMU_SUBSTATE_READ_MAGNE_Z,
+    IMU_SUBSTATE_READ_MAGNE_WAIT_X_COMPLETE,
+
+    /**
+     * @brief Wait for magnetometer Y value read complete substate.
+     */
+    IMU_SUBSTATE_READ_MAGNE_WAIT_Y_COMPLETE,
+
+    /**
+     * @brief Wait for magnetometer Z value read complete substate.
+     */
+    IMU_SUBSTATE_READ_MAGNE_WAIT_Z_COMPLETE,
 
     /**
      * @brief Read Magnetometer ST2 state.
@@ -325,7 +336,7 @@ typedef enum _Imu_SubState {
      * instead this is used to signal to the magnetometer that the end of the
      * data read has been completed.
      */
-    IMU_SUBSTATE_READ_MAGNE_ST2
+    IMU_SUBSTATE_READ_MAGNE_WAIT_ST2_COMPLETE
 
 } Imu_SubState;
 
@@ -352,6 +363,26 @@ typedef struct _Imu_VecInt16 {
      */
     int16_t z;
 } Imu_VecInt16;
+
+/**
+ * @brief Vector of 8 bit unsigned integers.
+ */
+typedef struct _Imu_VecUint16 {
+    /**
+     * @brief X component of the vector.
+     */
+    uint8_t x;
+
+    /**
+     * @brief Y component of the vector.
+     */
+    uint8_t y;
+
+    /**
+     * @brief Z component of the vector.
+     */
+    uint8_t z;
+} Imu_VecUint8;
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS

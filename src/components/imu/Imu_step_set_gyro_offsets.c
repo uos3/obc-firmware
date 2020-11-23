@@ -62,7 +62,7 @@ bool Imu_step_set_gyro_offsets(void) {
 
             /* Send X offset bytes to the device */
             i2c_error = I2c_device_send_bytes(
-                &IMU_I2C_DEVICE, 
+                &IMU_MAIN_I2C_DEVICE, 
                 (uint8_t *)offset_x, 
                 3
             );
@@ -96,6 +96,7 @@ bool Imu_step_set_gyro_offsets(void) {
 
             /* Wait for the send action to complete */
             if (!Imu_wait_i2c_action_finished(
+                &IMU_MAIN_I2C_DEVICE,
                 &i2c_action_finished,
                 &i2c_action_success,
                 EVT_IMU_SET_GYRO_OFFSETS_FAILURE
@@ -118,7 +119,7 @@ bool Imu_step_set_gyro_offsets(void) {
             }
 
             /* Clear the action on the device */
-            i2c_error = I2c_clear_device_action(&IMU_I2C_DEVICE);
+            i2c_error = I2c_clear_device_action(&IMU_MAIN_I2C_DEVICE);
             if (i2c_error != I2C_ERROR_NONE) {
                 DEBUG_ERR("Could not clear action on IMU_I2C_DEVICE");
                 DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
@@ -127,7 +128,7 @@ bool Imu_step_set_gyro_offsets(void) {
 
             /* The send was successful, send Y offset bytes to the device */
             i2c_error = I2c_device_send_bytes(
-                &IMU_I2C_DEVICE, 
+                &IMU_MAIN_I2C_DEVICE, 
                 (uint8_t *)offset_y, 
                 3
             );
@@ -162,6 +163,7 @@ bool Imu_step_set_gyro_offsets(void) {
 
             /* Wait for the send action to complete */
             if (!Imu_wait_i2c_action_finished(
+                &IMU_MAIN_I2C_DEVICE,
                 &i2c_action_finished,
                 &i2c_action_success,
                 EVT_IMU_SET_GYRO_OFFSETS_FAILURE
@@ -184,7 +186,7 @@ bool Imu_step_set_gyro_offsets(void) {
             }
 
             /* Clear the action on the device */
-            i2c_error = I2c_clear_device_action(&IMU_I2C_DEVICE);
+            i2c_error = I2c_clear_device_action(&IMU_MAIN_I2C_DEVICE);
             if (i2c_error != I2C_ERROR_NONE) {
                 DEBUG_ERR("Could not clear action on IMU_I2C_DEVICE");
                 DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
@@ -193,7 +195,7 @@ bool Imu_step_set_gyro_offsets(void) {
 
             /* Send Y offset bytes to the device */
             i2c_error = I2c_device_send_bytes(
-                &IMU_I2C_DEVICE, 
+                &IMU_MAIN_I2C_DEVICE, 
                 (uint8_t *)offset_z, 
                 3
             );
@@ -224,6 +226,7 @@ bool Imu_step_set_gyro_offsets(void) {
 
             /* Wait for the send action to complete */
             if (!Imu_wait_i2c_action_finished(
+                &IMU_MAIN_I2C_DEVICE,
                 &i2c_action_finished,
                 &i2c_action_success,
                 EVT_IMU_SET_GYRO_OFFSETS_FAILURE
@@ -246,7 +249,7 @@ bool Imu_step_set_gyro_offsets(void) {
             }
 
             /* Clear the action on the device */
-            i2c_error = I2c_clear_device_action(&IMU_I2C_DEVICE);
+            i2c_error = I2c_clear_device_action(&IMU_MAIN_I2C_DEVICE);
             if (i2c_error != I2C_ERROR_NONE) {
                 DEBUG_ERR("Could not clear action on IMU_I2C_DEVICE");
                 DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;

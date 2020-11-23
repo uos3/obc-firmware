@@ -31,9 +31,14 @@
  * CONSTANTS
  * ------------------------------------------------------------------------- */
 
-I2c_Device IMU_I2C_DEVICE = {
+I2c_Device IMU_MAIN_I2C_DEVICE = {
     0x2,
     0x68
+};
+
+I2c_Device IMU_MAGNE_I2C_DEVICE = {
+    0x2,
+    0x0C
 };
 
 /* -------------------------------------------------------------------------   
@@ -62,176 +67,8 @@ bool Imu_step_self_test(void) {
     return true;
 }
 
-bool Imu_step_read_temp(void) {
-    /* No need to check for the module being initialised as this is done in
-     * Imu_step() */
-
-    /* Switch statement vars. Cases don't have separate scopes so variables
-     * must be declared outside the switch */
-    I2c_ErrorCode i2c_error = I2C_ERROR_NONE;
-    bool is_event_raised = false;
-    bool i2c_action_finished = false;
-    bool i2c_action_success = false;
-    uint8_t temp_data[2] = {0};
-    
-    /* 
-     * Execute substate specific steps. 
-     * 
-     * The general idea with these substates is that there's a break where we
-     * wait for IO. This means that the first part of a substate (except the
-     * init) is waiting on an I2C event. Once the I2C event is fired we then
-     * either continue to the next IO operation or exit on an error.
-     *
-     * Also disable switch-enum warning as this causes a warning for each 
-     * missed IMU_SUBSTATE, but this is handled nicely by the default here. 
-     */
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wswitch-enum"
-    switch (DP.IMU.SUBSTATE) {
-        case IMU_SUBSTATE_READ_TEMP_INIT: ;
-
-            /* Read bytes from the device */
-            i2c_error = I2c_device_recv_bytes(
-                &IMU_I2C_DEVICE, 
-                IMU_REG_TEMP_OUT,
-                2
-            );
-            if (i2c_error != I2C_ERROR_NONE) {
-                DEBUG_ERR(
-                    "I2C error while receiving temperature: %d", 
-                    i2c_error
-                );
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-                DP.IMU.I2C_ERROR = i2c_error;
-
-                /* Raise the failed event */
-                if (!EventManager_raise_event(
-                    EVT_IMU_READ_TEMP_FAILURE
-                )) {
-                    DEBUG_ERR(
-                        "CRITICAL: could not raise EVT_IMU_READ_TEMP_FAILURE"
-                    );
-                }
-
-                return false;
-            }
-
-            /* Advance to next substate */
-            DP.IMU.SUBSTATE = IMU_SUBSTATE_READ_TEMP_WAIT_COMPLETE;
-
-            /* Explicit fallthrough allowed here so that as much progress is
-             * made as possible in a single cycle. */
-            __attribute__ ((fallthrough));
-        case IMU_SUBSTATE_READ_TEMP_WAIT_COMPLETE: ;
-
-            /* Wait for the I2c operation to finish */
-            if (!Imu_wait_i2c_action_finished(
-                &i2c_action_finished,
-                &i2c_action_success,
-                EVT_IMU_READ_TEMP_FAILURE
-            )) {
-                /* Imu_wait_i2c_action_finished will set error code and 
-                 * message */
-                return false;
-            }
-
-            /* If not finished continue waiting for the IO to complete */
-            if (!i2c_action_finished) {
-                DEBUG_TRC("Waiting for I2C action to finish in READ_TEMP");
-                return true;
-            }
-
-            /* If it's finished but not successful exit */
-            if (!i2c_action_success) {
-                /* Error code and message set by wait func */
-                return false;
-            }
-
-            /* If it was successful read the bytes from the I2C driver */
-            i2c_error = I2c_get_device_recved_bytes(
-                &IMU_I2C_DEVICE,
-                (uint8_t *)temp_data
-            );
-            if (i2c_error != I2C_ERROR_NONE) {
-                DEBUG_ERR(
-                    "I2C error while reading temp bytes: %d", 
-                    i2c_error
-                );
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-                DP.IMU.I2C_ERROR = i2c_error;
-
-                /* Raise the failed event */
-                if (!EventManager_raise_event(
-                    EVT_IMU_READ_TEMP_FAILURE
-                )) {
-                    DEBUG_ERR(
-                        "CRITICAL: could not raise EVT_IMU_READ_TEMP_FAILURE"
-                    );
-                }
-
-                return false;
-            }
-
-            /* Put the bytes into the data pool field */
-            DP.IMU.TEMPERATURE_DATA = (int16_t)(
-                ((uint16_t)temp_data[0] << 8) /* High byte is first */
-                | (uint16_t)temp_data[1]
-            );
-
-            /* Remove the action */
-            i2c_error = I2c_clear_device_action(&IMU_I2C_DEVICE);
-            if (i2c_error != I2C_ERROR_NONE) {
-                DEBUG_ERR(
-                    "I2C error while clearing read temp action: %d", 
-                    i2c_error
-                );
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-                DP.IMU.I2C_ERROR = i2c_error;
-
-                /* Raise the failed event */
-                if (!EventManager_raise_event(
-                    EVT_IMU_READ_TEMP_FAILURE
-                )) {
-                    DEBUG_ERR(
-                        "CRITICAL: could not raise EVT_IMU_READ_TEMP_FAILURE"
-                    );
-                }
-
-                return false;
-            }
-
-            /* Raise success event */
-            if (!EventManager_raise_event(EVT_IMU_READ_TEMP_SUCCESS)) {
-                DEBUG_ERR("Error raising EVT_IMU_READ_TEMP_SUCCESS");
-                DP.IMU.ERROR = IMU_ERROR_EVENTMANAGER_ERROR;
-                return false;
-            }
-
-            break;
-        default: ;
-            DEBUG_ERR(
-                "Invalid IMU substate for READ_TEMPERATURE state: %d",
-                DP.IMU.SUBSTATE  
-            );
-            DP.IMU.ERROR = IMU_ERROR_INVALID_SUBSTATE;
-            return false;
-    }
-    #pragma GCC diagnostic pop
-
-    return true;
-}
-
-bool Imu_step_read_gyro(void) {
-    // TODO
-    return true;
-}
-
-bool Imu_step_read_magne(void) {
-    // TODO
-    return true;
-}
-
 bool Imu_wait_i2c_action_finished(
+    I2c_Device *p_device_in,
     bool *p_finished_out, 
     bool *p_success_out,
     Event failure_event
@@ -275,7 +112,7 @@ bool Imu_wait_i2c_action_finished(
         I2c_ErrorCode i2c_error = I2C_ERROR_NONE;
         I2c_ActionStatus i2c_status = I2C_ACTION_STATUS_NO_ACTION;
         i2c_error = I2c_get_device_action_status(
-            &IMU_I2C_DEVICE,
+            p_device_in,
             &i2c_status
         );
         if (i2c_error != I2C_ERROR_NONE) {
@@ -285,10 +122,11 @@ bool Imu_wait_i2c_action_finished(
 
             /* Raise the failed event */
             if (!EventManager_raise_event(
-                EVT_IMU_SET_GYRO_OFFSETS_FAILURE
+                failure_event
             )) {
                 DEBUG_ERR(
-                    "CRITICAL: could not raise EVT_IMU_SET_GYRO_OFFSETS_FAILURE"
+                    "CRITICAL: could not raise event 0x%04X",
+                    failure_event
                 );
             }
 
@@ -310,7 +148,7 @@ bool Imu_wait_i2c_action_finished(
             /* Get the error cause */
             I2c_ErrorCode i2c_action_error = I2C_ERROR_NONE;
             i2c_error = I2c_get_device_action_failure_cause(
-                &IMU_I2C_DEVICE,
+                p_device_in,
                 &i2c_action_error
             );
             if (i2c_error != I2C_ERROR_NONE) {
@@ -327,7 +165,8 @@ bool Imu_wait_i2c_action_finished(
                 failure_event
             )) {
                 DEBUG_ERR(
-                    "CRITICAL: could not raise EVT_IMU_SET_GYRO_OFFSETS_FAILURE"
+                    "CRITICAL: could not raise event 0x%04X",
+                    (uint16_t)failure_event
                 );
                 return false;
             }
@@ -342,6 +181,134 @@ bool Imu_wait_i2c_action_finished(
             return false;
         }
     }
+
+    return true;
+}
+
+bool Imu_wait_i2c_read_complete(
+    I2c_Device *p_device_in,
+    uint8_t *p_data_out,
+    bool *p_finished_out,
+    Event evt_failure_in,
+    uint8_t next_i2c_read_reg_in,
+    size_t next_i2c_read_length_in
+) {
+    /* Variables used throughout this function */
+    bool i2c_action_finished = false;
+    bool i2c_action_success = false;
+    I2c_ErrorCode i2c_error;
+
+    /* Default finished to false */
+    *p_finished_out = false;
+
+    /* Wait for the I2c operation to finish */
+    if (!Imu_wait_i2c_action_finished(
+        p_device_in,
+        &i2c_action_finished,
+        &i2c_action_success,
+        evt_failure_in
+    )) {
+        /* Imu_wait_i2c_action_finished will set error code and 
+            * message */
+        return false;
+    }
+
+    /* If not finished continue waiting for the IO to complete */
+    if (!i2c_action_finished) {
+        DEBUG_TRC(
+            "Waiting for I2C action to finish in IMU substate 0x%02X",
+            DP.IMU.SUBSTATE
+        );
+        return true;
+    }
+
+    /* If it's finished but not successful exit */
+    if (!i2c_action_success) {
+        /* Error code and message set by wait func */
+        return false;
+    }
+
+    /* If it was successful read the bytes from the I2C driver */
+    i2c_error = I2c_get_device_recved_bytes(
+        p_device_in,
+        p_data_out
+    );
+    if (i2c_error != I2C_ERROR_NONE) {
+        DEBUG_ERR(
+            "I2C error while reading bytes: %d, DP.IMU.SUBSTATE = 0x%02X", 
+            i2c_error,
+            DP.IMU.SUBSTATE
+        );
+        DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
+        DP.IMU.I2C_ERROR = i2c_error;
+
+        /* Raise the failed event */
+        if (!EventManager_raise_event(
+            evt_failure_in
+        )) {
+            DEBUG_ERR(
+                "CRITICAL: could not raise IMU failure event 0x%04X",
+                (uint16_t)evt_failure_in
+            );
+        }
+
+        return false;
+    }
+
+    /* Remove the action */
+    i2c_error = I2c_clear_device_action(&p_device_in);
+    if (i2c_error != I2C_ERROR_NONE) {
+        DEBUG_ERR(
+            "I2C error while clearing action: %d, DP.IMU.SUBSTATE = 0x%02X", 
+            i2c_error,
+            DP.IMU.SUBSTATE
+        );
+        DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
+        DP.IMU.I2C_ERROR = i2c_error;
+
+        /* Raise the failed event */
+        if (!EventManager_raise_event(
+            evt_failure_in
+        )) {
+            DEBUG_ERR(
+                "CRITICAL: could not raise IMU failure event 0x%04X",
+                (uint16_t)evt_failure_in
+            );
+        }
+
+        return false;
+    }
+
+    /* Read bytes from the device */
+    i2c_error = I2c_device_recv_bytes(
+        p_device_in, 
+        next_i2c_read_reg_in,
+        next_i2c_read_length_in
+    );
+    if (i2c_error != I2C_ERROR_NONE) {
+        DEBUG_ERR(
+            "I2C error while requesting recv: %d, DP.IMU.SUBSTATE = 0x%02X", 
+            i2c_error,
+            DP.IMU.SUBSTATE
+        );
+        DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
+        DP.IMU.I2C_ERROR = i2c_error;
+
+        /* Raise the failed event */
+        if (!EventManager_raise_event(
+            evt_failure_in
+        )) {
+            DEBUG_ERR(
+                "CRITICAL: could not raise IMU failure event 0x%04X",
+                (uint16_t)evt_failure_in
+            );
+        }
+
+        return false;
+    }
+
+    /* Raise the finished flag */
+    *p_finished_out = true;
 
     return true;
 }

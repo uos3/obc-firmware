@@ -142,6 +142,9 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
     /* In this linux dummy we read the required number of bytes from
      * /dev/urandom (random bytes) and output that */
     bool dev_found = false;
+    #if DEBUG_MODE
+    size_t length = 0;
+    #endif
     for (int i = 0; i < I2C_MAX_NUM_ACTIONS; ++i) {
         if (I2C.action_types[i] == I2C_ACTION_TYPE_BURST_RECV) {
             /* If the devices don't match skip to next one */
@@ -162,6 +165,10 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                  * going to add separate ones for linux as it's not official */
                 return I2C_ERROR_ZERO_LENGTH_RECEIVE;
             }
+
+            #if DEBUG_MODE
+            length = I2C.u_actions[i].burst_recv.length;
+            #endif
 
             size_t num_items = fread(
                 p_bytes_out, 
@@ -191,12 +198,21 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
         return I2C_ERROR_NO_ACTION_FOR_DEVICE;
     }
 
+    #if DEBUG_MODE
+    char *p_bytes_string = (char *)malloc(4 * length);
+    char buf[4];
+    for (int i = 0; i < length; ++i) {
+        sprintf((char *)buf, "%02X ", p_bytes_out[i]);
+        strcat(p_bytes_string, buf);
+    }
     DEBUG_DBG(
         "I2C recv (%02X, %02X): %s", 
         p_device_in->module, 
         p_device_in->address,
-        p_bytes_out
+        p_bytes_string
     );
+    free(p_bytes_string);
+    #endif
 
     return I2C_ERROR_NONE;
 }

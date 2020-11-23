@@ -9,11 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
-<<<<<<< Updated upstream
- * @date 2020-11-19
-=======
- * @date 2020-11-20
->>>>>>> Stashed changes
+ * @date 2020-11-23
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -175,8 +171,8 @@ bool DataPool_get(
     /* DP.IMU.MAGNE_SENSE_ADJUST_DATA */
     case 0x040a:
         *pp_data_out = &DP.IMU.MAGNE_SENSE_ADJUST_DATA;
-        *p_data_type_out = DATAPOOL_DATATYPE_IMU_VECINT16;
-        *p_data_size_out = sizeof(Imu_VecInt16);
+        *p_data_type_out = DATAPOOL_DATATYPE_IMU_VECUINT8;
+        *p_data_size_out = sizeof(Imu_VecUint8);
         return true;
 
 
@@ -193,6 +189,14 @@ bool DataPool_get(
         *pp_data_out = &DP.IMU.TEMPERATURE_DATA;
         *p_data_type_out = DATAPOOL_DATATYPE_INT16_T;
         *p_data_size_out = sizeof(int16_t);
+        return true;
+
+
+    /* DP.IMU.TEMPERATURE_DATA_VALID */
+    case 0x040d:
+        *pp_data_out = &DP.IMU.TEMPERATURE_DATA_VALID;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
         return true;
 
     
@@ -321,6 +325,12 @@ bool DataPool_get_symbol_str(
     /* DP.IMU.TEMPERATURE_DATA */
     case 0x040c:
         *pp_symbol_str_out = strdup("DP.IMU.TEMPERATURE_DATA");
+        return true;
+
+
+    /* DP.IMU.TEMPERATURE_DATA_VALID */
+    case 0x040d:
+        *pp_symbol_str_out = strdup("DP.IMU.TEMPERATURE_DATA_VALID");
         return true;
 
 

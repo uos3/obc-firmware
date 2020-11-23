@@ -33,11 +33,25 @@
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief The I2C device which represents the IMU.
+ * @brief The I2C device which represents the main IMU.
  * 
- * The IMU is connected on module I2C2, with an address of 0x68.
+ * The main IMU is connected on module I2C2, with an address of 0x68.
+ * 
+ * The main device contains the gyroscope, accelerometer, and temperature
+ * sensors. The magnetometer is found on a different device, even though they
+ * are in the same physical chip.
  */
-extern I2c_Device IMU_I2C_DEVICE;
+extern I2c_Device IMU_MAIN_I2C_DEVICE;
+
+/**
+ * @brief The I2C device which represents the IMU's magnetometer.
+ * 
+ * The IMU magnetometer is connected on module I2C2, with an address of 0x0C.
+ * 
+ * The magnetometer is actually a separate device inside the IMU, and has a
+ * separate register space and I2C address.
+ */
+extern I2c_Device IMU_MAGNE_I2C_DEVICE;
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -63,6 +77,76 @@ extern I2c_Device IMU_I2C_DEVICE;
  * From [REGMAP] p. 8.
  */
 #define IMU_REG_GYRO_Z_OFFSET_H (0x17)
+
+/**
+ * @brief IMU register address for Gyroscope X output high byte.
+ * 
+ * From [REGMAP] p. 8.
+ */
+#define IMU_REG_GYRO_X_OUT_H (0x43)
+
+/**
+ * @brief IMU register address for Gyroscope Y output high byte.
+ * 
+ * From [REGMAP] p. 8.
+ */
+#define IMU_REG_GYRO_Y_OUT_H (0x45)
+
+/**
+ * @brief IMU register address for Gyroscope Z output high byte.
+ * 
+ * From [REGMAP] p. 8.
+ */
+#define IMU_REG_GYRO_Z_OUT_H (0x47)
+
+/**
+ * @brief IMU register address for magnetometer X sensitivity adjust.
+ * 
+ * From [REGMAP] p. 47
+ */
+#define IMU_REG_MAGNE_SENSE_ADJUST_X (0x10)
+
+/**
+ * @brief IMU register address for magnetometer X sensitivity adjust.
+ * 
+ * From [REGMAP] p. 47
+ */
+#define IMU_REG_MAGNE_SENSE_ADJUST_Y (0x11)
+
+/**
+ * @brief IMU register address for magnetometer X sensitivity adjust.
+ * 
+ * From [REGMAP] p. 47
+ */
+#define IMU_REG_MAGNE_SENSE_ADJUST_Z (0x12)
+
+/**
+ * @brief IMU register address for magnetometer X value.
+ * 
+ * From [REGMAP] p. 47
+ */
+#define IMU_REG_MAGNE_X_OUT_L (0x03)
+
+/**
+ * @brief IMU register address for magnetometer Y value.
+ * 
+ * From [REGMAP] p. 47
+ */
+#define IMU_REG_MAGNE_Y_OUT_L (0x05)
+
+/**
+ * @brief IMU register address for magnetometer Z value.
+ * 
+ * From [REGMAP] p. 47
+ */
+#define IMU_REG_MAGNE_Z_OUT_L (0x07)
+
+/**
+ * @brief IMU register address for magnetometer Status 2 register.
+ * 
+ * From [REGMAP] p. 47
+ */
+#define IMU_REG_MAGNE_ST2 (0x09)
 
 /**
  * @brief IMU register address for the temperature out high byte.
@@ -144,15 +228,43 @@ bool Imu_step_read_magne(void);
 /**
  * @brief Wait for an I2C IO action to finish
  * 
+ * @param p_device_in Pointer to the I2C device to operate on.
  * @param p_finished_out True if the action finished.
  * @param p_success_out True if the action was successful.
  * @param failure_event The event to raise if the action was a failure.
  * @return true True on function (not action) success, false on error.
  */
 bool Imu_wait_i2c_action_finished(
+    I2c_Device *p_device_in,
     bool *p_finished_out, 
     bool *p_success_out,
     Event failure_event
+);
+
+/**
+ * @brief Wait for a read I2C operation to complete as a part of a multi-send
+ * action. 
+ * 
+ * The length of p_data_out should be the same as that set in the previous
+ * I2c_device_read_bytes call (or this function).
+ * 
+ * @param p_device_in Pointer to the I2C device to operate on.
+ * @param p_data_out Pointer to a byte array of the proper length which the
+ *        recieved data will be set into.
+ * @param p_finished_out True if the operation has finished and the next I2C
+ *        read action has been started.
+ * @param evt_failure_in Event to raise if a failure occurs.
+ * @param next_i2c_read_reg_in The register address of the next I2C read action.
+ * @param data_length_in The length of the next data recieve command.
+ * @return bool True if no error occurs, false otherwise.
+ */
+bool Imu_wait_i2c_read_complete(
+    I2c_Device *p_device_in,
+    uint8_t *p_data_out,
+    bool *p_finished_out,
+    Event evt_failure_in,
+    uint8_t next_i2c_read_reg_in,
+    size_t next_i2c_read_length_in
 );
 
 

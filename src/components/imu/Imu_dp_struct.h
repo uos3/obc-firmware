@@ -116,7 +116,7 @@ typedef struct _Imu_Dp {
      * 
      * @dp 10
      */
-    Imu_VecInt16 MAGNE_SENSE_ADJUST_DATA;
+    Imu_VecUint8 MAGNE_SENSE_ADJUST_DATA;
 
     /**
      * @brief True when the data contained in DP.IMU.MAGNETOMETER_DATA is valid.
@@ -135,14 +135,25 @@ typedef struct _Imu_Dp {
     bool MAGNETOMETER_DATA_VALID;
 
     /**
-     * @brief Temperature reading from the IMU..
+     * @brief Temperature reading from the IMU.
      * 
-     * As this value only requires one I2C read it shall always be consistent,
-     * therefore no _VALID flag is required.
+     * This value is only guarenteed to be valid when 
+     * DP.IMU.TEMPERATURE_DATA_VALID is true.
      * 
      * @dp 12
      */
     int16_t TEMPERATURE_DATA;
+
+    /**
+     * @brief True when the data contained in DP.IMU.TEMPERATURE_DATA is valid.
+     * 
+     * This flag is required since it is possible for a request to the
+     * component to update the data value to be made and not set in the same
+     * cycle. 
+     * 
+     * @dp 13
+     */
+    bool TEMPERATURE_DATA_VALID;
 
 } Imu_Dp;
 

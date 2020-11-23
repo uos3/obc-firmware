@@ -132,7 +132,7 @@ bool Imu_step(void) {
                         /* Begin the gyro state */
                         if (!Imu_begin_state(
                             IMU_STATE_READ_GYROSCOPE,
-                            IMU_SUBSTATE_READ_GYROSCOPE_X
+                            IMU_SUBSTATE_READ_GYROSCOPE_INIT
                         )) {
                             /* Error message and code set by the begin func */
                             return false;
@@ -144,7 +144,7 @@ bool Imu_step(void) {
                         /* Begin the magne state */
                         if (!Imu_begin_state(
                             IMU_STATE_READ_MAGNETOMETER,
-                            IMU_SUBSTATE_READ_MAGNE_SENSE_ADJUST_X
+                            IMU_SUBSTATE_READ_MAGNE_INIT
                         )) {
                             /* Error message and code set by the begin func */
                             return false;
