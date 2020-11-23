@@ -69,10 +69,13 @@ int main(void) {
 
     /* 
      * Demo step is a counter used to:
-     * 1. Read temperature
-     * 2. Read gyroscope
-     * 3. Read magnetometer
-     * and print the data out
+     * 0. Wait for IMU gyro offsets to be set
+     * 1. Start read temperature
+     * 2. Wait for read complete 
+     * 3. Start read gyroscope
+     * 4. Wait for read complete
+     * 5. Start read magnetometer
+     * 6. Wait for reac complete & print the data out
      */
     uint8_t demo_step = 0;
 

@@ -163,16 +163,16 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                 return I2C_ERROR_ZERO_LENGTH_RECEIVE;
             }
 
-            size_t bytes_read = fread(
+            size_t num_items = fread(
                 p_bytes_out, 
                 I2C.u_actions[i].burst_recv.length,
                 1,
                 fp_random
             );
-            if (bytes_read != I2C.u_actions[i].burst_recv.length) {
+            if (num_items != 1) {
                 DEBUG_ERR(
-                    "Could not get %d bytes from /dev/urandom",
-                    I2C.u_actions[i].burst_recv.length
+                    "Could not get 1 items from /dev/urandom (read %d instead)",
+                    num_items
                 );
                 /* This obivously isn't the right error code but we're not
                  * going to add separate ones for linux as it's not official */
