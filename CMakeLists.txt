@@ -1,6 +1,6 @@
 
-# Minimum CMake version here is the one that ships with Ubuntu 20.04
-cmake_minimum_required(VERSION 3.16.3)
+# Minimum CMake version here is the one that apt installs on the raspberry pi.
+cmake_minimum_required(VERSION 3.13.4)
 
 # Project declaration
 project(obc_firmware)
