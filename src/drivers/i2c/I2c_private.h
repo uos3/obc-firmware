@@ -351,12 +351,6 @@ typedef struct _I2c {
      */
     bool module_locked[I2C_NUM_MODULES];
 
-    /**
-     * @brief Indicates which device has locked the module.
-     * 
-     * To check if the module is locked see module_locked.
-     */
-    I2c_Device module_user[I2C_NUM_MODULES];
 } I2c;
 
 /* -------------------------------------------------------------------------   
@@ -443,6 +437,24 @@ I2c_ErrorCode I2c_burst_send_wait_master_not_busy(
     I2c_ActionBurstSend *p_action_in,
     I2c_Module *p_i2c_module_in,
     bool *p_exit_action_out
+);
+
+/**
+ * @brief Attempts to get a lock on the device's module.
+ * 
+ * Note: This function must be called once the I2c module has been initialised
+ * as it makes no check of this.
+ * 
+ * @param p_device_in The device attempting to lock the mdoule.
+ * @return I2c_ErrorCode Return code. If I2C_ERROR_NONE the device has
+ *         successfully got the lock on the module. If other then the module is
+ *         already locked by another device.
+ */
+I2c_ErrorCode I2c_lock_module(I2c_Device *p_device_in);
+
+I2c_ErrorCode I2c_action_burst_recv_master_busy_check(
+    I2c_ActionBurstRecv *p_action_in,
+    bool *p_master_busy_out
 );
 
 #endif /* H_I2C_PRIVATE_H */

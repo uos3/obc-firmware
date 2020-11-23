@@ -280,6 +280,11 @@ I2c_ErrorCode I2c_device_send_bytes(
         return I2C_ERROR_NOT_INITIALISED;
     }
 
+    /* Attempt to get the module lock */
+    if (I2c_lock_module(p_device_in) != I2C_ERROR_NONE) {
+        return I2C_ERROR_MODULE_LOCKED_BY_ANOTHER_DEVICE;
+    }
+
     /* Raise an error if the length of the data is zero, as we cannot
      * send zero bytes. */
     if (length_in == 0) {
@@ -367,6 +372,11 @@ I2c_ErrorCode I2c_device_recv_bytes(
             "Attempted to send byte(s) to I2C when it is not initialised."
         );
         return I2C_ERROR_NOT_INITIALISED;
+    }
+
+    /* Attempt to get the module lock */
+    if (I2c_lock_module(p_device_in) != I2C_ERROR_NONE) {
+        return I2C_ERROR_MODULE_LOCKED_BY_ANOTHER_DEVICE;
     }
 
     /* Raise an error if the length of the data is zero, as we cannot
@@ -611,4 +621,12 @@ I2c_ErrorCode I2c_get_device_action_failure_cause(
     /* If we have got to this point with no device found return an error */
     DEBUG_ERR("Device (%d, %d) not found in the list of I2C actions.");
     return I2C_ERROR_NO_ACTION_FOR_DEVICE;
+}
+
+I2c_ErrorCode I2c_get_device_action_status(I2c_Device *p_device_in, I2c_ActionStatus *p_status_out) {
+    
+}
+
+I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
+
 }

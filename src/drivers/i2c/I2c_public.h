@@ -169,7 +169,13 @@ typedef enum _I2c_ErrorCode {
     /**
      * @brief Error in the event manager.
      */
-    I2C_ERROR_EVENTMANAGER_ERROR
+    I2C_ERROR_EVENTMANAGER_ERROR,
+
+    /**
+     * @brief The action cannot be queued as the module (bus) the device is on
+     * is already locked by another device. 
+     */
+    I2C_ERROR_MODULE_LOCKED_BY_ANOTHER_DEVICE
 
 } I2c_ErrorCode;
 

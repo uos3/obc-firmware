@@ -66,6 +66,7 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
     /* Get a pointer to the I2C Module this device is associated with */
     I2c_Module *p_i2c_module = &I2C_MODULES[p_action_in->device.module];
     I2c_ErrorCode master_error = I2C_ERROR_NONE;
+    bool master_busy;
 
     switch (p_action_in->step) {
         case 0:
@@ -77,16 +78,61 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
                 p_action_in->device.address,
                 false
             );
-
             I2CMasterDataPut(
                 p_i2c_module->base_i2c,
                 p_action_in->reg
             );
-
             I2CMasterControl(
                 p_i2c_module->base_i2c,
                 I2C_MASTER_CMD_SINGLE_SEND
             );
+
+            /* Increment the step and continue. */
+            p_action_in->step++;
+            __attribute__ ((fallthrough));
+
+        case 1:
+            /* Check if the I2C is busy */
+            master_busy = true;
+            p_action_in->error = I2c_action_burst_recv_master_busy_check(
+                p_action_in,
+                &master_busy
+            );
+            
+            /* If the master is busy, set the action as failure, show a debug
+             * message, and return the error. */
+            if (master_busy) {
+                p_action_in->status = I2C_ACTION_STATUS_FAILURE;
+                /* Debug error message for busy I2C (in depth error message
+                 * is shown within the above function). */
+                DEBUG_DBG(
+                    "I2C master module is busy."
+                );
+                return p_action_in->error;
+            }
+
+            /* If the master is not busy, increment the step and continue. */
+            else {
+                p_action_in->step++;
+            }
+
+            __attribute__ ((fallthrough));
+            
+        case 2:
+            /* Get the Error status */
+            p_action_in->error = I2c_check_master_error(p_i2c_module->base_i2c);
+
+            /* If the error status is anaything other than NONE, return
+             * the error. If the error is NONE, continue. */
+            if (p_action_in->error != I2C_ERROR_NONE) {
+                DEBUG_ERR("Error setting up I2C for burst receive function.");
+                p_action_in->status = I2C_ACTION_STATUS_FAILURE;
+                return p_action_in->error;
+            }
+            else {
+                p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
+                return I2C_ERROR_NONE;
+            }
             
             /* Set the I2C to receive bytes from the device by
              * setting the slave address (true = receive in this case) */
@@ -95,7 +141,6 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
                 p_action_in->device.address,
                 true
             );
-
             /* Tell the bus to receive (single) */
             I2CMasterControl(
                 p_i2c_module->base_i2c,
@@ -103,75 +148,43 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
             );
 
             /* Receive byte from the device */
-            /* TODO: Why is busy check done before the bus is confirmed not
-             * busy?
-             * FIXME send and recv, single and burst: double check: is an extra
-             * busy check required, or is it enough to just swap
-             *  case 0 and 1? */
-            p_action_in->p_bytes[0] = (uint8_t)I2CMasterDataGet(p_i2c_module->base_i2c);
+            p_action_in->p_bytes[0] = (uint8_t)I2CMasterDataGet(
+                p_i2c_module->base_i2c
+            );
 
             /* Increase the step by 1 */
             p_action_in->step++;
 
             __attribute__ ((fallthrough));
         
-        case 1:
-            /* Check that the number of major checks is below the set maximum,
-             * and return an error if the maximum has been reached */
-            if (
-                p_action_in->num_master_busy_major_checks
-                >=
-                I2C_MAX_NUM_MASTER_BUSY_MAJOR_CHECKS
-            ) {
-                DEBUG_ERR(
-                    "I2C master module %d has been busy for %d major loops and is now marked as unresponsive.",
-                    p_action_in->device.module,
-                    p_action_in->num_master_busy_major_checks
-                );
-
-                /* Set the action status as a failure if the maximum number
-                 * of checks has been reached. */
+        case 3:
+            /* Check if the I2C is busy */
+            master_busy = true;
+            p_action_in->error = I2c_action_burst_recv_master_busy_check(
+                p_action_in,
+                &master_busy
+            );
+            
+            /* If the master is busy, set the action as failure, show a debug
+             * message, and return the error. */
+            if (master_busy) {
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
-                p_action_in->error = I2C_ERROR_MODULE_MASTER_BUSY;
-
+                /* Debug error message for busy I2C (in depth error message
+                 * is shown within the above function). */
+                DEBUG_DBG(
+                    "I2C master module is busy."
+                );
                 return p_action_in->error;
             }
 
-            /* Check if the I2C is busy within the minor loops */
-            /* TODO: Should this be declared at the start of the function,
-             * as it is also used later on? */
-            bool master_busy = true;
-            for (int i = 0; i < I2C_MAX_NUM_MASTER_BUSY_MINOR_CHECKS; ++i) {
-                master_busy = I2CMasterBusy(p_i2c_module->base_i2c);
-
-                /* If the master is not busy at any point in the loop, exit
-                 * the loop, as there is only an issue if it has been busy
-                 * for the maximum number of checks */
-                if (!master_busy) {
-                    break;
-                }
+            /* If the master is not busy, increment the step and continue. */
+            else {
+                p_action_in->step++;
             }
-
-            /* If the master is busy for all minor checks, exit to the major
-             * loop and increase step by 1. If the master is not busy,
-             * continue to the next step. */
-            if (master_busy) {
-                p_action_in->num_master_busy_major_checks++;
-
-                /* If master is busy, exit and return to the main loop,
-                 * assuming the number of checks has not reached the maximum */
-                DEBUG_DBG(
-                    "I2C master module %d still busy after minor check.",
-                    p_action_in->device.module
-                );
-                return I2C_ERROR_NONE;
-            }
-
-            p_action_in->step++;
 
             __attribute__ ((fallthrough));
 
-        case 2:
+        case 4:
             
             /* Get the Error status */
             master_error = I2c_check_master_error(p_i2c_module->base_i2c);
@@ -196,62 +209,58 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
             ) {
                 switch (p_action_in->substep) {
                     case 0:
-                        I2CMasterControl(p_i2c_module->base_i2c, I2C_MASTER_CMD_BURST_RECEIVE_CONT);
-                        p_action_in->p_bytes[i] = (uint8_t)I2CMasterDataGet(p_i2c_module->base_i2c);
+                        I2CMasterControl(
+                            p_i2c_module->base_i2c,
+                            I2C_MASTER_CMD_BURST_RECEIVE_CONT
+                        );
+                        p_action_in->p_bytes[i]
+                        =
+                        (uint8_t)I2CMasterDataGet(p_i2c_module->base_i2c);
                         p_action_in->substep++;
 
                         __attribute__ ((fallthrough));
 
                     case 1:
-                        if (
-                            p_action_in->num_master_busy_major_checks
-                            <=
-                            I2C_MAX_NUM_MASTER_BUSY_MAJOR_CHECKS
-                        ) {
-                            DEBUG_ERR(
-                                "I2C master module %d has been busy for %d major loops and is now marked as unresponsive.",
-                                p_action_in->device.module,
-                                p_action_in->num_master_busy_major_checks
-                            );
-
-                            /* Set the action status as a failure if the maximum number
-                             * of checks has been reached. */
+                        /* Check if the I2C is busy */
+                        master_busy = true;
+                        p_action_in->error
+                        =
+                        I2c_action_burst_recv_master_busy_check(
+                            p_action_in,
+                            &master_busy
+                        );
+                        
+                        /* If the master is busy, set the action as failure,
+                         * show a debug message, and return the error. */
+                        if (master_busy) {
                             p_action_in->status = I2C_ACTION_STATUS_FAILURE;
-                            p_action_in->error = I2C_ERROR_MODULE_MASTER_BUSY;
-
+                            /* Debug error message for busy I2C (in depth error
+                             * message is shown within the above function). */
+                            DEBUG_DBG(
+                                "I2C master module is busy."
+                            );
                             return p_action_in->error;
                         }
 
-                        /* Check if the I2C is busy within the minor loops */
-                        bool master_busy = true;
-                        for (int i = 0; i < I2C_MAX_NUM_MASTER_BUSY_MINOR_CHECKS; ++i) {
-                            master_busy = I2CMasterBusy(p_i2c_module->base_i2c);
-
-                            /* If the master is not busy at any point in the loop, exit
-                            * the loop, as there is only an issue if it has been busy
-                            * for the maximum number of checks */
-                            if (!master_busy) {
-                                break;
-                            }
+                        /* If the master is not busy, increment the step and
+                         * continue. */
+                        else {
+                            p_action_in->step++;
                         }
-
-                        /* If the master is busy for all minor checks, exit to the major
-                        * loop and increase step by 1. If the master is not busy,
-                        * continue to the next step. */
-                        if (master_busy) {
-                            p_action_in->num_master_busy_major_checks++;
-                        }
-
-                        p_action_in->substep++;
 
                         __attribute__ ((fallthrough));
                     
                     case 2:
 
-                        master_error = I2c_check_master_error(p_i2c_module->base_i2c);
+                        master_error
+                        =
+                        I2c_check_master_error(p_i2c_module->base_i2c);
 
                         if (master_error != I2C_ERROR_NONE) {
-                            I2CMasterControl(p_i2c_module->base_i2c, I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP);
+                            I2CMasterControl(
+                                p_i2c_module->base_i2c,
+                                I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP
+                            );
 
                             DEBUG_ERR("Error receiving byte %d from device", i);
                             p_action_in->error = master_error;
@@ -271,83 +280,60 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
 
             __attribute__ ((fallthrough));
         
-        case 3:
-            I2CMasterControl(p_i2c_module->base_i2c, I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
-            p_action_in->p_bytes[p_action_in->length - 1] = (uint8_t)I2CMasterDataGet(p_i2c_module->base_i2c);
+        case 5:
+            I2CMasterControl(
+                p_i2c_module->base_i2c,
+                I2C_MASTER_CMD_BURST_RECEIVE_FINISH
+            );
+
+            p_action_in->p_bytes[p_action_in->length - 1]
+            =
+            (uint8_t)I2CMasterDataGet(p_i2c_module->base_i2c);
 
             p_action_in->step++;
 
             __attribute__ ((fallthrough));
         
-        case 4:
-            /* Check that the number of major checks is below the set maximum,
-             * and return an error if the maximum has been reached */
-            if (
-                p_action_in->num_master_busy_major_checks
-                >=
-                I2C_MAX_NUM_MASTER_BUSY_MAJOR_CHECKS
-            ) {
-                DEBUG_ERR(
-                    "I2C master module %d has been busy for %d major loops and is now marked as unresponsive.",
-                    p_action_in->device.module,
-                    p_action_in->num_master_busy_major_checks
-                );
-
-                /* Set the action status as a failure if the maximum number
-                 * of checks has been reached. */
+        case 6:
+            /* Check if the I2C is busy */
+            master_busy = true;
+            p_action_in->error
+            =
+            I2c_action_burst_recv_master_busy_check(p_action_in, &master_busy);
+            
+            /* If the master is busy, set the action as failure, show a debug
+             * message, and return the error. */
+            if (master_busy) {
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
-                p_action_in->error = I2C_ERROR_MODULE_MASTER_BUSY;
-
+                /* Debug error message for busy I2C (in depth error message
+                 * is shown within the above function). */
+                DEBUG_DBG(
+                    "I2C master module is busy."
+                );
                 return p_action_in->error;
             }
 
-            /* Check if the I2C is busy within the minor loops */
-            master_busy = true;
-            for (int i = 0; i < I2C_MAX_NUM_MASTER_BUSY_MINOR_CHECKS; ++i) {
-                master_busy = I2CMasterBusy(p_i2c_module->base_i2c);
-
-                /* If the master is not busy at any point in the loop, exit
-                 * the loop, as there is only an issue if it has been busy
-                 * for the maximum number of checks */
-                if (!master_busy) {
-                    break;
-                }
+            /* If the master is not busy, increment the step and continue. */
+            else {
+                p_action_in->step++;
             }
-
-            /* If the master is busy for all minor checks, exit to the major
-             * loop and increase step by 1. If the master is not busy,
-             * continue to the next step. */
-            if (master_busy) {
-                p_action_in->num_master_busy_major_checks++;
-
-                /* If master is busy, exit and return to the main loop,
-                 * assuming the number of checks has not reached the maximum */
-                DEBUG_DBG(
-                    "I2C master module %d still busy after minor check.",
-                    p_action_in->device.module
-                );
-                return I2C_ERROR_NONE;
-            }
-
-            p_action_in->step++;
 
             __attribute__ ((fallthrough));
         
-        case 5:
+        case 7:
             /* Get the Error status */
-            master_error = I2c_check_master_error(p_i2c_module->base_i2c);
+            p_action_in->error = I2c_check_master_error(p_i2c_module->base_i2c);
 
             /* If the error status is anaything other than NONE, return
              * the error. If the error is NONE, continue. */
-            if (master_error != I2C_ERROR_NONE) {
-                I2CMasterControl(p_i2c_module->base_i2c,
-                I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP
-                );
-
-                DEBUG_ERR("Error Receiving First Byte from Device");
-                p_action_in->error = master_error;
+            if (p_action_in->error != I2C_ERROR_NONE) {
+                DEBUG_ERR("Error Receiving Final Byte from Device");
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
                 return p_action_in->error;
+            }
+            else {
+                p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
+                return I2C_ERROR_NONE;
             }
 
             break;

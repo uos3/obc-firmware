@@ -14,6 +14,29 @@
       devices match
 - I2c_action_single_recv
 - I2c_clear_device_action
+- I2c_action_x_master_busy_check
+    - Check major cycle numbers
+    - If major cycle failed:
+        - Set master_busy true
+        - Return error
+    - Check minor cycles
+    - If master not busy:
+        - Set master_busy false
+        - Set num_master_major_busy_checks = 0
+        - Return no error
+    - If master busy:
+        - Set master_busy true
+        - Increment num_master_major_busy_checks
+        - Return no error
+
+bool master_busy = true;
+i2c_error = I2c_action_x_master_busy_check(p_action_in, &master_busy);
+if (master_busy) {
+    return i2c_error;
+}
+else {
+    p_action_in->step++;
+}
 
 # Duncan
 
