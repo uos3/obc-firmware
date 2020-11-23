@@ -249,9 +249,26 @@ I2c_ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in) {
 
     switch(p_action_in->step) {
         case 0:
-            /* TODO: Set address as a send and use dataput onto register */
+            /* Set address as a send and use dataput onto register, must
+             * send onto register to prepare the I2C to receive.
+             * (false = send in this case). */
+            I2CMasterSlaveAddrSet(
+                p_i2c_module->base_i2c,
+                p_action_in->device.address,
+                false
+            );
 
-            /* Step 0: Setup: Set the I2C to receive bytes from the device by
+            I2CMasterDataPut(
+                p_i2c_module->base_i2c,
+                p_action_in->reg
+            );
+
+            I2CMasterControl(
+                p_i2c_module->base_i2c,
+                I2C_MASTER_CMD_SINGLE_SEND
+            );
+
+            /* Set the I2C to receive bytes from the device by
              * setting the slave address (true = receive in this case) */
             I2CMasterSlaveAddrSet(
                 p_i2c_module->base_i2c,
@@ -314,6 +331,14 @@ I2c_ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in) {
              * continue to the next step. */
             if (master_busy) {
                 p_action_in->num_master_busy_major_checks++;
+
+                /* If master is busy, exit and return to the main loop,
+                 * assuming the number of checks has not reached the maximum */
+                DEBUG_DBG(
+                    "I2C master module %d still busy after minor check.",
+                    p_action_in->device.module
+                );
+                return I2C_ERROR_NONE;
             }
 
             p_action_in->step++;

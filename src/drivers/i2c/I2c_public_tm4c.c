@@ -440,7 +440,7 @@ I2c_ErrorCode I2c_device_recv_bytes(
 
 I2c_ErrorCode I2c_get_device_recved_bytes(
     I2c_Device *p_device_in,
-    uint8_t **pp_bytes_out
+    uint8_t *p_bytes_out
 ) {
     /* Loop through the actions that are not NONE and find this device */
     for (size_t i = 0; i < I2C_MAX_NUM_ACTIONS; ++i) {
@@ -485,7 +485,7 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                 if (I2c_devices_equal(&p_sr_action->device, p_device_in)) {
                     /* If the status is success get the byte */
                     if (p_sr_action->status == I2C_ACTION_STATUS_SUCCESS) {
-                        *pp_bytes_out[0] = p_sr_action->byte;
+                        p_bytes_out[0] = p_sr_action->byte;
                         return I2C_ERROR_NONE;
                     }
                     /* If the status is not success return an error */
@@ -520,7 +520,7 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                          * requested.
                          */
                         memcpy(
-                            (void *)(*pp_bytes_out), 
+                            (void *)(p_bytes_out), 
                             (void *)(p_br_action->p_bytes),
                             p_br_action->length
                         );
