@@ -126,6 +126,11 @@ the run using
 You can use `./flash --help` to see help information. The script expects ELF
 files that have been built using `./build -t tm4c`.
 
+You can also flash immediately after building, for instance:
+```shell
+./build -t launchpad --flash demo_imu.elf
+```
+
 ## Debugging
 
 OpenOCD and GDB can be used to debug the software. To use these in one terminal
@@ -141,3 +146,15 @@ the ELF file not a binary, as GDB and OpenOCD will handle the flashing process
 for you. You can put breakpoints in the code using `__asm("BKPT")`. Make sure
 to remove these before testing without the debugging setup as they will halt 
 execution.
+
+## Build Features
+
+A number of features may be enabled by a build, which can be seen by calling
+```shell
+./build --list-features
+```
+
+Features allow certain parts of the code to be excluded from particular builds,
+for instance the IMU calibration code is not required in the flight version of
+the software, so it's inclusion in the build is only enabled when using the
+`imu_calib` feature.
