@@ -31,6 +31,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "system/event_manager/EventManager_public.h"
 #include "drivers/i2c/I2c_private.h"
 
 /* -------------------------------------------------------------------------   
@@ -430,6 +431,12 @@ I2c_ErrorCode I2c_burst_send_wait_master_not_busy(
         p_action_in->status = I2C_ACTION_STATUS_FAILURE;
         p_action_in->error = I2C_ERROR_MODULE_MASTER_BUSY;
         *p_exit_action_out = true;
+
+        /* Emmit the finished event */
+        if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+            DEBUG_ERR("CRITICAL: Error raising event during error");
+        }
+
         return I2C_ERROR_MODULE_MASTER_BUSY;
     }
 
@@ -511,6 +518,11 @@ I2c_ErrorCode I2c_action_burst_recv_master_busy_check(
 
         p_action_in->status = I2C_ACTION_STATUS_FAILURE;
         p_action_in->error = I2C_ERROR_MODULE_MASTER_BUSY;
+
+        /* Emmit the finished event */
+        if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+            DEBUG_ERR("CRITICAL: Error raising event during error");
+        }
 
         return p_action_in->error;
     }

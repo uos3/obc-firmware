@@ -34,7 +34,7 @@
  * ------------------------------------------------------------------------- */
 
 int main(void) {
-    /* Init system */
+    /* Init system critical modules */
     if (!DataPool_init()) {
         Debug_exit(1);
     }
@@ -49,6 +49,14 @@ int main(void) {
     }
 
     DEBUG_INF("IMU Demo");
+
+    /* Init the I2C driver */
+    uint32_t i2c_modules[] = {0x02};
+    I2c_ErrorCode i2c_error = I2c_init((uint32_t *)i2c_modules, 1);
+    if (i2c_error != I2C_ERROR_NONE) {
+        DEBUG_ERR("I2C error code: %d", i2c_error);
+        Debug_exit(1);
+    }
 
     /* Init the IMU */
     if (!Imu_init()) {
@@ -85,6 +93,8 @@ int main(void) {
     bool run_loop = true;
     bool sleep = false;
     while (run_loop) {
+
+        DEBUG_TRC("--- CYCLE ---");
 
         /* Do the demo actions */
         bool event_raised = false;
@@ -280,7 +290,13 @@ int main(void) {
                 break;
         }
 
-        /* TODO: Step I2C */
+        /* Step the I2C */
+        i2c_error = I2c_step();
+        if (i2c_error != I2C_ERROR_NONE) {
+            DEBUG_ERR("I2C error code: %d", i2c_error);
+            /* Don't exit as we want to see the IMU component detect this
+             * error. */
+        }
 
         /* Step the IMU */
         if (!Imu_step()) {
