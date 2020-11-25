@@ -40,7 +40,6 @@ bool Imu_step_set_gyro_offsets(void) {
     /* Switch statement vars. Cases don't have separate scopes so variables
      * must be declared outside the switch */
     I2c_ErrorCode i2c_error = I2C_ERROR_NONE;
-    bool is_event_raised = false;
     bool i2c_action_finished = false;
     bool i2c_action_success = false;
 

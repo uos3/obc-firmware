@@ -35,7 +35,6 @@ bool Imu_step_read_magne(void) {
     /* Switch statement vars. Cases don't have separate scopes so variables
      * must be declared outside the switch */
     I2c_ErrorCode i2c_error = I2C_ERROR_NONE;
-    bool is_event_raised = false;
     bool i2c_action_finished = false;
     bool i2c_action_success = false;
     uint8_t sens_adjust_data = 0;
@@ -187,7 +186,7 @@ bool Imu_step_read_magne(void) {
             /* Wait and trigger next read */
             if (!Imu_wait_i2c_read_complete(
                 &IMU_MAGNE_I2C_DEVICE,
-                &magne_data,
+                (uint8_t *)magne_data,
                 &i2c_action_finished,
                 EVT_IMU_READ_MAGNE_FAILURE,
                 IMU_REG_MAGNE_Y_OUT_L,
@@ -221,7 +220,7 @@ bool Imu_step_read_magne(void) {
             /* Wait and trigger next read */
             if (!Imu_wait_i2c_read_complete(
                 &IMU_MAGNE_I2C_DEVICE,
-                &magne_data,
+                (uint8_t *)magne_data,
                 &i2c_action_finished,
                 EVT_IMU_READ_MAGNE_FAILURE,
                 IMU_REG_MAGNE_Z_OUT_L,
@@ -255,7 +254,7 @@ bool Imu_step_read_magne(void) {
             /* Wait and trigger next read */
             if (!Imu_wait_i2c_read_complete(
                 &IMU_MAGNE_I2C_DEVICE,
-                &magne_data,
+                (uint8_t *)magne_data,
                 &i2c_action_finished,
                 EVT_IMU_READ_MAGNE_FAILURE,
                 IMU_REG_MAGNE_ST2,
@@ -358,12 +357,20 @@ bool Imu_step_read_magne(void) {
 
             /* Calculate the adjusted magnetometer readings, as per the formula
              * in [REGMAP] p. 53 */
+            double x_multiplier 
+                = ((((DP.IMU.MAGNE_SENSE_ADJUST_DATA.x - 128)*0.5)/128) + 1);
             DP.IMU.MAGNETOMETER_DATA.x 
-                *= ((((DP.IMU.MAGNE_SENSE_ADJUST_DATA.x - 128)*0.5)/128) + 1);
+                = (int16_t)((double)DP.IMU.MAGNETOMETER_DATA.x * x_multiplier);
+
+            double y_multiplier 
+                = ((((DP.IMU.MAGNE_SENSE_ADJUST_DATA.y - 128)*0.5)/128) + 1);
             DP.IMU.MAGNETOMETER_DATA.y 
-                *= ((((DP.IMU.MAGNE_SENSE_ADJUST_DATA.y - 128)*0.5)/128) + 1);
-            DP.IMU.MAGNETOMETER_DATA.z
-                *= ((((DP.IMU.MAGNE_SENSE_ADJUST_DATA.z - 128)*0.5)/128) + 1);
+                = (int16_t)((double)DP.IMU.MAGNETOMETER_DATA.y * y_multiplier);
+
+            double z_multiplier 
+                = ((((DP.IMU.MAGNE_SENSE_ADJUST_DATA.z - 128)*0.5)/128) + 1);
+            DP.IMU.MAGNETOMETER_DATA.z 
+                = (int16_t)((double)DP.IMU.MAGNETOMETER_DATA.z * z_multiplier);
 
             /* Set the data valid flag to true */
             DP.IMU.MAGNETOMETER_DATA_VALID = true;

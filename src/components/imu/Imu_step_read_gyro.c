@@ -36,7 +36,6 @@ bool Imu_step_read_gyro(void) {
     /* Switch statement vars. Cases don't have separate scopes so variables
      * must be declared outside the switch */
     I2c_ErrorCode i2c_error = I2C_ERROR_NONE;
-    bool is_event_raised = false;
     bool i2c_action_finished = false;
     bool i2c_action_success = false;
     uint8_t gyro_data[2] = {0};
@@ -98,7 +97,7 @@ bool Imu_step_read_gyro(void) {
             /* Wait and trigger next read */
             if (!Imu_wait_i2c_read_complete(
                 &IMU_MAIN_I2C_DEVICE,
-                &gyro_data,
+                (uint8_t *)gyro_data,
                 &i2c_action_finished,
                 EVT_IMU_READ_GYRO_FAILURE,
                 IMU_REG_GYRO_Y_OUT_H,
@@ -132,7 +131,7 @@ bool Imu_step_read_gyro(void) {
             /* Wait and trigger next read */
             if (!Imu_wait_i2c_read_complete(
                 &IMU_MAIN_I2C_DEVICE,
-                &gyro_data,
+                (uint8_t *)gyro_data,
                 &i2c_action_finished,
                 EVT_IMU_READ_GYRO_FAILURE,
                 IMU_REG_GYRO_Z_OUT_H,

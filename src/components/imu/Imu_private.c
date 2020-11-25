@@ -256,7 +256,7 @@ bool Imu_wait_i2c_read_complete(
     }
 
     /* Remove the action */
-    i2c_error = I2c_clear_device_action(&p_device_in);
+    i2c_error = I2c_clear_device_action(p_device_in);
     if (i2c_error != I2C_ERROR_NONE) {
         DEBUG_ERR(
             "I2C error while clearing action: %d, DP.IMU.SUBSTATE = 0x%02X", 
