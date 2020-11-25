@@ -355,6 +355,13 @@ bool Imu_step_read_magne(void) {
                 return false;
             }
 
+            DEBUG_DBG(
+                "Raw magne values: (%d, %d, %d)",
+                DP.IMU.MAGNETOMETER_DATA.x,
+                DP.IMU.MAGNETOMETER_DATA.y,
+                DP.IMU.MAGNETOMETER_DATA.z
+            );
+
             /* Calculate the adjusted magnetometer readings, as per the formula
              * in [REGMAP] p. 53 */
             double x_multiplier 
@@ -371,6 +378,19 @@ bool Imu_step_read_magne(void) {
                 = ((((DP.IMU.MAGNE_SENSE_ADJUST_DATA.z - 128)*0.5)/128) + 1);
             DP.IMU.MAGNETOMETER_DATA.z 
                 = (int16_t)((double)DP.IMU.MAGNETOMETER_DATA.z * z_multiplier);
+
+            DEBUG_DBG(
+                "Magne multipliers: (%.6f, %.6f, %.6f)",
+                x_multiplier,
+                y_multiplier,
+                z_multiplier
+            );
+            DEBUG_DBG(
+                "Adjusted magne values: (%d, %d, %d)",
+                DP.IMU.MAGNETOMETER_DATA.x,
+                DP.IMU.MAGNETOMETER_DATA.y,
+                DP.IMU.MAGNETOMETER_DATA.z
+            );
 
             /* Set the data valid flag to true */
             DP.IMU.MAGNETOMETER_DATA_VALID = true;

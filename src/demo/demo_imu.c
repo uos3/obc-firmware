@@ -311,6 +311,9 @@ int main(void) {
             }
         }
     }
+
+    /* Destroy the event manager to clear up allocated memory */
+    EventManager_destroy();
 }
 
 /** @} */ /* End of demo_imu */
