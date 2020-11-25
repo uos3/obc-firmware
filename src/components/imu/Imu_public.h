@@ -163,10 +163,15 @@ typedef enum _Imu_ErrorCode {
 typedef enum _Imu_State {
 
     /**
-     * @brief Set gyroscope offset state, which is the initial state the IMU
-     * will be booted into.
+     * @brief IMU initialisation state, in which all the basic IMU settings are
+     * enabled.
      */
-    IMU_STATE_SET_GYROSCOPE_OFFSETS = 0,
+    IMU_STATE_INITIALISATION = 0,
+
+    /**
+     * @brief Set gyroscope offset state.
+     */
+    IMU_STATE_SET_GYROSCOPE_OFFSETS,
 
     /**
      * @brief Self test state.
@@ -241,6 +246,53 @@ typedef enum _Imu_SubState {
      * be in a substate.
      */
     IMU_SUBSTATE_NONE = 0,
+
+    /**
+     * @brief The initialisation substate of the initialisation state.
+     */
+    IMU_SUBSTATE_INIT_INIT,
+
+    /**
+     * @brief Wait on init INT_PIN_CFG read complete substate.
+     */
+    I2C_SUBSTATE_INIT_WAIT_INT_PIN_CFG_READ_COMPLETE,
+
+    /**
+     * @brief Wait on init INT_PIN_CFG send complete substate.
+     */
+    I2C_SUBSTATE_INIT_WAIT_INT_PIN_CFG_SEND_COMPLETE,
+
+    /**
+     * @brief Wait on magnetometer mode reset complete.
+     */
+    I2C_SUBSTATE_INIT_WAIT_MAGNE_MODE_RESET_COMPLETE,
+
+    /**
+     * @brief Wait for gyroscope bandwidth read config register complete
+     * 
+     */
+    I2C_SUBSTATE_INIT_WAIT_GYRO_BW_RECV_CFG_COMPLETE,
+
+    /**
+     * @brief Wait for gyroscope bandwidth send config register complete
+     */
+    I2C_SUBSTATE_INIT_WAIT_GYRO_BW_SEND_CFG_COMPLETE,
+
+    /**
+     * @brief Wait on magnetometer mode set complete
+     */
+    I2C_SUBSTATE_INIT_WAIT_MAGNE_MODE_SET_COMPLETE,
+
+    /**
+     * @brief Wait on gyroscope sensitivity read 
+     */
+    I2C_SUBSTATE_INIT_WAIT_GYRO_SENSE_RECV_COMPLETE,
+
+    I2C_SUBSTATE_INIT_WAIT_GYRO_SENSE_SEND_COMPLETE,
+
+    I2C_SUBSTATE_INIT_WAIT_GYRO_BW_RECV_GYRO_CFG_COMPLETE,
+
+    I2C_SUBSTATE_INIT_WAIT_GYRO_BW_SEND_GYRO_CFG_COMPLETE,
 
     /**
      * @brief Initial state for SET_GYROSCOPE_OFFSET, which sends the X values

@@ -58,6 +58,13 @@ extern I2c_Device IMU_MAGNE_I2C_DEVICE;
  * ------------------------------------------------------------------------- */
 
 /**
+ * @brief IMU register address for the INT pin / bypass enable config.
+ * 
+ * From [REGMAP] p. 8.
+ */
+#define IMU_REG_INT_PIN_CFG (0x37)
+
+/**
  * @brief IMU register address for the Gyroscope X offset high byte. 
  * 
  * From [REGMAP] p. 8.
@@ -154,6 +161,13 @@ extern I2c_Device IMU_MAGNE_I2C_DEVICE;
  * From [REGMAP] p. 8.
  */
 #define IMU_REG_TEMP_OUT (0x41)
+
+/**
+ * @brief Bypass enable bit of the INT_PIN_CFG register is bit1.
+ *
+ * From [REGMAP] p. 8. 
+ */
+#define IMU_INT_PIN_CFG_BYPASS_ENABLE_BIT (0b10)
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
