@@ -157,6 +157,26 @@ def main():
 
     ok('Build complete')
 
+    # Flash if requested
+    if len(args.flash) == 1:
+        if not build_dir.exists():
+            error('Flash requested but no binaries were built')
+        
+        # Change to the root of the obc-firmware folder
+        os.chdir(root_dir)
+
+        flash_path = build_dir.joinpath(args.flash[0])
+        info(f'Flashing {flash_path}')
+
+        flash = subprocess.run([
+            './flash', flash_path
+        ])
+        if flash.returncode != 0:
+            exit(flash.returncode)
+            
+    elif len(args.flash) > 1:
+        error('Can only flash a single file but multiple were provided, no file was flashed.')
+
 def parse_args():
     '''
     Parse command line arguments
@@ -193,6 +213,14 @@ def parse_args():
         '--list-features',
         help='Show the list of possible features. This will not build anything.',
         action='store_true'
+    )
+    parser.add_argument(
+        '--flash',
+        help='''
+        Also flash the provided ELF file once build complete. Expects the name 
+        of the file such as "demo_imu.elf", not the path.
+        ''',
+        nargs=1
     )
 
     # Parse the arguments
