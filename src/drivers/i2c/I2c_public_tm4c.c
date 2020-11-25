@@ -559,7 +559,11 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
     }
 
     /* If we have got to this point with no device found return an error */
-    DEBUG_ERR("Device (%d, %d) not found in the list of I2C actions.");
+    DEBUG_ERR(
+        "Device (%d, %d) not found in the list of I2C actions.",
+        p_device_in->module,
+        p_device_in->address    
+    );
     return I2C_ERROR_NO_ACTION_FOR_DEVICE;
 }
 
@@ -627,7 +631,6 @@ I2c_ErrorCode I2c_get_device_action_status(
     I2c_Device *p_device_in,
     I2c_ActionStatus *p_status_out
 ) {
-    I2c_Device *p_action_device;
     
     /* Check the I2C is initialised */
     if (!I2C.initialised) {
@@ -643,7 +646,9 @@ I2c_ErrorCode I2c_get_device_action_status(
         
         /* Get the action type */
         I2c_ActionType type = I2C.action_types[i];
-        p_action_device = NULL;
+        
+        /* Initialise pointers */
+        I2c_Device *p_action_device = NULL;
         I2c_ActionStatus *p_status = NULL;
 
         switch(type) {
@@ -683,6 +688,12 @@ I2c_ErrorCode I2c_get_device_action_status(
                 break;
         }
 
+        /* If either pointer is null the action is none so skip to next 
+         * action */
+        if (p_action_device == NULL || p_status == NULL) {
+            continue;
+        }
+
         /* Check the device code */
         if (I2c_devices_equal(p_action_device, p_device_in)) {
             /* Set the status code and return */
@@ -694,15 +705,14 @@ I2c_ErrorCode I2c_get_device_action_status(
 
     /* If the loop has completed without a device found, give an error */
     DEBUG_ERR(
-            "Device (%d, %d) not found in the list of I2C actions.",
-            p_action_device->address,
-            p_action_device->module
-        );
-        return I2C_ERROR_NO_ACTION_FOR_DEVICE;
+        "Device (%d, %d) not found in the list of I2C actions.",
+        p_device_in->address,
+        p_device_in->module
+    );
+    return I2C_ERROR_NO_ACTION_FOR_DEVICE;
 }
 
 I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
-    I2c_Device *p_action_device;
     
     /* Check the I2C is initialised */
     if (!I2C.initialised) {
@@ -716,82 +726,30 @@ I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
     /* Loop through the actions */
     for (size_t i = 0; i < I2C_MAX_NUM_ACTIONS; ++i) {
         I2c_ActionType type = I2C.action_types[i];
-
-        p_action_device = NULL;
+        I2c_Device *p_action_device = NULL;
 
         switch(type) {
             case I2C_ACTION_TYPE_SINGLE_SEND:
                 /* Check the device */
                 p_action_device = &I2C.u_actions[i].single_send.device;
                 
-                /* Clear the single send action */
-                I2C.u_actions[i].single_send.byte = NULL;
-                I2C.u_actions[i].single_send.device.address = NULL;
-                I2C.u_actions[i].single_send.device.module = NULL;
-                I2C.u_actions[i].single_send.num_master_busy_major_checks = 0;
-                I2C.u_actions[i].single_send.step = 0;
-                I2C.u_actions[i].single_send.status
-                =
-                I2C_ACTION_STATUS_NO_ACTION;
-                I2C.u_actions[i].single_send.error = I2C_ERROR_NONE;
-                
                 break;
 
             case I2C_ACTION_TYPE_BURST_SEND:
                 /* Check the device */
                 p_action_device = &I2C.u_actions[i].burst_send.device;
-                
-                /* Clear the burst send action */
-                I2C.u_actions[i].burst_send.p_bytes = NULL;
-                I2C.u_actions[i].burst_send.device.address = NULL;
-                I2C.u_actions[i].burst_send.device.module = NULL;
-                I2C.u_actions[i].burst_send.num_bytes_sent = 0;
-                I2C.u_actions[i].burst_send.length = 0;
-                I2C.u_actions[i].burst_send.num_master_busy_major_checks = 0;
-                I2C.u_actions[i].burst_send.step = 0;
-                I2C.u_actions[i].burst_send.substep = 0;
-                I2C.u_actions[i].burst_send.status
-                =
-                I2C_ACTION_STATUS_NO_ACTION;
-                I2C.u_actions[i].burst_send.error = I2C_ERROR_NONE;
 
                 break;
 
             case I2C_ACTION_TYPE_SINGLE_RECV:
                 /* Check the device */
                 p_action_device = &I2C.u_actions[i].single_recv.device;
-                
-                /* Clear the single receive action */
-                I2C.u_actions[i].single_recv.byte = NULL;
-                I2C.u_actions[i].single_recv.device.address = NULL;
-                I2C.u_actions[i].single_recv.device.module = NULL;
-                I2C.u_actions[i].single_recv.reg = NULL;
-                I2C.u_actions[i].single_recv.num_master_busy_major_checks = 0;
-                I2C.u_actions[i].single_recv.step = 0;
-                I2C.u_actions[i].single_recv.status
-                =
-                I2C_ACTION_STATUS_NO_ACTION;
-                I2C.u_actions[i].single_recv.error = I2C_ERROR_NONE;
 
                 break;
                 
             case I2C_ACTION_TYPE_BURST_RECV:
                 /* Check the device */
                 p_action_device = &I2C.u_actions[i].burst_recv.device;
-                
-                /* Clear the burst receive action */
-                I2C.u_actions[i].burst_recv.p_bytes = NULL;
-                I2C.u_actions[i].burst_recv.device.address = NULL;
-                I2C.u_actions[i].burst_recv.device.module = NULL;
-                I2C.u_actions[i].burst_recv.reg = NULL;
-                I2C.u_actions[i].burst_recv.num_master_busy_major_checks = 0;
-                I2C.u_actions[i].burst_recv.length = 0;
-                I2C.u_actions[i].burst_recv.step = 0;
-                I2C.u_actions[i].burst_recv.substep = 0;
-                I2C.u_actions[i].burst_recv.status
-                =
-                I2C_ACTION_STATUS_NO_ACTION;
-                I2C.u_actions[i].burst_recv.error = I2C_ERROR_NONE;
 
                 break;
             
@@ -808,8 +766,27 @@ I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
                 break;
         }
 
+        /* If the device wasn't found go to the next action */
+        if (p_action_device == NULL) {
+            continue;
+        }
+
         /* Check the device code */
         if (I2c_devices_equal(p_action_device, p_device_in)) {
+
+            /* Set the data in the action to zero, effectively clearing it */
+            memset(
+                &I2C.u_actions[i],
+                0,
+                sizeof(I2c_Action)
+            );
+
+            /* Set the action type to none, again clearing it */
+            I2C.action_types[i] = I2C_ACTION_TYPE_NONE;
+
+            /* Unlock the bus */
+            I2C.module_locked[p_device_in->module] = false;
+
             return I2C_ERROR_NONE;
         }
         /* If devices are not equal, continue */
@@ -817,9 +794,9 @@ I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
 
     /* If the loop has completed without a device found, give an error */
     DEBUG_ERR(
-            "Device (%d, %d) not found in the list of I2C actions.",
-            p_action_device->address,
-            p_action_device->module
-        );
-        return I2C_ERROR_NO_ACTION_FOR_DEVICE;
+        "Device (%d, %d) not found in the list of I2C actions.",
+        p_device_in->address,
+        p_device_in->module
+    );
+    return I2C_ERROR_NO_ACTION_FOR_DEVICE;
 }

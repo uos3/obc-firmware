@@ -407,6 +407,7 @@ I2c_ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in) {
     }
 }
 
+/* TODO: Refactor this function to match the one for burst recv */
 I2c_ErrorCode I2c_burst_send_wait_master_not_busy(
     I2c_ActionBurstSend *p_action_in,
     I2c_Module *p_i2c_module_in,
@@ -498,17 +499,17 @@ I2c_ErrorCode I2c_lock_module(I2c_Device *p_device_in) {
 I2c_ErrorCode I2c_action_burst_recv_master_busy_check(
     I2c_ActionBurstRecv *p_action_in,
     bool *p_master_busy_out
-    ) {
+) {
         
-        /* Get a pointer to the I2C Module Associated with the Device. */
-        I2c_Module *p_i2c_module = &I2C_MODULES[p_action_in->device.module];
+    /* Get a pointer to the I2C Module Associated with the Device. */
+    I2c_Module *p_i2c_module = &I2C_MODULES[p_action_in->device.module];
 
-        /* Check that the number of major checks is less than the specified
-         * maximum, and return an error if it is not. */
-        if (
-            p_action_in->num_master_busy_major_checks
-            >=
-            I2C_MAX_NUM_MASTER_BUSY_MAJOR_CHECKS
+    /* Check that the number of major checks is greater than or equal to the 
+     * specified maximum, and return an error if it is. */
+    if (
+        p_action_in->num_master_busy_major_checks
+        >=
+        I2C_MAX_NUM_MASTER_BUSY_MAJOR_CHECKS
     ) {
         DEBUG_ERR(
             "I2C master module %d has been busy for %d major loops and is now marked as unresponsive.",
@@ -541,9 +542,8 @@ I2c_ErrorCode I2c_action_burst_recv_master_busy_check(
         }
     }
 
-    /* If the master is still busy, increment the number of major checks. */
-    if (*p_master_busy_out) {
-        p_action_in->num_master_busy_major_checks++;
-        return I2C_ERROR_NONE;
-    }
+    /* If the master is still busy at the end of the minor loop, increment the
+     * number of major checks. */
+    p_action_in->num_master_busy_major_checks++;
+    return I2C_ERROR_NONE;
 }

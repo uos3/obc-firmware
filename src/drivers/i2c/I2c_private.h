@@ -310,6 +310,11 @@ typedef struct _I2c_ActionBurstRecv {
      */
     uint32_t num_master_busy_major_checks;
 
+    /**
+     * @brief Number of bytes recieved up to this point.
+     */
+    size_t num_bytes_recved;
+
 } I2c_ActionBurstRecv;
 
 /**
