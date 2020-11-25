@@ -64,8 +64,10 @@ int main(void) {
     DEBUG_INF(
         "| STATE | SUBSTATE | COMMAND | ERROR | EVENTS"
     );
+    #ifdef DEBUG_MODE
     char *p_table_format = 
         "|  0x%02X |     0x%02X |    0x%02X |  0x%02X | %s";
+    #endif
 
     /* 
      * Demo step is a counter used to:
@@ -286,12 +288,14 @@ int main(void) {
             Debug_exit(1);
         }
 
+        #ifdef DEBUG_MODE
         if (!sleep) {
             char *p_events = NULL;
             EventManager_get_event_list_string(&p_events);
             DEBUG_INF(p_table_format, DP.IMU.STATE, DP.IMU.SUBSTATE, DP.IMU.COMMAND, DP.IMU.ERROR, p_events);
             free(p_events);
         }
+        #endif
 
         /* Call event cleanup */
         if (!EventManager_cleanup_events()) {
