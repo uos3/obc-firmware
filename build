@@ -192,7 +192,7 @@ def parse_args():
     )
     parser.add_argument(
         '-t', '--target',
-        help='Specify the target for the build, one of "linux" (default), "tobc" or "launchpad',
+        help='Specify the target for the build, one of "linux" (default), "tobc" or "launchpad"',
         default='linux'
     )
     parser.add_argument(
@@ -220,7 +220,7 @@ def parse_args():
     )
     parser.add_argument(
         'cmake_target',
-        help='The CMake target to build, for instance demo_imu. If not provided all targets will be built.',
+        help='The CMake target(s) to build, for instance demo_imu. If not provided all targets will be built.',
         nargs='*'
     )
 
