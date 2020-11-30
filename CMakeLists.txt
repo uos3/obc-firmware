@@ -127,6 +127,7 @@ add_subdirectory(src/drivers)
 add_subdirectory(src/system)
 add_subdirectory(src/components)
 add_subdirectory(src/demo)
+add_subdirectory(src/tools)
 
 # Build the tests if required
 if(${UOS3_BUILD_TESTS})

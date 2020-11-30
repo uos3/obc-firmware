@@ -101,13 +101,8 @@ def main():
 
     info(f'Build timestamp: {timestamp}')
 
-    # Get the root directory (the last directory in the path called obc-firmware)
-    root_dir = Path('/')
-    current_path = root_dir
-    for part in Path(os.getcwd()).parts:
-        current_path = current_path.joinpath(part)
-        if part == 'obc-firmware':
-            root_dir = current_path
+    # Get the root directory
+    root_dir = Path(__file__).parent.absolute()
 
     # Get the profile directory
     prof_dir = Path(root_dir, 'builds')
@@ -146,7 +141,7 @@ def main():
             clean_dir(build_dir)
 
     # Run the build process
-    build(cmake_dir, root_dir, args.release, args.target, args.tests, args.features)
+    build(cmake_dir, root_dir, args.clean, args.release, args.target, args.tests, args.features, args.cmake_target)
 
     # Copy binaries into the build dir
     copy_bins(cmake_dir, build_dir)
@@ -223,6 +218,11 @@ def parse_args():
         ''',
         nargs=1
     )
+    parser.add_argument(
+        'cmake_target',
+        help='The CMake target to build, for instance demo_imu. If not provided all targets will be built.',
+        nargs='*'
+    )
 
     # Parse the arguments
     return parser.parse_args()
@@ -243,7 +243,16 @@ def clean_dir(directory):
 
     ok(f'{directory} cleaned')
 
-def build(directory, root_dir, release, target, tests, features):
+def build(
+    directory, 
+    root_dir, 
+    clean, 
+    release, 
+    target, 
+    tests, 
+    features, 
+    make_targets
+):
     '''
     Run the build process (CMake then make) in the given directory.
     '''
@@ -272,7 +281,11 @@ def build(directory, root_dir, release, target, tests, features):
         f'-DUOS3_BUILD_TESTS={"ON" if tests else "OFF"}'
     ]
     cmake_cmd.extend(feature_defines)
+    if clean:
+        cmake_cmd.append('--clean-first')
     cmake_cmd.append('../../../')
+
+    print(cmake_cmd)
 
     # Run cmake
     cmake = subprocess.run(
@@ -303,9 +316,14 @@ def build(directory, root_dir, release, target, tests, features):
 
     info('Running make')
 
+    make_cmd = [
+        'make', '-j', '4'
+    ]
+    make_cmd.extend(make_targets)
+
     # Run make
     make = subprocess.run(
-        ['make', '-j', '4']
+        make_cmd
         # stdout=subprocess.PIPE,
         # stderr=subprocess.PIPE
     )
