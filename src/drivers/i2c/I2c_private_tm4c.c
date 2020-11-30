@@ -407,71 +407,55 @@ I2c_ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in) {
     }
 }
 
-/* TODO: Refactor this function to match the one for burst recv */
-I2c_ErrorCode I2c_burst_send_wait_master_not_busy(
+I2c_ErrorCode I2c_action_burst_send_master_busy_check(
     I2c_ActionBurstSend *p_action_in,
-    I2c_Module *p_i2c_module_in,
-    bool *p_exit_action_out
+    bool *p_master_busy_out
 ) {
+        
+    /* Get a pointer to the I2C Module Associated with the Device. */
+    I2c_Module *p_i2c_module = &I2C_MODULES[p_action_in->device.module];
 
-    /* By default the action should not exit */
-    *p_exit_action_out = false;
-
-    /* Check that the number of checks is less than the limit */
+    /* Check that the number of major checks is greater than or equal to the 
+     * specified maximum, and return an error if it is. */
     if (
-        p_action_in->num_master_busy_major_checks 
-        >= 
+        p_action_in->num_master_busy_major_checks
+        >=
         I2C_MAX_NUM_MASTER_BUSY_MAJOR_CHECKS
     ) {
         DEBUG_ERR(
-            "I2C master module %d has been busy for %d major loops, now\
-            considered unresponsive.",
+            "I2C master module %d has been busy for %d major loops and is now marked as unresponsive.",
             p_action_in->device.module,
             p_action_in->num_master_busy_major_checks
         );
+
         p_action_in->status = I2C_ACTION_STATUS_FAILURE;
         p_action_in->error = I2C_ERROR_MODULE_MASTER_BUSY;
-        *p_exit_action_out = true;
 
         /* Emmit the finished event */
         if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
             DEBUG_ERR("CRITICAL: Error raising event during error");
         }
 
-        return I2C_ERROR_MODULE_MASTER_BUSY;
+        return p_action_in->error;
     }
 
-    /* Check for master busy in the minor loop */
-    bool master_busy = true;
+    /* Check if the master is busy within the minor loop. */
     for (int i = 0; i < I2C_MAX_NUM_MASTER_BUSY_MINOR_CHECKS; ++i) {
-        master_busy = I2CMasterBusy(p_i2c_module_in->base_i2c);
 
-        /* If the master is already not busy exit before the end of the
-            * loop */
-        if (!master_busy) {
-            break;
+        /* Sets the value of the master_busy output bool. */
+        *p_master_busy_out = I2CMasterBusy(p_i2c_module->base_i2c);
+
+        /* If the master is not busy, exit the loop, resetting the major
+         * checks to 0 for next time. */
+        if (!*p_master_busy_out) {
+            p_action_in->num_master_busy_major_checks = 0;
+            return I2C_ERROR_NONE;
         }
     }
 
-    /* If the master is busy exit and return to main loop control,
-     * otherwise carry on to next step */
-    if (master_busy) {
-        /* Increment major check number */
-        p_action_in->num_master_busy_major_checks++;
-
-        /* Set that the action should be exited */
-        *p_exit_action_out = true;
-
-        DEBUG_DBG(
-            "I2C master module %d still busy after minor check.",
-            p_action_in->device.module
-        );
-        return I2C_ERROR_NONE;
-    }
-
-    /* Zero the major check counter */
-    p_action_in->num_master_busy_major_checks = 0;
-
+    /* If the master is still busy at the end of the minor loop, increment the
+     * number of major checks. */
+    p_action_in->num_master_busy_major_checks++;
     return I2C_ERROR_NONE;
 }
 

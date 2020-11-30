@@ -164,36 +164,12 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
             
             /* If the master is busy, set the action as failure, show a debug
              * message, and return the error. */
-            /* FIXME */
             if (master_busy) {
-                p_action_in->status = I2C_ACTION_STATUS_FAILURE;
-                /* Debug error message for busy I2C (in depth error message
-                 * is shown within the above function). */
-                DEBUG_DBG(
-                    "I2C master module is busy."
-                );
                 return p_action_in->error;
             }
 
             /* If the master is not busy, increment the step and continue. */
             else {
-                /* Get the Error status */
-                /* FIXME */
-                master_error = I2c_check_master_error(p_i2c_module->base_i2c);
-
-                /* If the error status is anaything other than NONE, return
-                * the error. If the error is NONE, continue. */
-                if (master_error != I2C_ERROR_NONE) {
-                    I2CMasterControl(p_i2c_module->base_i2c,
-                    I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP
-                    );
-
-                    DEBUG_ERR("Error Receiving First Byte from Device");
-                    p_action_in->error = master_error;
-                    p_action_in->status = I2C_ACTION_STATUS_FAILURE;
-                    return p_action_in->error;
-                }
-
                 /* Set the number of recieved bytes to 1 and increment the 
                  * step */
                 p_action_in->num_bytes_recved = 1;
@@ -204,6 +180,27 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
 
         case 4:
             
+            /* Get the Error status */
+            p_action_in->error = I2c_check_master_error(p_i2c_module->base_i2c);
+
+            /* If the error status is not NONE, stop the burst receive, set
+             * the status as failure, and return the error. */
+            if (p_action_in->error != I2C_ERROR_NONE) {
+                
+                I2CMasterControl(p_i2c_module->base_i2c,
+                I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP
+                );
+                
+                p_action_in->status = I2C_ACTION_STATUS_FAILURE;
+                
+                /* Raise the finished event */
+                if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+                    DEBUG_ERR("CRITICAL: Failed to raise event");
+                }
+
+                return p_action_in->error;
+            }
+
             for (
                 size_t i = p_action_in->num_bytes_recved;
                 i < p_action_in->length - 1;
@@ -236,14 +233,7 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
                         
                         /* If the master is busy, set the action as failure,
                          * show a debug message, and return the error. */
-                        /* FIXME */
                         if (master_busy) {
-                            p_action_in->status = I2C_ACTION_STATUS_FAILURE;
-                            /* Debug error message for busy I2C (in depth error
-                             * message is shown within the above function). */
-                            DEBUG_DBG(
-                                "I2C master module is busy."
-                            );
                             return p_action_in->error;
                         }
 
@@ -256,23 +246,28 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
                         __attribute__ ((fallthrough));
                     
                     case 2:
-                        /* FIXME */
-                        /*  */
-                        master_error
-                        =
-                        I2c_check_master_error(p_i2c_module->base_i2c);
+                        /* Check the Error Status */
+                        p_action_in->error = I2c_check_master_error(
+                            p_i2c_module->base_i2c
+                        );
 
-                        if (master_error != I2C_ERROR_NONE) {
-                            /* */
+                        if (p_action_in->error != I2C_ERROR_NONE) {
+                            /* If the error status is not NONE, set the status
+                             * as failed, and stop the burst receive function,
+                             * returning the error. */
                             I2CMasterControl(
                                 p_i2c_module->base_i2c,
                                 I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP
                             );
 
-                            DEBUG_ERR("Error receiving byte %d from device", i);
-                            p_action_in->error = master_error;
-                            /* Set the status and raise finished event */
-                            return master_error;
+                            p_action_in->status = I2C_ACTION_STATUS_FAILURE;
+
+                            return p_action_in->error;
+                        }
+
+                        /* Raise the finished event */
+                        if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+                            DEBUG_ERR("CRITICAL: Failed to raise event.");
                         }
 
                         /* Increment number of received bytes and reset the
@@ -306,22 +301,17 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
             __attribute__ ((fallthrough));
         
         case 6:
-            /* FIXME */
             /* Check if the I2C is busy */
             master_busy = true;
-            p_action_in->error
-            =
-            I2c_action_burst_recv_master_busy_check(p_action_in, &master_busy);
+
+            p_action_in->error = I2c_action_burst_recv_master_busy_check(
+                p_action_in,
+                &master_busy
+            );
             
             /* If the master is busy, set the action as failure, show a debug
              * message, and return the error. */
             if (master_busy) {
-                p_action_in->status = I2C_ACTION_STATUS_FAILURE;
-                /* Debug error message for busy I2C (in depth error message
-                 * is shown within the above function). */
-                DEBUG_DBG(
-                    "I2C master module is busy."
-                );
                 return p_action_in->error;
             }
 
@@ -333,20 +323,26 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
             __attribute__ ((fallthrough));
         
         case 7:
-            /* FIXME */
             /* Get the Error status */
             p_action_in->error = I2c_check_master_error(p_i2c_module->base_i2c);
 
             /* If the error status is anything other than NONE, return
              * the error. If the error is NONE, continue. */
             if (p_action_in->error != I2C_ERROR_NONE) {
-                DEBUG_ERR("Error Receiving Final Byte from Device");
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
+                
+                if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+                    DEBUG_ERR("CRITICAL: Failed to raise event.");
+                }
+                
                 return p_action_in->error;
             }
+            
             else {
                 /* Set action as finished successfully */
-                /* TODO: raise finished event */
+
+                EventManager_raise_event(EVT_I2C_ACTION_FINISHED);
+
                 p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
                 return I2C_ERROR_NONE;
             }
@@ -355,8 +351,10 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
         
         default:
             DEBUG_ERR("Unexpected I2C action step");
+
+            EventManager_raise_event(EVT_I2C_ACTION_FINISHED);
+
             p_action_in->status = I2C_ACTION_STATUS_FAILURE;
-            /* TODO: raise event */
             return I2C_ERROR_UNEXPECTED_ACTION_STEP;
     }
 

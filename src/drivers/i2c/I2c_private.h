@@ -457,6 +457,27 @@ I2c_ErrorCode I2c_burst_send_wait_master_not_busy(
  */
 I2c_ErrorCode I2c_lock_module(I2c_Device *p_device_in);
 
+/**
+ * @brief Checks to see if the master is busy for the burst send function.
+ * 
+ * @param p_action_in Pointer to the action.
+ * @param p_master_busy_out Pointer to a bool which will return true if
+ *      busy, false if not busy.
+ * @return I2c_ErrorCode 
+ */
+I2c_ErrorCode I2c_action_burst_send_master_busy_check(
+    I2c_ActionBurstSend *p_action_in,
+    bool *p_master_busy_out
+);
+
+/**
+ * @brief Checks to see if the master i sbusy for the burst recv function.
+ * 
+ * @param p_action_in Pointer to the action.
+ * @param p_master_busy_out Pointer to a bool which will return true if
+ *      busy, false if not busy.
+ * @return I2c_ErrorCode 
+ */
 I2c_ErrorCode I2c_action_burst_recv_master_busy_check(
     I2c_ActionBurstRecv *p_action_in,
     bool *p_master_busy_out

@@ -78,8 +78,7 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
     I2c_Module *p_i2c_module = &I2C_MODULES[p_action_in->device.module];
 
     /* Values declared in the switch statement */
-    bool exit_action = false;
-    I2c_ErrorCode master_busy = I2C_ERROR_NONE;
+    bool master_busy = true;
     I2c_ErrorCode master_error = I2C_ERROR_NONE;
 
     switch (p_action_in->step) {
@@ -108,21 +107,22 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
         /* Wait for not busy */
         case 1:
 
-            /* Check for busy */
-            exit_action = false;
-            master_busy = I2c_burst_send_wait_master_not_busy(
+            /* Check if the I2C is busy */
+            p_action_in->error = I2c_action_burst_send_master_busy_check(
                 p_action_in,
-                p_i2c_module,
-                &exit_action
+                &master_busy
             );
-
-            /* If the busy funcion needs to exit do */
-            if (exit_action) {
-                return master_busy;
+            
+            /* If the master is busy, set the action as failure, show a debug
+             * message, and return the error. */
+            if (master_busy) {
+                return p_action_in->error;
             }
 
-            /* Increment step */
-            p_action_in->step++;
+            /* If the master is not busy, increment the step and continue. */
+            else {
+                p_action_in->step++;
+            }
 
             __attribute__ ((fallthrough));
         /* Check for send error */
@@ -192,22 +192,23 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
                         __attribute__ ((fallthrough));
                     case 1:
 
-                        /* Check for busy */
-                        exit_action = false;
-                        master_busy 
-                            = I2c_burst_send_wait_master_not_busy(
-                                p_action_in,
-                                p_i2c_module,
-                                &exit_action
-                            );
-
-                        /* If the busy funcion needs to exit do */
-                        if (exit_action) {
-                            return master_busy;
+                        /* Check if the I2C is busy */
+                        master_busy = true;
+                        p_action_in->error = I2c_action_burst_send_master_busy_check(
+                            p_action_in,
+                            &master_busy
+                        );
+                        
+                        /* If the master is busy, set the action as failure, show a debug
+                        * message, and return the error. */
+                        if (master_busy) {
+                            return p_action_in->error;
                         }
 
-                        /* Increment substep */
-                        p_action_in->substep++;
+                        /* If the master is not busy, increment the step and continue. */
+                        else {
+                            p_action_in->step++;
+                        }
 
                         __attribute__ ((fallthrough));
                     case 2:
@@ -272,21 +273,24 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
         /* Wait for not busy */
         case 5:
 
-            /* Check for busy */
-            exit_action = false;
-            master_busy = I2c_burst_send_wait_master_not_busy(
-                p_action_in,
-                p_i2c_module,
-                &exit_action
-            );
+            /* Check if the I2C is busy */
+            master_busy = true;
 
-            /* If the busy funcion needs to exit do */
-            if (exit_action) {
-                return master_busy;
+            p_action_in->error = I2c_action_burst_send_master_busy_check(
+                p_action_in,
+                &master_busy
+            );
+            
+            /* If the master is busy, set the action as failure, show a debug
+             * message, and return the error. */
+            if (master_busy) {
+                return p_action_in->error;
             }
 
-            /* Increment step */
-            p_action_in->step++;
+            /* If the master is not busy, increment the step and continue. */
+            else {
+                p_action_in->step++;
+            }
 
             __attribute__ ((fallthrough));
         /* Check for send error */
