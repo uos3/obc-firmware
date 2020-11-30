@@ -39,7 +39,7 @@ bool Imu_step_set_gyro_offsets(void) {
 
     /* Switch statement vars. Cases don't have separate scopes so variables
      * must be declared outside the switch */
-    I2c_ErrorCode i2c_error = I2C_ERROR_NONE;
+    ErrorCode i2c_error = ERROR_NONE;
     bool i2c_action_finished = false;
     bool i2c_action_success = false;
 
@@ -65,13 +65,13 @@ bool Imu_step_set_gyro_offsets(void) {
                 (uint8_t *)offset_x, 
                 3
             );
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR(
                     "I2C error while setting gyroscope X offsets: %d", 
                     i2c_error
                 );
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-                DP.IMU.I2C_ERROR = i2c_error;
+                DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+                DP.IMU.I2C_ERROR_CODE = i2c_error;
 
                 /* Raise the failed event */
                 if (!EventManager_raise_event(
@@ -119,9 +119,9 @@ bool Imu_step_set_gyro_offsets(void) {
 
             /* Clear the action on the device */
             i2c_error = I2c_clear_device_action(&IMU_MAIN_I2C_DEVICE);
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR("Could not clear action on IMU_I2C_DEVICE");
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
+                DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
                 return false;
             };
 
@@ -131,13 +131,13 @@ bool Imu_step_set_gyro_offsets(void) {
                 (uint8_t *)offset_y, 
                 3
             );
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR(
                     "I2C error while setting gyroscope Y offsets: %d", 
                     i2c_error
                 );
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-                DP.IMU.I2C_ERROR = i2c_error;
+                DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+                DP.IMU.I2C_ERROR_CODE = i2c_error;
 
                 /* Raise the failed event */
                 if (!EventManager_raise_event(
@@ -186,9 +186,9 @@ bool Imu_step_set_gyro_offsets(void) {
 
             /* Clear the action on the device */
             i2c_error = I2c_clear_device_action(&IMU_MAIN_I2C_DEVICE);
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR("Could not clear action on IMU_I2C_DEVICE");
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
+                DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
                 return false;
             };
 
@@ -198,13 +198,13 @@ bool Imu_step_set_gyro_offsets(void) {
                 (uint8_t *)offset_z, 
                 3
             );
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR(
                     "I2C error while setting gyroscope Z offsets: %d", 
                     i2c_error
                 );
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-                DP.IMU.I2C_ERROR = i2c_error;
+                DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+                DP.IMU.I2C_ERROR_CODE = i2c_error;
 
                 /* Raise the failed event */
                 if (!EventManager_raise_event(
@@ -249,16 +249,16 @@ bool Imu_step_set_gyro_offsets(void) {
 
             /* Clear the action on the device */
             i2c_error = I2c_clear_device_action(&IMU_MAIN_I2C_DEVICE);
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR("Could not clear action on IMU_I2C_DEVICE");
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
+                DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
                 return false;
             };
 
             /* The send was successful, raise the success event */
             if (!EventManager_raise_event(EVT_IMU_SET_GYRO_OFFSETS_SUCCESS)) {
                 DEBUG_ERR("Error raising EVT_IMU_SET_GYRO_OFFSETS_SUCCESS");
-                DP.IMU.ERROR = IMU_ERROR_EVENTMANAGER_ERROR;
+                DP.IMU.ERROR_CODE = IMU_ERROR_EVENTMANAGER_ERROR;
                 return false;
             }
 
@@ -279,7 +279,7 @@ bool Imu_step_set_gyro_offsets(void) {
                 "Invalid substate for SET_GYROSCOPE_OFFSETS state: %d", 
                 DP.IMU.SUBSTATE
             );
-            DP.IMU.ERROR = IMU_ERROR_INVALID_SUBSTATE;
+            DP.IMU.ERROR_CODE = IMU_ERROR_INVALID_SUBSTATE;
             return false;
     }
     #pragma GCC diagnostic pop

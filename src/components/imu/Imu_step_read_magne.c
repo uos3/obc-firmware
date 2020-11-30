@@ -34,7 +34,7 @@ bool Imu_step_read_magne(void) {
 
     /* Switch statement vars. Cases don't have separate scopes so variables
      * must be declared outside the switch */
-    I2c_ErrorCode i2c_error = I2C_ERROR_NONE;
+    ErrorCode i2c_error = ERROR_NONE;
     bool i2c_action_finished = false;
     bool i2c_action_success = false;
     uint8_t sens_adjust_data = 0;
@@ -66,13 +66,13 @@ bool Imu_step_read_magne(void) {
                 IMU_REG_MAGNE_SENSE_ADJUST_X,
                 1
             );
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR(
                     "I2C error while receiving gyroscope X: %d", 
                     i2c_error
                 );
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-                DP.IMU.I2C_ERROR = i2c_error;
+                DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+                DP.IMU.I2C_ERROR_CODE = i2c_error;
 
                 /* Raise the failed event */
                 if (!EventManager_raise_event(
@@ -313,13 +313,13 @@ bool Imu_step_read_magne(void) {
                 &IMU_MAGNE_I2C_DEVICE,
                 &st2
             );
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR(
                     "I2C error while reading magnetometer ST2 byte: %d", 
                     i2c_error
                 );
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-                DP.IMU.I2C_ERROR = i2c_error;
+                DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+                DP.IMU.I2C_ERROR_CODE = i2c_error;
 
                 /* Raise the failed event */
                 if (!EventManager_raise_event(
@@ -335,13 +335,13 @@ bool Imu_step_read_magne(void) {
 
             /* Remove the action */
             i2c_error = I2c_clear_device_action(&IMU_MAIN_I2C_DEVICE);
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR(
                     "I2C error while clearing read magne ST2 action: %d", 
                     i2c_error
                 );
-                DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-                DP.IMU.I2C_ERROR = i2c_error;
+                DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+                DP.IMU.I2C_ERROR_CODE = i2c_error;
 
                 /* Raise the failed event */
                 if (!EventManager_raise_event(
@@ -398,7 +398,7 @@ bool Imu_step_read_magne(void) {
             /* Raise success event */
             if (!EventManager_raise_event(EVT_IMU_READ_MAGNE_SUCCESS)) {
                 DEBUG_ERR("Error raising EVT_IMU_READ_MAGNE_SUCCESS");
-                DP.IMU.ERROR = IMU_ERROR_EVENTMANAGER_ERROR;
+                DP.IMU.ERROR_CODE = IMU_ERROR_EVENTMANAGER_ERROR;
                 return false;
             }
 
@@ -408,7 +408,7 @@ bool Imu_step_read_magne(void) {
                 IMU_SUBSTATE_NONE
             )) {
                 DEBUG_ERR("Error begining IMU_STATE_WAIT_NEW_COMMAND");
-                DP.IMU.ERROR = IMU_ERROR_EVENTMANAGER_ERROR;
+                DP.IMU.ERROR_CODE = IMU_ERROR_EVENTMANAGER_ERROR;
                 return false;
             }
 
@@ -416,7 +416,7 @@ bool Imu_step_read_magne(void) {
             break;
         default:
             DEBUG_ERR("Invalid DP.IMU.SUBSTATE value: %d", DP.IMU.SUBSTATE);
-            DP.IMU.ERROR = IMU_ERROR_INVALID_SUBSTATE;
+            DP.IMU.ERROR_CODE = IMU_ERROR_INVALID_SUBSTATE;
             return false;
     }
     #pragma GCC diagnostic pop

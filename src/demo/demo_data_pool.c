@@ -91,9 +91,9 @@ int main(void) {
     DEBUG_INF("p_em_error_code = %p", (void *)p_em_error_code);
     DEBUG_INF("*p_em_error_code = %d", *p_em_error_code);
     DEBUG_INF(
-        "data_type = %d (== DATAPOOL_DATATYPE_EVENTMANAGER_ERRORCODE = %d)", 
+        "data_type = %d (== DATAPOOL_DATATYPE_ERRORCODE = %d)", 
         data_type,
-        data_type == DATAPOOL_DATATYPE_EVENTMANAGER_ERRORCODE
+        data_type == DATAPOOL_DATATYPE_ERRORCODE
     );
     DEBUG_INF("data_size = %ld\n", data_size);
 

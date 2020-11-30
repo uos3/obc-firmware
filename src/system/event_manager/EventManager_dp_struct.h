@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 /* Internal includes */
+#include "system/kernel/Kernel_errors.h"
 #include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -43,7 +44,7 @@ typedef struct _EventManager_Dp {
      * 
      * @dp 2
      */
-    EventManager_ErrorCode ERROR_CODE;
+    ErrorCode ERROR_CODE;
 
     /**
      * @brief Flag which is true if the maximum number of events have been

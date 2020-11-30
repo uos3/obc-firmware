@@ -234,7 +234,7 @@ static int EventManager_test_setup(void **state) {
 static int EventManager_test_teardown(void **state) {
     (void) state;
     
-    if (DP.EVENTMANAGER.ERROR_CODE != EVENTMANAGER_ERROR_NONE) {
+    if (DP.EVENTMANAGER.ERROR_CODE != ERROR_NONE) {
         DEBUG_ERR(
             "DP.EVENTMANAGER.ERROR_CODE = %d", 
             DP.EVENTMANAGER.ERROR_CODE

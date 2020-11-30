@@ -40,7 +40,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
+ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
     /*
      * Steps required for this action:
      * 
@@ -66,7 +66,7 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
 
     /* Get a pointer to the I2C Module this device is associated with */
     I2c_Module *p_i2c_module = &I2C_MODULES[p_action_in->device.module];
-    I2c_ErrorCode master_error = I2C_ERROR_NONE;
+    ErrorCode master_error = ERROR_NONE;
     bool master_busy = true;
 
     switch (p_action_in->step) {
@@ -118,7 +118,7 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
 
             /* If the error status is anaything other than NONE, return
              * the error. If the error is NONE, continue. */
-            if (p_action_in->error != I2C_ERROR_NONE) {
+            if (p_action_in->error != ERROR_NONE) {
                 /* Set the status as failed, as this is not done within the
                  * I2c_check_master_error function */
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
@@ -185,7 +185,7 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
 
             /* If the error status is not NONE, stop the burst receive, set
              * the status as failure, and return the error. */
-            if (p_action_in->error != I2C_ERROR_NONE) {
+            if (p_action_in->error != ERROR_NONE) {
                 
                 I2CMasterControl(p_i2c_module->base_i2c,
                 I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP
@@ -251,7 +251,7 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
                             p_i2c_module->base_i2c
                         );
 
-                        if (p_action_in->error != I2C_ERROR_NONE) {
+                        if (p_action_in->error != ERROR_NONE) {
                             /* If the error status is not NONE, set the status
                              * as failed, and stop the burst receive function,
                              * returning the error. */
@@ -328,7 +328,7 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
 
             /* If the error status is anything other than NONE, return
              * the error. If the error is NONE, continue. */
-            if (p_action_in->error != I2C_ERROR_NONE) {
+            if (p_action_in->error != ERROR_NONE) {
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
                 
                 if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
@@ -344,7 +344,7 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
                 EventManager_raise_event(EVT_I2C_ACTION_FINISHED);
 
                 p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
-                return I2C_ERROR_NONE;
+                return ERROR_NONE;
             }
 
             break;
@@ -358,5 +358,5 @@ I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
             return I2C_ERROR_UNEXPECTED_ACTION_STEP;
     }
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }

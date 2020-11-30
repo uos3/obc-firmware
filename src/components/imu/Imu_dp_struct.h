@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 /* Internal includes */
+#include "system/kernel/Kernel_errors.h"
 #include "drivers/i2c/I2c_public.h"
 #include "components/imu/Imu_public.h"
 
@@ -42,14 +43,14 @@ typedef struct _Imu_Dp {
      * 
      * @dp 2
      */
-    Imu_ErrorCode ERROR;
+    ErrorCode ERROR_CODE;
 
     /**
      * @brief Stores errors from the I2C module.
      * 
      * @dp 3
      */
-    I2c_ErrorCode I2C_ERROR;
+    ErrorCode I2C_ERROR_CODE;
 
     /**
      * @brief IMU state machine state.

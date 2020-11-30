@@ -17,8 +17,8 @@
  * ------------------------------------------------------------------------- */
 
 /* Internal includes */
+#include "system/kernel/Kernel_module_ids.h"
 #include "system/event_manager/EventManager_public.h"
-#include "system/event_manager/EventManager_blocks.h"
 
 /* -------------------------------------------------------------------------   
  * EVENTS
@@ -32,53 +32,53 @@
  * executed. The user should not raise this event themselves, instead use the
  * Imu_new_command() function.
  */
-#define EVT_IMU_NEW_COMMAND ((Event)(EVENTMANAGER_BLOCK_IMU | 1))
+#define EVT_IMU_NEW_COMMAND ((Event)(MOD_ID_IMU | 1))
 
 /**
  * @brief IMU gyroscope read command completed successfully.
  */
-#define EVT_IMU_READ_GYRO_SUCCESS ((Event)(EVENTMANAGER_BLOCK_IMU | 2))
+#define EVT_IMU_READ_GYRO_SUCCESS ((Event)(MOD_ID_IMU | 2))
 
 /**
  * @brief IMU gyroscope read command failed. 
  */
-#define EVT_IMU_READ_GYRO_FAILURE ((Event)(EVENTMANAGER_BLOCK_IMU | 3))
+#define EVT_IMU_READ_GYRO_FAILURE ((Event)(MOD_ID_IMU | 3))
 
 /**
  * @brief IMU magnetometer read command completed successfully.
  */
-#define EVT_IMU_READ_MAGNE_SUCCESS ((Event)(EVENTMANAGER_BLOCK_IMU | 4))
+#define EVT_IMU_READ_MAGNE_SUCCESS ((Event)(MOD_ID_IMU | 4))
 
 /**
  * @brief IMU magnetometer read command failed.
  */
-#define EVT_IMU_READ_MAGNE_FAILURE ((Event)(EVENTMANAGER_BLOCK_IMU | 5))
+#define EVT_IMU_READ_MAGNE_FAILURE ((Event)(MOD_ID_IMU | 5))
 
 /**
  * @brief IMU temeprature read command completed successfully.
  */
-#define EVT_IMU_READ_TEMP_SUCCESS ((Event)(EVENTMANAGER_BLOCK_IMU | 6))
+#define EVT_IMU_READ_TEMP_SUCCESS ((Event)(MOD_ID_IMU | 6))
 
 /**
  * @brief IMU temperature read command failed.
  */
-#define EVT_IMU_READ_TEMP_FAILURE ((Event)(EVENTMANAGER_BLOCK_IMU | 7))
+#define EVT_IMU_READ_TEMP_FAILURE ((Event)(MOD_ID_IMU | 7))
 
 /**
  * @brief IMU set gyroscope offsets action completed successfully.
  */
-#define EVT_IMU_SET_GYRO_OFFSETS_SUCCESS ((Event)(EVENTMANAGER_BLOCK_IMU |8))
+#define EVT_IMU_SET_GYRO_OFFSETS_SUCCESS ((Event)(MOD_ID_IMU |8))
 
 /**
  * @brief IMU set gyroscope offsets action failed.
  */
-#define EVT_IMU_SET_GYRO_OFFSETS_FAILURE ((Event)(EVENTMANAGER_BLOCK_IMU |9))
+#define EVT_IMU_SET_GYRO_OFFSETS_FAILURE ((Event)(MOD_ID_IMU |9))
 
 /**
  * @brief Event used to signal a state change in the IMU. This is done so that
  * the new state will run it's first function in the next cycle without the
  * system going to sleep.
  */
-#define EVT_IMU_STATE_CHANGE ((Event)(EVENTMANAGER_BLOCK_IMU | 10))
+#define EVT_IMU_STATE_CHANGE ((Event)(MOD_ID_IMU | 10))
 
 #endif /* H_IMU_EVENTS_H */

@@ -45,6 +45,7 @@
 #ifdef F_IMU_CALIB
 #include "components/imu/Imu_calib.h"
 #endif
+#include "components/imu/Imu_errors.h"
 
 /* -------------------------------------------------------------------------   
  * ENUMS
@@ -89,67 +90,6 @@ typedef enum _Imu_Command {
      */
     IMU_CMD_READ_TEMPERATURE
 } Imu_Command;
-
-typedef enum _Imu_ErrorCode {
-
-    /**
-     * @brief Indicates that no error has occured.
-     */
-    IMU_ERROR_NONE = 0,
-
-    /**
-     * @brief Attempted to use the IMU when it wasn't initialised.
-     * 
-     */
-    IMU_ERROR_NOT_INITIALISED,
-
-    /**
-     * @brief Attempted to issue an IMU_CMD_NONE to the IMU module.
-     */
-    IMU_ERROR_NEW_NONE_COMMAND,
-
-    /**
-     * @brief There was an error in the EventManager that is preventing the IMU
-     * component operating. 
-     */
-    IMU_ERROR_EVENTMANAGER_ERROR,
-
-    /**
-     * @brief Invalid DP.IMU.STATE value.
-     */
-    IMU_ERROR_INVALID_STATE,
-
-    /**
-     * @brief Invalid DP.IMU.SUBSTATE value.
-     */
-    IMU_ERROR_INVALID_SUBSTATE,
-
-    /**
-     * @brief Unrecognised DP.IMU.COMMAND value.
-     * 
-     */
-    IMU_ERROR_UNRECOGNISED_CMD,
-
-    /**
-     * @brief Cannot issue a new command to the IMU since the IMU is not in the
-     * WAIT_NEW_COMMAND state. It could either not be initialised or is still
-     * finishing another command 
-     */
-    IMU_ERROR_CANNOT_ISSUE_NEW_COMMAND,
-
-    /**
-     * @brief There was an error in the I2C driver.
-     * 
-     * See the corresponding value of DP.IMU.I2C_ERROR for the root cause.
-     */
-    IMU_ERROR_I2C_ERROR,
-
-    /**
-     * @brief Unexpected value of an I2c_ActionStatus return.
-     */
-    IMU_ERROR_INVALID_I2C_ACTION_STATUS
-
-} Imu_ErrorCode;
 
 /**
  * @brief The state of the top-level Imu component state machine.

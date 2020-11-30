@@ -45,139 +45,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+/* Internal includes */
+#include "drivers/i2c/I2c_errors.h"
+
 /* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */
-
-/**
- * @brief Enumerates possible errors that can occur from the I2C driver.
- * 
- */
-typedef enum _I2c_ErrorCode {
-    /**
-     * @brief No error.
-     */
-    I2C_ERROR_NONE = 0,
-
-    /**
-     * @brief The I2C driver has not been initialised.
-     */
-    I2C_ERROR_NOT_INITIALISED,
-
-    /**
-     * @brief Failed to enable an I2C peripheral.
-     */
-    I2C_ERROR_I2C_PERIPH_ENABLE_FAILED,
-
-    /**
-     * @brief Failed to enable a GPIO peripheral.
-     * 
-     */
-    I2C_ERROR_GPIO_PERIPH_ENABLE_FAILED,
-
-    /**
-     * @brief Indicates that no action has been queued for the given device
-     */
-    I2C_ERROR_NO_ACTION_FOR_DEVICE,
-
-    /**
-     * @brief Attempted to check the TivaWare error status of an action which
-     * is of type NONE. 
-     */
-    I2C_ERROR_CHECK_ON_NONE_ACTION,
-
-    /**
-     * @brief Error indicating that a user attempted to read recieved bytes
-     * from a device that had sent data. 
-     */
-    I2C_ERROR_GET_RECVED_BYTES_FROM_SEND,
-
-    /**
-     * @brief Attempted to get the recieved bytes from a non successful action.
-     * Use I2c_get_device_action_status to check that the action was successful
-     * before calling I2c_get_device_recved_bytes.
-     */
-    I2C_ERROR_GET_RECVED_BYTES_ON_NON_SUCCESS_ACTION,
-
-    /**
-     * @brief Attempted to send 0 bytes.
-     */
-    I2C_ERROR_ZERO_LENGTH_SEND,
-
-    /**
-     * @brief Failed to allocate memory for send action. 
-     */
-    I2C_ERROR_MEMORY_ALLOC_FOR_SEND_FAILED,
-
-    /**
-     * @brief Failed to allocate memory for recieve action. 
-     */
-    I2C_ERROR_MEMORY_ALLOC_FOR_RECV_FAILED,
-
-    /**
-     * @brief A new action could not be queued as the maximum number of actions
-     * has been reached. 
-     */
-    I2C_ERROR_MAX_ACTIONS_REACHED,
-
-    /**
-     * @brief A new action could not be queued as the maximum number of actions
-     * has been reached. 
-     */
-    I2C_ERROR_ZERO_LENGTH_RECEIVE,
-
-    /**
-     * @brief An unexpected action step index was found while executing an
-     * action.
-     */
-    I2C_ERROR_UNEXPECTED_ACTION_STEP,
-
-    /**
-     * @brief An unexpected action step index was found while executing an
-     * action.
-     */
-    I2C_ERROR_UNEXPECTED_ACTION_SUBSTEP,
-
-    /**
-     * @brief A master I2C module is busy.
-     */
-    I2C_ERROR_MODULE_MASTER_BUSY,
-
-    /**
-     * @brief Failed to acknowledge the address of an I2C device, is the device
-     * address correct?
-     */
-    I2C_ERROR_ADDRESS_ACK_FAILED,
-
-    /**
-     * @brief Failed to acknowledge data sent to the master. The slave could be
-     * unresponsive. 
-     */
-    I2C_ERROR_DATA_ACK_FAILED,
-
-    /**
-     * @brief The arbitration of the bus has been lost. This could indicate
-     * that a slave is in error. 
-     */
-    I2C_ERROR_ARBITRATION_LOST,
-
-    /**
-     * @brief An unkown TivaWare library error has occured 
-     */
-    I2C_ERROR_UNKNOWN_TIVAWARE_ERROR,
-
-    /**
-     * @brief Error in the event manager.
-     */
-    I2C_ERROR_EVENTMANAGER_ERROR,
-
-    /**
-     * @brief The action cannot be queued as the module (bus) the device is on
-     * is already locked by another device. 
-     */
-    I2C_ERROR_MODULE_LOCKED_BY_ANOTHER_DEVICE
-
-} I2c_ErrorCode;
 
 /**
  * @brief The possible status of an action being performed by the I2C driver.
@@ -236,16 +109,16 @@ typedef struct _I2c_Device {
  * @param p_modules_in A pointer to an array of module indexes to initialise.
  * @param num_modules_in The number of modules to initialise (size of 
  *        p_modules_in).
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in);
+ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in);
 
 /**
  * @brief Step the I2C driver, performing any queued actions.
  * 
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_step(void);
+ErrorCode I2c_step(void);
 
 /**
  * @brief Send the given bytes to the I2C device.
@@ -259,9 +132,9 @@ I2c_ErrorCode I2c_step(void);
  * @param p_device_in The device to send the data to.
  * @param p_data_in A pointer to an array of bytes to send.
  * @param length_in The length of the byte array.
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_device_send_bytes(
+ErrorCode I2c_device_send_bytes(
     I2c_Device *p_device_in, 
     uint8_t *p_data_in, 
     size_t length_in
@@ -278,9 +151,9 @@ I2c_ErrorCode I2c_device_send_bytes(
  * @param p_device_in The device to recieve from.
  * @param reg_in The register to read from the device.
  * @param length_in The number of bytes expected from the device.
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_device_recv_bytes(
+ErrorCode I2c_device_recv_bytes(
     I2c_Device *p_device_in,
     uint8_t reg_in,
     size_t length_in
@@ -295,9 +168,9 @@ I2c_ErrorCode I2c_device_recv_bytes(
  * @param p_device_in The device to retrieve bytes from.
  * @param pp_bytes_out A pointer to an array of bytes to write in. The array
  *        must be at least the size passed into I2c_device_recv_bytes.
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_get_device_recved_bytes(
+ErrorCode I2c_get_device_recved_bytes(
     I2c_Device *p_device_in,
     uint8_t *p_bytes_out
 );
@@ -308,9 +181,9 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
  * @param p_device_in The device to check.
  * @param p_status_out Pointer to a I2c_ActionStatus enum indicating the status
  *        of this device's action.
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_get_device_action_status(
+ErrorCode I2c_get_device_action_status(
     I2c_Device *p_device_in,
     I2c_ActionStatus *p_status_out
 );
@@ -319,13 +192,13 @@ I2c_ErrorCode I2c_get_device_action_status(
  * @brief Get the error associated with a failed I2C action.
  * 
  * @param p_device_in The device to check.
- * @param p_error_out Pointer to an I2c_ErrorCode which will be filled with the
+ * @param p_error_out Pointer to an ErrorCode which will be filled with the
  *        error that caused the action to fail.
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_get_device_action_failure_cause(
+ErrorCode I2c_get_device_action_failure_cause(
     I2c_Device *p_device_in,
-    I2c_ErrorCode *p_error_out
+    ErrorCode *p_error_out
 );
 
 /**
@@ -337,9 +210,9 @@ I2c_ErrorCode I2c_get_device_action_failure_cause(
  * the future.
  * 
  * @param p_device_in The device to clear.
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in);
+ErrorCode I2c_clear_device_action(I2c_Device *p_device_in);
 
 #endif /* H_I2C_PUBLIC_H */
 

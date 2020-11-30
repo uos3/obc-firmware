@@ -67,8 +67,8 @@ bool DataPool_get(
     /* DP.EVENTMANAGER.ERROR_CODE */
     case 0x0202:
         *pp_data_out = &DP.EVENTMANAGER.ERROR_CODE;
-        *p_data_type_out = DATAPOOL_DATATYPE_EVENTMANAGER_ERRORCODE;
-        *p_data_size_out = sizeof(EventManager_ErrorCode);
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
         return true;
 
 
@@ -104,19 +104,19 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.IMU.ERROR */
+    /* DP.IMU.ERROR_CODE */
     case 0x0402:
-        *pp_data_out = &DP.IMU.ERROR;
-        *p_data_type_out = DATAPOOL_DATATYPE_IMU_ERRORCODE;
-        *p_data_size_out = sizeof(Imu_ErrorCode);
+        *pp_data_out = &DP.IMU.ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
         return true;
 
 
-    /* DP.IMU.I2C_ERROR */
+    /* DP.IMU.I2C_ERROR_CODE */
     case 0x0403:
-        *pp_data_out = &DP.IMU.I2C_ERROR;
-        *p_data_type_out = DATAPOOL_DATATYPE_I2C_ERRORCODE;
-        *p_data_size_out = sizeof(I2c_ErrorCode);
+        *pp_data_out = &DP.IMU.I2C_ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
         return true;
 
 
@@ -262,15 +262,15 @@ bool DataPool_get_symbol_str(
         return true;
 
 
-    /* DP.IMU.ERROR */
+    /* DP.IMU.ERROR_CODE */
     case 0x0402:
-        *pp_symbol_str_out = strdup("DP.IMU.ERROR");
+        *pp_symbol_str_out = strdup("DP.IMU.ERROR_CODE");
         return true;
 
 
-    /* DP.IMU.I2C_ERROR */
+    /* DP.IMU.I2C_ERROR_CODE */
     case 0x0403:
-        *pp_symbol_str_out = strdup("DP.IMU.I2C_ERROR");
+        *pp_symbol_str_out = strdup("DP.IMU.I2C_ERROR_CODE");
         return true;
 
 

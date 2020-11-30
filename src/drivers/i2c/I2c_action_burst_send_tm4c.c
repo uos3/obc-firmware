@@ -39,7 +39,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
+ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
     /*
      * Steps for this action:
      * 
@@ -79,7 +79,7 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
 
     /* Values declared in the switch statement */
     bool master_busy = true;
-    I2c_ErrorCode master_error = I2C_ERROR_NONE;
+    ErrorCode master_error = ERROR_NONE;
 
     switch (p_action_in->step) {
         /* Setup and send first byte */
@@ -135,7 +135,7 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
 
             /* If there is an error set the action as failed and return the
              * error */
-            if (master_error != I2C_ERROR_NONE) {
+            if (master_error != ERROR_NONE) {
                 /* Control for failure, which allows the I2C bus to gracefully
                  * recover */
                 I2CMasterControl(
@@ -218,7 +218,7 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
                         );
 
                         /* If there is an error save it and return failure */
-                        if (master_error != I2C_ERROR_NONE) {
+                        if (master_error != ERROR_NONE) {
                             /* Control for failure, which allows the I2C bus to
                              * gracefully recover */
                             I2CMasterControl(
@@ -303,7 +303,7 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
 
             /* If there is an error set the action as failed and return the
              * error */
-            if (master_error != I2C_ERROR_NONE) {
+            if (master_error != ERROR_NONE) {
                 /* Control for failure, which allows the I2C bus to gracefully
                  * recover */
                 I2CMasterControl(
@@ -326,7 +326,7 @@ I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
             p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
 
             /* Return since finished */
-            return I2C_ERROR_NONE;
+            return ERROR_NONE;
         
         default:
             DEBUG_ERR("Unrecognised I2C action step");

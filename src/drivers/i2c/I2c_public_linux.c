@@ -36,16 +36,10 @@
 #include "drivers/i2c/I2c_private.h"
 
 /* -------------------------------------------------------------------------   
- * GLOBALS
- * ------------------------------------------------------------------------- */
-
-
-
-/* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-I2c_ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
+ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
     /* Mark these as unused */
     (void) p_modules_in;
     (void) num_modules_in;
@@ -53,17 +47,17 @@ I2c_ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
     /* Set the initialised flag to true */
     I2C.initialised = true;
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_step(void) {
+ErrorCode I2c_step(void) {
     /* Won't actually do anything in this as all the functions will succeed and
      * return the correct values immediately */
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_device_send_bytes(
+ErrorCode I2c_device_send_bytes(
     I2c_Device *p_device_in, 
     uint8_t *p_data_in, 
     size_t length_in
@@ -96,10 +90,10 @@ I2c_ErrorCode I2c_device_send_bytes(
         return I2C_ERROR_EVENTMANAGER_ERROR;
     }
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_device_recv_bytes(
+ErrorCode I2c_device_recv_bytes(
     I2c_Device *p_device_in,
     uint8_t reg_in,
     size_t length_in
@@ -127,7 +121,7 @@ I2c_ErrorCode I2c_device_recv_bytes(
             return I2C_ERROR_EVENTMANAGER_ERROR;
         }
 
-        return I2C_ERROR_NONE;
+        return ERROR_NONE;
     }
     else {
         DEBUG_ERR("Max number of I2C actions reached, cannot raise another one");
@@ -135,7 +129,7 @@ I2c_ErrorCode I2c_device_recv_bytes(
     }
 }
 
-I2c_ErrorCode I2c_get_device_recved_bytes(
+ErrorCode I2c_get_device_recved_bytes(
     I2c_Device *p_device_in,
     uint8_t *p_bytes_out
 ) {
@@ -214,31 +208,31 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
     free(p_bytes_string);
     #endif
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_get_device_action_status(
+ErrorCode I2c_get_device_action_status(
     I2c_Device *p_device_in,
     I2c_ActionStatus *p_status_out
 ) {
     /* Return success */
     *p_status_out = I2C_ACTION_STATUS_SUCCESS;
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_get_device_action_failure_cause(
+ErrorCode I2c_get_device_action_failure_cause(
     I2c_Device *p_device_in,
-    I2c_ErrorCode *p_error_out
+    ErrorCode *p_error_out
 ) {
     /* Since we don't track device action failure causes in the linux dummy
      * just return none */
-    *p_error_out = I2C_ERROR_NONE;
+    *p_error_out = ERROR_NONE;
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
+ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
     for (int i = 0; i < I2C_MAX_NUM_ACTIONS; ++i) {
         I2c_ActionType type = I2C.action_types[i];
         bool devices_match = false;
@@ -291,5 +285,5 @@ I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
         }
     }
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }

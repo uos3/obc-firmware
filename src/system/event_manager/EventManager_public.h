@@ -41,6 +41,7 @@
 
 /* Internal includes */
 #include "system/event_manager/EventManager_events.h"
+#include "system/event_manager/EventManager_errors.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -95,45 +96,6 @@
  * therefore 16 bit is the smallest that can be used.
  */
 typedef uint16_t Event;
-
-/* -------------------------------------------------------------------------   
- * ENUMS
- * ------------------------------------------------------------------------- */
-
-/**
- * @brief Possible errors that can occur in the EventManager.
- */
-typedef enum _EventManager_ErrorCode {
-    /**
-     * @brief No error.
-     */
-    EVENTMANAGER_ERROR_NONE = 0,
-
-    /**
-     * @brief The maximum number of events has been reached and no more events
-     * will be raised until an event is polled.
-     */
-    EVENTMANAGER_ERROR_MAX_EVENTS_REACHED,
-
-    /**
-     * @brief There was insufficient memory to increase the size of the event 
-     * lists.
-     */
-    EVENTMANAGER_ERROR_OUT_OF_MEMORY,
-
-    /**
-     * @brief A call to realloc() failed while trying to shrink the lists. This
-     * indicates memory corruption. 
-     */
-    EVENTMANAGER_ERROR_SHRINK_REALLOC_FAILED,
-
-    /**
-     * @brief An EventManager function was called when the EventManager wasn't
-     * initialised. Make sure to call EventManager_init() before using the
-     * EventManager.
-     */
-    EVENTMANAGER_ERROR_NOT_INITIALISED
-} EventManager_ErrorCode;
 
 /* -------------------------------------------------------------------------   
  * STRUCTS

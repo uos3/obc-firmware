@@ -54,7 +54,7 @@ bool Imu_begin_state(Imu_State state, Imu_SubState initial_substate) {
      * go to sleep and immediately executes the next cycle */
     if (!EventManager_raise_event(EVT_IMU_STATE_CHANGE)) {
         DEBUG_ERR("Error rasising EVT_IMU_STATE_CHANGE event");
-        DP.IMU.ERROR = IMU_ERROR_EVENTMANAGER_ERROR;
+        DP.IMU.ERROR_CODE = IMU_ERROR_EVENTMANAGER_ERROR;
         return false;
     }
 
@@ -85,7 +85,7 @@ bool Imu_wait_i2c_action_finished(
         &is_event_raised
     )) {
         DEBUG_ERR("Error reading EVT_I2C_ACTION_FINISHED event");
-        DP.IMU.ERROR = IMU_ERROR_EVENTMANAGER_ERROR;
+        DP.IMU.ERROR_CODE = IMU_ERROR_EVENTMANAGER_ERROR;
 
         /* Raise the failed event */
         if (!EventManager_raise_event(
@@ -109,16 +109,16 @@ bool Imu_wait_i2c_action_finished(
         *p_finished_out = true;
 
         /* Get the status of the operation */
-        I2c_ErrorCode i2c_error = I2C_ERROR_NONE;
+        ErrorCode i2c_error = ERROR_NONE;
         I2c_ActionStatus i2c_status = I2C_ACTION_STATUS_NO_ACTION;
         i2c_error = I2c_get_device_action_status(
             p_device_in,
             &i2c_status
         );
-        if (i2c_error != I2C_ERROR_NONE) {
+        if (i2c_error != ERROR_NONE) {
             DEBUG_ERR("Error getting I2C action status for IMU device");
-            DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-            DP.IMU.I2C_ERROR = i2c_error;
+            DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+            DP.IMU.I2C_ERROR_CODE = i2c_error;
 
             /* Raise the failed event */
             if (!EventManager_raise_event(
@@ -143,22 +143,22 @@ bool Imu_wait_i2c_action_finished(
             /* No need to set success as false as this is the default value */
             
             DEBUG_ERR("I2C action failed");
-            DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
+            DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
 
             /* Get the error cause */
-            I2c_ErrorCode i2c_action_error = I2C_ERROR_NONE;
+            ErrorCode i2c_action_error = ERROR_NONE;
             i2c_error = I2c_get_device_action_failure_cause(
                 p_device_in,
                 &i2c_action_error
             );
-            if (i2c_error != I2C_ERROR_NONE) {
+            if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR(
                     "CRITICAL: could not get I2C action error cause"
                 );
                 return false;
             }
 
-            DP.IMU.I2C_ERROR = i2c_action_error;
+            DP.IMU.I2C_ERROR_CODE = i2c_action_error;
 
             /* Raise the failed event */
             if (!EventManager_raise_event(
@@ -177,7 +177,7 @@ bool Imu_wait_i2c_action_finished(
                 "Unexpected I2c_ActionStatus value for finished operation: %d", 
                 i2c_status
             );
-            DP.IMU.ERROR = IMU_ERROR_INVALID_I2C_ACTION_STATUS;
+            DP.IMU.ERROR_CODE = IMU_ERROR_INVALID_I2C_ACTION_STATUS;
             return false;
         }
     }
@@ -196,7 +196,7 @@ bool Imu_wait_i2c_read_complete(
     /* Variables used throughout this function */
     bool i2c_action_finished = false;
     bool i2c_action_success = false;
-    I2c_ErrorCode i2c_error;
+    ErrorCode i2c_error;
 
     /* Default finished to false */
     *p_finished_out = false;
@@ -233,14 +233,14 @@ bool Imu_wait_i2c_read_complete(
         p_device_in,
         p_data_out
     );
-    if (i2c_error != I2C_ERROR_NONE) {
+    if (i2c_error != ERROR_NONE) {
         DEBUG_ERR(
             "I2C error while reading bytes: %d, DP.IMU.SUBSTATE = 0x%02X", 
             i2c_error,
             DP.IMU.SUBSTATE
         );
-        DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-        DP.IMU.I2C_ERROR = i2c_error;
+        DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+        DP.IMU.I2C_ERROR_CODE = i2c_error;
 
         /* Raise the failed event */
         if (!EventManager_raise_event(
@@ -257,14 +257,14 @@ bool Imu_wait_i2c_read_complete(
 
     /* Remove the action */
     i2c_error = I2c_clear_device_action(p_device_in);
-    if (i2c_error != I2C_ERROR_NONE) {
+    if (i2c_error != ERROR_NONE) {
         DEBUG_ERR(
             "I2C error while clearing action: %d, DP.IMU.SUBSTATE = 0x%02X", 
             i2c_error,
             DP.IMU.SUBSTATE
         );
-        DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-        DP.IMU.I2C_ERROR = i2c_error;
+        DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+        DP.IMU.I2C_ERROR_CODE = i2c_error;
 
         /* Raise the failed event */
         if (!EventManager_raise_event(
@@ -285,14 +285,14 @@ bool Imu_wait_i2c_read_complete(
         next_i2c_read_reg_in,
         next_i2c_read_length_in
     );
-    if (i2c_error != I2C_ERROR_NONE) {
+    if (i2c_error != ERROR_NONE) {
         DEBUG_ERR(
             "I2C error while requesting recv: %d, DP.IMU.SUBSTATE = 0x%02X", 
             i2c_error,
             DP.IMU.SUBSTATE
         );
-        DP.IMU.ERROR = IMU_ERROR_I2C_ERROR;
-        DP.IMU.I2C_ERROR = i2c_error;
+        DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+        DP.IMU.I2C_ERROR_CODE = i2c_error;
 
         /* Raise the failed event */
         if (!EventManager_raise_event(

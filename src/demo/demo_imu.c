@@ -52,15 +52,15 @@ int main(void) {
 
     /* Init the I2C driver */
     uint32_t i2c_modules[] = {0x02};
-    I2c_ErrorCode i2c_error = I2c_init((uint32_t *)i2c_modules, 1);
-    if (i2c_error != I2C_ERROR_NONE) {
+    ErrorCode i2c_error = I2c_init((uint32_t *)i2c_modules, 1);
+    if (i2c_error != ERROR_NONE) {
         DEBUG_ERR("I2C error code: %d", i2c_error);
         Debug_exit(1);
     }
 
     /* Init the IMU */
     if (!Imu_init()) {
-        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR);
+        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
         Debug_exit(1);
     }
 
@@ -129,7 +129,7 @@ int main(void) {
 
                     /* If failed print error and exit */
                     if (event_raised) {
-                        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR);
+                        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
                         Debug_exit(1);
                     }
                     /* Otherwise the read just isn't finished yet, so wait a
@@ -176,7 +176,7 @@ int main(void) {
 
                     /* If failed print error and exit */
                     if (event_raised) {
-                        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR);
+                        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
                         Debug_exit(1);
                     }
                     /* Otherwise the read just isn't finished yet, so wait a
@@ -226,7 +226,7 @@ int main(void) {
 
                     /* If failed print error and exit */
                     if (event_raised) {
-                        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR);
+                        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
                         Debug_exit(1);
                     }
                     /* Otherwise the read just isn't finished yet, so wait a
@@ -276,7 +276,7 @@ int main(void) {
 
                     /* If failed print error and exit */
                     if (event_raised) {
-                        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR);
+                        DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
                         Debug_exit(1);
                     }
                     /* Otherwise the read just isn't finished yet, so wait a
@@ -292,7 +292,7 @@ int main(void) {
 
         /* Step the I2C */
         i2c_error = I2c_step();
-        if (i2c_error != I2C_ERROR_NONE) {
+        if (i2c_error != ERROR_NONE) {
             DEBUG_ERR("I2C error code: %d", i2c_error);
             /* Don't exit as we want to see the IMU component detect this
              * error. */
@@ -300,7 +300,7 @@ int main(void) {
 
         /* Step the IMU */
         if (!Imu_step()) {
-            DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR);
+            DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
             Debug_exit(1);
         }
 
@@ -308,7 +308,7 @@ int main(void) {
         if (!sleep) {
             char *p_events = NULL;
             EventManager_get_event_list_string(&p_events);
-            DEBUG_INF(p_table_format, DP.IMU.STATE, DP.IMU.SUBSTATE, DP.IMU.COMMAND, DP.IMU.ERROR, p_events);
+            DEBUG_INF(p_table_format, DP.IMU.STATE, DP.IMU.SUBSTATE, DP.IMU.COMMAND, DP.IMU.ERROR_CODE, p_events);
             free(p_events);
         }
         #endif

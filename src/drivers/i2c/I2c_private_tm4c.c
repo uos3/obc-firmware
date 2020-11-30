@@ -102,7 +102,7 @@ I2c_Module I2C_MODULES[I2C_NUM_MODULES] = {
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
+ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
     /* No need to check for initialisation as this is done in the step 
      * function */
     
@@ -198,7 +198,7 @@ I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
                     "I2C master module %d still busy after minor check.",
                     p_action_in->device.module
                 );
-                return I2C_ERROR_NONE;
+                return ERROR_NONE;
             }
 
             /* Increment step */
@@ -212,9 +212,9 @@ I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
                 = I2c_check_master_error(p_i2c_module->base_i2c);
 
             /* If no error return success, otherwise return failure */
-            if (p_action_in->error == I2C_ERROR_NONE) {
+            if (p_action_in->error == ERROR_NONE) {
                 p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
-                return I2C_ERROR_NONE;
+                return ERROR_NONE;
             }
             else {
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
@@ -229,7 +229,7 @@ I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
 
 }
 
-I2c_ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in) {
+ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in) {
     /* Steps required for this action:
      * 
      * Step 0: Setup:
@@ -339,7 +339,7 @@ I2c_ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in) {
                     "I2C master module %d still busy after minor check.",
                     p_action_in->device.module
                 );
-                return I2C_ERROR_NONE;
+                return ERROR_NONE;
             }
 
             p_action_in->step++;
@@ -352,9 +352,9 @@ I2c_ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in) {
              * the error if there is one. */
             p_action_in->error = I2c_check_master_error(p_i2c_module->base_i2c);
 
-            if (p_action_in->error == I2C_ERROR_NONE) {
+            if (p_action_in->error == ERROR_NONE) {
                 p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
-                return I2C_ERROR_NONE;
+                return ERROR_NONE;
             }
             else {
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
@@ -377,14 +377,14 @@ bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in) {
         (p_a_in->address == p_b_in->address);
 }
 
-I2c_ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in) {
+ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in) {
     /* Read error code from I2C module */
     uint32_t i2c_error = I2CMasterErr(i2c_base_addr_in);
 
     /* Return the translated error code */
     switch (i2c_error) {
         case I2C_MASTER_ERR_NONE:
-            return I2C_ERROR_NONE;
+            return ERROR_NONE;
 
         /* Address acknowledge failed */
         case I2C_MASTER_ERR_ADDR_ACK:
@@ -407,7 +407,7 @@ I2c_ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in) {
     }
 }
 
-I2c_ErrorCode I2c_action_burst_send_master_busy_check(
+ErrorCode I2c_action_burst_send_master_busy_check(
     I2c_ActionBurstSend *p_action_in,
     bool *p_master_busy_out
 ) {
@@ -449,17 +449,17 @@ I2c_ErrorCode I2c_action_burst_send_master_busy_check(
          * checks to 0 for next time. */
         if (!*p_master_busy_out) {
             p_action_in->num_master_busy_major_checks = 0;
-            return I2C_ERROR_NONE;
+            return ERROR_NONE;
         }
     }
 
     /* If the master is still busy at the end of the minor loop, increment the
      * number of major checks. */
     p_action_in->num_master_busy_major_checks++;
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_lock_module(I2c_Device *p_device_in) {
+ErrorCode I2c_lock_module(I2c_Device *p_device_in) {
     /* No need to check if I2C initialised because the calling function shall
      * allways do this check first */
 
@@ -476,11 +476,11 @@ I2c_ErrorCode I2c_lock_module(I2c_Device *p_device_in) {
     else {
         DEBUG_TRC("Module %d locked", p_device_in->module);
         I2C.module_locked[p_device_in->module] = true;
-        return I2C_ERROR_NONE;
+        return ERROR_NONE;
     }
 }
 
-I2c_ErrorCode I2c_action_burst_recv_master_busy_check(
+ErrorCode I2c_action_burst_recv_master_busy_check(
     I2c_ActionBurstRecv *p_action_in,
     bool *p_master_busy_out
 ) {
@@ -522,12 +522,12 @@ I2c_ErrorCode I2c_action_burst_recv_master_busy_check(
          * checks to 0 for next time. */
         if (!*p_master_busy_out) {
             p_action_in->num_master_busy_major_checks = 0;
-            return I2C_ERROR_NONE;
+            return ERROR_NONE;
         }
     }
 
     /* If the master is still busy at the end of the minor loop, increment the
      * number of major checks. */
     p_action_in->num_master_busy_major_checks++;
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }

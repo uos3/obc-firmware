@@ -68,7 +68,7 @@ bool Imu_step(void) {
     /* Check the IMU is initialised */
     if (!DP.IMU.INITIALISED) {
         DEBUG_ERR("Attempted to step Imu when not initialised");
-        DP.IMU.ERROR = IMU_ERROR_NOT_INITIALISED;
+        DP.IMU.ERROR_CODE = IMU_ERROR_NOT_INITIALISED;
         return false;
     }
 
@@ -112,7 +112,7 @@ bool Imu_step(void) {
             bool new_command = false;
             if (!EventManager_poll_event(EVT_IMU_NEW_COMMAND, &new_command)) {
                 DEBUG_ERR("EventManager error occured");
-                DP.IMU.ERROR = IMU_ERROR_EVENTMANAGER_ERROR;
+                DP.IMU.ERROR_CODE = IMU_ERROR_EVENTMANAGER_ERROR;
                 return false;
             }
 
@@ -124,7 +124,7 @@ bool Imu_step(void) {
                         DEBUG_ERR(
                             "New command event raised when no command set in DP"
                         );
-                        DP.IMU.ERROR = IMU_ERROR_NEW_NONE_COMMAND;
+                        DP.IMU.ERROR_CODE = IMU_ERROR_NEW_NONE_COMMAND;
                         return false;
                     
                     case IMU_CMD_READ_GYROSCOPE:
@@ -165,7 +165,7 @@ bool Imu_step(void) {
                         break;
                     default:
                         DEBUG_ERR("Unrecognised command");
-                        DP.IMU.ERROR = IMU_ERROR_UNRECOGNISED_CMD;
+                        DP.IMU.ERROR_CODE = IMU_ERROR_UNRECOGNISED_CMD;
                         return false;
                 }
             }
@@ -200,7 +200,7 @@ bool Imu_step(void) {
             break;
         default:
             DEBUG_ERR("Invalid DP.IMU.STATE: %d", DP.IMU.STATE);
-            DP.IMU.ERROR = IMU_ERROR_INVALID_STATE;
+            DP.IMU.ERROR_CODE = IMU_ERROR_INVALID_STATE;
             return false;
     }
 
@@ -211,7 +211,7 @@ bool Imu_new_command(Imu_Command command_in) {
     /* If the IMU is not in wait new command mode return error */
     if (DP.IMU.STATE != IMU_STATE_WAIT_NEW_COMMAND) {
         DEBUG_ERR("Cannot issue new command since the IMU is not in the WAIT_NEW_COMMAND state");
-        DP.IMU.ERROR = IMU_ERROR_CANNOT_ISSUE_NEW_COMMAND;
+        DP.IMU.ERROR_CODE = IMU_ERROR_CANNOT_ISSUE_NEW_COMMAND;
         return false;
     }
 

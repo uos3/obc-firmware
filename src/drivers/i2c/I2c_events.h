@@ -5,6 +5,8 @@
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Defines the events available for the I2C module.
  * 
+ * Task ref: [UT_2.8.7]
+ * 
  * @version 0.1
  * @date 2020-11-12
  * 
@@ -19,8 +21,8 @@
  * ------------------------------------------------------------------------- */
 
 /* Internal includes */
+#include "system/kernel/Kernel_module_ids.h"
 #include "system/event_manager/EventManager_public.h"
-#include "system/event_manager/EventManager_blocks.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -30,7 +32,7 @@
  * @brief This event indicates that a new action has been requested for the I2C
  * driver to execute.
  */
-#define EVT_I2C_NEW_ACTION (EVENTMANAGER_BLOCK_I2C | 1)
+#define EVT_I2C_NEW_ACTION (MOD_ID_I2C | 1)
 
 /**
  * @brief Event that indicates when an I2C action has been finished. The user
@@ -41,6 +43,6 @@
  * EventManager_is_event_raised must be used. The I2c module will clear the
  * event when all finished actions have been handled.
  */
-#define EVT_I2C_ACTION_FINISHED (EVENTMANAGER_BLOCK_I2C | 2)
+#define EVT_I2C_ACTION_FINISHED (MOD_ID_I2C | 2)
 
 #endif /* H_I2C_EVENTS_H */

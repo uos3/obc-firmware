@@ -136,7 +136,7 @@ typedef struct _I2c_ActionSingleSend {
     /**
      * @brief Stores any error associated with this action.
      */
-    I2c_ErrorCode error;
+    ErrorCode error;
 
     /**
      * @brief The device to perform this action on.
@@ -174,7 +174,7 @@ typedef struct _I2c_ActionSingleRecv {
     /**
      * @brief Stores any error associated with this action.
      */
-    I2c_ErrorCode error;
+    ErrorCode error;
 
     /**
      * @brief The device to perform this action on.
@@ -225,7 +225,7 @@ typedef struct _I2c_ActionBurstSend {
     /**
      * @brief Stores any error associated with this action.
      */
-    I2c_ErrorCode error;
+    ErrorCode error;
 
     /**
      * @brief The device to perform this action on.
@@ -281,7 +281,7 @@ typedef struct _I2c_ActionBurstRecv {
     /**
      * @brief Stores any error associated with this action.
      */
-    I2c_ErrorCode error;
+    ErrorCode error;
 
     /**
      * @brief The device to perform this action on.
@@ -380,33 +380,33 @@ extern I2c_Module I2C_MODULES[I2C_NUM_MODULES];
  * @brief Step a single send action.
  * 
  * @param p_action_in The action to perform
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in);
+ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in);
 
 /**
  * @brief Step a single receive action.
  * 
  * @param p_action_in The action to perform
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in);
+ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in);
 
 /**
  * @brief Step a burst send action.
  * 
  * @param p_action_in The action to perform
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in);
+ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in);
 
 /**
  * @brief Step a burst receive action.
  * 
  * @param p_action_in The action to perform
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in);
+ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in);
 
 /**
  * @brief Returns true if both devices have the same module and address.
@@ -421,9 +421,9 @@ bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in);
  * @brief Check the I2C master for the given module base address for errors.
  * 
  * @param i2c_base_addr_in The base address of the I2C module.
- * @return I2c_ErrorCode Return code.
+ * @return ErrorCode Return code.
  */
-I2c_ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in);
+ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in);
 
 /**
  * @brief Waits for the master to not be busy in a burst send action.
@@ -436,9 +436,9 @@ I2c_ErrorCode I2c_check_master_error(uint32_t i2c_base_addr_in);
  *        action's device.
  * @param p_exit_action_out Pointer to a boolean which will be set to true if
  *        the action should exit back to the major loop control. 
- * @return I2c_ErrorCode 
+ * @return ErrorCode 
  */
-I2c_ErrorCode I2c_burst_send_wait_master_not_busy(
+ErrorCode I2c_burst_send_wait_master_not_busy(
     I2c_ActionBurstSend *p_action_in,
     I2c_Module *p_i2c_module_in,
     bool *p_exit_action_out
@@ -451,11 +451,11 @@ I2c_ErrorCode I2c_burst_send_wait_master_not_busy(
  * as it makes no check of this.
  * 
  * @param p_device_in The device attempting to lock the mdoule.
- * @return I2c_ErrorCode Return code. If I2C_ERROR_NONE the device has
+ * @return ErrorCode Return code. If I2C_ERROR_NONE the device has
  *         successfully got the lock on the module. If other then the module is
  *         already locked by another device.
  */
-I2c_ErrorCode I2c_lock_module(I2c_Device *p_device_in);
+ErrorCode I2c_lock_module(I2c_Device *p_device_in);
 
 /**
  * @brief Checks to see if the master is busy for the burst send function.
@@ -463,9 +463,9 @@ I2c_ErrorCode I2c_lock_module(I2c_Device *p_device_in);
  * @param p_action_in Pointer to the action.
  * @param p_master_busy_out Pointer to a bool which will return true if
  *      busy, false if not busy.
- * @return I2c_ErrorCode 
+ * @return ErrorCode 
  */
-I2c_ErrorCode I2c_action_burst_send_master_busy_check(
+ErrorCode I2c_action_burst_send_master_busy_check(
     I2c_ActionBurstSend *p_action_in,
     bool *p_master_busy_out
 );
@@ -476,9 +476,9 @@ I2c_ErrorCode I2c_action_burst_send_master_busy_check(
  * @param p_action_in Pointer to the action.
  * @param p_master_busy_out Pointer to a bool which will return true if
  *      busy, false if not busy.
- * @return I2c_ErrorCode 
+ * @return ErrorCode 
  */
-I2c_ErrorCode I2c_action_burst_recv_master_busy_check(
+ErrorCode I2c_action_burst_recv_master_busy_check(
     I2c_ActionBurstRecv *p_action_in,
     bool *p_master_busy_out
 );

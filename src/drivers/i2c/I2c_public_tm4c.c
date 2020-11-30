@@ -44,7 +44,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-I2c_ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
+ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
 
     /* Loop through each module */
     for (size_t i = 0; i < num_modules_in; ++i) {
@@ -161,10 +161,10 @@ I2c_ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
     I2C.initialised = true;
 
     /* Return success */
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_step(void) {
+ErrorCode I2c_step(void) {
     /* 
      * In the step we poll for an I2C_NEW_ACTION event, and iterate through 
      * each action and call the appropriate function.
@@ -191,7 +191,7 @@ I2c_ErrorCode I2c_step(void) {
         I2c_ActionType type = I2C.action_types[i];
 
         /* Error return code for the stepped action functions */
-        I2c_ErrorCode error = I2C_ERROR_NONE;
+        ErrorCode error = ERROR_NONE;
 
         switch(type) {
             case I2C_ACTION_TYPE_SINGLE_SEND:
@@ -199,7 +199,7 @@ I2c_ErrorCode I2c_step(void) {
                 error = I2c_action_single_send(&I2C.u_actions[i].single_send);
 
                 /* If there was an error log where it came from and return it */
-                if (error != I2C_ERROR_NONE) {
+                if (error != ERROR_NONE) {
                     DEBUG_ERR(
                         "Error performing single send action for device (%d, %d)",
                         I2C.u_actions[i].single_send.device.module,
@@ -214,7 +214,7 @@ I2c_ErrorCode I2c_step(void) {
                 error = I2c_action_single_recv(&I2C.u_actions[i].single_recv);
 
                 /* If there was an error log where it came from and return it */
-                if (error != I2C_ERROR_NONE) {
+                if (error != ERROR_NONE) {
                     DEBUG_ERR(
                         "Error performing single receive action for device (%d, %d)",
                         I2C.u_actions[i].single_recv.device.module,
@@ -229,7 +229,7 @@ I2c_ErrorCode I2c_step(void) {
                 error = I2c_action_burst_send(&I2C.u_actions[i].burst_send);
 
                 /* If there was an error log where it came from and return it */
-                if (error != I2C_ERROR_NONE) {
+                if (error != ERROR_NONE) {
                     DEBUG_ERR(
                         "Error performing burst send action for device (%d, %d)",
                         I2C.u_actions[i].burst_send.device.module,
@@ -244,7 +244,7 @@ I2c_ErrorCode I2c_step(void) {
                 error = I2c_action_burst_recv(&I2C.u_actions[i].burst_recv);
 
                 /* If there was an error log where it came from and return it */
-                if (error != I2C_ERROR_NONE) {
+                if (error != ERROR_NONE) {
                     DEBUG_ERR(
                         "Error performing burst receive action for device (%d, %d)",
                         I2C.u_actions[i].burst_recv.device.module,
@@ -264,10 +264,10 @@ I2c_ErrorCode I2c_step(void) {
         }
     }
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_device_send_bytes(
+ErrorCode I2c_device_send_bytes(
     I2c_Device *p_device_in,
     uint8_t *p_data_in,
     size_t length_in
@@ -281,7 +281,7 @@ I2c_ErrorCode I2c_device_send_bytes(
     }
 
     /* Attempt to get the module lock */
-    if (I2c_lock_module(p_device_in) != I2C_ERROR_NONE) {
+    if (I2c_lock_module(p_device_in) != ERROR_NONE) {
         return I2C_ERROR_MODULE_LOCKED_BY_ANOTHER_DEVICE;
     }
 
@@ -303,7 +303,7 @@ I2c_ErrorCode I2c_device_send_bytes(
             if (length_in == 1) {
                 I2C.action_types[i] = I2C_ACTION_TYPE_SINGLE_SEND;
                 I2C.u_actions[i].single_send.step = 0;
-                I2C.u_actions[i].single_send.error = I2C_ERROR_NONE;
+                I2C.u_actions[i].single_send.error = ERROR_NONE;
                 I2C.u_actions[i].single_send.status
                     = I2C_ACTION_STATUS_IN_PROGRESS;
                 I2C.u_actions[i].single_send.device = *p_device_in;
@@ -315,7 +315,7 @@ I2c_ErrorCode I2c_device_send_bytes(
             else {
                 I2C.action_types[i] = I2C_ACTION_TYPE_BURST_SEND;
                 I2C.u_actions[i].burst_send.step = 0;
-                I2C.u_actions[i].burst_send.error = I2C_ERROR_NONE;
+                I2C.u_actions[i].burst_send.error = ERROR_NONE;
                 I2C.u_actions[i].burst_send.status
                     = I2C_ACTION_STATUS_IN_PROGRESS;
                 I2C.u_actions[i].burst_send.device = *p_device_in;
@@ -358,10 +358,10 @@ I2c_ErrorCode I2c_device_send_bytes(
         return I2C_ERROR_MAX_ACTIONS_REACHED;
     }
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_device_recv_bytes(
+ErrorCode I2c_device_recv_bytes(
     I2c_Device *p_device_in,
     uint8_t reg_in,
     size_t length_in
@@ -375,7 +375,7 @@ I2c_ErrorCode I2c_device_recv_bytes(
     }
 
     /* Attempt to get the module lock */
-    if (I2c_lock_module(p_device_in) != I2C_ERROR_NONE) {
+    if (I2c_lock_module(p_device_in) != ERROR_NONE) {
         return I2C_ERROR_MODULE_LOCKED_BY_ANOTHER_DEVICE;
     }
 
@@ -397,7 +397,7 @@ I2c_ErrorCode I2c_device_recv_bytes(
             if (length_in == 1) {
                 I2C.action_types[i] = I2C_ACTION_TYPE_SINGLE_RECV;
                 I2C.u_actions[i].single_recv.step = 0;
-                I2C.u_actions[i].single_recv.error = I2C_ERROR_NONE;
+                I2C.u_actions[i].single_recv.error = ERROR_NONE;
                 I2C.u_actions[i].single_recv.status
                     = I2C_ACTION_STATUS_IN_PROGRESS;
                 I2C.u_actions[i].single_recv.device = *p_device_in;
@@ -408,7 +408,7 @@ I2c_ErrorCode I2c_device_recv_bytes(
             else {
                 I2C.action_types[i] = I2C_ACTION_TYPE_BURST_RECV;
                 I2C.u_actions[i].burst_recv.step = 0;
-                I2C.u_actions[i].burst_recv.error = I2C_ERROR_NONE;
+                I2C.u_actions[i].burst_recv.error = ERROR_NONE;
                 I2C.u_actions[i].burst_recv.status
                     = I2C_ACTION_STATUS_IN_PROGRESS;
                 I2C.u_actions[i].burst_recv.device = *p_device_in;
@@ -445,10 +445,10 @@ I2c_ErrorCode I2c_device_recv_bytes(
         return I2C_ERROR_MAX_ACTIONS_REACHED;
     }
 
-    return I2C_ERROR_NONE;
+    return ERROR_NONE;
 }
 
-I2c_ErrorCode I2c_get_device_recved_bytes(
+ErrorCode I2c_get_device_recved_bytes(
     I2c_Device *p_device_in,
     uint8_t *p_bytes_out
 ) {
@@ -496,7 +496,7 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                     /* If the status is success get the byte */
                     if (p_sr_action->status == I2C_ACTION_STATUS_SUCCESS) {
                         p_bytes_out[0] = p_sr_action->byte;
-                        return I2C_ERROR_NONE;
+                        return ERROR_NONE;
                     }
                     /* If the status is not success return an error */
                     else {
@@ -534,7 +534,7 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
                             (void *)(p_br_action->p_bytes),
                             p_br_action->length
                         );
-                        return I2C_ERROR_NONE;
+                        return ERROR_NONE;
                     }
                     /* If the status is not success return an error */
                     else {
@@ -567,16 +567,16 @@ I2c_ErrorCode I2c_get_device_recved_bytes(
     return I2C_ERROR_NO_ACTION_FOR_DEVICE;
 }
 
-I2c_ErrorCode I2c_get_device_action_failure_cause(
+ErrorCode I2c_get_device_action_failure_cause(
     I2c_Device *p_device_in,
-    I2c_ErrorCode *p_error_out
+    ErrorCode *p_error_out
 ) {
     /* Loop through the actions that are not NONE and find this device */
     for (size_t i = 0; i < I2C_MAX_NUM_ACTIONS; ++i) {
         /* Get the action type */
         I2c_ActionType type = I2C.action_types[i];
         I2c_Device *p_action_device = NULL;
-        I2c_ErrorCode *p_error = NULL;
+        ErrorCode *p_error = NULL;
 
         switch (type) {
             case I2C_ACTION_TYPE_SINGLE_SEND:
@@ -617,7 +617,7 @@ I2c_ErrorCode I2c_get_device_action_failure_cause(
         if (I2c_devices_equal(p_action_device, p_device_in)) {
             /* Set the error code and return */
             *p_error_out = *p_error;
-            return I2C_ERROR_NONE;
+            return ERROR_NONE;
         }
         /* If devices not equal continue to the next action */
     }
@@ -627,7 +627,7 @@ I2c_ErrorCode I2c_get_device_action_failure_cause(
     return I2C_ERROR_NO_ACTION_FOR_DEVICE;
 }
 
-I2c_ErrorCode I2c_get_device_action_status(
+ErrorCode I2c_get_device_action_status(
     I2c_Device *p_device_in,
     I2c_ActionStatus *p_status_out
 ) {
@@ -698,7 +698,7 @@ I2c_ErrorCode I2c_get_device_action_status(
         if (I2c_devices_equal(p_action_device, p_device_in)) {
             /* Set the status code and return */
             *p_status_out = *p_status;
-            return I2C_ERROR_NONE;
+            return ERROR_NONE;
         }
         /* If devices are not equal, continue */
     }
@@ -712,7 +712,7 @@ I2c_ErrorCode I2c_get_device_action_status(
     return I2C_ERROR_NO_ACTION_FOR_DEVICE;
 }
 
-I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
+ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
     
     /* Check the I2C is initialised */
     if (!I2C.initialised) {
@@ -787,7 +787,7 @@ I2c_ErrorCode I2c_clear_device_action(I2c_Device *p_device_in) {
             /* Unlock the bus */
             I2C.module_locked[p_device_in->module] = false;
 
-            return I2C_ERROR_NONE;
+            return ERROR_NONE;
         }
         /* If devices are not equal, continue */
     }
