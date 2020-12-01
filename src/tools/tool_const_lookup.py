@@ -69,11 +69,13 @@ def print_matches(matches):
     if len(matches['events']) == 0:
         console.print('    [i]None[/i]')
     else:
+        if len(matches['events']) > 1:
+            print('')
+            console.print('    [red][bold]WARNING[/bold] Multiple Events with the same value detected![/red]')
+            console.print('            [red]This must be corrected in the header definition so there is no conflict![/red]')
         console.print('')
         for event in matches['events']:
-            console.print(f'    [bold]{event["symbol"]}:[/bold] [cyan]0x{event["value"]:04X}[/cyan] ({event["value"]}, 0b{event["value"]:016b})')
-            desc = Padding(event['description'], (0, 0, 0, 8))
-            console.print(desc)
+            _print_const(console, event)
     console.print('')
 
     # Print errors
@@ -81,11 +83,13 @@ def print_matches(matches):
     if len(matches['errors']) == 0:
         console.print('    [i]None[/i]')
     else:
+        if len(matches['errors']) > 1:
+            print('')
+            console.print('    [red][bold]WARNING[/bold] Multiple ErrorCodes with the same value detected![/red]')
+            console.print('            [red]This must be corrected in the header definition so there is no conflict![/red]')
         console.print('')
         for error in matches['errors']:
-            console.print(f'    [bold]{error["symbol"]}:[/bold] [cyan]0x{error["value"]:04X}[/cyan] ({error["value"]}, 0b{error["value"]:016b})')
-            desc = Padding(error['description'], (0, 0, 0, 8))
-            console.print(desc)
+            _print_const(console, error)
     console.print('')
         
     # Print datapools
@@ -98,7 +102,15 @@ def print_matches(matches):
     #         console.print(f'    [bold]{dp["symbol"]}:[/bold] [cyan]0x{dp["value"]:04X}[/cyan] ({dp["value"]}, 0b{dp["value"]:016b})')
     #         desc = Padding(dp['description'], (0, 0, 0, 8))
     #         console.print(desc)
-    
+
+def _print_const(console, const):
+    '''
+    Print an individual constant to the given console.
+    '''
+    console.print(f'    [bold][cyan]{const["symbol"]}[/cyan]:[/bold] 0x{const["value"]:04X} ({const["value"]}, 0b{const["value"]:016b})')
+    desc = Padding(const['description'], (0, 0, 0, 8))
+    console.print(desc)
+
 
 def _parse_args():
     '''
