@@ -15,3 +15,6 @@ docs/**/build
 
 # Ignore massif files
 **/massif.out.*
+
+# Ignore pycaches
+**/__pycache__

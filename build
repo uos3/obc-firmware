@@ -32,6 +32,7 @@ import subprocess
 import shutil
 from pathlib import Path
 from datetime import datetime
+from src.tools.tool_gen_const_db import gen_const_db
 
 class TermCols:
     '''Terminal colour codes'''
@@ -151,6 +152,12 @@ def main():
         write_build_info_file(build_dir, 'release' if args.release else 'debug', args.target, timestamp)
 
     ok('Build complete')
+
+    info('Generating constant database')
+    db_path = gen_const_db()
+    info('Copying const db to builds directory')
+    shutil.copy2(db_path, root_dir.joinpath('builds', 'const_db.json'))
+    ok('Constant database generation complete')
 
     # Flash if requested
     if args.flash is not None:
