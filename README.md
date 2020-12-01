@@ -20,11 +20,13 @@ Developing this repository requires the following software:
 - Python 3 - used for build script
 - cmocka - framework used to test the software
 - OpenOCD - debugging host which allows GDB to be used to debug the software
+- TinyDB and rich - python libraries used in the constant databse and lookup tool
 
 On ubuntu the following command should install most of these:
 
 ```shell
 sudo apt install build-essential gcc-arm-none-eabi cmake lm4flash openocd
+pip install tinydb rich
 ```
 
 For `python3`, be careful as you probably already have it installed.
@@ -158,3 +160,32 @@ Features allow certain parts of the code to be excluded from particular builds,
 for instance the IMU calibration code is not required in the flight version of
 the software, so it's inclusion in the build is only enabled when using the
 `imu_calib` feature.
+
+## Constants
+
+The software uses 16-bit constants for error, event and datapool ID codes.
+There are many different codes and looking them up can be a challenge,
+therefore a database of all codes and a short python tool to search that
+database is provided.
+
+The databse is generated automatically as a part of the build process. The
+lookup tool can be used as such:
+
+```shell
+python src/tools/tool_const_lookup.py 0x940A
+```
+
+and will return
+
+```shell
+Events
+
+    EVT_IMU_STATE_CHANGE: 0x940A (37898, 0b1001010000001010)
+        Event used to signal a state change in the IMU. This is done so that 
+        the new state will run it's first function in the next cycle without 
+        the system going to sleep.
+
+Errors
+    None
+
+```
