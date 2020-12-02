@@ -33,6 +33,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "system/event_manager/EventManager_public.h"
 #include "drivers/i2c/I2c_private.h"
 
 /* -------------------------------------------------------------------------   
@@ -71,7 +72,8 @@ ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
      * 5. Wait on master not busy (see step 1)
      * 6. Check for errors:
      *      - If error control for burst send error stop
-     *      - Exit
+     * 7. Action finished:
+     *      - Empty state where the action waits to be cleared
      */
 
     /* Get a pointer to the I2C module this device is associated with */
@@ -144,6 +146,12 @@ ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
                 );
 
                 DEBUG_ERR("Error sending first byte to device.");
+                
+                /* Raise the finished event */
+                if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+                    DEBUG_ERR("CRITICAL: failed to raise event");
+                }
+
                 p_action_in->error = master_error;
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
                 return master_error;
@@ -227,6 +235,14 @@ ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
                             );
 
                             DEBUG_ERR("Error sending byte %d to device.", i);
+
+                            /* Raise the finished event */
+                            if (!EventManager_raise_event(
+                                EVT_I2C_ACTION_FINISHED)
+                            ) {
+                                DEBUG_ERR("CRITICAL: failed to raise event");
+                            }
+
                             p_action_in->error = master_error;
                             p_action_in->status = I2C_ACTION_STATUS_FAILURE;
                             return master_error;
@@ -312,6 +328,12 @@ ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
                 );
 
                 DEBUG_ERR("Error sending last byte to device.");
+
+                /* Raise the finished event */
+                if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+                    DEBUG_ERR("CRITICAL: failed to raise event");
+                }
+
                 p_action_in->error = master_error;
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
                 return master_error;
@@ -325,6 +347,18 @@ ErrorCode I2c_action_burst_send(I2c_ActionBurstSend *p_action_in) {
             /* Set the action as successful */
             p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
 
+            /* Raise the finished event */
+            if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+                DEBUG_ERR("CRITICAL: failed to raise event");
+            }
+
+            /* Increment to the final empty step */
+            p_action_in->step++;
+
+            __attribute__ ((fallthrough));
+        /* Empty final step */
+        case 7:
+        
             /* Return since finished */
             return ERROR_NONE;
         

@@ -211,15 +211,28 @@ ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
             p_action_in->error 
                 = I2c_check_master_error(p_i2c_module->base_i2c);
 
-            /* If no error return success, otherwise return failure */
+            /* Raise the finished event */
+            if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+                DEBUG_ERR("CRITICAL: Could not raise action finished event");
+            }
+ 
+            /* If no error set the action as successful, otherwise return 
+             * failure */
             if (p_action_in->error == ERROR_NONE) {
                 p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
-                return ERROR_NONE;
             }
             else {
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
                 return p_action_in->error;
             }
+
+            /* Increment step */
+            p_action_in->step++;
+
+            __attribute__ ((fallthrough));
+        case 3:
+
+            return ERROR_NONE;
             
         default:
             DEBUG_ERR("Reached unexpected step of single send action");
@@ -243,6 +256,7 @@ ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in) {
      * Step 2: Finish
      *     -Check for errors and set action status as successful if no errors
      *         occured
+     * Step 3: Empty state while action waits to be cleared
      */
 
     /* Get a pointer to the I2C module this device is associated with */
@@ -361,14 +375,19 @@ ErrorCode I2c_action_single_recv(I2c_ActionSingleRecv *p_action_in) {
                 return p_action_in->error;
             }
 
-            break;
+            /* Increment step */
+            p_action_in->step++;
+
+            __attribute__ ((fallthrough));
+        case 3:
+
+            return ERROR_NONE;
         
         default:
             /* If the step is any value other than expected, raise an error */
             DEBUG_ERR("Reached unexpected step of single receive action");
             return I2C_ERROR_UNEXPECTED_ACTION_STEP;
     }
-
 }
 
 bool I2c_devices_equal(I2c_Device *p_a_in, I2c_Device *p_b_in) {

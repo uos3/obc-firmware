@@ -42,6 +42,8 @@
 
 ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
     /*
+     * TODO Update this comment!
+     * 
      * Steps required for this action:
      * 
      * Step 0: Setup:
@@ -61,7 +63,6 @@ ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
      * Step 5: Wait for Master to Become Non-Busy:
      * 
      * Step 6: Finish
-     * 
      */
 
     /* Get a pointer to the I2C Module this device is associated with */
@@ -331,6 +332,9 @@ ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
             if (p_action_in->error != ERROR_NONE) {
                 p_action_in->status = I2C_ACTION_STATUS_FAILURE;
                 
+                /* Raise the action finished event, note that we dont actually
+                 * want to overwrite the error code here, instead we just log 
+                 * this */
                 if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
                     DEBUG_ERR("CRITICAL: Failed to raise event.");
                 }
@@ -338,14 +342,22 @@ ErrorCode I2c_action_burst_recv(I2c_ActionBurstRecv *p_action_in) {
                 return p_action_in->error;
             }
             
-            else {
-                /* Set action as finished successfully */
-
-                EventManager_raise_event(EVT_I2C_ACTION_FINISHED);
-
-                p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
-                return ERROR_NONE;
+            /* Raise the action finished event, raising an error if it occurs,
+             * but since the action occured successfully there's no need to
+             * actually use the error. */
+            if (!EventManager_raise_event(EVT_I2C_ACTION_FINISHED)) {
+                DEBUG_ERR("Could not raise event.");
+                p_action_in->error = I2C_ERROR_EVENTMANAGER_ERROR;
             }
+
+            /* Set the action as succesful */
+            p_action_in->status = I2C_ACTION_STATUS_SUCCESS;
+            
+            /* Increment step */
+            p_action_in->step++;
+
+            __attribute__ ((fallthrough));
+        case 8:
 
             break;
         

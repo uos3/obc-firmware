@@ -13,17 +13,33 @@
  * handling I2C errors (either themselves or by propagating to FDIR system).
  * This is because many hardware endpoints can be connected to the I2C bus, so
  * errors in those endpoints must be handled by the component responsible for
- * them. The I2C driver itself won't understand the meaning of IMU error codes,
- * for example.
+ * them. The I2C driver itself won't understand what action can be taken if the
+ * IMU doesn't respond, for example.
  * 
- * There are a number of I2C actions available:
- *  - Send byte to device (I2C_ACTION_SINGLE_SEND)
- *  - Receive byte from device register (I2C_ACTION_SINGLE_RECV)
- *  - Send bytes to device (I2C_ACTION_BURST_SEND)
- *  - Receive bytes from device register (I2C_ACTION_BURST_RECV)
+ * The I2C driver works with the concept of actions being performed on devices.
+ * A device represents a slave connected to one of the available I2C modules,
+ * of which on the TM4C123GPHM there are 4. Many devices can be connected to
+ * the same module, so each device also has a separate address. While an action
+ * is being performed on a device that device locks the module, to prevent
+ * other devices interrupting the communications of the locking device.
  * 
- * All actions are state machines themselves, meaning that they may be exited
- * while waiting on events to occur such as an interrupt. This 
+ * Actions are raised and performed asynchronously from the point of view of
+ * the user. The user first calls `I2c_init()` with the list of modules to
+ * activate, and can then use either `I2c_device_send_bytes()` or
+ * `I2c_device_recv_bytes()` to perform actions on the device. The user then
+ * must poll the `EVT_I2C_ACTION_FINISHED` event, which occurs at least one
+ * cycle later. Once the action is finished the status of the action shall be
+ * read using `I2c_get_device_action_status()`, which will either be
+ * `I2C_ACTION_STATUS_SUCCESS` or `I2C_ACTION_STATUS_FAILURE`.  
+ * 
+ * The root cause of a failed action may be found using
+ * `I2c_get_device_action_failure_cause()`. The bytes read by a successful 
+ * `recv` action can be retrieved using `I2c_get_device_recved_bytes()`.
+ * 
+ * Finally the user must call `I2c_clear_device_action()` once all necessary
+ * data has been retrieved by the user. Failure to do so will result in the
+ * I2C module associated with that device remaining locked, and therefore
+ * unusable by that device or others. 
  * 
  * @version 0.1
  * @date 2020-11-09
