@@ -78,7 +78,10 @@ typedef enum _Imu_Command {
      */
     IMU_CMD_READ_MAGNETOMETER,
 
-    /* TODO: Accelerometer command too? */
+    /* TODO: Accelerometer command too?
+     * -> Probably, so that we can get some quaternion estimation? Possibly
+     * using gravity vector?
+     */
 
     /**
      * @brief Read the temperature from the IMU.
@@ -195,44 +198,42 @@ typedef enum _Imu_SubState {
     /**
      * @brief Wait on init INT_PIN_CFG read complete substate.
      */
-    I2C_SUBSTATE_INIT_WAIT_INT_PIN_CFG_READ_COMPLETE,
+    IMU_SUBSTATE_INIT_WAIT_INT_PIN_CFG_READ_COMPLETE,
 
     /**
      * @brief Wait on init INT_PIN_CFG send complete substate.
      */
-    I2C_SUBSTATE_INIT_WAIT_INT_PIN_CFG_SEND_COMPLETE,
+    IMU_SUBSTATE_INIT_WAIT_INT_PIN_CFG_SEND_COMPLETE,
 
     /**
      * @brief Wait on magnetometer mode reset complete.
      */
-    I2C_SUBSTATE_INIT_WAIT_MAGNE_MODE_RESET_COMPLETE,
-
-    /**
-     * @brief Wait for gyroscope bandwidth read config register complete
-     * 
-     */
-    I2C_SUBSTATE_INIT_WAIT_GYRO_BW_RECV_CFG_COMPLETE,
-
-    /**
-     * @brief Wait for gyroscope bandwidth send config register complete
-     */
-    I2C_SUBSTATE_INIT_WAIT_GYRO_BW_SEND_CFG_COMPLETE,
+    IMU_SUBSTATE_INIT_WAIT_MAGNE_MODE_RESET_COMPLETE,
 
     /**
      * @brief Wait on magnetometer mode set complete
      */
-    I2C_SUBSTATE_INIT_WAIT_MAGNE_MODE_SET_COMPLETE,
+    IMU_SUBSTATE_INIT_WAIT_MAGNE_MODE_SET_COMPLETE,
 
     /**
-     * @brief Wait on gyroscope sensitivity read 
+     * @brief Wait for the configuration register read to complete.
      */
-    I2C_SUBSTATE_INIT_WAIT_GYRO_SENSE_RECV_COMPLETE,
+    IMU_SUBSTATE_INIT_WAIT_CFG_RECV_COMPLETE,
 
-    I2C_SUBSTATE_INIT_WAIT_GYRO_SENSE_SEND_COMPLETE,
+    /**
+     * @brief Wait for the configuration register write to complete.
+     */
+    IMU_SUBSTATE_INIT_WAIT_CFG_SEND_COMPLETE,
 
-    I2C_SUBSTATE_INIT_WAIT_GYRO_BW_RECV_GYRO_CFG_COMPLETE,
+    /**
+     * @brief Wait on gyroscope config register read complete
+     */
+    IMU_SUBSTATE_INIT_WAIT_GYRO_CFG_RECV_COMPLETE,
 
-    I2C_SUBSTATE_INIT_WAIT_GYRO_BW_SEND_GYRO_CFG_COMPLETE,
+    /**
+     * @brief Wait on gyroscope config register set complete
+     */
+    IMU_SUBSTATE_INIT_WAIT_GYRO_CFG_SEND_COMPLETE,
 
     /**
      * @brief Initial state for SET_GYROSCOPE_OFFSET, which sends the X values

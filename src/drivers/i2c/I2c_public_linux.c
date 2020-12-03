@@ -194,6 +194,7 @@ ErrorCode I2c_get_device_recved_bytes(
 
     #if DEBUG_MODE
     char *p_bytes_string = (char *)malloc(4 * length);
+    memset(p_bytes_string, 0, 4 * length);
     char buf[4];
     for (int i = 0; i < length; ++i) {
         sprintf((char *)buf, "%02X ", p_bytes_out[i]);

@@ -11,6 +11,7 @@ endif()
 add_library(Imu
     Imu_public.c
     Imu_private.c
+    Imu_step_init.c
     Imu_step_set_gyro_offsets.c
     Imu_step_read_temp.c
     Imu_step_read_gyro.c

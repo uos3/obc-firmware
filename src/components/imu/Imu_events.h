@@ -81,4 +81,14 @@
  */
 #define EVT_IMU_STATE_CHANGE ((Event)(MOD_ID_IMU | 10))
 
+/**
+ * @brief IMU initialisation successful event.
+ */
+#define EVT_IMU_INIT_SUCCESS ((Event)(MOD_ID_IMU | 11))
+
+/**
+ * @brief IMU initialisation failed event.
+ */
+#define EVT_IMU_INIT_FAILURE ((Event)(MOD_ID_IMU | 12))
+
 #endif /* H_IMU_EVENTS_H */

@@ -43,19 +43,14 @@ bool Imu_init(void) {
         return false;
     }
 
-    // TODO
-
-    /* Set the initialised flag in the DP */
-    DP.IMU.INITIALISED = true;
-
     /* TODO: should we actually do the self-test first rather than set the
      * offsets? As fas as I can tell from [SELFTEST] the offsets do not need to
      * be set to use self-test since it's based on raw factory readings. */
 
     /* Call the begin function for the first state */
     if (!Imu_begin_state(
-        IMU_STATE_SET_GYROSCOPE_OFFSETS,
-        IMU_SUBSTATE_SET_GYRO_OFFSET_INIT
+        IMU_STATE_INITIALISATION,
+        IMU_SUBSTATE_INIT_INIT
     )) {
         /* Do not set DP.IMU.ERROR as Imu_begin_state will do this*/
         return false;
@@ -65,8 +60,8 @@ bool Imu_init(void) {
 }
 
 bool Imu_step(void) {
-    /* Check the IMU is initialised */
-    if (!DP.IMU.INITIALISED) {
+    /* Check the IMU is initialised, and is not in initialisation mode */
+    if ((!DP.IMU.INITIALISED) && DP.IMU.STATE != IMU_STATE_INITIALISATION) {
         DEBUG_ERR("Attempted to step Imu when not initialised");
         DP.IMU.ERROR_CODE = IMU_ERROR_NOT_INITIALISED;
         return false;
@@ -84,6 +79,16 @@ bool Imu_step(void) {
 
     /* Run the main state machine */
     switch (DP.IMU.STATE) {
+        case IMU_STATE_INITIALISATION: ;
+
+            /* Step the state itself */
+            if (!Imu_step_init()) {
+                /* Message and error code set by the step function */
+                return false;
+            }
+
+            break;
+
         case IMU_STATE_SET_GYROSCOPE_OFFSETS: ;
 
             /* Step the state itself */

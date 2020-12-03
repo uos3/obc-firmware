@@ -130,6 +130,12 @@ bool Imu_wait_i2c_action_finished(
                 );
             }
 
+            /* Clear the I2C action */
+            i2c_error = I2c_clear_device_action(p_device_in);
+            if (i2c_error != ERROR_NONE) {
+                DEBUG_ERR("CRITICAL: could not clear the I2C device action");
+            }
+
             return false;
         }
 
@@ -155,7 +161,6 @@ bool Imu_wait_i2c_action_finished(
                 DEBUG_ERR(
                     "CRITICAL: could not get I2C action error cause"
                 );
-                return false;
             }
 
             DP.IMU.I2C_ERROR_CODE = i2c_action_error;
@@ -168,8 +173,15 @@ bool Imu_wait_i2c_action_finished(
                     "CRITICAL: could not raise event 0x%04X",
                     (uint16_t)failure_event
                 );
-                return false;
             }
+
+            /* Clear the I2C action */
+            i2c_error = I2c_clear_device_action(p_device_in);
+            if (i2c_error != ERROR_NONE) {
+                DEBUG_ERR("CRITICAL: could not clear the I2C device action");
+            }
+
+            return false;
         }
         /* If something else is happening */
         else {
@@ -252,14 +264,24 @@ bool Imu_wait_i2c_read_complete(
             );
         }
 
+        /* Clear the I2C action */
+        i2c_error = I2c_clear_device_action(p_device_in);
+        if (i2c_error != ERROR_NONE) {
+            DEBUG_ERR("CRITICAL: could not clear the I2C device action");
+        }
+
         return false;
     }
 
-    /* Remove the action */
-    i2c_error = I2c_clear_device_action(p_device_in);
+    /* Read bytes from the device */
+    i2c_error = I2c_device_recv_bytes(
+        p_device_in, 
+        next_i2c_read_reg_in,
+        next_i2c_read_length_in
+    );
     if (i2c_error != ERROR_NONE) {
         DEBUG_ERR(
-            "I2C error while clearing action: %d, DP.IMU.SUBSTATE = 0x%02X", 
+            "I2C error while requesting recv: %d, DP.IMU.SUBSTATE = 0x%02X", 
             i2c_error,
             DP.IMU.SUBSTATE
         );
@@ -276,18 +298,20 @@ bool Imu_wait_i2c_read_complete(
             );
         }
 
+        /* Clear the I2C action */
+        i2c_error = I2c_clear_device_action(p_device_in);
+        if (i2c_error != ERROR_NONE) {
+            DEBUG_ERR("CRITICAL: could not clear the I2C device action");
+        }
+
         return false;
     }
 
-    /* Read bytes from the device */
-    i2c_error = I2c_device_recv_bytes(
-        p_device_in, 
-        next_i2c_read_reg_in,
-        next_i2c_read_length_in
-    );
+    /* Remove the action */
+    i2c_error = I2c_clear_device_action(p_device_in);
     if (i2c_error != ERROR_NONE) {
         DEBUG_ERR(
-            "I2C error while requesting recv: %d, DP.IMU.SUBSTATE = 0x%02X", 
+            "I2C error while clearing action: %d, DP.IMU.SUBSTATE = 0x%02X", 
             i2c_error,
             DP.IMU.SUBSTATE
         );

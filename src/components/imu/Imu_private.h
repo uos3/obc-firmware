@@ -190,6 +190,16 @@ extern I2c_Device IMU_MAGNE_I2C_DEVICE;
 bool Imu_begin_state(Imu_State state, Imu_SubState initial_substate);
 
 /**
+ * @brief Step the INIT state machine.
+ * 
+ * This function will log an error message and set the appropriate value of
+ * DP.IMU.ERROR if it returns false.
+ * 
+ * @return bool True on success, false on failure.
+ */
+bool Imu_step_init(void);
+
+/**
  * @brief Step the SET_GYROSCOPE_OFFSETS state machine.
  * 
  * This function will log an error message and set the appropriate value of
