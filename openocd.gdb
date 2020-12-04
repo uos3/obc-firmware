@@ -29,4 +29,4 @@ monitor arm semihosting enable
 load
 
 # Begin execution
-continue
+# continue
