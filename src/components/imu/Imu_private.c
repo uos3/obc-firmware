@@ -273,6 +273,30 @@ bool Imu_wait_i2c_read_complete(
         return false;
     }
 
+    /* Remove the action */
+    i2c_error = I2c_clear_device_action(p_device_in);
+    if (i2c_error != ERROR_NONE) {
+        DEBUG_ERR(
+            "I2C error while clearing action: %d, DP.IMU.SUBSTATE = 0x%02X", 
+            i2c_error,
+            DP.IMU.SUBSTATE
+        );
+        DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
+        DP.IMU.I2C_ERROR_CODE = i2c_error;
+
+        /* Raise the failed event */
+        if (!EventManager_raise_event(
+            evt_failure_in
+        )) {
+            DEBUG_ERR(
+                "CRITICAL: could not raise IMU failure event 0x%04X",
+                (uint16_t)evt_failure_in
+            );
+        }
+
+        return false;
+    }
+
     /* Read bytes from the device */
     i2c_error = I2c_device_recv_bytes(
         p_device_in, 
@@ -302,30 +326,6 @@ bool Imu_wait_i2c_read_complete(
         i2c_error = I2c_clear_device_action(p_device_in);
         if (i2c_error != ERROR_NONE) {
             DEBUG_ERR("CRITICAL: could not clear the I2C device action");
-        }
-
-        return false;
-    }
-
-    /* Remove the action */
-    i2c_error = I2c_clear_device_action(p_device_in);
-    if (i2c_error != ERROR_NONE) {
-        DEBUG_ERR(
-            "I2C error while clearing action: %d, DP.IMU.SUBSTATE = 0x%02X", 
-            i2c_error,
-            DP.IMU.SUBSTATE
-        );
-        DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
-        DP.IMU.I2C_ERROR_CODE = i2c_error;
-
-        /* Raise the failed event */
-        if (!EventManager_raise_event(
-            evt_failure_in
-        )) {
-            DEBUG_ERR(
-                "CRITICAL: could not raise IMU failure event 0x%04X",
-                (uint16_t)evt_failure_in
-            );
         }
 
         return false;

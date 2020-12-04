@@ -322,6 +322,14 @@ bool Imu_step_init(void) {
             /* Set the initialised flag in the DP */
             DP.IMU.INITIALISED = true;
 
+            /* Move to next mode */
+            if (!Imu_begin_state(
+                IMU_STATE_SET_GYROSCOPE_OFFSETS,
+                IMU_SUBSTATE_SET_GYRO_OFFSET_INIT
+            )) {
+                return false;
+            }
+
             break;
         default:
             DEBUG_ERR(

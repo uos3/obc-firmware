@@ -154,7 +154,6 @@ bool Imu_step_set_gyro_offsets(void) {
             /* Advance to next substate */
             DP.IMU.SUBSTATE = IMU_SUBSTATE_SET_GYRO_OFFSET_WAIT_Y_COMPLETE;
 
-
             /* Explicit fallthrough allowed here so that as much progress is
              * made as possible in a single cycle. */
             __attribute__ ((fallthrough));
@@ -217,6 +216,9 @@ bool Imu_step_set_gyro_offsets(void) {
 
                 return false;
             }
+
+            /* Advance to next substate */
+            DP.IMU.SUBSTATE = IMU_SUBSTATE_SET_GYRO_OFFSET_WAIT_Z_COMPLETE;
 
             /* Explicit fallthrough allowed here so that as much progress is
              * made as possible in a single cycle. */

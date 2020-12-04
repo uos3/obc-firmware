@@ -68,7 +68,7 @@ bool Imu_step_read_magne(void) {
             );
             if (i2c_error != ERROR_NONE) {
                 DEBUG_ERR(
-                    "I2C error while receiving gyroscope X: %d", 
+                    "I2C error while receiving magne sensitivity X: 0x%04X", 
                     i2c_error
                 );
                 DP.IMU.ERROR_CODE = IMU_ERROR_I2C_ERROR;
@@ -85,6 +85,10 @@ bool Imu_step_read_magne(void) {
 
                 return false;
             }
+
+            /* Advance to next substate */
+            DP.IMU.SUBSTATE 
+                = IMU_SUBSTATE_READ_MAGNE_WAIT_SENSE_ADJUST_X_COMPLETE;
 
             /* Explicit fallthrough allowed here so that as much progress is
              * made as possible in a single cycle. */

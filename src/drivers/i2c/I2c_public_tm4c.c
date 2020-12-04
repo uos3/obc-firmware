@@ -183,7 +183,10 @@ ErrorCode I2c_step(void) {
      * trigger the next cycle to be run immediately, rather than putting the
      * system to sleep. */
     bool new_action = false;
-    EventManager_poll_event(EVT_I2C_NEW_ACTION, &new_action);
+    if (!EventManager_poll_event(EVT_I2C_NEW_ACTION, &new_action)) {
+        DEBUG_ERR("Could not poll for EVT_I2C_NEW_ACTION event");
+        return I2C_ERROR_EVENTMANAGER_ERROR;
+    }
 
     /* Loop through all actions and run the ones that are not NONE */
     for (size_t i = 0; i < I2C_MAX_NUM_ACTIONS; ++i) {
@@ -349,6 +352,30 @@ ErrorCode I2c_device_send_bytes(
         }
     }
 
+    #ifdef DEBUG_MODE
+    /* Alloc string to print bytes in hex, 2 chars ber pyte, + spaces, + null */
+    char *p_hex_string = (char *)malloc(sizeof(char) * 3 * length_in);
+    char buf[4] = {0};
+
+    /* Print bytes except last into the string */
+    for (int i = 0; i < length_in - 1; ++i) {
+        sprintf((char *)buf, "%02X ", p_data_in[i]);
+        strcat(p_hex_string, (char *)buf);
+    }
+
+    sprintf((char *)buf, "%02X", p_data_in[length_in - 1]);
+    strcat(p_hex_string, (char *)buf);
+
+    DEBUG_DBG(
+        "I2C send (%02X, %02X): %s", 
+        p_device_in->module, 
+        p_device_in->address,
+        p_hex_string
+    );
+
+    free(p_hex_string);
+    #endif
+
     /* If the action was not queued raise an error */
     if (!action_queued) {
         DEBUG_ERR(
@@ -356,6 +383,12 @@ ErrorCode I2c_device_send_bytes(
              has been reached."
         );
         return I2C_ERROR_MAX_ACTIONS_REACHED;
+    }
+
+    /* The action has been queued, raise the new action event */
+    if (!EventManager_raise_event(EVT_I2C_NEW_ACTION)) {
+        DEBUG_ERR("Could not raise EVT_I2C_NEW_ACTION");
+        return I2C_ERROR_EVENTMANAGER_ERROR;
     }
 
     return ERROR_NONE;
@@ -443,6 +476,12 @@ ErrorCode I2c_device_recv_bytes(
              has been reached."
         );
         return I2C_ERROR_MAX_ACTIONS_REACHED;
+    }
+
+    /* The action has been queued, raise the new action event */
+    if (!EventManager_raise_event(EVT_I2C_NEW_ACTION)) {
+        DEBUG_ERR("Could not raise EVT_I2C_NEW_ACTION");
+        return I2C_ERROR_EVENTMANAGER_ERROR;
     }
 
     return ERROR_NONE;
