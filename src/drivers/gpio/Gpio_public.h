@@ -30,6 +30,28 @@
 #include "drivers/gpio/Gpio_errors.h"
 
 /* -------------------------------------------------------------------------   
+ * ENUMS
+ * ------------------------------------------------------------------------- */
+
+typedef enum _Gpio_Mode {
+
+    GPIO_MODE_INPUT,
+
+    GPIO_MODE_OUTPUT
+
+} Gpio_Mode;
+
+/* -------------------------------------------------------------------------   
+ * STRUCTS
+ * ------------------------------------------------------------------------- */
+
+typedef struct _Gpio_State {
+    bool initialised;
+    Gpio_Mode mode;
+    /* TODO: void *int_function? */
+} Gpio_State;
+
+/* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
@@ -65,12 +87,25 @@ ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state);
  * 
  * @param gpio_id_number GPIO pin ID number.
  * @param p_gpio_value_out Input value of GPIO pin (true = HIGH, false = LOW).
- * @return ErrorCode Return
+ * @return ErrorCode Return code.
  */
 ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out);
 
-/* TODO: Come back to these on 2020-12-07
- * ErrorCode Gpio_set_rising_interrupt();
- * ErrorCode Gpio_reset_interrupt();*/
+/**
+ * @brief Sets up a rising edge interrupt on a specified GPIO pin.
+ * 
+ * @param gpio_id_number GPIO pin ID number.
+ * @param interrupt_callback Pointer to the function which is called in the interrupt.
+ * @return ErrorCode Return code.
+ */
+ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_callback(void));
+
+/**
+ * @brief Removes the interrupt from a specified GPIO pin.
+ * 
+ * @param gpio_id_number GPIO pin ID number.
+ * @return ErrorCode Return code.
+ */
+ErrorCode Gpio_reset_interrupt(uint8_t gpio_id_number);
 
 #endif /* H_GPIO_PUBLIC_H */

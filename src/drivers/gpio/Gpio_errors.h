@@ -24,4 +24,6 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
+/* TODO: In I2c_errors.h, why is there no "ERROR_NONE" defined? */
+
 #endif /* H_GPIO_ERRORS_H */
