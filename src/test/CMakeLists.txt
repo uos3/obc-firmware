@@ -12,3 +12,12 @@ target_link_libraries(test_all_modules
     ${CMOCKA_LIBRARY}
     EventManager
 )
+
+add_executable(test_mem_store_mgr_config
+    ${STARTUP_SOURCE}
+    test_mem_store_mgr_config.c
+)
+target_link_libraries(test_mem_store_mgr_config
+    ${STANDARD_LINK_LIBS}
+    Eeprom
+)
