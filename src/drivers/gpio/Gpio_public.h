@@ -45,33 +45,24 @@ typedef enum _Gpio_Mode {
  * STRUCTS
  * ------------------------------------------------------------------------- */
 
-typedef struct _Gpio_State {
-    bool initialised;
+/**
+ * @brief Defines a GPIO module
+ * 
+ */
+typedef struct _Gpio_Module {
+    uint32_t peripheral;
+    uint32_t port;
+    uint8_t pin;
+    uint8_t interrupt_pin;
     Gpio_Mode mode;
-    /* TODO: void *int_function? */
-} Gpio_State;
+    bool initialised;
+    /* Prev year has void (*int_function)(void); in a different struct.
+     * TODO: Check what its purpose is */
+} Gpio_Module;
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
-
-/* TODO: Are the two functions below (gpio_set and gpio_reset) reduntand due
- * to gpio_write, as you can write either high (set) or low (reset) within? */
-/**
- * @brief Sets the state of a specified GPIO pin to HIGH.
- * 
- * @param gpio_id_number GPIO pin ID number.
- * @return ErrorCode Return code.
- */
-ErrorCode Gpio_set(uint8_t gpio_id_number);
-
-/**
- * @brief Sets the state of a specified GPIO pin to LOW.
- * 
- * @param gpio_id_number GPIO pin ID number.
- * @return ErrorCode Return code.
- */
-ErrorCode Gpio_reset(uint8_t gpio_id_number);
 
 /**
  * @brief Writes the state of a specified GPIO pin to HIGH or LOW.

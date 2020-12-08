@@ -24,6 +24,9 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
-/* TODO: In I2c_errors.h, why is there no "ERROR_NONE" defined? */
+/**
+ * @brief The GPIO peripheral failed to enable.
+ */
+#define GPIO_ERROR_PERIPHERAL_ENABLE_FAILED ((ErrorCode)MOD_ID_I2C | 1)
 
 #endif /* H_GPIO_ERRORS_H */
