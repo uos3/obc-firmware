@@ -68,6 +68,12 @@ int main(void) {
         Debug_exit(1);
     }
 
+    DEBUG_INF(
+        "Wrote {0x%08X, 0x%08X} to EEPROM at 0x100",
+        data[0],
+        data[1]
+    );
+
     /* Read that data back */
     uint32_t read_data[2] = {0};
     eeprom_error = Eeprom_read(0x100, read_data, sizeof(data));
@@ -76,9 +82,7 @@ int main(void) {
     }
 
     DEBUG_INF(
-        "Wrote {0x%08X, 0x%08X} to EEPROM, read {0x%08X, 0x%08X}",
-        data[0],
-        data[1],
+        "Read {0x%08X, 0x%08X} from EEPROM at 0x100",
         read_data[0],
         read_data[1]    
     );
