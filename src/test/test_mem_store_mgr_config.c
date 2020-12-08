@@ -27,7 +27,7 @@
 
 /* Note: until MemStoreManager is implemented this function will test the
  * EEPROM driver */
-int main() {
+int main(void) {
     ErrorCode eeprom_error = ERROR_NONE;
 
     /* Init system critical modules */
@@ -63,20 +63,20 @@ int main() {
 
     /* Write some data to the EEPROM */
     uint32_t data[2] = {0x12345678, 0x56789ABC};
-    eeprom_error = Eeprom_write(data, 0x100, sizeof(data));
+    eeprom_error = Eeprom_write(0x100, data, sizeof(data));
     if (eeprom_error != ERROR_NONE) {
         Debug_exit(1);
     }
 
     /* Read that data back */
     uint32_t read_data[2] = {0};
-    eeprom_error = Eeprom_read(read_data, 0x100, sizeof(data));
+    eeprom_error = Eeprom_read(0x100, read_data, sizeof(data));
     if (eeprom_error != ERROR_NONE) {
         Debug_exit(1);
     }
 
     DEBUG_INF(
-        "Wrote {0x08X, 0x08X} to EEPROM, read {0x08X, 0x08X}",
+        "Wrote {0x%08X, 0x%08X} to EEPROM, read {0x%08X, 0x%08X}",
         data[0],
         data[1],
         read_data[0],
