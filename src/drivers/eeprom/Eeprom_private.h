@@ -33,6 +33,13 @@
  */
 #define EEPROM_NUM_OP_READY_CHECKS (10)
 
+#ifdef TARGET_UNIX
+/**
+ * @brief File path to the dummy EEPROM file on linux.
+ */
+#define EEPROM_DUMMY_FILE_PATH ("builds/linux_dummy_eeprom.bin")
+#endif
+
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
