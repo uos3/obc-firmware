@@ -8,6 +8,7 @@ if (${UOS3_TARGET_TM4C})
     )
 else()
     add_library(Eeprom
+        Eeprom_public_linux.c
     )
 endif()
 
