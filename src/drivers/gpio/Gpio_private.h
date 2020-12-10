@@ -33,6 +33,11 @@
 /* Maximum number of programmable GPIOs set by TivaWare manual */
 #define GPIO_MAX_NUM_GPIOS (43)
 
+/* Number of GPIOs 
+ * TODO: This is currently the same as the max number, but it is a separate
+ * define just in case they end up being different later on. */
+#define GPIO_NUM_GPIOS (43)
+
 /* Maximum number of times to check that the GPIO peripheral is ready
  * TODO: This is arbitrary and based off of the current I2C peripheral
  * ready checks. */
