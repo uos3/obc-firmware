@@ -60,6 +60,33 @@ typedef struct _Gpio_Module {
      * TODO: Check what its purpose is */
 } Gpio_Module;
 
+/**
+ * @brief State of the GPIO driver
+ * TODO: Does this have to be separate to GPIO module? I have created it as
+ * a seperate struct so there can be a global state, so other modules can check
+ * if it has been (for example) initialised.
+ * 
+ */
+typedef struct _Gpio {
+    
+    /**
+     * @brief Flag to show if the Gpio has been initalised or not
+     * 
+     */
+    bool initialised;
+
+} Gpio;
+
+/* -------------------------------------------------------------------------   
+ * GLOBALS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Global instance of the GPIO driver state
+ * 
+ */
+extern Gpio GPIO;
+
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */

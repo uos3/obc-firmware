@@ -102,7 +102,7 @@ Gpio_Module GPIO_MODULES[GPIO_MAX_NUM_GPIOS] = {
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpio_Mode mode) {
+ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpio_Mode mode_in) {
     /* Initialises the GPIO */
 
     /* Loop through modules being initialised */
@@ -127,13 +127,18 @@ ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpi
             SysCtlPeripheralReset(p_gpio_module->peripheral);
             SysCtlPeripheralEnable(p_gpio_module->peripheral);
 
-            /* Attempt to initialise the GPIO peripheral */
-            for (int attempt = 0; attempt < GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
+            /* Attempt to initialise the GPIO peripheral, looping through
+             * number of attempts i. */
+            for (int i = 0; i < GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
                 if (SysCtlPeripheralReady(p_gpio_module->peripheral)) {
+                    /* If the peripheral is ready, break out of the loop, as
+                     * it does not need to attempt again. */
                     break;
                 }
 
-                if (attempt = GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+                if (i = GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+                    /* If the number of attempts has reached the maximum,
+                     * raise an error. */
                     DEBUG_ERR("Failed to enable GPIO %d peripheral", p_gpio_modules_in[i]);
                     /* TODO: Raise an event */
                     return GPIO_ERROR_PERIPHERAL_ENABLE_FAILED;
@@ -141,9 +146,31 @@ ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpi
             }
         }
 
-        /* TODO: - GPIO Mode initialisation 
-         *       - Set GPIO module as initialised 
-         *       - Check if the modes are equal
-         *       - Return an error_none */
+        /* Initialise the mode of the GPIO */
+        if (p_gpio_module->mode != mode_in) {
+            /* Set the pin of the module to either input or output */
+            switch(mode_in) {
+                
+                case GPIO_MODE_INPUT:
+                    GPIOPinTypeGPIOInput(p_gpio_module->port, p_gpio_module->pin);
+                    break;
+                
+                case GPIO_MODE_OUTPUT:
+                    GPIOPinTypeGPIOOutput(p_gpio_module->port, p_gpio_module->pin);
+                    break;
+                
+                default:
+                    /* If the mode is neither GPIO_MODE_INPUT or
+                     * GPIO_MODE_OUTPUT, return an error */
+                    DEBUG_ERR("Unexpected mode for GPIO module %d", p_gpio_modules_in[i]);
+                    return GPIO_ERROR_UNEXPECTED_MODE;
+            }
+            
+            /* Set the mode of the GPIO */
+            p_gpio_module->mode = mode_in;
+        }
+
+        /* If this point has reached without any errors, return ERROR_NONE */
+        return ERROR_NONE;
     }
 }
