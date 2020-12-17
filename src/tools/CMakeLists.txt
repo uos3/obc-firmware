@@ -6,17 +6,19 @@ find_library(TOML_LIB
 )
 
 # Config Pack Tool
-add_executable(tool_config_pack
-    tool_config_pack.c
-)
-target_link_libraries(tool_config_pack
-    ${TOML_LIB}
-    Debug
-)
-# Exclude from all build, need to parse tool_config_pack
-set_target_properties(tool_config_pack
-    PROPERTIES EXCLUDE_FROM_ALL 1
-)
+if(TOML_LIB)
+    add_executable(tool_config_pack
+        tool_config_pack.c
+    )
+    target_link_libraries(tool_config_pack
+        ${TOML_LIB}
+        Debug
+    )
+    # Exclude from all build, need to parse tool_config_pack
+    set_target_properties(tool_config_pack
+        PROPERTIES EXCLUDE_FROM_ALL 1
+    )
+endif()
 
 # Config Flash Tool
 add_executable(tool_config_flash
