@@ -20,4 +20,5 @@ add_executable(test_mem_store_mgr_config
 target_link_libraries(test_mem_store_mgr_config
     ${STANDARD_LINK_LIBS}
     Eeprom
+    MemStoreManager
 )

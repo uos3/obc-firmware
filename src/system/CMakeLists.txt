@@ -5,3 +5,6 @@
 
 # Event Manager module
 add_subdirectory(event_manager)
+
+# MemStoreManager module
+add_subdirectory(mem_store_manager)

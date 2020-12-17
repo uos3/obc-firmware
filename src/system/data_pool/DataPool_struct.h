@@ -26,6 +26,7 @@
 
 /* Internal includes */
 #include "system/event_manager/EventManager_dp_struct.h"
+#include "system/mem_store_manager/MemStoreManager_dp_struct.h"
 #include "components/imu/Imu_dp_struct.h"
 
 /* -------------------------------------------------------------------------
@@ -39,6 +40,7 @@
  * DataPool: 0
  * EventManager: 1
  * Imu: 2
+ * MemStoreManager: 3
  */
 typedef struct _DataPool {
 
@@ -74,6 +76,13 @@ typedef struct _DataPool {
      * @dp_module Imu
      */
     Imu_Dp IMU;
+
+    /**
+     * @brief DataPool parameters for the MemStoreManager component.
+     * 
+     * @dp_module MemStoreManager
+     */
+    MemStoreManager_Dp MEMSTOREMANAGER;
 } DataPool;
 
 

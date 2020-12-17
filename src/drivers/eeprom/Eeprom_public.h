@@ -36,6 +36,25 @@
 #include "drivers/eeprom/Eeprom_errors.h"
 
 /* -------------------------------------------------------------------------   
+ * DEFINES
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Address of the first config file copy.
+ */
+#define EEPROM_ADDR_CFG_FILE_1 (0x100)
+
+/**
+ * @brief Address of the second config file copy.
+ */
+#define EEPROM_ADDR_CFG_FILE_2 (0x200)
+
+/**
+ * @brief Address of the third config file copy.
+ */
+#define EEPROM_ADDR_CFG_FILE_3 (0x300)
+
+/* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 

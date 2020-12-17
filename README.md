@@ -20,7 +20,9 @@ Developing this repository requires the following software:
 - Python 3 - used for build script
 - cmocka - framework used to test the software
 - OpenOCD - debugging host which allows GDB to be used to debug the software
-- TinyDB and rich - python libraries used in the constant databse and lookup tool
+- TinyDB and rich - python libraries used in the constant databse and lookup
+  tool
+- tomlc99 - TOML parsing library used for configuration management
 
 On ubuntu the following command should install most of these:
 

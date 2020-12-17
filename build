@@ -142,7 +142,17 @@ def main():
             clean_dir(build_dir)
 
     # Run the build process
-    build(cmake_dir, root_dir, args.clean, args.release, args.target, args.tests, args.features, args.cmake_target)
+    build(
+        cmake_dir, 
+        root_dir, 
+        args.clean, 
+        args.release, 
+        args.target, 
+        args.tests, 
+        args.features, 
+        args.cmake_target,
+        args.config
+    )
 
     # Copy binaries into the build dir
     copy_bins(cmake_dir, build_dir)
@@ -226,6 +236,11 @@ def parse_args():
         nargs=1
     )
     parser.add_argument(
+        '--config',
+        help='Specify the config binary file to use for tool_config_flash',
+        nargs='?'
+    )
+    parser.add_argument(
         'cmake_target',
         help='The CMake target(s) to build, for instance demo_imu. If not provided all targets will be built.',
         nargs='*'
@@ -258,7 +273,8 @@ def build(
     target, 
     tests, 
     features, 
-    make_targets
+    make_targets,
+    config
 ):
     '''
     Run the build process (CMake then make) in the given directory.
@@ -290,6 +306,8 @@ def build(
     cmake_cmd.extend(feature_defines)
     if clean:
         cmake_cmd.append('--clean-first')
+    if config is not None:
+        cmake_cmd.append(f'-DUOS3_CFG_FILE_PATH={config}')
     cmake_cmd.append('../../../')
 
     print(cmake_cmd)
