@@ -3,7 +3,7 @@
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Performs functionality test of the MemStoreManager's configuration
  * management system.
- * 
+ *  
  * Task ref: [UT_2.9.3]
  * 
  * Test procedure:
