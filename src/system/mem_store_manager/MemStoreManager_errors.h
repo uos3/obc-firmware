@@ -34,4 +34,15 @@
  */
 #define MEMSTOREMANAGER_ERROR_EEPROM_ERROR ((ErrorCode)(MOD_ID_MEMSTOREMANAGER | 2))
 
+/**
+ * @brief Indicates an error occured in the event manager which is being
+ * propagated.
+ */
+#define MEMSTOREMANAGER_ERROR_EVENTMANAGER_ERROR ((ErrorCode)(MOD_ID_MEMSTOREMANAGER | 3))
+
+/**
+ * @brief All stored configuration files are corrupted.
+ */
+#define MEMSTOREMANAGER_ERROR_ALL_CFG_FILES_CORRUPTED ((ErrorCode)(MOD_ID_MEMSTOREMANAGER | 4))
+
 #endif /* H_MEMSTOREMANAGER_ERRORS_H */

@@ -35,4 +35,13 @@
  */
 #define EVT_MEMSTOREMANAGER_CFG_UPDATE_FAILURE ((Event)(MOD_ID_MEMSTOREMANAGER | 2))
 
+/**
+ * @brief Event indicating that a corrupted config file was found while loading
+ * from the EEPROM.
+ * 
+ * Check DP.MEMSTOREMANAGER.CFG_FILE_x_OK flags to determine which file was
+ * corrupted.
+ */
+#define EVT_MEMSTOREMANAGER_CORRUPTED_CFG_FILE_FOUND ((Event)(MOD_ID_MEMSTOREMANAGER | 3))
+
 #endif /* H_MEMSTOREMANAGER_EVENTS_H */

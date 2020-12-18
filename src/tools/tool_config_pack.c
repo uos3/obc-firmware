@@ -23,6 +23,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "util/crypto/Crypto_public.h"
 #include "system/mem_store_manager/MemStoreManager_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -102,11 +103,17 @@ int main(int argc, char **pp_argv) {
     /* Free the TOML file */
     toml_free(p_config);
 
-    /* Calculate the CRC of the data and store it in the file */
+    /* Create the config file */
     MemStoreManager_ConfigFile cfg_file;
     memset((void *)&cfg_file, 0, sizeof(MemStoreManager_ConfigFile));
     cfg_file.data = cfg_data;
-    cfg_file.crc = 0xffffffff;
+    
+    /* Calculate the CRC */
+    Crypto_get_crc32(
+        (uint8_t *)&cfg_file.data, 
+        sizeof(MemStoreManager_ConfigData),
+        &cfg_file.crc  
+    );
 
     DEBUG_INF(
         "Packing complete, config file is %d bytes in size", 

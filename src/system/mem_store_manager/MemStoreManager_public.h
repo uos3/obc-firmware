@@ -97,6 +97,18 @@ extern MemStoreManager_ConfigData CFG;
  * ------------------------------------------------------------------------- */
 
 /**
+ * @brief Initialise the MemStoreManager.
+ * 
+ * This function:
+ * 1. Loads the configuration from the EEPROM.
+ * 
+ * On an error the DP.MEMSTOREMANAGER.ERROR_CODE value will be set.
+ * 
+ * @return bool True on success, false on failure.
+ */
+bool MemStoreManager_init(void);
+
+/**
  * @brief Step the memory and storage manager.
  * 
  * On an error the DP.MEMSTOREMANAGER.ERROR_CODE value will be set.

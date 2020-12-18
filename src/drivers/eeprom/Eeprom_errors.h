@@ -74,4 +74,10 @@
  */
 #define EEPROM_ERROR_READ_TOO_LARGE ((ErrorCode)(MOD_ID_EEPROM | 7))
 
+/**
+ * @brief Inputs to an EEPROM function must be word-aligned, but some inputs
+ * wern't.
+ */
+#define EEPROM_ERROR_INPUTS_NOT_WORD_ALIGNED ((ErrorCode)(MOD_ID_EEPROM | 8))
+
 #endif /* H_EEPROM_ERRORS_H */

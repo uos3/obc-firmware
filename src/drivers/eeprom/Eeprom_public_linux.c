@@ -135,6 +135,15 @@ ErrorCode Eeprom_write(
         return EEPROM_ERROR_WRITE_TOO_LARGE;
     }
 
+    /* Check that the length and address are mutliples of 4 */
+    if (address_in % 4 != 0
+        ||
+        length_in % 4 != 0
+    ) {
+        DEBUG_ERR("EEPROM write inputs not word-aligned");
+        return EEPROM_ERROR_INPUTS_NOT_WORD_ALIGNED;
+    }
+
     /* Attempt to open the EEPROM file */
     FILE *fp_eeprom = fopen(EEPROM_DUMMY_FILE_PATH, "r+b");
 
@@ -202,6 +211,15 @@ ErrorCode Eeprom_read(
             address_in  
         );
         return EEPROM_ERROR_READ_TOO_LARGE;
+    }
+
+    /* Check that the length and address are mutliples of 4 */
+    if (address_in % 4 != 0
+        ||
+        length_in % 4 != 0
+    ) {
+        DEBUG_ERR("EEPROM write inputs not word-aligned");
+        return EEPROM_ERROR_INPUTS_NOT_WORD_ALIGNED;
     }
 
     /* Attempt to open the EEPROM file */

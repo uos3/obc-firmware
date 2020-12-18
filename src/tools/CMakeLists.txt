@@ -13,6 +13,7 @@ if(TOML_LIB)
     target_link_libraries(tool_config_pack
         ${TOML_LIB}
         Debug
+        Crypto
     )
     # Exclude from all build, need to parse tool_config_pack
     set_target_properties(tool_config_pack

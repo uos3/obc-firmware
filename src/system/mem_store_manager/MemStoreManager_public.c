@@ -34,6 +34,15 @@ MemStoreManager_ConfigData CFG;
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
+bool MemStoreManager_init(void) {
+    /* Load config files */
+    if (!MemStoreManager_config_load()) {
+        return false;
+    }
+
+    return true;
+}
+
 bool MemStoreManager_config_update(MemStoreManager_ConfigFile *p_cfg_file_in) {
     ErrorCode eeprom_error;
 

@@ -46,4 +46,20 @@ bool MemStoreManager_config_check_crc(
     MemStoreManager_ConfigFile *p_cfg_file_in
 );
 
+/**
+ * @brief Load the configuration files from the EEPROM.
+ * 
+ * This function loads the config data by reading config files from the EEPROM.
+ * Note only one non-corrupted config file is required for success. If a
+ * corrupted config file is found it is marked as not-ok in the datapool and
+ * the EVT_MEMSTOREMANAGER_CORRUPTED_CFG_FILE_FOUND event is fired.
+ * 
+ * Only if all config files are corrupted will the loading fail, in which case
+ * false is returned and the datapool DP.MEMSTOREMANAGER.ERROR_CODE value is
+ * set. 
+ * 
+ * @return bool True on success, false on failure.
+ */
+bool MemStoreManager_config_load(void);
+
 #endif /* H_MEMSTOREMANAGER_PRIVATE_H */

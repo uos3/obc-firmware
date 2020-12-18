@@ -33,6 +33,21 @@ typedef struct _MemStoreManager_Dp {
      * @brief Error code from the EEPROM driver.
      */
     ErrorCode EEPROM_ERROR_CODE;
+
+    /**
+     * @brief Indicates if the first configuration file is OK.
+     */
+    bool CFG_FILE_1_OK;
+
+    /**
+     * @brief Indicates if the second configuration file is OK.
+     */
+    bool CFG_FILE_2_OK;
+
+    /**
+     * @brief Indicates if the third configuration file is OK.
+     */
+    bool CFG_FILE_3_OK;
 } MemStoreManager_Dp;
 
 #endif /* H_MEMSTOREMANAGER_DP_STRUCT_H */
