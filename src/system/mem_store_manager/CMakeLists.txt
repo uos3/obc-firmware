@@ -8,4 +8,5 @@ add_library(MemStoreManager
 target_link_libraries(MemStoreManager
     ${STANDARD_LINK_LIBS}
     Eeprom
+    Crypto
 )

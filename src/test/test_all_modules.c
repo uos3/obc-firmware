@@ -23,6 +23,7 @@
 /* Internal includes */
 #include "util/debug/test/Debug_test.c"
 #include "system/event_manager/test/EventManager_test.c"
+#include "util/crypto/test/Crypto_test.c"
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -43,6 +44,13 @@ int main(void) {
     ret |= cmocka_run_group_tests_name(
         "EventManager", 
         eventmanager_tests, 
+        NULL, NULL
+    );
+
+    /* Crypto tests */
+    ret |= cmocka_run_group_tests_name(
+        "Crypto",
+        crypto_tests,
         NULL, NULL
     );
     

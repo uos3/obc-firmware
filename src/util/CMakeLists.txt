@@ -2,3 +2,6 @@
 
 # Debug module
 add_subdirectory(debug)
+
+# Crypto module
+add_subdirectory(crypto)

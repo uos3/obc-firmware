@@ -11,6 +11,7 @@ target_link_libraries(test_all_modules
     ${STANDARD_LINK_LIBS}
     ${CMOCKA_LIBRARY}
     EventManager
+    Crypto
 )
 
 add_executable(test_mem_store_mgr_config
