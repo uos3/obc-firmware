@@ -18,3 +18,6 @@ docs/**/build
 
 # Ignore pycaches
 **/__pycache__
+
+# Ignore the constant database, so changes to it don't cause merge conflicts
+**/const_db.json

@@ -5,6 +5,10 @@
  * @version 0.1
  * @date 2020-12-16
  * 
+ * This tool is used to create binary configuration files from raw data source
+ * files. See the UoS3_ObcSoftwareConfigurationManual in the SharePoint for 
+ * more information. 
+ * 
  * @copyright Copyright (c) UoS3 2020
  */
 
@@ -40,7 +44,7 @@ int main(int argc, char **pp_argv) {
     /* Check that the right number of arguments is provided */
     if (argc != 3) {
         DEBUG_ERR(
-            "Wrong number of arguments, use tool_config_pack <PATH_TO_CONFIG_TOML> <PATH_TO_UTPUT_BINARY>"
+            "Wrong number of arguments, use tool_config_pack <PATH_TO_CONFIG_TOML> <PATH_TO_OUTPUT_BINARY>"
         );
         Debug_exit(1);
     }
