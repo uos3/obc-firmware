@@ -19,6 +19,55 @@
 /* TODO: Check parts of prev. year's gpio.c which should be moved into gpio.h */
 
 /* -------------------------------------------------------------------------   
+ * DEFINES
+ * ------------------------------------------------------------------------- */
+
+/* TODO: Check for potential loss of efficiency/warnings that may arise due
+ * to these values being defined twice (once in the tivaware library and once
+ * here). */
+
+/* The following values define the respective GPIOs */
+
+#define GPIOA 0xf0000800
+#define GPIOB 0xf0000801
+#define GPIOC 0xf0000802
+#define GPIOD 0xf0000803
+#define GPIOE 0xf0000804
+#define GPIOF 0xf0000805
+
+/* The following values define the respective GPIO ports */
+
+#define GPIO_PORTA_BASE 0x40004000
+#define GPIO_PORTB_BASE 0x40005000
+#define GPIO_PORTC_BASE 0x40006000
+#define GPIO_PORTD_BASE 0x40007000
+#define GPIO_PORTE_BASE 0x40024000
+#define GPIO_PORTF_BASE 0x40025000
+
+/* The following values define the respective GPIO pins */
+
+#define GPIO_PIN_0 0x00000001
+#define GPIO_PIN_1 0x00000002
+#define GPIO_PIN_2 0x00000004
+#define GPIO_PIN_3 0x00000008
+#define GPIO_PIN_4 0x00000010
+#define GPIO_PIN_5 0x00000020
+#define GPIO_PIN_6 0x00000040
+#define GPIO_PIN_7 0x00000080
+
+/* The following values are to be passed in to the GPIOIntEnable() and
+ * GPIOIntDisable() functions (ui32IntFlags parameter) */
+
+#define GPIO_INT_PIN_0 0x00000001
+#define GPIO_INT_PIN_1 0x00000002
+#define GPIO_INT_PIN_2 0x00000004
+#define GPIO_INT_PIN_3 0x00000008
+#define GPIO_INT_PIN_4 0x00000010
+#define GPIO_INT_PIN_5 0x00000020
+#define GPIO_INT_PIN_6 0x00000040
+#define GPIO_INT_PIN_7 0x00000080
+
+/* -------------------------------------------------------------------------   
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
