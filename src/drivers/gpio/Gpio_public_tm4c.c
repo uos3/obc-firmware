@@ -45,7 +45,7 @@
  * 
  * TODO: Find out if there was a reason why 201920 group had all 8 for each
  * port. It is probably an error however there may be a reason behind it. */
-Gpio_Module GPIO_MODULES[GPIO_MAX_NUM_GPIOS] = {
+Gpio_Module GPIO_PINS[GPIO_MAX_NUM_GPIOS] = {
     {SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_0, GPIO_INT_PIN_0, GPIO_MODE_INPUT, false},
     {SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_1, GPIO_INT_PIN_1, GPIO_MODE_INPUT, false},
     {SYSCTL_PERIPH_GPIOA, GPIO_PORTA_BASE, GPIO_PIN_2, GPIO_INT_PIN_2, GPIO_MODE_INPUT, false},
@@ -100,36 +100,36 @@ Gpio_Module GPIO_MODULES[GPIO_MAX_NUM_GPIOS] = {
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpio_Mode mode_in) {
+ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode mode_in) {
     /* Initialises the GPIO */
 
     /* Loop through modules being initialised */
-    for (int i = 0; i < num_gpio_modules_in; ++i) {
+    for (int i = 0; i < num_gpio_pins_in; ++i) {
         
         /* Get a reference to the GPIO */
-        Gpio_Module *p_gpio_module = &GPIO_MODULES[p_gpio_modules_in[i]];
+        Gpio_Module *p_gpio_pin = &GPIO_PINS[p_gpio_pins_in[i]];
 
         /* If the GPIO has already been initialised, do not initialise it
          * again, and return a warning message (but not an error) */
-        if (p_gpio_module->initialised) {
+        if (p_gpio_pin->initialised) {
             DEBUG_WRN(
                 "Gpio_init() called on GPIO module %d when already initialised",
                 /* TODO: Raise an event */
-                p_gpio_modules_in[i]
+                p_gpio_pins_in[i]
             );
 
             continue;
         }
 
         /* If the peripheral is not ready, reset and enable it */
-        if (!SysCtlPeripheralReady(p_gpio_module->peripheral)) {
-            SysCtlPeripheralReset(p_gpio_module->peripheral);
-            SysCtlPeripheralEnable(p_gpio_module->peripheral);
+        if (!SysCtlPeripheralReady(p_gpio_pin->peripheral)) {
+            SysCtlPeripheralReset(p_gpio_pin->peripheral);
+            SysCtlPeripheralEnable(p_gpio_pin->peripheral);
 
             /* Attempt to initialise the GPIO peripheral, looping through
              * number of attempts i. */
             for (int i = 0; i < GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
-                if (SysCtlPeripheralReady(p_gpio_module->peripheral)) {
+                if (SysCtlPeripheralReady(p_gpio_pin->peripheral)) {
                     /* If the peripheral is ready, break out of the loop, as
                      * it does not need to attempt again. */
                     break;
@@ -138,7 +138,7 @@ ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpi
                 if (i = GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS) {
                     /* If the number of attempts has reached the maximum,
                      * raise an error. */
-                    DEBUG_ERR("Failed to enable GPIO %d peripheral", p_gpio_modules_in[i]);
+                    DEBUG_ERR("Failed to enable GPIO %d peripheral", p_gpio_pins_in[i]);
                     /* TODO: Raise an event */
                     return GPIO_ERROR_PERIPHERAL_ENABLE_FAILED;
                 }
@@ -146,34 +146,34 @@ ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpi
         }
 
         /* Initialise the mode of the GPIO */
-        if (p_gpio_module->mode != mode_in) {
+        if (p_gpio_pin->mode != mode_in) {
             /* Set the pin of the module to either input or output */
             switch(mode_in) {
                 
                 case GPIO_MODE_INPUT:
                     /* Configure the pin for use as GPIO input */
-                    GPIOPinTypeGPIOInput(p_gpio_module->port, p_gpio_module->pin);
+                    GPIOPinTypeGPIOInput(p_gpio_pin->port, p_gpio_pin->pin);
                     break;
                 
                 case GPIO_MODE_OUTPUT:
                     /* Configure the pin for use as GPIO output */
-                    GPIOPinTypeGPIOOutput(p_gpio_module->port, p_gpio_module->pin);
+                    GPIOPinTypeGPIOOutput(p_gpio_pin->port, p_gpio_pin->pin);
                     break;
                 
                 default:
                     /* If the mode is neither GPIO_MODE_INPUT or
                      * GPIO_MODE_OUTPUT, return an error */
-                    DEBUG_ERR("Unexpected mode for GPIO module %d", p_gpio_modules_in[i]);
+                    DEBUG_ERR("Unexpected mode for GPIO module %d", p_gpio_pins_in[i]);
                     /* TODO: Raise an event */
                     return GPIO_ERROR_UNEXPECTED_MODE;
             }
             
             /* Set the mode of the GPIO */
-            p_gpio_module->mode = mode_in;
+            p_gpio_pin->mode = mode_in;
         }
 
         /* Set the GPIO module as initialised */
-        p_gpio_module->initialised = true;
+        p_gpio_pin->initialised = true;
 
     }
 
@@ -184,7 +184,7 @@ ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpi
 }
 
 ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state_in) {
-    Gpio_Module *p_gpio_module = &GPIO_MODULES[gpio_id_number];
+    Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
 
     /* Check the GPIO has been initialised */
     if (!GPIO.initialised) {
@@ -200,13 +200,13 @@ ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state_in) {
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOPinWrite(p_gpio_module->port, p_gpio_module->pin, gpio_state_in);
+    GPIOPinWrite(p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
 
     return ERROR_NONE;
 }
 
 ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out) {
-    Gpio_Module *p_gpio_module = &GPIO_MODULES[gpio_id_number];
+    Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
 
     /* Check the GPIO has been initialised */
     if (!GPIO.initialised) {
@@ -222,7 +222,7 @@ ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out) {
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    p_gpio_value_out = GPIOPinRead(p_gpio_module->port, p_gpio_module->pin);
+    p_gpio_value_out = GPIOPinRead(p_gpio_pin->port, p_gpio_pin->pin);
 
     return ERROR_NONE;
 }
