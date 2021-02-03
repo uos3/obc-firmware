@@ -102,7 +102,7 @@ void EventManager_destroy(void) {
 }
 
 bool EventManager_raise_event(Event event_in) {
-    DEBUG_TRC("Raise event 0x%04X", event_in);
+    // DEBUG_TRC("Raise event 0x%04X", event_in);
 
     /* Check that init has been called */
     if (DP.EVENTMANAGER.INITIALISED == false) {
@@ -298,7 +298,7 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out) {
             return false;
         }
 
-        DEBUG_TRC("Polled event 0x%04X", event_in);
+        // DEBUG_TRC("Polled event 0x%04X", event_in);
     }
 
     return true;
