@@ -31,3 +31,15 @@
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
+
+ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode mode_in) {
+    return ERROR_NONE;
+}
+
+ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state_in) {
+    return ERROR_NONE;
+}
+
+ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out) {
+    return ERROR_NONE;
+}

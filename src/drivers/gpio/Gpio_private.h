@@ -21,10 +21,21 @@
 /* Standard library includes */
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 /* Internal includes */
 #include "drivers/gpio/Gpio_public.h"
 #include "drivers/gpio/Gpio_errors.h"
+
+/* -------------------------------------------------------------------------   
+ * GLOBALS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Global instance of the GPIO driver state
+ * 
+ */
+extern Gpio GPIO;
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -50,15 +61,5 @@
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
-
-/**
- * @brief Initialises a GPIO
- * 
- * @param p_gpio_modules_in Pointer to an array of GPIO module to be initialised.
- * @param num_gpio_modules_in Number of gpio modules to initialise
- * @param mode Mode of the GPIO (input or output)
- * @return ErrorCode 
- */
-ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpio_Mode mode);
 
 #endif /* H_GPIO_PRIVATE_H */
