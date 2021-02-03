@@ -87,5 +87,8 @@ ErrorCode Timer_start_one_shot(double duration_s_in, Event *p_timer_event_out);
  */
 ErrorCode Timer_start_periodic(double duration_s_in, Event *p_timer_event_out);
 
+/* TODO: Add Timer_disable? */
+
+/* TODO: Add Timer_get_reserved? */
 
 #endif /* H_TIMER_PUBLIC_H */
