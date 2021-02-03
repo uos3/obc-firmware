@@ -8,3 +8,6 @@ add_subdirectory(i2c)
 
 # Eeprom module
 add_subdirectory(eeprom)
+
+# Timer module
+add_subdirectory(timer)

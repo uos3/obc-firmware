@@ -43,3 +43,13 @@ target_link_libraries(demo_imu
     ${STANDARD_LINK_LIBS}
     Imu
 )
+
+# Timer demo
+add_executable(demo_timer
+    ${STARTUP_SOURCE}
+    demo_timer.c
+)
+target_link_libraries(demo_timer
+    ${STANDARD_LINK_LIBS}
+    Timer
+)
