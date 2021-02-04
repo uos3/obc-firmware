@@ -21,9 +21,10 @@
 /* Internal includes */
 #include "system/kernel/Kernel_module_ids.h"
 #include "system/event_manager/EventManager_public.h"
-#include "drivers/i2c/I2c_events.h"
-#include "components/imu/Imu_events.h"
 #include "system/mem_store_manager/MemStoreManager_events.h"
+#include "drivers/i2c/I2c_events.h"
+#include "drivers/timer/Timer_events.h"
+#include "components/imu/Imu_events.h"
 
 /* -------------------------------------------------------------------------   
  * EVENTS
