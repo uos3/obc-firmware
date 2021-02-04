@@ -67,4 +67,9 @@
  */
 #define TIMER_ERROR_NO_64_BIT_TIMERS ((ErrorCode)(MOD_ID_TIMER | 7))
 
+/**
+ * @brief A negative duration was specified for the timer.
+ */
+#define TIMER_ERROR_DURATION_NEGATIVE ((ErrorCode)(MOD_ID_TIMER | 8))
+
 #endif /* H_TIMER_ERRORS_H */

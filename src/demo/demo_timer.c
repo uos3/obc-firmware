@@ -25,8 +25,6 @@
 #include "drivers/timer/Timer_public.h"
 
 /* Only included for test, don't use in real code */
-#include "driverlib/timer.h"
-#include "drivers/timer/Timer_private.h"
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -136,5 +134,5 @@ int main(void) {
     /* Free event manager */
     EventManager_destroy();
 
-    return 1;
+    return 0;
 }

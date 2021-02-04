@@ -1,7 +1,7 @@
 /**
- * @file Timer_public.c
+ * @file Timer_public_tm4c.c
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
- * @brief Implements the timer driver for the software.
+ * @brief Implements the timer driver for the software on the TM4C platform.
  * 
  * Task ref: [UT_2.8.1]
  * 
