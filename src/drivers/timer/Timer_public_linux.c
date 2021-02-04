@@ -190,7 +190,7 @@ void Timer_signal_handler(
 ) {
     struct timespec now;
     struct itimerspec when;
-    int saved_errno, i;
+    int saved_errno, i, state;
     double next;
 
     /* If not a timer signal exit now. */
@@ -212,10 +212,11 @@ void Timer_signal_handler(
 
     /* Check all timers that are used and armed, but haven't passed yet. */
     for (i = 0; i < TIMER_NUM_TIMERS; ++i) {
-        if ((__sync_or_and_fetch(&TIMER_LINUX_STATE[i], 0) 
-            & 
-            (TIMER_USED | TIMER_ARMED))
-        ) {
+        state = __atomic_load_n(
+            &TIMER_LINUX_STATE[i],
+            __ATOMIC_RELAXED
+        );
+        if (state & (TIMER_USED | TIMER_ARMED) == (TIMER_USED | TIMER_ARMED)) {
             /* Get the number of seconds between now and the timer */
             double seconds = timespec_diff(TIMER_TIME[i].it_value, now);
 
@@ -226,11 +227,8 @@ void Timer_signal_handler(
                     DEBUG_ERR("Failed to raise event in Timer signal handler");
                     return;
                 }
-                /* If periodic increment the time the time */
-                if (__sync_or_and_fetch(&TIMER_LINUX_STATE[i], 0) 
-                    & 
-                    TIMER_PERIODIC
-                ) {
+                /* If periodic increment the target time in the timer */
+                if (state & TIMER_PERIODIC == TIMER_PERIODIC) {
                     timespec_add(
                         &TIMER_TIME[i].it_value, 
                         TIMER_TIME[i].it_interval
@@ -239,9 +237,17 @@ void Timer_signal_handler(
                     /* reset the seconds counter for this one */
                     seconds = timespec_diff(TIMER_TIME[i].it_value, now);
                 }
+                /* If not periodic delete this timer */
+                else {
+                    __atomic_store_n(
+                        &TIMER_LINUX_STATE[i],
+                        0,
+                        __ATOMIC_RELAXED
+                    );
+                }
             }
             
-            if (next <= 0.0 || (seconds >= 0.0 && seconds < next)) {
+            if (next <= 0.0 || (seconds > __DBL_EPSILON__ && seconds < next)) {
                 /* This is the soonest timer in the future */
                 next = seconds;
             }
@@ -287,12 +293,12 @@ ErrorCode Timer_set(
     timespec_add_seconds(&then, seconds_in);
 
     /* Find an unused timer. */
-    for (timer = 0; timer < TIMER_NUM_TIMERS; timer++)
-        if (!(__sync_fetch_and_or(&TIMER_LINUX_STATE[timer], TIMER_USED) 
-            & TIMER_USED
-        )) {
+    for (timer = 0; timer < TIMER_NUM_TIMERS; timer++) {
+        state = __atomic_load_n(&TIMER_LINUX_STATE[timer], __ATOMIC_RELAXED);
+        if (!(state & TIMER_USED)) {
             break;
         }
+    }
 
     /* No unused timeouts? */
     if (timer >= TIMER_NUM_TIMERS) {
@@ -302,12 +308,16 @@ ErrorCode Timer_set(
 
     /* Clear all but TIMEOUT_USED and set the periodicty */
     if (periodic_in) {
-        state = TIMER_USED | TIMER_PERIODIC;
+        state = (TIMER_USED | TIMER_PERIODIC);
     }
     else {
         state = TIMER_USED;
     }
-    __sync_and_and_fetch(&TIMER_LINUX_STATE[timer], state);
+    __atomic_store_n(
+        &TIMER_LINUX_STATE[timer], 
+        state, 
+        __ATOMIC_RELAXED
+    );
 
     /* update the timer details, */
     TIMER_TIME[timer].it_value = then;
@@ -317,18 +327,25 @@ ErrorCode Timer_set(
     }
 
     /* and mark the timer armable. */
-    __sync_or_and_fetch(&TIMER_LINUX_STATE[timer], TIMER_ARMED);
+    state |= TIMER_ARMED;
+    __atomic_store_n(
+        &TIMER_LINUX_STATE[timer],
+        state,
+        __ATOMIC_RELAXED
+    );
 
     /* How long till the next timeout? */
     next = seconds_in;
     for (i = 0; i < TIMER_NUM_TIMERS; i++) {
-        if ((__sync_fetch_and_or(&TIMER_LINUX_STATE[i], 0) 
-            & 
-            (TIMER_USED | TIMER_ARMED)) 
-            == 
-            (TIMER_USED | TIMER_ARMED)
-        ) {
+        state = __atomic_load_n(
+            &TIMER_LINUX_STATE[i],
+            __ATOMIC_RELAXED
+        );
+        /* If the timer is both used and armed */
+        if (state & (TIMER_USED | TIMER_ARMED) == (TIMER_USED | TIMER_ARMED)) {
             const double secs = timespec_diff(TIMER_TIME[i].it_value, now);
+
+            /* Set next to be this timer's duration */
             if (secs >= 0.0 && secs < next)
                 next = secs;
         }
@@ -341,8 +358,12 @@ ErrorCode Timer_set(
 
     /* and arm the timer. */
     if (timer_settime(TIMER_TIMER, 0, &when, NULL)) {
-        /* Failed. */
-        __sync_and_and_fetch(&TIMER_LINUX_STATE[timer], 0);
+        /* Failed, clear the timer we just set */
+        __atomic_store_n(
+            &TIMER_LINUX_STATE[timer],
+            0,
+            __ATOMIC_RELAXED
+        );
         DEBUG_ERR("Couldn't set timer");
         return TIMER_ERROR_NO_FACTORS_FOUND;
     }
