@@ -169,3 +169,220 @@ ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out) {
 
     return ERROR_NONE;
 }
+
+static void GPIO_PortA_InterruptHandler(void) {
+    uint32_t status;
+
+    /* Get the interrupt status of the GPIO */
+    status = GPIOIntStatus(GPIO_PORTA_BASE, true);
+
+    if (status) {
+        /* Clear the Port A interrupt Status */
+        GPIOIntClear(GPIO_PORTA_BASE, status);
+
+        /* Loop through all the pins in port A */
+        /* TODO: Check this is correct, as prev. year had this only for ports
+         * A, B, D, and I have tried to come up with a way to combine them
+         * into slightly more efficient code */
+        for (int i = 0; i < 8; ++i) {
+            if (status & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
+                /* Call the interrupt function pointer */
+                (*GPIO_PINS[i].int_function)();
+            }
+        }
+    }
+}
+
+static void GPIO_PortB_InterruptHandler(void) {
+    uint32_t status;
+
+    /* Get the interrupt status of the GPIO */
+    status = GPIOIntStatus(GPIO_PORTA_BASE, true);
+
+    if (status) {
+        /* Clear the Port B interrupt Status */
+        GPIOIntClear(GPIO_PORTA_BASE, status);
+
+        /* Loop through all the pins in port B */
+        /* TODO: Check this is correct, as prev. year had this only for ports
+         * A, B, D, and I have tried to come up with a way to combine them
+         * into slightly more efficient code */
+        for (int i = 8; i < 16; ++i) {
+            if (status & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
+                /* Call the interrupt function pointer */
+                (*GPIO_PINS[i].int_function)();
+            }
+        }
+    }
+}
+
+static void GPIO_PortC_InterruptHandler(void) {
+    uint32_t status;
+
+    /* Get the interrupt status of the GPIO */
+    status = GPIOIntStatus(GPIO_PORTA_BASE, true);
+
+    if (status) {
+        /* Clear the Port C interrupt Status */
+        GPIOIntClear(GPIO_PORTA_BASE, status);
+
+        /* Loop through all the pins in port C */
+        /* TODO: Check this is correct, as prev. year had this only for ports
+         * A, B, D, and I have tried to come up with a way to combine them
+         * into slightly more efficient code */
+        for (int i = 16; i < 24; ++i) {
+            if (status & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
+                /* Call the interrupt function pointer */
+                (*GPIO_PINS[i].int_function)();
+            }
+        }
+    }
+}
+
+static void GPIO_PortD_InterruptHandler(void) {
+    uint32_t status;
+
+    /* Get the interrupt status of the GPIO */
+    status = GPIOIntStatus(GPIO_PORTA_BASE, true);
+
+    if (status) {
+        /* Clear the Port D interrupt Status */
+        GPIOIntClear(GPIO_PORTA_BASE, status);
+
+        /* Loop through all the pins in port D */
+        /* TODO: Check this is correct, as prev. year had this only for ports
+         * A, B, D, and I have tried to come up with a way to combine them
+         * into slightly more efficient code */
+        for (int i = 24; i < 32; ++i) {
+            if (status & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
+                /* Call the interrupt function pointer */
+                (*GPIO_PINS[i].int_function)();
+            }
+        }
+    }
+}
+
+static void GPIO_PortE_InterruptHandler(void) {
+    uint32_t status;
+
+    /* Get the interrupt status of the GPIO */
+    status = GPIOIntStatus(GPIO_PORTA_BASE, true);
+
+    if (status) {
+        /* Clear the Port E interrupt Status */
+        GPIOIntClear(GPIO_PORTA_BASE, status);
+
+        /* Loop through all the pins in port E */
+        /* TODO: Check this is correct, as prev. year had this only for ports
+         * A, B, D, and I have tried to come up with a way to combine them
+         * into slightly more efficient code */
+        for (int i = 32; i < 38; ++i) {
+            if (status & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
+                /* Call the interrupt function pointer */
+                (*GPIO_PINS[i].int_function)();
+            }
+        }
+    }
+}
+
+static void GPIO_PortF_InterruptHandler(void) {
+    uint32_t status;
+
+    /* Get the interrupt status of the GPIO */
+    status = GPIOIntStatus(GPIO_PORTA_BASE, true);
+
+    if (status) {
+        /* Clear the Port AF interrupt Status */
+        GPIOIntClear(GPIO_PORTA_BASE, status);
+
+        /* Loop through all the pins in port F */
+        /* TODO: Check this is correct, as prev. year had this only for ports
+         * A, B, D, and I have tried to come up with a way to combine them
+         * into slightly more efficient code */
+        for (int i = 38; i < 43; ++i) {
+            if (status & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
+                /* Call the interrupt function pointer */
+                (*GPIO_PINS[i].int_function)();
+            }
+        }
+    }
+}
+
+ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_callback(void)) {
+    Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
+
+    if (!GPIO.initialised) {
+        DEBUG_ERR("Attempted to set rising edge interrupt on GPIO pin when\
+        the GPIO has not been initialised");
+        /* TODO: Raise an event */
+        return GPIO_ERROR_NOT_INITIALISED;
+    }
+    
+    if (gpio_id_number >= GPIO_NUM_GPIOS) {
+        DEBUG_ERR("Gpio ID number has exceeded total number of GPIOs");
+        /* TODO: Raise an event */
+        return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
+    }
+
+    /* Set the interrupt type to rising edge interrupt */
+    GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
+
+    /* Set the interrupt function of the GPIO */
+    p_gpio_pin->int_function = interrupt_callback;
+
+    /* Check the port and call the appropriate function */
+    switch (p_gpio_pin->port) {
+        case GPIO_PORTA_BASE:
+            GPIOIntRegister(p_gpio_pin->port, GPIO_PortA_InterruptHandler);
+            break;
+        case GPIO_PORTB_BASE:
+            GPIOIntRegister(p_gpio_pin->port, GPIO_PortA_InterruptHandler);
+            break;
+        case GPIO_PORTC_BASE:
+            GPIOIntRegister(p_gpio_pin->port, GPIO_PortA_InterruptHandler);
+            break;
+        case GPIO_PORTD_BASE:
+            GPIOIntRegister(p_gpio_pin->port, GPIO_PortA_InterruptHandler);
+            break;
+        case GPIO_PORTE_BASE:
+            GPIOIntRegister(p_gpio_pin->port, GPIO_PortA_InterruptHandler);
+            break;
+        case GPIO_PORTF_BASE:
+            GPIOIntRegister(p_gpio_pin->port, GPIO_PortA_InterruptHandler);
+            break;
+        default:
+            DEBUG_ERR("Unexpected GPIO port");
+            return GPIO_ERROR_UNEXPECTED_PORT;
+    }
+
+    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->pin);
+
+    return ERROR_NONE;
+}
+
+ErrorCode GPIO_reset_interrupt(uint8_t gpio_id_numer) {
+    Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_numer];
+
+    /* Check for valid gpio id number and initialisation before attempting
+     * interrupt reset */
+    if (!GPIO.initialised) {
+        DEBUG_ERR("Attempted to set rising edge interrupt on GPIO pin when\
+        the GPIO has not been initialised");
+        /* TODO: Raise an event */
+        return GPIO_ERROR_NOT_INITIALISED;
+    }
+    
+    if (gpio_id_numer >= GPIO_NUM_GPIOS) {
+        DEBUG_ERR("Gpio ID number has exceeded total number of GPIOs");
+        /* TODO: Raise an event */
+        return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
+    }
+
+    /* Disable the gpio interrupt and unregister the port, as per the 
+     * tiva manual */
+    GPIOIntDisable(p_gpio_pin->port, p_gpio_pin->pin);
+    GPIOIntUnregister(p_gpio_pin->port);
+    p_gpio_pin->int_function = NULL;
+
+    return ERROR_NONE;
+}

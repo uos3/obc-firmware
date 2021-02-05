@@ -28,8 +28,55 @@
 
 
 /* -------------------------------------------------------------------------   
- * DEFINES
+ * GLOBALS
  * ------------------------------------------------------------------------- */
+
+/* Creates an index of pin (port and number) to be called in the functions */
+typedef enum _GPIO_PIN_INDEX {
+    GPIO_PINA0 = 0,
+    GPIO_PINA1,
+    GPIO_PINA2,
+    GPIO_PINA3,
+    GPIO_PINA4,
+    GPIO_PINA5,
+    GPIO_PINA6,
+    GPIO_PINA7,
+    GPIO_PINB0,
+    GPIO_PINB1,
+    GPIO_PINB2,
+    GPIO_PINB3,
+    GPIO_PINB4,
+    GPIO_PINB5,
+    GPIO_PINB6,
+    GPIO_PINB7,
+    GPIO_PINC0,
+    GPIO_PINC1,
+    GPIO_PINC2,
+    GPIO_PINC3,
+    GPIO_PINC4,
+    GPIO_PINC5,
+    GPIO_PINC6,
+    GPIO_PINC7,
+    GPIO_PIND0,
+    GPIO_PIND1,
+    GPIO_PIND2,
+    GPIO_PIND3,
+    GPIO_PIND4,
+    GPIO_PIND5,
+    GPIO_PIND6,
+    GPIO_PIND7,
+    GPIO_PINE0,
+    GPIO_PINE1,
+    GPIO_PINE2,
+    GPIO_PINE3,
+    GPIO_PINE4,
+    GPIO_PINE5,
+    GPIO_PINF0,
+    GPIO_PINF1,
+    GPIO_PINF2,
+    GPIO_PINF3,
+    GPIO_PINF4,
+} ;
 
 /* -------------------------------------------------------------------------   
  * INCLUDES
@@ -70,8 +117,7 @@ typedef struct _Gpio_Module {
     uint8_t interrupt_pin;
     Gpio_Mode mode;
     bool initialised;
-    /* Prev year has void (*int_function)(void); in a different struct.
-     * TODO: Check what its purpose is */
+    void (*int_function)(void); /* Interrupt function */
 } Gpio_Module;
 
 /**
