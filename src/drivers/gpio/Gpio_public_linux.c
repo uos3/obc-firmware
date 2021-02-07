@@ -32,7 +32,11 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode mode_in) {
+ErrorCode Gpio_init(
+    uint32_t *p_gpio_pins_in,
+    size_t num_gpio_pins_in,
+    Gpio_Mode mode_in
+) {
     DEBUG_DBG("GPIO initialise attempted when running on linux, ignoring.");
     return ERROR_NONE;
 }
@@ -44,5 +48,21 @@ ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state_in) {
 
 ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out) {
     DEBUG_DBG("GPIO read attempted when running on linux, ignoring.");
+    return ERROR_NONE;
+}
+
+ErrorCode Gpio_set_rising_interrupt(
+    uint8_t gpio_id_number,
+    void *interrupt_callback(void)
+) {
+        
+    DEBUG_DBG("GPIO set rising interrupt attempted when running on linux,\
+    ignoring.");
+    return ERROR_NONE;
+}
+
+ErrorCode GPIO_reset_interrupt(uint8_t gpio_id_numer) {
+    DEBUG_DBG("GPIO reset interrupt attempted when running on linux,\
+    ignoring.");
     return ERROR_NONE;
 }

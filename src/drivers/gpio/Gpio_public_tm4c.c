@@ -57,7 +57,6 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
         if (p_gpio_pin->initialised) {
             DEBUG_WRN(
                 "Gpio_init() called on GPIO module %d when already initialised",
-                /* TODO: Raise an event */
                 p_gpio_pins_in[i]
             );
 
@@ -82,7 +81,6 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
                     /* If the number of attempts has reached the maximum,
                      * raise an error. */
                     DEBUG_ERR("Failed to enable GPIO %d peripheral", p_gpio_pins_in[i]);
-                    /* TODO: Raise an event */
                     return GPIO_ERROR_PERIPHERAL_ENABLE_FAILED;
                 }
             }
@@ -107,7 +105,6 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
                     /* If the mode is neither GPIO_MODE_INPUT or
                      * GPIO_MODE_OUTPUT, return an error */
                     DEBUG_ERR("Unexpected mode for GPIO module %d", p_gpio_pins_in[i]);
-                    /* TODO: Raise an event */
                     return GPIO_ERROR_UNEXPECTED_MODE;
             }
             
@@ -132,14 +129,12 @@ ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state_in) {
     /* Check the GPIO has been initialised */
     if (!GPIO.initialised) {
         DEBUG_ERR("Attempted to write GPIO pin when the GPIO has not been initalised");
-        /* TODO: Raise an event */
         return GPIO_ERROR_NOT_INITIALISED;
     }
 
     /* Check the GPIO to be read is not exceeding the number of GPIOs */
     if (gpio_id_number >= GPIO_NUM_GPIOS) {
         DEBUG_ERR("Gpio ID number has exceeded total number of GPIOs");
-        /* TODO: Raise an event */
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
@@ -154,14 +149,12 @@ ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out) {
     /* Check the GPIO has been initialised */
     if (!GPIO.initialised) {
         DEBUG_ERR("Attempted to write GPIO pin when the GPIO has not been initalised");
-        /* TODO: Raise an event */
         return GPIO_ERROR_NOT_INITIALISED;
     }
 
     /* Check the GPIO to be read is not exceeding the number of GPIOs */
     if (gpio_id_number >= GPIO_NUM_GPIOS) {
         DEBUG_ERR("Gpio ID number has exceeded total number of GPIOs");
-        /* TODO: Raise an event */
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
@@ -314,13 +307,11 @@ ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_call
     if (!GPIO.initialised) {
         DEBUG_ERR("Attempted to set rising edge interrupt on GPIO pin when\
         the GPIO has not been initialised");
-        /* TODO: Raise an event */
         return GPIO_ERROR_NOT_INITIALISED;
     }
     
     if (gpio_id_number >= GPIO_NUM_GPIOS) {
         DEBUG_ERR("Gpio ID number has exceeded total number of GPIOs");
-        /* TODO: Raise an event */
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
@@ -368,13 +359,11 @@ ErrorCode GPIO_reset_interrupt(uint8_t gpio_id_numer) {
     if (!GPIO.initialised) {
         DEBUG_ERR("Attempted to set rising edge interrupt on GPIO pin when\
         the GPIO has not been initialised");
-        /* TODO: Raise an event */
         return GPIO_ERROR_NOT_INITIALISED;
     }
     
     if (gpio_id_numer >= GPIO_NUM_GPIOS) {
         DEBUG_ERR("Gpio ID number has exceeded total number of GPIOs");
-        /* TODO: Raise an event */
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
