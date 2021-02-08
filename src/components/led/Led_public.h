@@ -26,8 +26,13 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
+/* Standard library includes */
 #include <stdint.h>
 #include <stdbool.h>
+
+/* Internal includes */
+#include "drivers/gpio/Gpio_public.h"
+#include "drivers/board/Board_public.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -39,19 +44,25 @@
  * STRUCTS
  * ------------------------------------------------------------------------- */
 
-typedef struct _Led {
+/* Struct defining an LED, with the pin and state */
+typedef struct _Led_Module {
     uint8_t gpio_pin;
-    bool state;
-} Led;
+    bool state; /* Current state of the LED (true = on, false = off) */
+} Led_Module;
+
+/* TODO: Find more suitable name perhaps, look at software writing standards
+ * document */
+/* LEDs are connected to pins B1 and C2
+ * TODO: find file location of schematic for reference */
+static Led_Module LED_LEDS[NUMBER_OF_LEDS] = {
+    {GPIO_PINB1, false},
+    {GPIO_PINC2, false}
+};
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-/* TODO: For Led_set and Led_toggle, was initially a void function, but I
- * chose to make them a bool so they can return the state of the LED after
- * it has been altered (perhaps may be useful for debugging or testing), must
- * check if this is worth it, or if they should go back to void */
 /**
  * @brief Sets the state of the LED peripheral
  * 
@@ -59,7 +70,7 @@ typedef struct _Led {
  * @param led_state_in The state of which the LED is to be set to
  * @return Returns a bool of the state of the LED after setting
  */
-bool Led_set(uint8_t led_number_in, bool led_state_in);
+ErrorCode Led_set(uint8_t led_number_in, bool led_state_in);
 
 /**
  * @brief Toggles the state of the LED peripheral
@@ -67,6 +78,6 @@ bool Led_set(uint8_t led_number_in, bool led_state_in);
  * @param led_number_in ID number of the LED peripheral
  * @return Returns a bool of the state of the LED after toggling
  */
-bool Led_toggle(uint8_t led_number_in);
+ErrorCode Led_toggle(uint8_t led_number_in);
 
 #endif /* H_LED_PUBLIC_H */
