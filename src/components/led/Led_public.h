@@ -35,31 +35,6 @@
 #include "drivers/board/Board_public.h"
 
 /* -------------------------------------------------------------------------   
- * DEFINES
- * ------------------------------------------------------------------------- */
-
-#define NUMBER_OF_LEDS (2)
-
-/* -------------------------------------------------------------------------   
- * STRUCTS
- * ------------------------------------------------------------------------- */
-
-/* Struct defining an LED, with the pin and state */
-typedef struct _Led_Module {
-    uint8_t gpio_pin;
-    bool state; /* Current state of the LED (true = on, false = off) */
-} Led_Module;
-
-/* TODO: Find more suitable name perhaps, look at software writing standards
- * document */
-/* LEDs are connected to pins B1 and C2
- * TODO: find file location of schematic for reference */
-static Led_Module LED_LEDS[NUMBER_OF_LEDS] = {
-    {GPIO_PINB1, false},
-    {GPIO_PINC2, false}
-};
-
-/* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
