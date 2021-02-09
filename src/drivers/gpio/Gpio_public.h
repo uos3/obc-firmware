@@ -186,4 +186,15 @@ ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_call
  */
 ErrorCode Gpio_reset_interrupt(uint8_t gpio_id_number);
 
+/**
+ * @brief Handles the interrupt, looping through all pins between the lower
+ * and upper limits (as arguments).
+ * 
+ * @param gpio_int_status_in 
+ * @param gpio_pin_lower_in 
+ * @param gpio_pin_upper_in 
+ * @return ErrorCode Return code.
+ */
+ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, uint8_t gpio_pin_lower_in, uint8_t gpio_pin_upper_in);
+
 #endif /* H_GPIO_PUBLIC_H */
