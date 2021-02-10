@@ -40,12 +40,7 @@
 
 /* Define the constant number of LEDs occupying pins (currently 2 from TOBC
  * diagram, see sharepoint) */
-#define NUMBER_OF_LEDS (2)
-
-/* Define the two separate LEDs
- * TODO: These are temp names */
-#define LED_TEMP_1 (0)
-#define LED_TEMP_2 (1)
+#define LED_NUMBER_OF_LEDS (2)
 
 /* -------------------------------------------------------------------------   
  * STRUCTS

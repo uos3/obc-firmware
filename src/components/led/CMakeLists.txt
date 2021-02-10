@@ -8,4 +8,5 @@ add_library(Led
 
 target_link_libraries(Led
     ${STANDARD_LINK_LIBS}
+    Gpio
 )

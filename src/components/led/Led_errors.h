@@ -25,8 +25,8 @@
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief The LED ID number exceeded the number of LEDs connected
+ * @brief The LED ID number was invalid (should be 0 or 1)
  */
-#define LED_ERROR_EXCEEDED_NUM_LEDS ((ErrorCode)MOD_ID_LED | 1)
+#define LED_ERROR_INVALID_LED_ID ((ErrorCode)(MOD_ID_LED | 1))
 
 #endif /* H_LED_ERRORS_H */
