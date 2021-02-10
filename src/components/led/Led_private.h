@@ -60,6 +60,6 @@ typedef struct _Led_Module {
  * @brief Global instance of the LED component state.
  * 
  */
-extern Led_Module LED_LEDS;
+extern Led_Module LED_LEDS[LED_NUMBER_OF_LEDS];
 
 #endif /* H_LED_PRIVATE_H */

@@ -28,9 +28,9 @@
 #include <stdbool.h>
 
 /* Internal includes */
+#include "util/debug/Debug_public.h"
 #include "components/led/Led_public.h"
 #include "components/led/Led_private.h"
-#include "components/led/Led_private.c"
 #include "components/led/Led_errors.h"
 
 /* -------------------------------------------------------------------------   
