@@ -25,6 +25,7 @@
 #include "drivers/timer/Timer_public.h"
 
 /* Only included for test, don't use in real code */
+#include "drivers/timer/Timer_private.h"
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -35,10 +36,13 @@ int main(void) {
     bool run_loop = true;
     Event timer_0_25_done;
     Event timer_2_done;
+    Event timer_1_done;
     Event timer_10_done;
     bool is_raised = false;
     int num_0_25_timers = 0;
+    int num_1_timers = 0;
     int num_2_timers = 0;
+    bool timer_disabled = false;
     
     /* Init system critical modules */
     if (!DataPool_init()) {
@@ -73,6 +77,16 @@ int main(void) {
 
     DEBUG_INF("");
 
+    /* Start 1s timer (periodic) */
+    DEBUG_INF("Starting 1 second periodic (repeating) timer");
+    error = Timer_start_periodic(1.0, &timer_1_done);
+    if (error != ERROR_NONE) {
+        Debug_exit(1);
+    }
+    DEBUG_INF("Timer event code: 0x%04X", timer_1_done);
+
+    DEBUG_INF("");
+
     /* Start 10s timer */
     DEBUG_INF("Starting 10 second one-shot timer");
     error = Timer_start_one_shot(10.0, &timer_10_done);
@@ -101,6 +115,23 @@ int main(void) {
             num_0_25_timers++;
         }
 
+        /* Count number of 1 second timers */
+        if (!EventManager_poll_event(timer_1_done, &is_raised)) {
+            Debug_exit(1);
+        }
+        if (is_raised) {
+            num_1_timers++;
+        }
+        if (num_1_timers >= 5 && !timer_disabled) {
+            /* Disable the 1 s timer after 5 events counted */
+            error = Timer_disable(timer_1_done);
+            if (error != ERROR_NONE) {
+                Debug_exit(1);
+            }
+
+            timer_disabled = true;
+        }
+
         /* Count number of 2 s timer events */
         if (!EventManager_poll_event(timer_2_done, &is_raised)) {
             Debug_exit(1);
@@ -123,15 +154,20 @@ int main(void) {
     }
 
     DEBUG_INF(
-        "10 s timer fired, %d 2 s timers and %d 0.25 s timers", 
+        "10 s timer fired, %dx1 s timers, %dx2 s timers, and %dx0.25 s timers", 
+        num_1_timers,
         num_2_timers,
         num_0_25_timers
     );
 
+    DEBUG_INF("Should only be 5x1 s timers, as after 5 we disable that timer.");
     DEBUG_INF("Should have 4x2 s timers, since they are started after the 10 s timer.");
     DEBUG_INF("The 0.25 s timers are started before the 10 s, so there should be 40 of them.");
 
-    /* Free event manager */
+    /* Disable all timers then destroy the event manager. Must be done in this
+     * order to prevent a hardfault if a timer attempts to access the event
+     * manager after it's destroyed. */
+    Timer_disable_all();
     EventManager_destroy();
 
     return 0;

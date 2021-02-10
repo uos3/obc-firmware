@@ -26,6 +26,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "system/kernel/Kernel_public.h"
 #include "drivers/timer/Timer_public.h"
 #include "drivers/timer/Timer_private.h"
 
@@ -114,6 +115,75 @@ ErrorCode Timer_start_periodic(
     if (error != ERROR_NONE) {
         DEBUG_ERR("Error while configuring timer: 0x%04d", error);
     }
-    
+
     return error;
+}
+
+ErrorCode Timer_disable(Event timer_event_in) {
+    int timer_idx, i;
+    bool timer_found = false;
+    Timer_Timer *p_timer;
+
+    /* Check the event is one of the timer events */
+    if (timer_event_in < EVT_TIMER_00A_COMPLETE 
+        || 
+        timer_event_in > EVT_TIMER_11B_COMPLETE
+    ) {
+        DEBUG_ERR(
+            "Cannot disable timer as event 0x%04X isn't associated with a timer",
+            timer_event_in
+        );
+        return TIMER_ERROR_NON_TIMER_EVENT;
+    }
+
+    /* Get the timer index associated with this event. As events are linear
+     * increments from EVT_TIMER_00A_COMPLETE we can just work out the 
+     * difference and use that as an index. */
+    timer_idx = timer_event_in - EVT_TIMER_00A_COMPLETE;
+
+    /* Check that the timer is actually the correct one by accessing that timer
+     * and making sure the event IDs match. If they don't match do a linear
+     * search through the timer array for the right index. */
+    if (TIMER_STATE.timers[timer_idx].completed_event != timer_event_in) {
+        for (i = 0; i < TIMER_NUM_TIMERS; ++i) {
+            if (TIMER_STATE.timers[i].completed_event == timer_event_in) {
+                timer_idx = i;
+                timer_found = true;
+                break;
+            }
+        }
+
+        /* If the timer wasn't found return an error */
+        if (!timer_found) {
+            DEBUG_ERR(
+                "Couldn't find timer associated with event 0x%04X", 
+                timer_event_in
+            );
+            return TIMER_ERROR_TIMER_EVENT_NOT_FOUND;
+        }
+    }
+
+    /* Get a pointer to the timer for easier manipulation */
+    p_timer = &TIMER_STATE.timers[timer_idx];
+
+    /* If the timer isn't disabled don't error but show a warning. */
+    if (p_timer->is_available) {
+        DEBUG_WRN("Cannot disable timer as it isn't enabled");
+        return ERROR_NONE;
+    }
+
+    Timer_disable_specific(p_timer);
+
+    return ERROR_NONE;
+}
+
+void Timer_disable_all(void) {
+    int timer_idx;
+    
+    /* Loop over all timers and disable them if they are enabled */
+    for (timer_idx = 0; timer_idx < TIMER_NUM_TIMERS; ++timer_idx) {
+        if (!TIMER_STATE.timers[timer_idx].is_available) {
+            Timer_disable_specific(&TIMER_STATE.timers[timer_idx]);
+        }
+    }
 }

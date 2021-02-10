@@ -49,7 +49,7 @@
  * ------------------------------------------------------------------------- */
 
 /* Pre-definition to allow Timer_Block to be used in Timer_Timer */
-typedef struct _Timer_Block Timer_Block;
+struct _Timer_Block;
 
 typedef struct _Timer_Timer {
     /**
@@ -66,7 +66,7 @@ typedef struct _Timer_Timer {
     /**
      * @brief Pointer to the timer's owning block.
      */
-    Timer_Block *p_block;
+    struct _Timer_Block *p_block;
 
     /**
      * @brief Prescale value used for the timer. The limit of this value is
@@ -184,7 +184,7 @@ typedef struct _Timer_State {
     /**
      * @brief Pointer to the  next free 64 bit timer.
      */
-    Timer_Timer *p_next_64
+    Timer_Timer *p_next_64;
 
 } Timer_State;
 
@@ -269,9 +269,23 @@ ErrorCode Timer_enable(Timer_Timer *p_timer_in);
  */
 ErrorCode Timer_update_pointers(void);
 
+/**
+ * @brief Disables a specific timer.
+ * 
+ * @param p_timer_in Pointer to the timer 
+ */
+void Timer_disable_specific(Timer_Timer *p_timer_in);
+
 /* -------------------------------------------------------------------------   
  * INTERRUPTS
  * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Used to raise an event during a timer interrupt
+ * 
+ * @param p_timer The timer who's event to raise
+ */
+void Timer_int_raise_event(Timer_Timer *p_timer);
 
 void Timer_int_00A(void);
 void Timer_int_00B(void);

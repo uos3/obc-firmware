@@ -81,6 +81,47 @@ static volatile sig_atomic_t TIMER_LINUX_STATE[TIMER_NUM_TIMERS] = { 0 };
 static struct itimerspec TIMER_TIME[TIMER_NUM_TIMERS];
 
 /* -------------------------------------------------------------------------   
+ * FUNCTION PROTOTYPES
+ * ------------------------------------------------------------------------- */
+
+/* Putting these prototypes here avoids a separate header for linux/tm4c. */
+
+static inline double timespec_diff(
+    const struct timespec after, 
+    const struct timespec before
+);
+static inline void timespec_add_seconds(
+    struct timespec *const to, 
+    const double seconds
+);
+
+static inline struct timespec timespec_from_seconds(
+    const double seconds
+);
+
+static inline void timespec_set_seconds(
+    struct timespec *const to, 
+    const double seconds
+);
+
+static inline void timespec_add(
+    struct timespec *const to,
+    const struct timespec from
+);
+
+void Timer_signal_handler(
+    int signum __attribute__((unused)), 
+    siginfo_t *p_info, 
+    void *p_context __attribute__((unused))
+);
+
+ErrorCode Timer_set(
+    const double seconds_in, 
+    bool periodic_in,
+    Event *p_event_out
+);
+
+/* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
@@ -216,19 +257,24 @@ void Timer_signal_handler(
             &TIMER_LINUX_STATE[i],
             __ATOMIC_RELAXED
         );
-        if (state & (TIMER_USED | TIMER_ARMED) == (TIMER_USED | TIMER_ARMED)) {
+        if ((state & (TIMER_USED | TIMER_ARMED)) 
+            == 
+            (TIMER_USED | TIMER_ARMED)
+        ) {
             /* Get the number of seconds between now and the timer */
             double seconds = timespec_diff(TIMER_TIME[i].it_value, now);
 
             /* If passed, fire the timer's event. We count on the events being
              * mapped linearly with timer index */
             if (seconds <= 0.0) {
-                if (!EventManager_raise_event(EVT_TIMER_00A_COMPLETE + i)) {
+                if (!EventManager_raise_event(
+                    (Event)(EVT_TIMER_00A_COMPLETE + i))
+                ) {
                     DEBUG_ERR("Failed to raise event in Timer signal handler");
                     return;
                 }
                 /* If periodic increment the target time in the timer */
-                if (state & TIMER_PERIODIC == TIMER_PERIODIC) {
+                if ((state & TIMER_PERIODIC) == TIMER_PERIODIC) {
                     timespec_add(
                         &TIMER_TIME[i].it_value, 
                         TIMER_TIME[i].it_interval
@@ -342,7 +388,10 @@ ErrorCode Timer_set(
             __ATOMIC_RELAXED
         );
         /* If the timer is both used and armed */
-        if (state & (TIMER_USED | TIMER_ARMED) == (TIMER_USED | TIMER_ARMED)) {
+        if ((state & (TIMER_USED | TIMER_ARMED)) 
+            == 
+            (TIMER_USED | TIMER_ARMED)
+        ) {
             const double secs = timespec_diff(TIMER_TIME[i].it_value, now);
 
             /* Set next to be this timer's duration */
@@ -431,4 +480,42 @@ ErrorCode Timer_start_periodic(
     Event *p_timer_event_out
 ) {
     return Timer_set(duration_s_in, true, p_timer_event_out);
+}
+
+ErrorCode Timer_disable(Event timer_event_in) {
+    
+    /* Timer events are linear from the first timer, so just subtract the
+     * first one to get the index of the timer */
+    int timer = (int)(timer_event_in - EVT_TIMER_00A_COMPLETE);
+
+    /* Check timer is valid */
+    if ((timer >= TIMER_NUM_TIMERS) || (timer < 0)) {
+        DEBUG_ERR(
+            "Cannot disable timer as event 0x%04X isn't associated with a timer",
+            timer_event_in
+        );
+        return TIMER_ERROR_NON_TIMER_EVENT;
+    }
+
+    /* Disable that timer */
+    __atomic_store_n(
+        &TIMER_LINUX_STATE[timer],
+        0,
+        __ATOMIC_RELAXED
+    );
+
+    return ERROR_NONE;
+}
+
+void Timer_disable_all(void) {
+    int timer;
+
+    /* Just set the state to 0 */
+    for (timer = 0; timer < TIMER_NUM_TIMERS; ++timer) {
+        __atomic_store_n(
+            &TIMER_LINUX_STATE[timer],
+            0,
+            __ATOMIC_RELAXED
+        );
+    }
 }

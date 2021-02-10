@@ -99,7 +99,7 @@ Timer_State TIMER_STATE = {
         {
             .is_split = true,
             .config = 0,
-            .peripheral = SYSCTL_PERIPH_WTIMER2,
+            .peripheral = SYSCTL_PERIPH_WTIMER1,
             .base = WTIMER1_BASE,
             .p_a = &TIMER_STATE.timers[14],
             .p_b = &TIMER_STATE.timers[15]

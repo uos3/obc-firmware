@@ -80,14 +80,26 @@ ErrorCode Timer_start_one_shot(double duration_s_in, Event *p_timer_event_out);
  * @param timer_event_out The event which will be fired when the timer
  * completes. 
  * @return ErrorCode Indicates any error starting the timer.
- * 
- * @param duration_s_in 
- * @param p_timer_event_out 
- * @return ErrorCode 
  */
 ErrorCode Timer_start_periodic(double duration_s_in, Event *p_timer_event_out);
 
-/* TODO: Add Timer_disable? */
+/**
+ * @brief Disables the timer associated with the given timer event.
+ * 
+ * The user should pass in the event returned by Timer_start_x
+ * 
+ * @param timer_event_in Completed event for the timer to disable.
+ * @return ErrorCode If the timer wasn't disabled an error is returned.
+ */
+ErrorCode Timer_disable(Event timer_event_in);
+
+/**
+ * @brief Disables all timers registered with the system.
+ * 
+ * CAUTION: This should only be used if you know what you're doing. General use
+ * should use Timer_disable instead!
+ */
+void Timer_disable_all(void);
 
 /* TODO: Add Timer_get_reserved? */
 

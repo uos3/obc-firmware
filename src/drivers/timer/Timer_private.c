@@ -59,7 +59,7 @@ ErrorCode Timer_configure_timer_for_duration(
 
     /* Calcualte number of target cycles. This is the number of clock cycles
      * required to get the requested duration. */
-    target_cycles = lround(
+    target_cycles = (uint64_t)lround(
         duration_s_in * ((double)clock_freq_hz)
     );
 
@@ -270,18 +270,20 @@ ErrorCode Timer_calc_timer_factors(
     uint16_t *p_prescale_out, 
     uint64_t *p_timer_value_out
 ) {
-    /* FIXME: Prescaler doesn't work on combined timers... */
     uint16_t min_prescale;
     int64_t target_diff;
-    uint32_t prescale;
+    uint16_t prescale;
     uint64_t timer_value;
-    uint16_t prescale_min_error;
-    uint64_t value_min_error;
+    uint16_t prescale_min_error = 0;
+    uint64_t value_min_error = 0;
     uint64_t min_error = UINT64_MAX;
 
     /* Minimum possible value of the prescalar, based on the maximum timer
-    value that is allowed. */
-    min_prescale = lround((double)cycles_in / (double)max_timer_value_in) + 1;
+     * value that is allowed. Previous checks shall ensure this value won't
+     * overflow. */
+    min_prescale = (uint16_t)lround(
+        (double)cycles_in / (double)max_timer_value_in
+    ) + 1;
 
     /* Limit min prescale to max value */
     if (min_prescale > max_prescale_value_in) {
@@ -300,7 +302,7 @@ ErrorCode Timer_calc_timer_factors(
         }
 
         /* Assert that the factors are within 1 of the target */
-        target_diff = *p_timer_value_out - cycles_in;
+        target_diff = (int64_t)(*p_timer_value_out) - (int64_t)cycles_in;
         if (target_diff * target_diff > 1) {
             DEBUG_ERR(
                 "Timer factor error is %d cycles (must be |diff| < 1) (no prescale available, timer too small)", 
@@ -315,7 +317,7 @@ ErrorCode Timer_calc_timer_factors(
          * can't be zero we must subtract 1 to get the prescale value to give 
          * to the diverlib. (i.e. a prescalar of 0 in the driverlib is actually
          * a prescalar multiplier of 1. */
-        *p_prescale_out = (uint16_t)min_prescale - 1;
+        *p_prescale_out = (uint16_t)(min_prescale - 1);
         *p_timer_value_out = lround((double)cycles_in / (double)min_prescale);
 
         /* Assert that the factors are within 1 of the target */
@@ -340,7 +342,9 @@ ErrorCode Timer_calc_timer_factors(
              * prescalar to get the target number of cycles. We round to reduce
              * the error as much as possible, as floor or ceil would incurr
              * greater error as you cross a boundary. */
-            timer_value = lround((double)cycles_in / (double)prescale);
+            timer_value = (uint64_t)lround(
+                (double)cycles_in / (double)prescale
+            );
 
             /* Calcualte the difference between the combination of timer and
              * prescalar value and the target number of cycles */
@@ -362,7 +366,7 @@ ErrorCode Timer_calc_timer_factors(
 
         /* Set the prescale and timer values that produced the minimum error,
          * noting the same -1 for prescale as above */
-        *p_prescale_out = prescale_min_error - 1;
+        *p_prescale_out = (uint16_t)(prescale_min_error - 1);
         *p_timer_value_out = value_min_error;
 
         /* Assert that the factors are within 1 of the target */
@@ -393,6 +397,14 @@ ErrorCode Timer_configure_timer(
     /* Set the prescale and value */
     p_timer_in->prescale = prescale_in;
     p_timer_in->value = value_in;
+
+    /* If the timer is a part of a joined block zero it's config. The config is
+     * controlled by the block. */
+    if (!p_timer_in->p_block->is_split) {
+        p_timer_in->config = 0;
+        p_timer_in->p_block->p_b->config = 0;
+        return ERROR_NONE;
+    }
 
     /* Set the config, being careful to use the right config for A or B timers. */
     if (p_timer_in->is_periodic && p_timer_in->is_a) {
@@ -505,7 +517,6 @@ ErrorCode Timer_enable(Timer_Timer *p_timer_in) {
 
 ErrorCode Timer_update_pointers(void) {
     Timer_Timer *p_next;
-    Timer_Timer *p_other;
     Timer_Timer *p_first_timer = &TIMER_STATE.timers[0];
     Timer_Timer *p_last_timer = &TIMER_STATE.timers[TIMER_NUM_TIMERS - 1];
     bool next_timer_found = false;
@@ -591,7 +602,7 @@ ErrorCode Timer_update_pointers(void) {
         }
         else if ((TIMER_STATE.p_next_32 + 1)->is_wide
             &&
-            (TIMER_STATE.p_next_32 + 1)->is_wide
+            (TIMER_STATE.p_next_32 + 2)->is_wide
         ) {
             p_next = TIMER_STATE.p_next_32 + 1;
         }
@@ -708,4 +719,28 @@ ErrorCode Timer_update_pointers(void) {
     }
 
     return ERROR_NONE;
+}
+
+void Timer_disable_specific(Timer_Timer *p_timer_in) {
+    /* If the timer is not part of a combined timer */
+    if (p_timer_in->p_block->is_split) {
+        /* Just disable this timer */
+        if (p_timer_in->is_a) {
+            TimerDisable(p_timer_in->p_block->base, TIMER_A);
+        }
+        else {
+            TimerDisable(p_timer_in->p_block->base, TIMER_B);
+        }
+
+        p_timer_in->is_available = true;
+    }
+    /* If it's part of a combined timer disable both and split the block */
+    else {
+        TimerDisable(p_timer_in->p_block->base, TIMER_BOTH);
+        p_timer_in->p_block->config = TIMER_CFG_SPLIT_PAIR;
+        p_timer_in->p_block->is_split = true;
+        
+        p_timer_in->p_block->p_a->is_available = true;
+        p_timer_in->p_block->p_b->is_available = true;
+    }
 }

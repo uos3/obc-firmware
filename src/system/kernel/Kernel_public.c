@@ -32,6 +32,8 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
+/* FIXME: Implement critical section stacking?? */
+
 void Kernel_disable_interrupts(void) {
     #ifdef TARGET_TM4C
     IntMasterDisable();

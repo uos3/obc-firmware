@@ -72,4 +72,15 @@
  */
 #define TIMER_ERROR_DURATION_NEGATIVE ((ErrorCode)(MOD_ID_TIMER | 8))
 
+/**
+ * @brief Provided event ID is not an event associated with timers.
+ */
+#define TIMER_ERROR_NON_TIMER_EVENT ((ErrorCode)(MOD_ID_TIMER | 9))
+
+/**
+ * @brief The provided timer event couldn't be found in the list of timer
+ * events.
+ */
+#define TIMER_ERROR_TIMER_EVENT_NOT_FOUND ((ErrorCode)(MOD_ID_TIMER | 10))
+
 #endif /* H_TIMER_ERRORS_H */

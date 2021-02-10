@@ -25,6 +25,7 @@
 /* Internal includes */
 #include "util/debug/Debug_public.h"
 #include "system/event_manager/EventManager_public.h"
+#include "system/kernel/Kernel_public.h"
 #include "drivers/timer/Timer_private.h"
 #include "drivers/timer/Timer_events.h"
 
@@ -35,7 +36,7 @@
 void Timer_int_raise_event(Timer_Timer *p_timer) {
     /* Disable interrupts to prevent another one from triggering any changes to
      * the event manager too */
-    IntMasterDisable();
+    Kernel_disable_interrupts();
 
     /* Clear the interrupt. This must be done early as it can take a number of
      * clock cycles for the clear to have an effect. */
@@ -59,7 +60,7 @@ void Timer_int_raise_event(Timer_Timer *p_timer) {
     }
 
     /* Reenable interrupts */
-    IntMasterEnable();
+    Kernel_enable_interrupts();
 }
 
 void Timer_int_00A(void) {
