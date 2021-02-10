@@ -1,6 +1,6 @@
 /**
  * @ingroup component
- * @file Led_public.h
+ * @file Led_private.h
  * @author Leon Galanakis (lg5g16@soton.ac.uk)
  * @brief LED component module.
  * 
@@ -19,8 +19,8 @@
  * @{
  */
 
-#ifndef H_LED_PUBLIC_H
-#define H_LED_PUBLIC_H
+#ifndef H_LED_PRIVATE_H
+#define H_LED_PRIVATE_H
 
 /* -------------------------------------------------------------------------   
  * INCLUDES
@@ -38,36 +38,28 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
-/**
- * @brief First LED, connected to pin B1
- */
-#define LED_TEMP_1 (0)
-
-/**
- * @brief Second LED, connected to pin C1
- * 
- */
-#define LED_TEMP_2 (1)
+/* Define the constant number of LEDs occupying pins (currently 2 from TOBC
+ * diagram, see sharepoint) */
+#define LED_NUMBER_OF_LEDS (2)
 
 /* -------------------------------------------------------------------------   
- * FUNCTIONS
+ * STRUCTS
+ * ------------------------------------------------------------------------- */
+
+/* Struct defining an LED, with the pin and state */
+typedef struct _Led_Module {
+    uint8_t gpio_pin;
+    bool state; /* Current state of the LED (true = on, false = off) */
+} Led_Module;
+
+/* -------------------------------------------------------------------------   
+ * GLOBALS
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief Sets the state of the LED peripheral
+ * @brief Global instance of the LED component state.
  * 
- * @param led_number_in ID number of the LED peripheral
- * @param led_state_in The state of which the LED is to be set to
- * @return Returns a bool of the state of the LED after setting
  */
-ErrorCode Led_set(uint8_t led_number_in, bool led_state_in);
+extern Led_Module LED_LEDS[LED_NUMBER_OF_LEDS];
 
-/**
- * @brief Toggles the state of the LED peripheral
- * 
- * @param led_number_in ID number of the LED peripheral
- * @return Returns a bool of the state of the LED after toggling
- */
-ErrorCode Led_toggle(uint8_t led_number_in);
-
-#endif /* H_LED_PUBLIC_H */
+#endif /* H_LED_PRIVATE_H */
