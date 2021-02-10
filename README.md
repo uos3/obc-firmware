@@ -151,6 +151,26 @@ for you. You can put breakpoints in the code using `__asm("BKPT")`. Make sure
 to remove these before testing without the debugging setup as they will halt 
 execution.
 
+If you're encountering faults using GDB will allow you to see where the faults
+are coming from. If you see a `SIGTRAP` with the GDB frame being
+`debug_fault_handler`, you can inspect the `p_frame` input to see what function
+caused the fault:
+```shell
+p/a *p_fault
+$1 = {
+  r0 = 0x40037000, 
+  r1 = 0x4000022, 
+  r2 = 0x0 <g_pfnVectors>, 
+  r3 = 0x200000a8 <TIMER_STATE+168>, 
+  r12 = 0xf801312e, 
+  lr = 0x1fbb <Timer_enable+38>, 
+  return_address = 0x2a18 <TimerConfigure>, 
+  xpsr = 0x21000000
+}
+```
+This gives information on the function causing the fault (`return_address` and
+`lr`, and the inputs to those functions `r1-12`.)
+
 ## Build Features
 
 A number of features may be enabled by a build, which can be seen by calling

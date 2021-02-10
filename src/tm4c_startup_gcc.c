@@ -44,6 +44,23 @@
 #include "inc/hw_nvic.h"
 #include "inc/hw_types.h"
 
+#include "util/debug/Debug_public.h"
+
+/* -------------------------------------------------------------------------   
+ * DEBUGGING SHIM
+ * ------------------------------------------------------------------------- */
+
+/* Passess the stack pointer into the hardfault function, see 
+ * https://interrupt.memfault.com/blog/cortex-m-fault-debug */
+#define HARDFAULT_HANDLING_ASM(_x)               \
+  __asm volatile(                                \
+      "tst lr, #4 \n"                            \
+      "ite eq \n"                                \
+      "mrseq r0, msp \n"                         \
+      "mrsne r0, psp \n"                         \
+      "b debug_fault_handler \n"                 \
+)
+
 //*****************************************************************************
 //
 // Forward declaration of the default fault handlers.
@@ -340,12 +357,27 @@ NmiSR(void)
 static void
 FaultISR(void)
 {
-    /* Raise a breakpoint so GDB can catch it 
+    /* Call the debugging hardfault handler */
+    HARDFAULT_HANDLING_ASM();
+
+    /* 
+     * Raise a breakpoint so GDB can catch it 
      */
     while(1)
     {
         __asm("BKPT");
     }
+}
+
+/**
+ * @brief Fault handler which will contain a stack frame thanks to the ASM shim
+ * above.
+ * 
+ * See https://interrupt.memfault.com/blog/cortex-m-fault-debug
+ */
+__attribute__((optimize("O0")))
+void debug_fault_handler(Debug_ContextStateFrame *p_frame) {
+    __asm("BKPT");
 }
 
 //*****************************************************************************

@@ -28,6 +28,29 @@
 #include <stdbool.h>
 
 /* -------------------------------------------------------------------------   
+ * STRUCTS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief ARM stack context state frame.
+ * 
+ * See https://interrupt.memfault.com/blog/cortex-m-fault-debug.
+ * 
+ * @return typedef struct 
+ */
+typedef struct __attribute__((packed)) _Debug_ContextStateFrame {
+  uint32_t r0;
+  uint32_t r1;
+  uint32_t r2;
+  uint32_t r3;
+  uint32_t r12;
+  uint32_t lr;
+  uint32_t return_address;
+  uint32_t xpsr;
+} Debug_ContextStateFrame;
+
+
+/* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */
 

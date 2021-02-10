@@ -106,6 +106,7 @@ endif()
 # Set the standard link set
 set(STANDARD_LINK_LIBS
     ${TIVAWARE_LIBS}
+    Kernel
     Debug
     Board
     DataPool
@@ -121,6 +122,7 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG_MODE")
 # Add subdirectories, each managed by its own CMakeLists.txt.
 # The ordering here is important as subdirs which have dependencies on other
 # must be added AFTER those dependencies have been made.
+add_subdirectory(src/system/kernel)
 add_subdirectory(src/system/data_pool)
 add_subdirectory(src/util)
 add_subdirectory(src/drivers)

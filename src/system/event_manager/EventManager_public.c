@@ -28,6 +28,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "system/kernel/Kernel_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "system/event_manager/EventManager_private.h"
@@ -84,12 +85,20 @@ bool EventManager_init(void) {
 void EventManager_destroy(void) {
     /* If the event manager is intiailised destroy it */
     if (DP.EVENTMANAGER.INITIALISED) {
-        /* Free the lists */
-        free(EVENTMANAGER.p_raised_events);
-        free(EVENTMANAGER.p_num_cycles_events_raised);
+        /* Zero the manager's datapool. We do this before freeing the lists
+         * since an event could be raised by an interrupt, meaning that we
+         * could concievably free the list before setting the manager as
+         * uninitialised, which will cause a hard fault when the interrupt
+         * tries to raise an event using a free'd list (use after free). */
+        memset(&DP.EVENTMANAGER, 0, sizeof(DP.EVENTMANAGER));
 
-        /* Zero the manager */
-        memset(&EVENTMANAGER, 0, sizeof(EVENTMANAGER));
+        /* Free the lists if not NULL */
+        if (EVENTMANAGER.p_raised_events != NULL) {
+            free(EVENTMANAGER.p_raised_events);
+        }
+        if (EVENTMANAGER.p_num_cycles_events_raised != NULL) {
+            free(EVENTMANAGER.p_num_cycles_events_raised);
+        }
     }
     /* Otherwise warn that destroy was called twice */
     else {
@@ -102,7 +111,10 @@ void EventManager_destroy(void) {
 }
 
 bool EventManager_raise_event(Event event_in) {
-    // DEBUG_TRC("Raise event 0x%04X", event_in);
+    /* Raise event must be interrupt safe, as it could be called in an
+     * interrupt, therefore we disable interrupts for the duration of this 
+     * function */
+    Kernel_disable_interrupts();
 
     /* Check that init has been called */
     if (DP.EVENTMANAGER.INITIALISED == false) {
@@ -177,6 +189,9 @@ bool EventManager_raise_event(Event event_in) {
 
     /* Increment number of events */
     DP.EVENTMANAGER.NUM_RAISED_EVENTS++;
+
+    /* Reenable interrupts */
+    Kernel_enable_interrupts();
 
     /* Return success */
     return true;
