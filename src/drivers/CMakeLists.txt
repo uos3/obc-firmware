@@ -11,3 +11,6 @@ add_subdirectory(eeprom)
 
 # Timer module
 add_subdirectory(timer)
+
+# Watchdog module
+add_subdirectory(wdt)
