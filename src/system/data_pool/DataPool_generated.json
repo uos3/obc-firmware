@@ -1,0 +1,191 @@
+{
+    "DP.INITIALISED": {
+        "block_id": 0,
+        "block_index": 1,
+        "dp_id": 1,
+        "data_type": "bool",
+        "brief": "Flag set to true if the DataPool has been initialised, false if otherwise."
+    },
+    "DP.BOARD_INITIALISED": {
+        "block_id": 0,
+        "block_index": 2,
+        "dp_id": 2,
+        "data_type": "bool",
+        "brief": "Flag set to true if the Board driver has been initialised, false otherwise."
+    },
+    "DP.EVENTMANAGER.INITIALISED": {
+        "block_id": 3,
+        "block_index": 1,
+        "dp_id": 3073,
+        "data_type": "bool",
+        "brief": "Flag indicating whether or not the EventManager has been  initialised."
+    },
+    "DP.EVENTMANAGER.ERROR_CODE": {
+        "block_id": 3,
+        "block_index": 2,
+        "dp_id": 3074,
+        "data_type": "ErrorCode",
+        "brief": "Stores an error code coming from the EventManager."
+    },
+    "DP.EVENTMANAGER.MAX_EVENTS_REACHED": {
+        "block_id": 3,
+        "block_index": 3,
+        "dp_id": 3075,
+        "data_type": "bool",
+        "brief": "Flag which is true if the maximum number of events have been raised, indicating that some events may be missed."
+    },
+    "DP.EVENTMANAGER.NUM_RAISED_EVENTS": {
+        "block_id": 3,
+        "block_index": 4,
+        "dp_id": 3076,
+        "data_type": "uint8_t",
+        "brief": "Counter storing the number of raised events."
+    },
+    "DP.EVENTMANAGER.EVENT_LIST_SIZE": {
+        "block_id": 3,
+        "block_index": 5,
+        "dp_id": 3077,
+        "data_type": "size_t",
+        "brief": "The current size of the allocated event lists."
+    },
+    "DP.IMU.INITIALISED": {
+        "block_id": 37,
+        "block_index": 1,
+        "dp_id": 37889,
+        "data_type": "bool",
+        "brief": "Flag indicating whether or not the Imu has been initialised."
+    },
+    "DP.IMU.ERROR_CODE": {
+        "block_id": 37,
+        "block_index": 2,
+        "dp_id": 37890,
+        "data_type": "ErrorCode",
+        "brief": "Stores errors that occur during operation."
+    },
+    "DP.IMU.I2C_ERROR_CODE": {
+        "block_id": 37,
+        "block_index": 3,
+        "dp_id": 37891,
+        "data_type": "ErrorCode",
+        "brief": "Stores errors from the I2C module."
+    },
+    "DP.IMU.STATE": {
+        "block_id": 37,
+        "block_index": 4,
+        "dp_id": 37892,
+        "data_type": "Imu_State",
+        "brief": "IMU state machine state."
+    },
+    "DP.IMU.SUBSTATE": {
+        "block_id": 37,
+        "block_index": 5,
+        "dp_id": 37893,
+        "data_type": "Imu_SubState",
+        "brief": "IMU state machine substate."
+    },
+    "DP.IMU.COMMAND": {
+        "block_id": 37,
+        "block_index": 6,
+        "dp_id": 37894,
+        "data_type": "Imu_Command",
+        "brief": "Command the Imu module shall execute."
+    },
+    "DP.IMU.GYROSCOPE_DATA": {
+        "block_id": 37,
+        "block_index": 7,
+        "dp_id": 37895,
+        "data_type": "Imu_VecInt16",
+        "brief": "Data from the IMU's gyroscope."
+    },
+    "DP.IMU.GYROSCOPE_DATA_VALID": {
+        "block_id": 37,
+        "block_index": 8,
+        "dp_id": 37896,
+        "data_type": "bool",
+        "brief": "True when the data contained in DP.IMU.GYROSCOPE_DATA is valid."
+    },
+    "DP.IMU.MAGNETOMETER_DATA": {
+        "block_id": 37,
+        "block_index": 9,
+        "dp_id": 37897,
+        "data_type": "Imu_VecInt16",
+        "brief": "Data from the IMU's magnetometer."
+    },
+    "DP.IMU.MAGNE_SENSE_ADJUST_DATA": {
+        "block_id": 37,
+        "block_index": 10,
+        "dp_id": 37898,
+        "data_type": "Imu_VecUint8",
+        "brief": "Sensetivity adjustment data from the magnetometer."
+    },
+    "DP.IMU.MAGNETOMETER_DATA_VALID": {
+        "block_id": 37,
+        "block_index": 11,
+        "dp_id": 37899,
+        "data_type": "bool",
+        "brief": "True when the data contained in DP.IMU.MAGNETOMETER_DATA is valid."
+    },
+    "DP.IMU.TEMPERATURE_DATA": {
+        "block_id": 37,
+        "block_index": 12,
+        "dp_id": 37900,
+        "data_type": "int16_t",
+        "brief": "Temperature reading from the IMU."
+    },
+    "DP.IMU.TEMPERATURE_DATA_VALID": {
+        "block_id": 37,
+        "block_index": 13,
+        "dp_id": 37901,
+        "data_type": "bool",
+        "brief": "True when the data contained in DP.IMU.TEMPERATURE_DATA is valid."
+    },
+    "DP.MEMSTOREMANAGER.ERROR_CODE": {
+        "block_id": 4,
+        "block_index": 1,
+        "dp_id": 4097,
+        "data_type": "ErrorCode",
+        "brief": "Error code for the MemStoreManager"
+    },
+    "DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE": {
+        "block_id": 4,
+        "block_index": 2,
+        "dp_id": 4098,
+        "data_type": "ErrorCode",
+        "brief": "Error code from the EEPROM driver."
+    },
+    "DP.MEMSTOREMANAGER.CFG_FILE_1_OK": {
+        "block_id": 4,
+        "block_index": 3,
+        "dp_id": 4099,
+        "data_type": "bool",
+        "brief": "Indicates if the first configuration file is OK."
+    },
+    "DP.MEMSTOREMANAGER.CFG_FILE_2_OK": {
+        "block_id": 4,
+        "block_index": 4,
+        "dp_id": 4100,
+        "data_type": "bool",
+        "brief": "Indicates if the second configuration file is OK."
+    },
+    "DP.MEMSTOREMANAGER.CFG_FILE_3_OK": {
+        "block_id": 4,
+        "block_index": 5,
+        "dp_id": 4101,
+        "data_type": "bool",
+        "brief": "Indicates if the third configuration file is OK."
+    },
+    "DP.EPS.INITIALISED": {
+        "block_id": 34,
+        "block_index": 1,
+        "dp_id": 34817,
+        "data_type": "bool",
+        "brief": "Flag indicating whether or not the Eps has been initialised."
+    },
+    "DP.EPS.ERROR_CODE": {
+        "block_id": 34,
+        "block_index": 2,
+        "dp_id": 34818,
+        "data_type": "ErrorCode",
+        "brief": "Stores errors that occur during operation."
+    }
+}

@@ -93,15 +93,18 @@ def print_matches(matches):
     console.print('')
         
     # Print datapools
-    # print('[bold u]DataPool members[/bold u]')
-    # if len(matches['datapools']) == 0:
-    #     print('    [i]None[/i]')
-    # else:
-    #     console.print('')
-    #     for dp in matches['datapools']:
-    #         console.print(f'    [bold]{dp["symbol"]}:[/bold] [cyan]0x{dp["value"]:04X}[/cyan] ({dp["value"]}, 0b{dp["value"]:016b})')
-    #         desc = Padding(dp['description'], (0, 0, 0, 8))
-    #         console.print(desc)
+    console.print('[bold u]DataPool Parameters[/bold u]')
+    if len(matches['datapool']) == 0:
+        console.print('    [i]None[/i]')
+    else:
+        if len(matches['datapool']) > 1:
+            print('')
+            console.print('    [red][bold]WARNING[/bold] Multiple DataPool parameters with the same value detected![/red]')
+            console.print('            [red]This must be corrected in the header definition so there is no conflict![/red]')
+        console.print('')
+        for dp in matches['datapool']:
+            _print_const(console, dp)
+    console.print('')
 
 def _print_const(console, const):
     '''

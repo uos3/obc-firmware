@@ -57,7 +57,7 @@ bool DataPool_get(
 
 
     /* DP.EVENTMANAGER.INITIALISED */
-    case 0x0201:
+    case 0x0c01:
         *pp_data_out = &DP.EVENTMANAGER.INITIALISED;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -65,7 +65,7 @@ bool DataPool_get(
 
 
     /* DP.EVENTMANAGER.ERROR_CODE */
-    case 0x0202:
+    case 0x0c02:
         *pp_data_out = &DP.EVENTMANAGER.ERROR_CODE;
         *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
         *p_data_size_out = sizeof(ErrorCode);
@@ -73,7 +73,7 @@ bool DataPool_get(
 
 
     /* DP.EVENTMANAGER.MAX_EVENTS_REACHED */
-    case 0x0203:
+    case 0x0c03:
         *pp_data_out = &DP.EVENTMANAGER.MAX_EVENTS_REACHED;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -81,7 +81,7 @@ bool DataPool_get(
 
 
     /* DP.EVENTMANAGER.NUM_RAISED_EVENTS */
-    case 0x0204:
+    case 0x0c04:
         *pp_data_out = &DP.EVENTMANAGER.NUM_RAISED_EVENTS;
         *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
         *p_data_size_out = sizeof(uint8_t);
@@ -89,7 +89,7 @@ bool DataPool_get(
 
 
     /* DP.EVENTMANAGER.EVENT_LIST_SIZE */
-    case 0x0205:
+    case 0x0c05:
         *pp_data_out = &DP.EVENTMANAGER.EVENT_LIST_SIZE;
         *p_data_type_out = DATAPOOL_DATATYPE_SIZE_T;
         *p_data_size_out = sizeof(size_t);
@@ -97,7 +97,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.INITIALISED */
-    case 0x0401:
+    case 0x9401:
         *pp_data_out = &DP.IMU.INITIALISED;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -105,7 +105,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.ERROR_CODE */
-    case 0x0402:
+    case 0x9402:
         *pp_data_out = &DP.IMU.ERROR_CODE;
         *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
         *p_data_size_out = sizeof(ErrorCode);
@@ -113,7 +113,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.I2C_ERROR_CODE */
-    case 0x0403:
+    case 0x9403:
         *pp_data_out = &DP.IMU.I2C_ERROR_CODE;
         *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
         *p_data_size_out = sizeof(ErrorCode);
@@ -121,7 +121,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.STATE */
-    case 0x0404:
+    case 0x9404:
         *pp_data_out = &DP.IMU.STATE;
         *p_data_type_out = DATAPOOL_DATATYPE_IMU_STATE;
         *p_data_size_out = sizeof(Imu_State);
@@ -129,7 +129,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.SUBSTATE */
-    case 0x0405:
+    case 0x9405:
         *pp_data_out = &DP.IMU.SUBSTATE;
         *p_data_type_out = DATAPOOL_DATATYPE_IMU_SUBSTATE;
         *p_data_size_out = sizeof(Imu_SubState);
@@ -137,7 +137,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.COMMAND */
-    case 0x0406:
+    case 0x9406:
         *pp_data_out = &DP.IMU.COMMAND;
         *p_data_type_out = DATAPOOL_DATATYPE_IMU_COMMAND;
         *p_data_size_out = sizeof(Imu_Command);
@@ -145,7 +145,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.GYROSCOPE_DATA */
-    case 0x0407:
+    case 0x9407:
         *pp_data_out = &DP.IMU.GYROSCOPE_DATA;
         *p_data_type_out = DATAPOOL_DATATYPE_IMU_VECINT16;
         *p_data_size_out = sizeof(Imu_VecInt16);
@@ -153,7 +153,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.GYROSCOPE_DATA_VALID */
-    case 0x0408:
+    case 0x9408:
         *pp_data_out = &DP.IMU.GYROSCOPE_DATA_VALID;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -161,7 +161,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.MAGNETOMETER_DATA */
-    case 0x0409:
+    case 0x9409:
         *pp_data_out = &DP.IMU.MAGNETOMETER_DATA;
         *p_data_type_out = DATAPOOL_DATATYPE_IMU_VECINT16;
         *p_data_size_out = sizeof(Imu_VecInt16);
@@ -169,7 +169,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.MAGNE_SENSE_ADJUST_DATA */
-    case 0x040a:
+    case 0x940a:
         *pp_data_out = &DP.IMU.MAGNE_SENSE_ADJUST_DATA;
         *p_data_type_out = DATAPOOL_DATATYPE_IMU_VECUINT8;
         *p_data_size_out = sizeof(Imu_VecUint8);
@@ -177,7 +177,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.MAGNETOMETER_DATA_VALID */
-    case 0x040b:
+    case 0x940b:
         *pp_data_out = &DP.IMU.MAGNETOMETER_DATA_VALID;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -185,7 +185,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.TEMPERATURE_DATA */
-    case 0x040c:
+    case 0x940c:
         *pp_data_out = &DP.IMU.TEMPERATURE_DATA;
         *p_data_type_out = DATAPOOL_DATATYPE_INT16_T;
         *p_data_size_out = sizeof(int16_t);
@@ -193,7 +193,7 @@ bool DataPool_get(
 
 
     /* DP.IMU.TEMPERATURE_DATA_VALID */
-    case 0x040d:
+    case 0x940d:
         *pp_data_out = &DP.IMU.TEMPERATURE_DATA_VALID;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -201,7 +201,7 @@ bool DataPool_get(
 
 
     /* DP.MEMSTOREMANAGER.ERROR_CODE */
-    case 0x0601:
+    case 0x1001:
         *pp_data_out = &DP.MEMSTOREMANAGER.ERROR_CODE;
         *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
         *p_data_size_out = sizeof(ErrorCode);
@@ -209,7 +209,7 @@ bool DataPool_get(
 
 
     /* DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE */
-    case 0x0602:
+    case 0x1002:
         *pp_data_out = &DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE;
         *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
         *p_data_size_out = sizeof(ErrorCode);
@@ -217,7 +217,7 @@ bool DataPool_get(
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_1_OK */
-    case 0x0603:
+    case 0x1003:
         *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_1_OK;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -225,7 +225,7 @@ bool DataPool_get(
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_2_OK */
-    case 0x0604:
+    case 0x1004:
         *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_2_OK;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -233,7 +233,7 @@ bool DataPool_get(
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_3_OK */
-    case 0x0605:
+    case 0x1005:
         *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_3_OK;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -241,7 +241,7 @@ bool DataPool_get(
 
 
     /* DP.EPS.INITIALISED */
-    case 0x0801:
+    case 0x8801:
         *pp_data_out = &DP.EPS.INITIALISED;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -249,7 +249,7 @@ bool DataPool_get(
 
 
     /* DP.EPS.ERROR_CODE */
-    case 0x0802:
+    case 0x8802:
         *pp_data_out = &DP.EPS.ERROR_CODE;
         *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
         *p_data_size_out = sizeof(ErrorCode);
@@ -283,151 +283,151 @@ bool DataPool_get_symbol_str(
 
 
     /* DP.EVENTMANAGER.INITIALISED */
-    case 0x0201:
+    case 0x0c01:
         *pp_symbol_str_out = strdup("DP.EVENTMANAGER.INITIALISED");
         return true;
 
 
     /* DP.EVENTMANAGER.ERROR_CODE */
-    case 0x0202:
+    case 0x0c02:
         *pp_symbol_str_out = strdup("DP.EVENTMANAGER.ERROR_CODE");
         return true;
 
 
     /* DP.EVENTMANAGER.MAX_EVENTS_REACHED */
-    case 0x0203:
+    case 0x0c03:
         *pp_symbol_str_out = strdup("DP.EVENTMANAGER.MAX_EVENTS_REACHED");
         return true;
 
 
     /* DP.EVENTMANAGER.NUM_RAISED_EVENTS */
-    case 0x0204:
+    case 0x0c04:
         *pp_symbol_str_out = strdup("DP.EVENTMANAGER.NUM_RAISED_EVENTS");
         return true;
 
 
     /* DP.EVENTMANAGER.EVENT_LIST_SIZE */
-    case 0x0205:
+    case 0x0c05:
         *pp_symbol_str_out = strdup("DP.EVENTMANAGER.EVENT_LIST_SIZE");
         return true;
 
 
     /* DP.IMU.INITIALISED */
-    case 0x0401:
+    case 0x9401:
         *pp_symbol_str_out = strdup("DP.IMU.INITIALISED");
         return true;
 
 
     /* DP.IMU.ERROR_CODE */
-    case 0x0402:
+    case 0x9402:
         *pp_symbol_str_out = strdup("DP.IMU.ERROR_CODE");
         return true;
 
 
     /* DP.IMU.I2C_ERROR_CODE */
-    case 0x0403:
+    case 0x9403:
         *pp_symbol_str_out = strdup("DP.IMU.I2C_ERROR_CODE");
         return true;
 
 
     /* DP.IMU.STATE */
-    case 0x0404:
+    case 0x9404:
         *pp_symbol_str_out = strdup("DP.IMU.STATE");
         return true;
 
 
     /* DP.IMU.SUBSTATE */
-    case 0x0405:
+    case 0x9405:
         *pp_symbol_str_out = strdup("DP.IMU.SUBSTATE");
         return true;
 
 
     /* DP.IMU.COMMAND */
-    case 0x0406:
+    case 0x9406:
         *pp_symbol_str_out = strdup("DP.IMU.COMMAND");
         return true;
 
 
     /* DP.IMU.GYROSCOPE_DATA */
-    case 0x0407:
+    case 0x9407:
         *pp_symbol_str_out = strdup("DP.IMU.GYROSCOPE_DATA");
         return true;
 
 
     /* DP.IMU.GYROSCOPE_DATA_VALID */
-    case 0x0408:
+    case 0x9408:
         *pp_symbol_str_out = strdup("DP.IMU.GYROSCOPE_DATA_VALID");
         return true;
 
 
     /* DP.IMU.MAGNETOMETER_DATA */
-    case 0x0409:
+    case 0x9409:
         *pp_symbol_str_out = strdup("DP.IMU.MAGNETOMETER_DATA");
         return true;
 
 
     /* DP.IMU.MAGNE_SENSE_ADJUST_DATA */
-    case 0x040a:
+    case 0x940a:
         *pp_symbol_str_out = strdup("DP.IMU.MAGNE_SENSE_ADJUST_DATA");
         return true;
 
 
     /* DP.IMU.MAGNETOMETER_DATA_VALID */
-    case 0x040b:
+    case 0x940b:
         *pp_symbol_str_out = strdup("DP.IMU.MAGNETOMETER_DATA_VALID");
         return true;
 
 
     /* DP.IMU.TEMPERATURE_DATA */
-    case 0x040c:
+    case 0x940c:
         *pp_symbol_str_out = strdup("DP.IMU.TEMPERATURE_DATA");
         return true;
 
 
     /* DP.IMU.TEMPERATURE_DATA_VALID */
-    case 0x040d:
+    case 0x940d:
         *pp_symbol_str_out = strdup("DP.IMU.TEMPERATURE_DATA_VALID");
         return true;
 
 
     /* DP.MEMSTOREMANAGER.ERROR_CODE */
-    case 0x0601:
+    case 0x1001:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.ERROR_CODE");
         return true;
 
 
     /* DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE */
-    case 0x0602:
+    case 0x1002:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE");
         return true;
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_1_OK */
-    case 0x0603:
+    case 0x1003:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_1_OK");
         return true;
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_2_OK */
-    case 0x0604:
+    case 0x1004:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_2_OK");
         return true;
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_3_OK */
-    case 0x0605:
+    case 0x1005:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_3_OK");
         return true;
 
 
     /* DP.EPS.INITIALISED */
-    case 0x0801:
+    case 0x8801:
         *pp_symbol_str_out = strdup("DP.EPS.INITIALISED");
         return true;
 
 
     /* DP.EPS.ERROR_CODE */
-    case 0x0802:
+    case 0x8802:
         *pp_symbol_str_out = strdup("DP.EPS.ERROR_CODE");
         return true;
 

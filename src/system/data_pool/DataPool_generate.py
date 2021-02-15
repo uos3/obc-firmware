@@ -7,10 +7,9 @@ This script starts in `DataPool_struct.h` and generates for the DataPool:
 
 This is done so that ground control may provide a list of DataPool items to
 downlink as telemetry, in the form of 16-bit ID numbers. The ID numbers are
-split into two parts, a block ID (0-127, 7 bits) and a block index (0-512, 9
-bits). Blocks are assigned to modules, allowing easy expansion of an individual
-module's DataPool without having to move other indexes or have members from
-other modules in the middle of a module's DP IDs.
+split into two parts, a block ID (0-63, 6 bits) and a block index (0-1023, 10
+bits). Block numbers match the module IDs specified in
+SSS_ConstantModuleIds.xlsx. 
 
 The IDs are specified as part of the documentation comment on a member, in the
 form of:
@@ -24,22 +23,26 @@ bool INITIALISED;
 ```
 
 Where the number following `@dp` is the index within the module's assigned
-block space. This must be less than the total number of indexes assigned to the
-module, for instance for a module with only one block assigned 512, for one
-with 3 blocks this would be 1536.
+block space. This must be less than 1024.
 
 DataPool parameters marked with `@dp_module ModuleName` indicate that the
 member stores the DP parameters for the given module. The module name given
-must match the one given in the block assignments listing in the documentation
-string for the DataPool struct itself.
+must match the one given SSS_ConstantModuleIds.xlsx.
 '''
 
 import os
 import re
 import math
+import json
 from warnings import warn
 from datetime import datetime
 from pathlib import Path
+
+# Number of bits assigned to the module ID
+MODULE_ID_BITS = 6
+
+# Maximum number of items in a block
+BLOCK_INDEX_MAX_LIMIT = 1024
 
 def main():
 
@@ -53,10 +56,17 @@ def main():
     src_dir = root_dir.joinpath('src')
     os.chdir(src_dir)
 
+    # Load the module IDs file
+    with open('system/kernel/Kernel_module_ids.json') as module_ids_f:
+        module_ids = json.load(module_ids_f)
+
     # Load the root DP file
     with open('system/data_pool/DataPool_struct.h') as dp_struct_f:
         # Parse the file
-        (datapool, version, includes) = parse_dp_struct(dp_struct_f.read())
+        (datapool, version, includes) = parse_dp_struct(
+            dp_struct_f.read(), 
+            module_ids
+        )
 
     # Generate the new header and source files from the pool
     (source, header) = generate_files(datapool, version, includes)
@@ -66,10 +76,12 @@ def main():
         source_f.write(source)
     with open('system/data_pool/DataPool_generated.h', 'w+') as header_f:
         header_f.write(header)
+    with open('system/data_pool/DataPool_generated.json', 'w+') as json_f:
+        json.dump(datapool, json_f, indent=4)
 
     print('DataPool code generation complete')
 
-def parse_dp_struct(dp_struct_text):
+def parse_dp_struct(dp_struct_text, module_ids):
     '''
     Parse the DataPool_struct.h text into the datapool format for further
     processing.
@@ -135,15 +147,10 @@ def parse_dp_struct(dp_struct_text):
     # Pop the DP comment off the matches list
     matches.pop(dp_comment_idx)
 
-    print('Parsing block assignments')
-
-    # Get the block assignments from this comment
-    block_assignments = parse_block_assignments(dp_comment)
-
     print('Parsing DataPool')
 
     # Recursively parse the remaining matches
-    datapool = parse_dp_matches(matches, included_structs, block_assignments)
+    datapool = parse_dp_matches(matches, included_structs, module_ids)
 
     # Return the dict
     return (datapool, version, includes)
@@ -166,43 +173,8 @@ def get_version_and_remove_header(text):
         re.sub(r'/\*{2}(.*?)\*/', '', text, count=1, flags=re.MULTILINE|re.S),
         version
     )
-    
-def parse_block_assignments(text):
-    '''
-    Parse block assignments in the form `ModuleName: block0, block1`
-    '''
 
-    block_assignments = {}
-
-    # Compile the regex
-    regex = re.compile(r'\*\s+(.*?):\s+([\d,\s]+)\n')
-
-    # Find all matches
-    matches = [match for match in regex.finditer(text)]
-
-    if len(matches) == 0:
-        raise RuntimeError(
-            'Could not find block assignments in DataPool documentation comment')
-
-    # Parse into the dict
-    for match in matches:
-        # The dict key is the module name and the value the block indexes,
-        # which are parsed by splitting the index list on commas and parsing to
-        # ints.
-        # Parse the list of indexes
-        idxs = []
-        for idx in match.group(2).split(','):
-            try:
-                idxs.append(int(idx))
-            except ValueError:
-                pass
-
-        # assign to block
-        block_assignments[match.group(1)] = idxs
-
-    return block_assignments
-
-def parse_dp_matches(matches, included_structs, block_assignments):
+def parse_dp_matches(matches, included_structs, module_ids):
     '''
     Parse all matches by descending through the members of DataPool to find
     included structs. The output format is a dictionary of symbols (like
@@ -212,6 +184,7 @@ def parse_dp_matches(matches, included_structs, block_assignments):
         'DP.EVENTMANAGER.INITIALISED': {
             'block_id': 1,
             'block_index': 1,
+            'dp_id: 0x0c01
             'data_type': 'bool',
             'brief': 'Indicates whether or not the EventManager has been initialised.'
         }
@@ -238,10 +211,17 @@ def parse_dp_matches(matches, included_structs, block_assignments):
         if module is not None:
             # Get the module struct from the included structs
             mod_struct = included_structs[match.group(2)]
+
+            # Find the ID associated with this module
+            module_id = next((m['module_id'] for m in module_ids if m['module_name'] == module.group(1)), None)
+            
+            # If none raise an error - module not found
+            if module_id is None:
+                raise RuntimeError(f'Module {module.group(1)} not in Kernel_module_ids.json')
             
             # Update the datapool with the parsed module struct
             datapool.update(parse_module_struct(
-                block_assignments[module.group(1)],
+                [module_id],
                 mod_struct,
                 match.group(3)
             ))
@@ -269,10 +249,10 @@ def parse_dp_matches(matches, included_structs, block_assignments):
 
             block_index = int(dp.group(1))
 
-            # If the index is greater than 512 raise error
-            if block_index > 512:
+            # If the index is greater than the max possible raise error
+            if block_index > BLOCK_INDEX_MAX_LIMIT:
                 raise ValueError(
-                    f'Root DataPool struct is assigned 1 block (512 parameters) but parameter DP.{match.group(3)} has an index of {block_index}.'
+                    f'Root DataPool struct is assigned 1 block ({BLOCK_INDEX_MAX_LIMIT} parameters) but parameter DP.{match.group(3)} has an index of {block_index}.'
                 )
 
             # Add the parameter to the data pool, noting that this is in the
@@ -280,6 +260,7 @@ def parse_dp_matches(matches, included_structs, block_assignments):
             datapool[f'DP.{match.group(3)}'] = {
                 'block_id': 0,
                 'block_index': block_index,
+                'dp_id': block_index,
                 'data_type': match.group(2),
                 'brief': brief_text
             }
@@ -333,10 +314,8 @@ def parse_module_struct(block_ids, text, symbol):
             # DP index
             dp_idx = int(dp.group(1))
 
-            # Calculate which block the module is assigned to this member fits
-            # in. For example if the index is 512->1023 it would go in the 2nd
-            # index.
-            block_id_idx = math.floor(dp_idx/512)
+            # Calculate which block the module is assigned to this member
+            block_id_idx = math.floor(dp_idx/BLOCK_INDEX_MAX_LIMIT)
 
             # Check if dp_idx is shared by another member
             if dp_idx in [member['block_index'] for member in mod_dp.values()]:
@@ -357,6 +336,7 @@ def parse_module_struct(block_ids, text, symbol):
             mod_dp[f'DP.{symbol}.{match.group(3)}'] = {
                 'block_id': block_ids[block_id_idx],
                 'block_index': dp_idx,
+                'dp_id': block_ids[block_id_idx] << (16 - MODULE_ID_BITS) | dp_idx,
                 'data_type': match.group(2),
                 'brief': brief_text
             }
@@ -581,12 +561,10 @@ def get_parameter_code(symbol, dp_value, data_type_map):
     Return a string for the given symbol that returns the case statement for 
     get_symbol_str.
     '''
-    # Calculate the index, shifting the block id 9 bits to the left.
-    idx = dp_value['block_id'] << 9 | dp_value['block_index']
     return \
 f'''
     /* {symbol} */
-    case 0x{idx:04x}:
+    case 0x{dp_value["dp_id"]:04x}:
         *pp_data_out = &{symbol};
         *p_data_type_out = {data_type_map[dp_value["data_type"]]};
         *p_data_size_out = sizeof({dp_value["data_type"]});
@@ -598,12 +576,10 @@ def get_symbol_str_code(symbol, dp_value):
     Return a string for the given symbol that returns the case statement for 
     get_symbol_str.
     '''
-    # Calculate the index, shifting the block id 9 bits to the left.
-    idx = dp_value['block_id'] << 9 | dp_value['block_index']
     return \
 f'''
     /* {symbol} */
-    case 0x{idx:04x}:
+    case 0x{dp_value["dp_id"]:04x}:
         *pp_symbol_str_out = strdup("{symbol}");
         return true;
 '''

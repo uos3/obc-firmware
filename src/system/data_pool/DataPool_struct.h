@@ -36,13 +36,6 @@
 
 /**
  * @brief The DataPool structure definition.
- * 
- * ---- BLOCK ASSIGNMENTS ----
- * DataPool: 0
- * EventManager: 1
- * Imu: 2
- * MemStoreManager: 3
- * Eps: 4
  */
 typedef struct _DataPool {
 

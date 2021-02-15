@@ -1,0 +1,200 @@
+[
+    {
+        "definition": "MOD_ID_KERNEL",
+        "group_name": "System",
+        "module_name": "Kernel",
+        "module_id": 0
+    },
+    {
+        "definition": "MOD_ID_DATAPOOL",
+        "group_name": "System",
+        "module_name": "DataPool",
+        "module_id": 1
+    },
+    {
+        "definition": "MOD_ID_FDIR",
+        "group_name": "System",
+        "module_name": "Fdir",
+        "module_id": 2
+    },
+    {
+        "definition": "MOD_ID_EVENTMANAGER",
+        "group_name": "System",
+        "module_name": "EventManager",
+        "module_id": 3
+    },
+    {
+        "definition": "MOD_ID_MEMSTOREMANAGER",
+        "group_name": "System",
+        "module_name": "MemStoreManager",
+        "module_id": 4
+    },
+    {
+        "definition": "MOD_ID_PARAMMONITOR",
+        "group_name": "System",
+        "module_name": "ParamMonitor",
+        "module_id": 5
+    },
+    {
+        "definition": "MOD_ID_SCHEDULER",
+        "group_name": "System",
+        "module_name": "Scheduler",
+        "module_id": 6
+    },
+    {
+        "definition": "MOD_ID_SERVINTERFACE",
+        "group_name": "System",
+        "module_name": "ServInterface",
+        "module_id": 7
+    },
+    {
+        "definition": "MOD_ID_TCPROCESSOR",
+        "group_name": "System",
+        "module_name": "TcProcessor",
+        "module_id": 8
+    },
+    {
+        "definition": "MOD_ID_BOARD",
+        "group_name": "Drivers",
+        "module_name": "Board",
+        "module_id": 16
+    },
+    {
+        "definition": "MOD_ID_DELAY",
+        "group_name": "Drivers",
+        "module_name": "Delay",
+        "module_id": 17
+    },
+    {
+        "definition": "MOD_ID_EEPROM",
+        "group_name": "Drivers",
+        "module_name": "Eeprom",
+        "module_id": 18
+    },
+    {
+        "definition": "MOD_ID_GPIO",
+        "group_name": "Drivers",
+        "module_name": "Gpio",
+        "module_id": 19
+    },
+    {
+        "definition": "MOD_ID_I2C",
+        "group_name": "Drivers",
+        "module_name": "I2c",
+        "module_id": 20
+    },
+    {
+        "definition": "MOD_ID_RTC",
+        "group_name": "Drivers",
+        "module_name": "Rtc",
+        "module_id": 21
+    },
+    {
+        "definition": "MOD_ID_SPI",
+        "group_name": "Drivers",
+        "module_name": "Spi",
+        "module_id": 22
+    },
+    {
+        "definition": "MOD_ID_TIMER",
+        "group_name": "Drivers",
+        "module_name": "Timer",
+        "module_id": 23
+    },
+    {
+        "definition": "MOD_ID_UART",
+        "group_name": "Drivers",
+        "module_name": "Uart",
+        "module_id": 24
+    },
+    {
+        "definition": "MOD_ID_WDT",
+        "group_name": "Drivers",
+        "module_name": "Wdt",
+        "module_id": 25
+    },
+    {
+        "definition": "MOD_ID_ANTENNA",
+        "group_name": "Components",
+        "module_name": "Antenna",
+        "module_id": 32
+    },
+    {
+        "definition": "MOD_ID_CAMERA",
+        "group_name": "Components",
+        "module_name": "Camera",
+        "module_id": 33
+    },
+    {
+        "definition": "MOD_ID_EPS",
+        "group_name": "Components",
+        "module_name": "Eps",
+        "module_id": 34
+    },
+    {
+        "definition": "MOD_ID_FRAM",
+        "group_name": "Components",
+        "module_name": "Fram",
+        "module_id": 35
+    },
+    {
+        "definition": "MOD_ID_GNSS",
+        "group_name": "Components",
+        "module_name": "Gnss",
+        "module_id": 36
+    },
+    {
+        "definition": "MOD_ID_IMU",
+        "group_name": "Components",
+        "module_name": "Imu",
+        "module_id": 37
+    },
+    {
+        "definition": "MOD_ID_LED",
+        "group_name": "Components",
+        "module_name": "Led",
+        "module_id": 38
+    },
+    {
+        "definition": "MOD_ID_RADIO",
+        "group_name": "Components",
+        "module_name": "Radio",
+        "module_id": 39
+    },
+    {
+        "definition": "MOD_ID_TEMP",
+        "group_name": "Components",
+        "module_name": "Temp",
+        "module_id": 40
+    },
+    {
+        "definition": "MOD_ID_BEACONAPP",
+        "group_name": "Applications",
+        "module_name": "BeaconApp",
+        "module_id": 48
+    },
+    {
+        "definition": "MOD_ID_CAMERAAPP",
+        "group_name": "Applications",
+        "module_name": "CameraApp",
+        "module_id": 49
+    },
+    {
+        "definition": "MOD_ID_DEPLOYMENTAPP",
+        "group_name": "Applications",
+        "module_name": "DeploymentApp",
+        "module_id": 50
+    },
+    {
+        "definition": "MOD_ID_PAYLOADAPP",
+        "group_name": "Applications",
+        "module_name": "PayloadApp",
+        "module_id": 51
+    },
+    {
+        "definition": "MOD_ID_SYSTEMHEALTHAPP",
+        "group_name": "Applications",
+        "module_name": "SystemHealthApp",
+        "module_id": 52
+    }
+]

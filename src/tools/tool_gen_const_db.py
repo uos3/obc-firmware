@@ -18,8 +18,8 @@ Next all error and event files (*_errors.h and *_events.h) are read and parsed
 in similar ways. #defines are read and names/ID values stored, along with
 descriptions.
 
-Finally parsing of the DataPool structs are handled by the special
-tool_generate_datapool.py file.
+Finally DataPool IDs are parsed using the DataPool_generated.json file, which
+is build during the DataPool compilation process.
 
 The results are output in this directory for later copying into the build dir.
 '''
@@ -28,6 +28,7 @@ import os
 import re
 from pathlib import Path
 from tinydb import TinyDB, where
+import json
 
 def gen_const_db():
     '''
@@ -48,6 +49,9 @@ def gen_const_db():
 
     # Generate the events table
     db = gen_events_table(root_dir, db)
+
+    # Generate the datapool table
+    db = gen_datapool_table(root_dir, db)
 
     return db_path
 
@@ -226,6 +230,40 @@ def gen_events_table(root_dir, db):
                 'description': desc,
                 'value': module['shifted_id'] | int(match.group(4), 0)
             })
+
+    return db
+
+def gen_datapool_table(root_dir, db):
+    '''
+    Generate the DataPool table of the database by parsing the
+    DataPool_generated.json file.
+
+    The format of the datapool table is:
+        - symbol
+        - module
+        - description
+        - value
+    '''
+
+    # Path to the module_ids file
+    file_path = root_dir.joinpath('src', 'system', 'data_pool', 'DataPool_generated.json')
+
+    # Load the generated dp file
+    with open(file_path) as dp_file:
+        dp_data = json.load(dp_file)
+
+    # Create new table
+    table = db.table('datapool')
+    modules_table = db.table('modules')
+
+    # For each parameter in the dp insert a new entry in the table
+    for (symbol, param) in dp_data.items():
+        table.insert({
+            'symbol': symbol,
+            'module_name': modules_table.get(where('id') == param['block_id'])['module_name'],
+            'value': param['dp_id'],
+            'description': param['brief']
+        })
 
     return db
 

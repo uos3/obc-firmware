@@ -9,6 +9,7 @@ import sys
 import os
 from datetime import datetime
 import openpyxl
+import json
 
 def generate_mod_ids(excel_file_path):
     '''
@@ -28,14 +29,20 @@ def generate_mod_ids(excel_file_path):
     # Get the ID definitions
     id_defs = get_id_defs(ids_sheet)
 
-    # Generate the file
-    module_defs_string = gen_mod_ids_file(id_defs)
+    # Generate the header file
+    module_defs_string_header = gen_mod_ids_file(id_defs)
 
-    # Output the file in the current working directory
+    # Output the header file in the current working directory
     with open('Kernel_module_ids.h', 'w+') as file:
-        file.write(module_defs_string)
+        file.write(module_defs_string_header)
+    
+    # Output the module IDs as JSON for easy reading by the DataPool generate
+    # code. 
+    with open('Kernel_module_ids.json', 'w+') as file:
+        json.dump(id_defs, file, indent=4)
 
     print(f'Constant Module IDs written to {os.getcwd()}/Kernel_module_ids.h')
+    print(f'JSON file written to {os.getcwd()}/Kernel_module_ids.json')
 
 def get_id_defs(sheet):
     '''
