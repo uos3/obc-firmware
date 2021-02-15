@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-01
+ * @date 2021-02-15
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -30,6 +30,7 @@
 #include "system/event_manager/EventManager_dp_struct.h"
 #include "system/mem_store_manager/MemStoreManager_dp_struct.h"
 #include "components/imu/Imu_dp_struct.h"
+#include "components/eps/Eps_dp_struct.h"
 
 /* -------------------------------------------------------------------------
  * TYPES

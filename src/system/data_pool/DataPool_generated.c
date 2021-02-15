@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-01
+ * @date 2021-02-15
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -199,6 +199,62 @@ bool DataPool_get(
         *p_data_size_out = sizeof(bool);
         return true;
 
+
+    /* DP.MEMSTOREMANAGER.ERROR_CODE */
+    case 0x0601:
+        *pp_data_out = &DP.MEMSTOREMANAGER.ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE */
+    case 0x0602:
+        *pp_data_out = &DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.CFG_FILE_1_OK */
+    case 0x0603:
+        *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_1_OK;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.CFG_FILE_2_OK */
+    case 0x0604:
+        *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_2_OK;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.CFG_FILE_3_OK */
+    case 0x0605:
+        *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_3_OK;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.EPS.INITIALISED */
+    case 0x0801:
+        *pp_data_out = &DP.EPS.INITIALISED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.EPS.ERROR_CODE */
+    case 0x0802:
+        *pp_data_out = &DP.EPS.ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
+        return true;
+
     
     default:
         DEBUG_ERR("Invalid DP ID: %d", id_in);
@@ -331,6 +387,48 @@ bool DataPool_get_symbol_str(
     /* DP.IMU.TEMPERATURE_DATA_VALID */
     case 0x040d:
         *pp_symbol_str_out = strdup("DP.IMU.TEMPERATURE_DATA_VALID");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.ERROR_CODE */
+    case 0x0601:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.ERROR_CODE");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE */
+    case 0x0602:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.CFG_FILE_1_OK */
+    case 0x0603:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_1_OK");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.CFG_FILE_2_OK */
+    case 0x0604:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_2_OK");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.CFG_FILE_3_OK */
+    case 0x0605:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_3_OK");
+        return true;
+
+
+    /* DP.EPS.INITIALISED */
+    case 0x0801:
+        *pp_symbol_str_out = strdup("DP.EPS.INITIALISED");
+        return true;
+
+
+    /* DP.EPS.ERROR_CODE */
+    case 0x0802:
+        *pp_symbol_str_out = strdup("DP.EPS.ERROR_CODE");
         return true;
 
 

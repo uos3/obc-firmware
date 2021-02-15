@@ -28,6 +28,7 @@
 #include "system/event_manager/EventManager_dp_struct.h"
 #include "system/mem_store_manager/MemStoreManager_dp_struct.h"
 #include "components/imu/Imu_dp_struct.h"
+#include "components/eps/Eps_dp_struct.h"
 
 /* -------------------------------------------------------------------------
  * DATAPOOL STRUCT
@@ -41,6 +42,7 @@
  * EventManager: 1
  * Imu: 2
  * MemStoreManager: 3
+ * Eps: 4
  */
 typedef struct _DataPool {
 
@@ -83,6 +85,13 @@ typedef struct _DataPool {
      * @dp_module MemStoreManager
      */
     MemStoreManager_Dp MEMSTOREMANAGER;
+
+    /**
+     * @brief DataPool parameters for the Eps component.
+     * 
+     * @dp_module Eps
+     */
+    Eps_Dp EPS;
 } DataPool;
 
 
