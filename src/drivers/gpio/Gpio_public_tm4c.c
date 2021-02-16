@@ -77,7 +77,7 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
                     break;
                 }
 
-                if (i = GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+                if (i >= GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS) {
                     /* If the number of attempts has reached the maximum,
                      * raise an error. */
                     DEBUG_ERR("Failed to enable GPIO %d peripheral", p_gpio_pins_in[i]);
@@ -312,7 +312,7 @@ ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_call
     return ERROR_NONE;
 }
 
-ErrorCode GPIO_reset_interrupt(uint8_t gpio_id_numer) {
+ErrorCode Gpio_reset_interrupt(uint8_t gpio_id_numer) {
     Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_numer];
 
     /* Check for valid gpio id number and initialisation before attempting
