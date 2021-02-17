@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-15
+ * @date 2021-02-17
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -58,7 +58,10 @@ typedef enum _DataPool_DataType {
     DATAPOOL_DATATYPE_IMU_COMMAND,
     DATAPOOL_DATATYPE_IMU_VECINT16,
     DATAPOOL_DATATYPE_IMU_VECUINT8,
-    DATAPOOL_DATATYPE_INT16_T
+    DATAPOOL_DATATYPE_INT16_T,
+    DATAPOOL_DATATYPE_EPS_STATE,
+    DATAPOOL_DATATYPE_EPS_COMMANDSTATUS,
+    DATAPOOL_DATATYPE_EPS_HKDATA
 } DataPool_DataType;
 
 /* -------------------------------------------------------------------------   

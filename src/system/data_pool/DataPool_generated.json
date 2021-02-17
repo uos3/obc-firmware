@@ -187,5 +187,47 @@
         "dp_id": 34818,
         "data_type": "ErrorCode",
         "brief": "Stores errors that occur during operation."
+    },
+    "DP.EPS.STATE": {
+        "block_id": 34,
+        "block_index": 3,
+        "dp_id": 34819,
+        "data_type": "Eps_State",
+        "brief": "The current state of the Eps module."
+    },
+    "DP.EPS.CONFIG_SYNCED": {
+        "block_id": 34,
+        "block_index": 4,
+        "dp_id": 34820,
+        "data_type": "bool",
+        "brief": "Indicates if the configuration of the EPS is synchronised (matches with) the config specified in the OBC's config file."
+    },
+    "DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH]": {
+        "block_id": 34,
+        "block_index": 5,
+        "dp_id": 34821,
+        "data_type": "uint8_t",
+        "brief": "The request (command) to be sent in EPS_STATE_REQUEST."
+    },
+    "DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH]": {
+        "block_id": 34,
+        "block_index": 6,
+        "dp_id": 34822,
+        "data_type": "uint8_t",
+        "brief": "The reply from the EPS."
+    },
+    "DP.EPS.COMMAND_STATUS": {
+        "block_id": 34,
+        "block_index": 7,
+        "dp_id": 34823,
+        "data_type": "Eps_CommandStatus",
+        "brief": "The status of the most recently sent command."
+    },
+    "DP.EPS.HK_DATA": {
+        "block_id": 34,
+        "block_index": 8,
+        "dp_id": 34824,
+        "data_type": "Eps_HkData",
+        "brief": "Most up-to-date housekeeping data returned by the EPS."
     }
 }

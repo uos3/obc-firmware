@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-15
+ * @date 2021-02-17
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -255,6 +255,54 @@ bool DataPool_get(
         *p_data_size_out = sizeof(ErrorCode);
         return true;
 
+
+    /* DP.EPS.STATE */
+    case 0x8803:
+        *pp_data_out = &DP.EPS.STATE;
+        *p_data_type_out = DATAPOOL_DATATYPE_EPS_STATE;
+        *p_data_size_out = sizeof(Eps_State);
+        return true;
+
+
+    /* DP.EPS.CONFIG_SYNCED */
+    case 0x8804:
+        *pp_data_out = &DP.EPS.CONFIG_SYNCED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH] */
+    case 0x8805:
+        *pp_data_out = &DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH];
+        *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
+        *p_data_size_out = sizeof(uint8_t);
+        return true;
+
+
+    /* DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH] */
+    case 0x8806:
+        *pp_data_out = &DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH];
+        *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
+        *p_data_size_out = sizeof(uint8_t);
+        return true;
+
+
+    /* DP.EPS.COMMAND_STATUS */
+    case 0x8807:
+        *pp_data_out = &DP.EPS.COMMAND_STATUS;
+        *p_data_type_out = DATAPOOL_DATATYPE_EPS_COMMANDSTATUS;
+        *p_data_size_out = sizeof(Eps_CommandStatus);
+        return true;
+
+
+    /* DP.EPS.HK_DATA */
+    case 0x8808:
+        *pp_data_out = &DP.EPS.HK_DATA;
+        *p_data_type_out = DATAPOOL_DATATYPE_EPS_HKDATA;
+        *p_data_size_out = sizeof(Eps_HkData);
+        return true;
+
     
     default:
         DEBUG_ERR("Invalid DP ID: %d", id_in);
@@ -429,6 +477,42 @@ bool DataPool_get_symbol_str(
     /* DP.EPS.ERROR_CODE */
     case 0x8802:
         *pp_symbol_str_out = strdup("DP.EPS.ERROR_CODE");
+        return true;
+
+
+    /* DP.EPS.STATE */
+    case 0x8803:
+        *pp_symbol_str_out = strdup("DP.EPS.STATE");
+        return true;
+
+
+    /* DP.EPS.CONFIG_SYNCED */
+    case 0x8804:
+        *pp_symbol_str_out = strdup("DP.EPS.CONFIG_SYNCED");
+        return true;
+
+
+    /* DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH] */
+    case 0x8805:
+        *pp_symbol_str_out = strdup("DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH]");
+        return true;
+
+
+    /* DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH] */
+    case 0x8806:
+        *pp_symbol_str_out = strdup("DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH]");
+        return true;
+
+
+    /* DP.EPS.COMMAND_STATUS */
+    case 0x8807:
+        *pp_symbol_str_out = strdup("DP.EPS.COMMAND_STATUS");
+        return true;
+
+
+    /* DP.EPS.HK_DATA */
+    case 0x8808:
+        *pp_symbol_str_out = strdup("DP.EPS.HK_DATA");
         return true;
 
 
