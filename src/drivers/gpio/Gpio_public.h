@@ -19,13 +19,12 @@
  * ------------------------------------------------------------------------- */
 
 /* Standard library includes */
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 /* Internal includes */
-#include "drivers/gpio/Gpio_public.h"
 #include "drivers/gpio/Gpio_errors.h"
-
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -77,18 +76,6 @@ typedef enum _GPIO_PIN_INDEX {
     GPIO_PINF3,
     GPIO_PINF4,
 } ;
-
-/* -------------------------------------------------------------------------   
- * INCLUDES
- * ------------------------------------------------------------------------- */
-
-/* Standard library includes */
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-
-/* Internal includes */
-#include "drivers/gpio/Gpio_errors.h"
 
 /* -------------------------------------------------------------------------   
  * ENUMS

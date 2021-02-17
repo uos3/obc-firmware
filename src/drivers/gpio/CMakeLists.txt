@@ -3,8 +3,8 @@
 # Library declaration
 if (${UOS3_TARGET_TM4C})
     add_library(Gpio
-        Gpio_private.tm4c.c
-        Gpio_public.tm4c.c
+        Gpio_private_tm4c.c
+        Gpio_public_tm4c.c
     )
 else()
     add_library(Gpio
