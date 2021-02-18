@@ -192,9 +192,15 @@
         "module_id": 51
     },
     {
-        "definition": "MOD_ID_SYSTEMHEALTHAPP",
+        "definition": "MOD_ID_MISSIONAPP",
         "group_name": "Applications",
-        "module_name": "SystemHealthApp",
+        "module_name": "MissionApp",
         "module_id": 52
+    },
+    {
+        "definition": "MOD_ID_POWERAPP",
+        "group_name": "Applications",
+        "module_name": "PowerApp",
+        "module_id": 53
     }
 ]
