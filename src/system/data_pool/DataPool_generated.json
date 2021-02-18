@@ -202,31 +202,59 @@
         "data_type": "bool",
         "brief": "Indicates if the configuration of the EPS is synchronised (matches with) the config specified in the OBC's config file."
     },
-    "DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH]": {
+    "DP.EPS.NEW_REQUEST": {
         "block_id": 34,
         "block_index": 5,
         "dp_id": 34821,
-        "data_type": "uint8_t",
-        "brief": "The request (command) to be sent in EPS_STATE_REQUEST."
+        "data_type": "bool",
+        "brief": "Flag indicating that there's a new request to send to the EPS."
     },
-    "DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH]": {
+    "DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH]": {
         "block_id": 34,
         "block_index": 6,
         "dp_id": 34822,
         "data_type": "uint8_t",
-        "brief": "The reply from the EPS."
+        "brief": "The request (command) to be sent in EPS_STATE_REQUEST."
     },
-    "DP.EPS.COMMAND_STATUS": {
+    "DP.EPS.EPS_REQUEST_LENGTH": {
         "block_id": 34,
         "block_index": 7,
         "dp_id": 34823,
+        "data_type": "size_t",
+        "brief": "Length of the request stored in DP.EPS.EPS_REQUEST."
+    },
+    "DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH]": {
+        "block_id": 34,
+        "block_index": 8,
+        "dp_id": 34824,
+        "data_type": "uint8_t",
+        "brief": "The reply from the EPS."
+    },
+    "DP.EPS.EPS_REPLY_LENGTH": {
+        "block_id": 34,
+        "block_index": 9,
+        "dp_id": 34825,
+        "data_type": "size_t",
+        "brief": "Length of the reply stored in DP.EPS.EPS_REPLY"
+    },
+    "DP.EPS.UART_FRAME_NUMBER": {
+        "block_id": 34,
+        "block_index": 10,
+        "dp_id": 34826,
+        "data_type": "uint8_t",
+        "brief": "Frame number of the latest UART frame to be sent."
+    },
+    "DP.EPS.COMMAND_STATUS": {
+        "block_id": 34,
+        "block_index": 11,
+        "dp_id": 34827,
         "data_type": "Eps_CommandStatus",
         "brief": "The status of the most recently sent command."
     },
     "DP.EPS.HK_DATA": {
         "block_id": 34,
-        "block_index": 8,
-        "dp_id": 34824,
+        "block_index": 12,
+        "dp_id": 34828,
         "data_type": "Eps_HkData",
         "brief": "Most up-to-date housekeeping data returned by the EPS."
     }

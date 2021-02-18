@@ -106,6 +106,21 @@
 #define EPS_UART_HEADER_LENGTH (3)
 
 /**
+ * @brief Position of the frame number byte within the UART header.
+ */
+#define EPS_UART_HEADER_FRAME_NUMBER_POS (0)
+
+/**
+ * @brief Position of the data type byte within the UART header.
+ */
+#define EPS_UART_HEADER_DATA_TYPE_POS (1)
+
+/**
+ * @brief Position of the payload length byte within the UART header.
+ */
+#define EPS_UART_HEADER_PAYLOAD_LENGTH_POS (2)
+
+/**
  * @brief The maximum length (in bytes) of a UART frame payload data section, 
  * i.e. the whole frame - the header.
  */
@@ -153,18 +168,18 @@ typedef struct _Eps_BattCmd {
 typedef struct _Eps_OcpState {
 
     /**
-     * @brief Status of the Radio RX rail.
+     * @brief Status of the Radio TX rail.
      * 
      * As per [DDF_1_15] this is for OCP rail 1.
      */
-    bool radio_rx;
+    bool radio_tx;
 
     /**
-     * @brief Status of the Radio TX rail.
+     * @brief Status of the Radio RX rail.
      * 
      * As per [DDF_1_15] this is for OCP rail 2.
      */
-    bool radio_tx;
+    bool radio_rx;
 
     /**
      * @brief Status of the Camera rail.

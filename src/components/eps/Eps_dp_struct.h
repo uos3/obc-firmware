@@ -62,14 +62,28 @@ typedef struct _Eps_Dp {
     bool CONFIG_SYNCED;
 
     /**
+     * @brief Flag indicating that there's a new request to send to the EPS.
+     * 
+     * @dp 5
+     */
+    bool NEW_REQUEST;
+
+    /**
      * @brief The request (command) to be sent in EPS_STATE_REQUEST.
      * 
      * PRIVATE: Do not set this value directly, instead use the public
      * functions. 
      * 
-     * @dp 5
+     * @dp 6
      */
     uint8_t EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH];
+
+    /**
+     * @brief Length of the request stored in DP.EPS.EPS_REQUEST.
+     * 
+     * @dp 7
+     */
+    size_t EPS_REQUEST_LENGTH;
 
     /**
      * @brief The reply from the EPS.
@@ -77,28 +91,35 @@ typedef struct _Eps_Dp {
      * PRIVATE: Do not set this value directly, instead use the public
      * functions.
      * 
-     * @dp 6
+     * @dp 8
      */
     uint8_t EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH];
 
     /**
+     * @brief Length of the reply stored in DP.EPS.EPS_REPLY
+     * 
+     * @dp 9
+     */
+    size_t EPS_REPLY_LENGTH;
+
+    /**
      * @brief Frame number of the latest UART frame to be sent.
      * 
-     * @dp 7
+     * @dp 10
      */
     uint8_t UART_FRAME_NUMBER;
 
     /**
      * @brief The status of the most recently sent command.
      * 
-     * @dp 8
+     * @dp 11
      */
     Eps_CommandStatus COMMAND_STATUS;
 
     /**
      * @brief Most up-to-date housekeeping data returned by the EPS.
      * 
-     * @dp 9
+     * @dp 12
      */
     Eps_HkData HK_DATA;
 

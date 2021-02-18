@@ -53,3 +53,14 @@ target_link_libraries(demo_timer
     ${STANDARD_LINK_LIBS}
     Timer
 )
+
+# Eps demo
+add_executable(demo_eps
+    ${STARTUP_SOURCE}
+    demo_eps.c
+)
+target_link_libraries(demo_eps
+    ${STANDARD_LINK_LIBS}
+    Eps
+    Timer
+)

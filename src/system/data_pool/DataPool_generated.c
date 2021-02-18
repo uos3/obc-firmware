@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-17
+ * @date 2021-02-18
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -272,24 +272,56 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH] */
+    /* DP.EPS.NEW_REQUEST */
     case 0x8805:
+        *pp_data_out = &DP.EPS.NEW_REQUEST;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH] */
+    case 0x8806:
         *pp_data_out = &DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH];
         *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
         *p_data_size_out = sizeof(uint8_t);
         return true;
 
 
+    /* DP.EPS.EPS_REQUEST_LENGTH */
+    case 0x8807:
+        *pp_data_out = &DP.EPS.EPS_REQUEST_LENGTH;
+        *p_data_type_out = DATAPOOL_DATATYPE_SIZE_T;
+        *p_data_size_out = sizeof(size_t);
+        return true;
+
+
     /* DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH] */
-    case 0x8806:
+    case 0x8808:
         *pp_data_out = &DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH];
         *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
         *p_data_size_out = sizeof(uint8_t);
         return true;
 
 
+    /* DP.EPS.EPS_REPLY_LENGTH */
+    case 0x8809:
+        *pp_data_out = &DP.EPS.EPS_REPLY_LENGTH;
+        *p_data_type_out = DATAPOOL_DATATYPE_SIZE_T;
+        *p_data_size_out = sizeof(size_t);
+        return true;
+
+
+    /* DP.EPS.UART_FRAME_NUMBER */
+    case 0x880a:
+        *pp_data_out = &DP.EPS.UART_FRAME_NUMBER;
+        *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
+        *p_data_size_out = sizeof(uint8_t);
+        return true;
+
+
     /* DP.EPS.COMMAND_STATUS */
-    case 0x8807:
+    case 0x880b:
         *pp_data_out = &DP.EPS.COMMAND_STATUS;
         *p_data_type_out = DATAPOOL_DATATYPE_EPS_COMMANDSTATUS;
         *p_data_size_out = sizeof(Eps_CommandStatus);
@@ -297,7 +329,7 @@ bool DataPool_get(
 
 
     /* DP.EPS.HK_DATA */
-    case 0x8808:
+    case 0x880c:
         *pp_data_out = &DP.EPS.HK_DATA;
         *p_data_type_out = DATAPOOL_DATATYPE_EPS_HKDATA;
         *p_data_size_out = sizeof(Eps_HkData);
@@ -492,26 +524,50 @@ bool DataPool_get_symbol_str(
         return true;
 
 
-    /* DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH] */
+    /* DP.EPS.NEW_REQUEST */
     case 0x8805:
+        *pp_symbol_str_out = strdup("DP.EPS.NEW_REQUEST");
+        return true;
+
+
+    /* DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH] */
+    case 0x8806:
         *pp_symbol_str_out = strdup("DP.EPS.EPS_REQUEST[EPS_MAX_UART_FRAME_LENGTH]");
         return true;
 
 
+    /* DP.EPS.EPS_REQUEST_LENGTH */
+    case 0x8807:
+        *pp_symbol_str_out = strdup("DP.EPS.EPS_REQUEST_LENGTH");
+        return true;
+
+
     /* DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH] */
-    case 0x8806:
+    case 0x8808:
         *pp_symbol_str_out = strdup("DP.EPS.EPS_REPLY[EPS_MAX_UART_FRAME_LENGTH]");
         return true;
 
 
+    /* DP.EPS.EPS_REPLY_LENGTH */
+    case 0x8809:
+        *pp_symbol_str_out = strdup("DP.EPS.EPS_REPLY_LENGTH");
+        return true;
+
+
+    /* DP.EPS.UART_FRAME_NUMBER */
+    case 0x880a:
+        *pp_symbol_str_out = strdup("DP.EPS.UART_FRAME_NUMBER");
+        return true;
+
+
     /* DP.EPS.COMMAND_STATUS */
-    case 0x8807:
+    case 0x880b:
         *pp_symbol_str_out = strdup("DP.EPS.COMMAND_STATUS");
         return true;
 
 
     /* DP.EPS.HK_DATA */
-    case 0x8808:
+    case 0x880c:
         *pp_symbol_str_out = strdup("DP.EPS.HK_DATA");
         return true;
 
