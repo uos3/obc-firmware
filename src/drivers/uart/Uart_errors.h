@@ -39,4 +39,10 @@
  */
 #define UART_ERROR_PERIPHERAL_READY_FAILED ((ErrorCode)MOD_ID_UART | 2)
 
+/**
+ * @brief TODO: A function has been called on the UART before it has been
+ * initialised.
+ */
+#define UART_ERROR_NOT_INITIALISED ((ErrorCode)MOD_ID_UART | 3)
+
 #endif /* H_UART_ERRORS_H */
