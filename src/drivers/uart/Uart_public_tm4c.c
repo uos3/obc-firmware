@@ -28,6 +28,8 @@
 #include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_errors.h"
 
+#include "drivers/uart/Uart_private_tm4c.c"
+
 /* External */
 #include "driverlib/gpio.h" /* Might be needed later for UART */
 #include "driverlib/sysctl.h"
@@ -40,3 +42,77 @@
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
+
+ErrorCode Uart_init(uint8_t uart_id_number_in) {
+    /* Pointer to the UART */
+    Uart_Device *p_uart_device = &UART_PINS[uart_id_number_in];
+
+    /* Check that the ID number of the UART is acceptable, return an error
+     * if not. */
+    if (uart_id_number_in >= UART_NUM_UARTS) {
+        DEBUG_ERR("The UART ID number was greater than the number of UARTs");
+        return UART_ERROR_MAX_NUM_UARTS;
+    }
+
+    /* Check if the UART has already been initialised, give a warning if it has
+     * already been initialised, or continue if it has not. */
+    if (p_uart_device->initialised) {
+        DEBUG_WRN("Uart_init called when already initialised");
+    }
+    else {
+        /* Initialise the UART peripheral */
+        if (!SysCtlPeripheralReady(p_uart_device->uart_peripheral)) {
+            SysCtlPeripheralReset(p_uart_device->uart_peripheral);
+            SysCtlPeripheralReady(p_uart_device->uart_peripheral);
+        }
+
+        for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
+            if (SysCtlPeripheralReady(p_uart_device->uart_peripheral)) {
+                /* If the peripheral is ready, break out of the loop */
+                break;
+            }
+            if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+                /* If the maximium number of peripheral ready checks has been
+                 * reached, raise an error. */
+                DEBUG_ERR("Failed to enable UART peripheral");
+                return UART_ERROR_PERIPHERAL_READY_FAILED;
+            }
+        }
+
+        /* Initialise the GPIO peripheral if not already */
+        if (!SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
+            SysCtlPeripheralReset(p_uart_device->gpio_peripheral);
+            SysCtlPeripheralReady(p_uart_device->gpio_peripheral);
+        }
+
+        for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
+            if (SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
+                /* If the peripheral is ready, break out of the loop */
+                break;
+            }
+            if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+                /* If the maximium number of peripheral ready checks has been
+                 * reached, raise an error. */
+                DEBUG_ERR("Failed to enable UART peripheral");
+                return UART_ERROR_PERIPHERAL_READY_FAILED;
+            }
+        }
+
+        GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
+        GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
+        /* TODO: Check the bitwise OR is used correctly. The parameter is the
+         * "bit-packed representation of the pins" from TI manual page 283. */
+        GPIOPinTypeUART(p_uart_device->gpio_base,
+            p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
+        );
+
+        /* TODO: Set baud rate? (Or check what default value is, or what
+         * value is required by UoS3) */
+    }
+
+    /* Set the UART state as initialised. */
+    p_uart_device->initialised = true;
+        /* Return error none if this point has been reached without any errors
+         * occuring. */
+        return ERROR_NONE;
+}

@@ -29,9 +29,14 @@
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief TODO: This is a temporary errorcode to be replaced and filled with 
- * future errorcode defines.
+ * @brief TODO: The UART ID number was greater than the number of UARTs.
  */
-#define UART_ERROR_TEMP ((ErrorCode)MOD_ID_UART | 1)
+#define UART_ERROR_MAX_NUM_UARTS ((ErrorCode)MOD_ID_UART | 1)
+
+/**
+ * @brief TODO: The UART peripheral failed to enable after reaching the maximum
+ *  number of checks.
+ */
+#define UART_ERROR_PERIPHERAL_READY_FAILED ((ErrorCode)MOD_ID_UART | 2)
 
 #endif /* H_UART_ERRORS_H */

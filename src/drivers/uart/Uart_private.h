@@ -39,6 +39,11 @@
 /* Number of UART devices. */
 #define UART_NUM_UARTS (3)
 
+/* Maximum number of times the peripheral ready check will occur before raising
+ * an error.
+ * TODO: This is currently arbitrary */
+#define UART_MAX_NUM_PERIPHERAL_READY_CHECKS (10)
+
 /* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */
