@@ -45,4 +45,10 @@
  */
 #define UART_ERROR_NOT_INITIALISED ((ErrorCode)MOD_ID_UART | 3)
 
+/**
+ * @brief TODO: There was no space available in the TX FIFO, so the character
+ * could not be sent.
+ */
+#define UART_ERROR_PUT_CHAR_FAILED ((ErrorCode)MOD_ID_UART | 4)
+
 #endif /* H_UART_ERRORS_H */
