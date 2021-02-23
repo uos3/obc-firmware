@@ -128,6 +128,7 @@ add_subdirectory(src/util)
 add_subdirectory(src/drivers)
 add_subdirectory(src/system)
 add_subdirectory(src/components)
+add_subdirectory(src/applications)
 add_subdirectory(src/demo)
 add_subdirectory(src/tools)
 

@@ -168,39 +168,39 @@
         "module_id": 40
     },
     {
-        "definition": "MOD_ID_BEACONAPP",
+        "definition": "MOD_ID_BEACON",
         "group_name": "Applications",
-        "module_name": "BeaconApp",
+        "module_name": "Beacon",
         "module_id": 48
     },
     {
-        "definition": "MOD_ID_CAMERAAPP",
+        "definition": "MOD_ID_PICTURE",
         "group_name": "Applications",
-        "module_name": "CameraApp",
+        "module_name": "Picture",
         "module_id": 49
     },
     {
-        "definition": "MOD_ID_DEPLOYMENTAPP",
+        "definition": "MOD_ID_DEPLOYMENT",
         "group_name": "Applications",
-        "module_name": "DeploymentApp",
+        "module_name": "Deployment",
         "module_id": 50
     },
     {
-        "definition": "MOD_ID_PAYLOADAPP",
+        "definition": "MOD_ID_PAYLOAD",
         "group_name": "Applications",
-        "module_name": "PayloadApp",
+        "module_name": "Payload",
         "module_id": 51
     },
     {
-        "definition": "MOD_ID_MISSIONAPP",
+        "definition": "MOD_ID_MISSION",
         "group_name": "Applications",
-        "module_name": "MissionApp",
+        "module_name": "Mission",
         "module_id": 52
     },
     {
-        "definition": "MOD_ID_POWERAPP",
+        "definition": "MOD_ID_POWER",
         "group_name": "Applications",
-        "module_name": "PowerApp",
+        "module_name": "Power",
         "module_id": 53
     }
 ]
