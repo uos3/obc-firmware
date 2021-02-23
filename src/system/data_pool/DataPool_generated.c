@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-18
+ * @date 2021-02-23
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -335,6 +335,30 @@ bool DataPool_get(
         *p_data_size_out = sizeof(Eps_HkData);
         return true;
 
+
+    /* DP.MISSION.INITIALISED */
+    case 0xd001:
+        *pp_data_out = &DP.MISSION.INITIALISED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.MISSION.ERROR_CODE */
+    case 0xd002:
+        *pp_data_out = &DP.MISSION.ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
+        return true;
+
+
+    /* DP.MISSION.OPMODE */
+    case 0xd003:
+        *pp_data_out = &DP.MISSION.OPMODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_MISSION_OPMODE;
+        *p_data_size_out = sizeof(Mission_OpMode);
+        return true;
+
     
     default:
         DEBUG_ERR("Invalid DP ID: %d", id_in);
@@ -569,6 +593,24 @@ bool DataPool_get_symbol_str(
     /* DP.EPS.HK_DATA */
     case 0x880c:
         *pp_symbol_str_out = strdup("DP.EPS.HK_DATA");
+        return true;
+
+
+    /* DP.MISSION.INITIALISED */
+    case 0xd001:
+        *pp_symbol_str_out = strdup("DP.MISSION.INITIALISED");
+        return true;
+
+
+    /* DP.MISSION.ERROR_CODE */
+    case 0xd002:
+        *pp_symbol_str_out = strdup("DP.MISSION.ERROR_CODE");
+        return true;
+
+
+    /* DP.MISSION.OPMODE */
+    case 0xd003:
+        *pp_symbol_str_out = strdup("DP.MISSION.OPMODE");
         return true;
 
 

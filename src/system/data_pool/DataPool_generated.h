@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-18
+ * @date 2021-02-23
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -31,6 +31,7 @@
 #include "system/mem_store_manager/MemStoreManager_dp_struct.h"
 #include "components/imu/Imu_dp_struct.h"
 #include "components/eps/Eps_dp_struct.h"
+#include "applications/mission/Mission_dp_struct.h"
 
 /* -------------------------------------------------------------------------
  * TYPES
@@ -61,7 +62,8 @@ typedef enum _DataPool_DataType {
     DATAPOOL_DATATYPE_INT16_T,
     DATAPOOL_DATATYPE_EPS_STATE,
     DATAPOOL_DATATYPE_EPS_COMMANDSTATUS,
-    DATAPOOL_DATATYPE_EPS_HKDATA
+    DATAPOOL_DATATYPE_EPS_HKDATA,
+    DATAPOOL_DATATYPE_MISSION_OPMODE
 } DataPool_DataType;
 
 /* -------------------------------------------------------------------------   

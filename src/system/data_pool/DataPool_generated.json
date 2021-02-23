@@ -257,5 +257,26 @@
         "dp_id": 34828,
         "data_type": "Eps_HkData",
         "brief": "Most up-to-date housekeeping data returned by the EPS."
+    },
+    "DP.MISSION.INITIALISED": {
+        "block_id": 52,
+        "block_index": 1,
+        "dp_id": 53249,
+        "data_type": "bool",
+        "brief": "Flag indicating if the Mission App has been initialised (true) or not (false)."
+    },
+    "DP.MISSION.ERROR_CODE": {
+        "block_id": 52,
+        "block_index": 2,
+        "dp_id": 53250,
+        "data_type": "ErrorCode",
+        "brief": "Stores errors that occur during operation."
+    },
+    "DP.MISSION.OPMODE": {
+        "block_id": 52,
+        "block_index": 3,
+        "dp_id": 53251,
+        "data_type": "Mission_OpMode",
+        "brief": "The current mission Operational Mode (OPMODE)"
     }
 }

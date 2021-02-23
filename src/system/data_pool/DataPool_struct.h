@@ -29,6 +29,7 @@
 #include "system/mem_store_manager/MemStoreManager_dp_struct.h"
 #include "components/imu/Imu_dp_struct.h"
 #include "components/eps/Eps_dp_struct.h"
+#include "applications/mission/Mission_dp_struct.h"
 
 /* -------------------------------------------------------------------------
  * DATAPOOL STRUCT
@@ -85,6 +86,14 @@ typedef struct _DataPool {
      * @dp_module Eps
      */
     Eps_Dp EPS;
+
+    /**
+     * @brief DataPool parameters for the Mission app.
+     * 
+     * @dp_module MissionApp
+     */
+    Mission_Dp MISSION;
+
 } DataPool;
 
 
