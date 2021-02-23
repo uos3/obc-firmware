@@ -63,14 +63,14 @@ typedef uint8_t Eps_OcpByte;
  * 
  * As per [DDF_1_15] this is for OCP rail 2.
  */
-#define EPS_OCP_RAIL_RADIO_RX_SHIFT (1)
+#define EPS_OCP_RAIL_RADIO_RX_CAMERA_SHIFT (1)
 
 /**
  * @brief Bitshift for the Camera rail of an Eps_OcpByte variable.
  * 
  * As per [DDF_1_15] this is for OCP rail 3.
  */
-#define EPS_OCP_RAIL_CAMERA_SHIFT (2)
+#define EPS_OCP_RAIL_EPS_MCU_SHIFT (2)
 
 /**
  * @brief Bitshift for the OBC rail of an Eps_OcpByte variable.
@@ -87,8 +87,7 @@ typedef uint8_t Eps_OcpByte;
 #define EPS_OCP_RAIL_GNSS_RX_SHIFT (4)
 
 /**
- * @brief Bitshift for the GNSS LNA (Low Noise Amplifier) rail of an 
- * Eps_OcpByte variable.
+ * @brief Bitshift for the GNSS LNA rail of an Eps_OcpByte variable.
  * 
  * As per [DDF_1_15] this is for OCP rail 6.
  */
@@ -102,18 +101,18 @@ typedef uint8_t Eps_OcpByte;
 #define EPS_OCP_RAIL_RADIO_TX_MASK (1 << EPS_OCP_RAIL_RADIO_TX_SHIFT)
 
 /**
- * @brief Bitmask for the Radio RX rail of an Eps_OcpByte variable.
+ * @brief Bitmask for the Radio RX/Camera rail of an Eps_OcpByte variable.
  * 
  * As per [DDF_1_15] this is for OCP rail 2.
  */
-#define EPS_OCP_RAIL_RADIO_RX_MASK (1 << EPS_OCP_RAIL_RADIO_RX_SHIFT)
+#define EPS_OCP_RAIL_RADIO_RX_CAMERA_MASK (1 << EPS_OCP_RAIL_RADIO_RX_CAMERA_SHIFT)
 
 /**
- * @brief Bitmask for the Camera rail of an Eps_OcpByte variable.
+ * @brief Bitmask for the EPS MCU rail of an Eps_OcpByte variable.
  * 
  * As per [DDF_1_15] this is for OCP rail 3.
  */
-#define EPS_OCP_RAIL_CAMERA_MASK (1 << EPS_OCP_RAIL_CAMERA_SHIFT)
+#define EPS_OCP_RAIL_EPS_MCU_MASK (1 << EPS_OCP_RAIL_EPS_MCU_SHIFT)
 
 /**
  * @brief Bitmask for the OBC rail of an Eps_OcpByte variable.
@@ -130,8 +129,7 @@ typedef uint8_t Eps_OcpByte;
 #define EPS_OCP_RAIL_GNSS_RX_MASK (1 << EPS_OCP_RAIL_GNSS_RX_SHIFT)
 
 /**
- * @brief Bitmask for the GNSS LNA (Low Noise Amplifier) rail of an 
- * Eps_OcpByte variable.
+ * @brief Bitmask for the GNSS LNA rail of an Eps_OcpByte variable.
  * 
  * As per [DDF_1_15] this is for OCP rail 6.
  */

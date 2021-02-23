@@ -359,6 +359,54 @@ bool DataPool_get(
         *p_data_size_out = sizeof(Mission_OpMode);
         return true;
 
+
+    /* DP.POWER.INITIALISED */
+    case 0xd401:
+        *pp_data_out = &DP.POWER.INITIALISED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.POWER.ERROR_CODE */
+    case 0xd402:
+        *pp_data_out = &DP.POWER.ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
+        return true;
+
+
+    /* DP.POWER.TIMER_ERROR_CODE */
+    case 0xd403:
+        *pp_data_out = &DP.POWER.TIMER_ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
+        return true;
+
+
+    /* DP.POWER.LOW_POWER_MODE_REQUEST */
+    case 0xd404:
+        *pp_data_out = &DP.POWER.LOW_POWER_MODE_REQUEST;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.POWER.TASK_TIMER_EVENT */
+    case 0xd405:
+        *pp_data_out = &DP.POWER.TASK_TIMER_EVENT;
+        *p_data_type_out = DATAPOOL_DATATYPE_EVENT;
+        *p_data_size_out = sizeof(Event);
+        return true;
+
+
+    /* DP.POWER.REQUESTED_OCP_STATE */
+    case 0xd406:
+        *pp_data_out = &DP.POWER.REQUESTED_OCP_STATE;
+        *p_data_type_out = DATAPOOL_DATATYPE_EPS_OCPSTATE;
+        *p_data_size_out = sizeof(Eps_OcpState);
+        return true;
+
     
     default:
         DEBUG_ERR("Invalid DP ID: %d", id_in);
@@ -611,6 +659,42 @@ bool DataPool_get_symbol_str(
     /* DP.MISSION.OPMODE */
     case 0xd003:
         *pp_symbol_str_out = strdup("DP.MISSION.OPMODE");
+        return true;
+
+
+    /* DP.POWER.INITIALISED */
+    case 0xd401:
+        *pp_symbol_str_out = strdup("DP.POWER.INITIALISED");
+        return true;
+
+
+    /* DP.POWER.ERROR_CODE */
+    case 0xd402:
+        *pp_symbol_str_out = strdup("DP.POWER.ERROR_CODE");
+        return true;
+
+
+    /* DP.POWER.TIMER_ERROR_CODE */
+    case 0xd403:
+        *pp_symbol_str_out = strdup("DP.POWER.TIMER_ERROR_CODE");
+        return true;
+
+
+    /* DP.POWER.LOW_POWER_MODE_REQUEST */
+    case 0xd404:
+        *pp_symbol_str_out = strdup("DP.POWER.LOW_POWER_MODE_REQUEST");
+        return true;
+
+
+    /* DP.POWER.TASK_TIMER_EVENT */
+    case 0xd405:
+        *pp_symbol_str_out = strdup("DP.POWER.TASK_TIMER_EVENT");
+        return true;
+
+
+    /* DP.POWER.REQUESTED_OCP_STATE */
+    case 0xd406:
+        *pp_symbol_str_out = strdup("DP.POWER.REQUESTED_OCP_STATE");
         return true;
 
 

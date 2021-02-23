@@ -278,5 +278,47 @@
         "dp_id": 53251,
         "data_type": "Mission_OpMode",
         "brief": "The current mission Operational Mode (OPMODE)"
+    },
+    "DP.POWER.INITIALISED": {
+        "block_id": 53,
+        "block_index": 1,
+        "dp_id": 54273,
+        "data_type": "bool",
+        "brief": "Indicates if the Power app is initialised (true) or not (false)."
+    },
+    "DP.POWER.ERROR_CODE": {
+        "block_id": 53,
+        "block_index": 2,
+        "dp_id": 54274,
+        "data_type": "ErrorCode",
+        "brief": "Stores error codes that occur during operation."
+    },
+    "DP.POWER.TIMER_ERROR_CODE": {
+        "block_id": 53,
+        "block_index": 3,
+        "dp_id": 54275,
+        "data_type": "ErrorCode",
+        "brief": "Stores error codes returned by the Timer driver."
+    },
+    "DP.POWER.LOW_POWER_MODE_REQUEST": {
+        "block_id": 53,
+        "block_index": 4,
+        "dp_id": 54276,
+        "data_type": "bool",
+        "brief": "Flag indicating whether or not Mission is requested to transition into Low Power (LP) OpMode."
+    },
+    "DP.POWER.TASK_TIMER_EVENT": {
+        "block_id": 53,
+        "block_index": 5,
+        "dp_id": 54277,
+        "data_type": "Event",
+        "brief": "The event associated with the app's primary task timer."
+    },
+    "DP.POWER.REQUESTED_OCP_STATE": {
+        "block_id": 53,
+        "block_index": 6,
+        "dp_id": 54278,
+        "data_type": "Eps_OcpState",
+        "brief": "The requested state of the OCP rails, which is based on the OpMode and the stored OpMode-OCP state configuration vector."
     }
 }

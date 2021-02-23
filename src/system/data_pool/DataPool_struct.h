@@ -30,6 +30,7 @@
 #include "components/imu/Imu_dp_struct.h"
 #include "components/eps/Eps_dp_struct.h"
 #include "applications/mission/Mission_dp_struct.h"
+#include "applications/power/Power_dp_struct.h"
 
 /* -------------------------------------------------------------------------
  * DATAPOOL STRUCT
@@ -90,9 +91,16 @@ typedef struct _DataPool {
     /**
      * @brief DataPool parameters for the Mission app.
      * 
-     * @dp_module MissionApp
+     * @dp_module Mission
      */
     Mission_Dp MISSION;
+
+    /**
+     * @brief DataPool parameters for the Power app.
+     * 
+     * @dp_module Power
+     */
+    Power_Dp POWER;
 
 } DataPool;
 

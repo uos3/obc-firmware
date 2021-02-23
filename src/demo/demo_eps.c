@@ -84,7 +84,7 @@ int main(void) {
 
         /* If initialised build a test ocp command and print it to the screen */
         if (DP.EPS.INITIALISED) {
-            ocp_state.radio_rx = true;
+            ocp_state.radio_rx_camera = true;
             ocp_state.obc = true;
             ocp_state.gnss_rx = true;
 

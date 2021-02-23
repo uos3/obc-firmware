@@ -88,8 +88,8 @@
 #include <stdbool.h>
 
 /* Internal includes */
-#include "components/eps/Eps_dp_struct.h"
 #include "components/eps/Eps_errors.h"
+#include "components/eps/Eps_events.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -137,7 +137,8 @@
  * be sent to the EPS during the initialisation process.
  */
 typedef struct _Eps_ConfigData {
-
+    /* FIXME: Remove */
+    uint8_t _dummy;
 } Eps_ConfigData;
 
 /**
@@ -164,6 +165,8 @@ typedef struct _Eps_BattCmd {
  * 
  * This struct defines the state of the OCP rails, either On (true) or Off
  * (false). 
+ * 
+ * TODO: Danny says the DDF is out of date, find a better reference
  */
 typedef struct _Eps_OcpState {
 
@@ -175,18 +178,18 @@ typedef struct _Eps_OcpState {
     bool radio_tx;
 
     /**
-     * @brief Status of the Radio RX rail.
+     * @brief Status of the Radio RX/Camera rail.
      * 
      * As per [DDF_1_15] this is for OCP rail 2.
      */
-    bool radio_rx;
+    bool radio_rx_camera;
 
     /**
-     * @brief Status of the Camera rail.
+     * @brief Status of the EPS MCU rail.
      * 
      * As per [DDF_1_15] this is for OCP rail 3.
      */
-    bool camera;
+    bool eps_mcu;
 
     /**
      * @brief Status of the OBC rail.
@@ -355,7 +358,7 @@ typedef enum _Eps_State {
      * 
      * No commands may be sent in this state.
      */
-    EPS_STATE_WAIT_REPLY = 4,
+    EPS_STATE_WAIT_REPLY = 4
 
 } Eps_State;
 

@@ -32,6 +32,7 @@
 #include "components/imu/Imu_dp_struct.h"
 #include "components/eps/Eps_dp_struct.h"
 #include "applications/mission/Mission_dp_struct.h"
+#include "applications/power/Power_dp_struct.h"
 
 /* -------------------------------------------------------------------------
  * TYPES
@@ -63,7 +64,9 @@ typedef enum _DataPool_DataType {
     DATAPOOL_DATATYPE_EPS_STATE,
     DATAPOOL_DATATYPE_EPS_COMMANDSTATUS,
     DATAPOOL_DATATYPE_EPS_HKDATA,
-    DATAPOOL_DATATYPE_MISSION_OPMODE
+    DATAPOOL_DATATYPE_MISSION_OPMODE,
+    DATAPOOL_DATATYPE_EVENT,
+    DATAPOOL_DATATYPE_EPS_OCPSTATE
 } DataPool_DataType;
 
 /* -------------------------------------------------------------------------   

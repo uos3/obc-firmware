@@ -47,6 +47,7 @@
 /* Internal includes */
 #include "system/mem_store_manager/MemStoreManager_errors.h"
 #include "system/mem_store_manager/MemStoreManager_events.h"
+#include "applications/power/Power_public.h"
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
@@ -64,6 +65,16 @@ typedef struct _MemStoreManager_ConfigData {
      */
     uint8_t version;
 
+    /**
+     * @brief Duration of the Power app's primary task timer, in seconds.
+     */
+    uint16_t power_task_timer_duration_s;
+
+    /**
+     * @brief The bit vector which defines which OCP rails shall be enabled
+     * during which OpModes (except the OBC and EPS rail, which are always on).
+     */
+    Power_OpModeOcpStateConfig power_op_mode_ocp_rail_config;
 
 } MemStoreManager_ConfigData;
 

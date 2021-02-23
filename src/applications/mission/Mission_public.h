@@ -30,7 +30,6 @@
 
 /* Internal includes */
 #include "applications/mission/Mission_errors.h"
-#include "applications/mission/Mission_dp_struct.h"
 
 /* -------------------------------------------------------------------------   
  * ENUMS

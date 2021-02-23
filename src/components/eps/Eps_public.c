@@ -219,10 +219,11 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
         (uint8_t)ocp_state_in.radio_tx << EPS_OCP_RAIL_RADIO_TX_SHIFT
     );
     state_byte |= (uint8_t)(
-        (uint8_t)ocp_state_in.radio_rx << EPS_OCP_RAIL_RADIO_RX_SHIFT
+        (uint8_t)ocp_state_in.radio_rx_camera 
+            << EPS_OCP_RAIL_RADIO_RX_CAMERA_SHIFT
     );
     state_byte |= (uint8_t)(
-        (uint8_t)ocp_state_in.camera << EPS_OCP_RAIL_CAMERA_SHIFT
+        (uint8_t)ocp_state_in.eps_mcu << EPS_OCP_RAIL_EPS_MCU_SHIFT
     );
     state_byte |= (uint8_t)(
         (uint8_t)ocp_state_in.obc << EPS_OCP_RAIL_OBC_SHIFT
