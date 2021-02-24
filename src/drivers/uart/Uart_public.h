@@ -74,7 +74,7 @@ ErrorCode Uart_init(uint8_t uart_id_number_in);
  * @param recvd_byte_out Byte received from the UART peripheral.
  * @return ErrorCode 
  */
-ErrorCode Uart_get_char(uint8_t uart_id_number_in, bool is_nonblocking_in, char *recvd_byte_out);
+ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out);
 
 /**
  * @brief Sends a byte from the specified UART peripheral.
@@ -84,17 +84,7 @@ ErrorCode Uart_get_char(uint8_t uart_id_number_in, bool is_nonblocking_in, char 
  * @param byte_out Byte to send.
  * @return ErrorCode 
  */
-ErrorCode Uart_put_char(uint8_t uart_id_number_in, bool is_nonblocking_in, char byte_out);
-
-/**
- * @brief Sends a string (/0 terminated) from the specified UART peripheral.
- * 
- * @param uart_id_number_in UART peripheral ID number.
- * @param is_blocking_in bool to check if the function should be nonblocking.
- * @param string_out Pointer to the string to send.
- * @return ErrorCode 
- */
-ErrorCode Uart_put_string(uint8_t uart_id_number_in, bool is_nonblocking_in, char *string_out);
+ErrorCode Uart_put_char(uint8_t uart_id_number_in, char byte_out);
 
 /**
  * @brief Sends a buffer with a specified length from the specified UART
@@ -106,7 +96,7 @@ ErrorCode Uart_put_string(uint8_t uart_id_number_in, bool is_nonblocking_in, cha
  * @param buffer_out Pointer to the buffer/string to send.
  * @return ErrorCode 
  */
-ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, bool is_nonblocking_in, size_t buffer_length_in, char *buffer_out);
+ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, char *buffer_out);
 
 /**
  * @brief Checks the TX FIFO busy status of the specified UART peripheral.

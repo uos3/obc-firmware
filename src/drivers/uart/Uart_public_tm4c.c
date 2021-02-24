@@ -117,7 +117,7 @@ ErrorCode Uart_init(uint8_t uart_id_number_in) {
         return ERROR_NONE;
 }
 
-ErrorCode Uart_get_char(uint8_t uart_id_number_in, bool is_nonblocking_in, char *recvd_byte_out) {
+ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out) {
     Uart_Device *p_uart_device = &UART_PINS[uart_id_number_in];
 
     /* Check that the ID number of the UART is acceptable, return an error
@@ -137,13 +137,7 @@ ErrorCode Uart_get_char(uint8_t uart_id_number_in, bool is_nonblocking_in, char 
         return UART_ERROR_NOT_INITIALISED;
     }
 
-    /* If the function is NOT nonblocking, get the byte using TI UARTCharGet
-     * function. */
-    if (!is_nonblocking_in) {
-        *recvd_byte_out = (char)UARTCharGet(p_uart_device->uart_base);
-    }
-    else {
-        /* Check if there are any characters available in the receive FIFO. If
+    /* Check if there are any characters available in the receive FIFO. If
          * there are, get the character. If not, show a warning that no
          * characters are available. */
         if (UARTCharsAvail(p_uart_device->uart_base) != 0) {
@@ -154,6 +148,88 @@ ErrorCode Uart_get_char(uint8_t uart_id_number_in, bool is_nonblocking_in, char 
              characters present in the receive FIFO."
             );
             return ERROR_NONE;
+        }
+
+    /* Return error none if this point has been reached without any errors. */
+    return ERROR_NONE;
+}
+
+ErrorCode Uart_put_char(uint8_t uart_id_number_in, char byte_out) {
+    Uart_Device *p_uart_device = &UART_PINS[uart_id_number_in];
+
+    /* Check that the ID number of the UART is acceptable, return an error
+     * if not. */
+    if (uart_id_number_in >= UART_NUM_UARTS) {
+        DEBUG_ERR("The UART ID number was greater than the number of UARTs");
+        return UART_ERROR_MAX_NUM_UARTS;
+    }
+
+    /* Check that the UART has been initialised before continuing, return an
+     * error if not. */
+    if (!p_uart_device->initialised) {
+        DEBUG_ERR(
+            "Attempted to call Uart_get_char when UART has not been\
+            initialised."
+        );
+        return UART_ERROR_NOT_INITIALISED;
+    }
+
+    if (UARTCharPutNonBlocking(p_uart_device->uart_base, byte_out)) {
+        /* This function returns true if the character was placed in the TX
+         * FIFO, so if this point has been reached, return no error. */
+        return ERROR_NONE;
+    }
+        else {
+        /* The function returns false if there is no space available in the
+         * TX FIFO, so raise an error. */
+        DEBUG_ERR("No space available in specified UART port, failed to\
+        send byte.");
+        return UART_ERROR_PUT_CHAR_FAILED;
+    }
+
+    /* Return error none if this point has been reached without any errors. */
+    return ERROR_NONE;
+}
+
+ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, char *buffer_out) {
+    Uart_Device *p_uart_device = &UART_PINS[uart_id_number_in];
+
+    /* Check that the ID number of the UART is acceptable, return an error
+     * if not. */
+    if (uart_id_number_in >= UART_NUM_UARTS) {
+        DEBUG_ERR("The UART ID number was greater than the number of UARTs");
+        return UART_ERROR_MAX_NUM_UARTS;
+    }
+
+    /* Check that the UART has been initialised before continuing, return an
+     * error if not. */
+    if (!p_uart_device->initialised) {
+        DEBUG_ERR(
+            "Attempted to call Uart_get_char when UART has not been\
+            initialised."
+        );
+        return UART_ERROR_NOT_INITIALISED;
+    }
+
+    /* TODO: Have another think about this. If space runs out halfway through
+     * this loop, part of the buffer will have been sent. Would it be better to
+     * send none of it unless there is sufficient space? Check to see if 
+     * UARTCharsAvail would be suitable to use here.
+     * Would implement roughly like:
+     * if (UartCharsAvail) {
+     * do the rest
+     * } */
+    for (int i = 0; i < buffer_length_in; ++i) {
+        if (UARTCharPutNonBlocking(p_uart_device->uart_base, buffer_out[i])) {
+            /* This function returns true if the character was placed in the TX
+             * FIFO, so if this point has been reached, return no error. */
+        }
+        else {
+            /* The function returns false if there is no space available in the
+             * TX FIFO, so raise an error. */
+            DEBUG_ERR("No space available in specified UART port, failed to\
+            send byte.");
+            return UART_ERROR_PUT_CHAR_FAILED;
         }
     }
 
