@@ -194,7 +194,7 @@ int main(void) {
     }
     DEBUG_INF("CFG update succeeded");
 
-    /* Re-init module *//* Init the MemStoreManager */
+    /* Re-init module */
     if (!MemStoreManager_init()) {
         DEBUG_ERR("Init failed when not expected, test failed!");
         print_cfg_status();
@@ -202,6 +202,7 @@ int main(void) {
     }
     DEBUG_INF("MemStoreManager initialised");
     print_cfg_status();
+    MemStoreManager_debug_print_cfg();
 
     DEBUG_INF("Test passed!");
 

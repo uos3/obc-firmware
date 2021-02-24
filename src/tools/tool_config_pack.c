@@ -84,6 +84,7 @@ int main(int argc, char **pp_argv) {
 
     /* Empty config data */
     MemStoreManager_ConfigData cfg_data;
+    memset((void *)&cfg_data, 0, sizeof(MemStoreManager_ConfigData));
     bool cfg_ok = true;
 
     /* Set all components of the cfg data */
@@ -94,6 +95,32 @@ int main(int argc, char **pp_argv) {
     }
     else {
         cfg_data.version = (uint8_t)version.u.i;
+    }
+
+    toml_datum_t power_task_timer_duration_s = toml_int_in(
+        p_config, 
+        "power_task_timer_duration_s"
+    );
+    if (!power_task_timer_duration_s.ok) {
+        DEBUG_ERR("Missing TOML parameter: power_task_timer_duration_s");
+        cfg_ok = false;
+    }
+    else {
+        cfg_data.power_task_timer_duration_s 
+            = (uint16_t)power_task_timer_duration_s.u.i;
+    }
+
+    toml_datum_t power_op_mode_ocp_rail_config = toml_int_in(
+        p_config, 
+        "power_op_mode_ocp_rail_config"
+    );
+    if (!power_op_mode_ocp_rail_config.ok) {
+        DEBUG_ERR("Missing TOML parameter: power_op_mode_ocp_rail_config");
+        cfg_ok = false;
+    }
+    else {
+        cfg_data.power_op_mode_ocp_rail_config 
+            = (uint32_t)power_op_mode_ocp_rail_config.u.i;
     }
 
     /* Exit if config loading didn't work */

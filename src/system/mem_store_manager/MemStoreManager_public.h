@@ -142,4 +142,12 @@ bool MemStoreManager_step(void);
  */
 bool MemStoreManager_config_update(MemStoreManager_ConfigFile *p_cfg_file_in);
 
+#ifdef DEBUG_MODE
+/**
+ * @brief Debug function used to print the configuration file to the primary
+ * debug UART.
+ */
+void MemStoreManager_debug_print_cfg(void);
+#endif
+
 #endif /* H_MEMSTOREMANAGER_PUBLIC_H */

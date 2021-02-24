@@ -113,3 +113,12 @@ bool MemStoreManager_config_update(MemStoreManager_ConfigFile *p_cfg_file_in) {
 
     return true;
 }
+
+#ifdef DEBUG_MODE
+void MemStoreManager_debug_print_cfg(void) {
+    DEBUG_INF("Loaded Configuration File:");
+    DEBUG_INF("    version: %d", CFG.version);
+    DEBUG_INF("    power_task_timer_duration_s: %u", CFG.power_task_timer_duration_s);
+    DEBUG_INF("    power_op_mode_ocp_rail_config: %u", (uint32_t)CFG.power_op_mode_ocp_rail_config);
+}
+#endif

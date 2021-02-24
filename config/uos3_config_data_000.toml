@@ -6,4 +6,5 @@ power_task_timer_duration_s = 300
 
 # As defined in OpModePowerTable_Working.
 # TODO: Issue this reference.
-power_op_mode_ocp_rail_config = 15938319
+power_op_mode_ocp_rail_config = 4039954176
+
