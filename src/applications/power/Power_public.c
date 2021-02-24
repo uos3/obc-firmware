@@ -27,11 +27,11 @@
 
 bool Power_init(void) {
     
-    /* Check that required modules are initialised */
+    /* Check that required modules are initialised. Note EPS is not required to
+     * be init since it must go through it's state machine to initialise. */
     if (!DP.INITIALISED ||
         !DP.EVENTMANAGER.INITIALISED ||
-        !DP.MISSION.INITIALISED ||
-        !DP.EPS.INITIALISED
+        !DP.MISSION.INITIALISED
     ) {
         DEBUG_ERR("Required module not initialised");
         DP.POWER.ERROR_CODE = POWER_ERROR_DEPENDENCY_NOT_INIT;

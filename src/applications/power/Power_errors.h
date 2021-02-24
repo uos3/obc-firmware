@@ -27,7 +27,7 @@
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief A required dependent module (DataPool, EventManager, Mission, Eps)
+ * @brief A required dependent module (DataPool, EventManager, Mission)
  * was not initialised.
  */
 #define POWER_ERROR_DEPENDENCY_NOT_INIT ((ErrorCode)(MOD_ID_POWER | 1))

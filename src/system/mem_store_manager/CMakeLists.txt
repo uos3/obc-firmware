@@ -6,7 +6,10 @@ add_library(MemStoreManager
     MemStoreManager_private.c
 )
 target_link_libraries(MemStoreManager
-    ${STANDARD_LINK_LIBS}
+    Debug
+    Board
+    DataPool
+    EventManager
     Eeprom
     Crypto
 )

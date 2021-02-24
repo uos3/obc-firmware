@@ -12,6 +12,7 @@ target_link_libraries(test_all_modules
     ${CMOCKA_LIBRARY}
     EventManager
     Crypto
+    Power
 )
 
 add_executable(test_mem_store_mgr_config

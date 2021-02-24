@@ -111,6 +111,7 @@ set(STANDARD_LINK_LIBS
     Board
     DataPool
     EventManager
+    MemStoreManager
 )
 
 # Set src as an include directory

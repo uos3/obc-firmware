@@ -24,6 +24,7 @@
 #include "util/debug/test/Debug_test.c"
 #include "system/event_manager/test/EventManager_test.c"
 #include "util/crypto/test/Crypto_test.c"
+#include "applications/power/test/Power_test.c"
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -51,6 +52,13 @@ int main(void) {
     ret |= cmocka_run_group_tests_name(
         "Crypto",
         crypto_tests,
+        NULL, NULL
+    );
+
+    /* Power tests */
+    ret |= cmocka_run_group_tests_name(
+        "Power",
+        power_tests,
         NULL, NULL
     );
     

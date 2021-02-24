@@ -7,4 +7,5 @@ add_library(Power
 target_link_libraries(Power
     ${STANDARD_LINK_LIBS}
     Eps
+    Timer
 )
