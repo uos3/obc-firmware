@@ -185,7 +185,7 @@ void Debug_log_tm4c(
         "[---------- %s%s\x1b[0m] %s:%ld ",
         Debug_level_colours[level], 
         Debug_level_names[level],
-        p_file_stripped,
+        p_file_stripped + 4,
         line
     );
 
