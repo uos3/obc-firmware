@@ -74,7 +74,7 @@ int main(void) {
     /* Print out the config file version number */
     DEBUG_INF(
         "tool_config_flash loaded with config file version %d", 
-        cfg_file.data.version
+        cfg_file.data.VERSION
     );
 
     /* Check the CRCs match */
