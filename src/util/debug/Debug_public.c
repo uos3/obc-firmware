@@ -147,7 +147,7 @@ void Debug_log_unix(
         delta_ms,
         Debug_level_colours[level], 
         Debug_level_names[level],
-        p_file_stripped,
+        p_file_stripped + 4,
         line
     );
 
