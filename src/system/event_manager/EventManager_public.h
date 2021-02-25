@@ -83,6 +83,11 @@
  */
 #define EVENTMANAGER_SHRUNK_LIST_SIZE_DIVISOR (2)
 
+/**
+ * @brief Reserved event code, corresponding to no event.
+ */
+#define EVT_NONE ((Event)0)
+
 /* -------------------------------------------------------------------------   
  * TYPES
  * ------------------------------------------------------------------------- */

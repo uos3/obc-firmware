@@ -1,10 +1,10 @@
 # Development version number
-version = 0
+VERSION = 0
 
 # As defined in OPMODE_20200608_v2.2
-power_task_timer_duration_s = 300
+POWER_TASK_TIMER_DURATION_S = 300
 
 # As defined in OpModePowerTable_Working.
 # TODO: Issue this reference.
-power_op_mode_ocp_rail_config = 4039954176
+POWER_OP_MODE_OCP_STATE_CONFIG = 4039954176
 

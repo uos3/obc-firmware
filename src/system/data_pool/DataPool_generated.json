@@ -279,6 +279,13 @@
         "data_type": "Mission_OpMode",
         "brief": "The current mission Operational Mode (OPMODE)"
     },
+    "DP.MISSION.NEXT_OPMODE": {
+        "block_id": 52,
+        "block_index": 4,
+        "dp_id": 53252,
+        "data_type": "Mission_OpMode",
+        "brief": "The next OpMode that will be set when the current mode change is complete."
+    },
     "DP.POWER.INITIALISED": {
         "block_id": 53,
         "block_index": 1,
@@ -320,5 +327,47 @@
         "dp_id": 54278,
         "data_type": "Eps_OcpState",
         "brief": "The requested state of the OCP rails, which is based on the OpMode and the stored OpMode-OCP state configuration vector."
+    },
+    "DP.POWER.UPDATE_EPS_HK": {
+        "block_id": 53,
+        "block_index": 7,
+        "dp_id": 54279,
+        "data_type": "bool",
+        "brief": "Flag which when true will cause the Power app to request a new EPS HK packet from the EPS outside of the standard task operation. See Power_request_eps_hk()."
+    },
+    "DP.POWER.UPDATE_EPS_CFG": {
+        "block_id": 53,
+        "block_index": 8,
+        "dp_id": 54280,
+        "data_type": "bool",
+        "brief": ""
+    },
+    "DP.POWER.UPDATE_EPS_OCP_STATE": {
+        "block_id": 53,
+        "block_index": 9,
+        "dp_id": 54281,
+        "data_type": "bool",
+        "brief": "Flag which when true will cause the Power app to send an updated OCP state to the EPS."
+    },
+    "DP.POWER.LAST_EPS_COMMAND": {
+        "block_id": 53,
+        "block_index": 10,
+        "dp_id": 54282,
+        "data_type": "Eps_UartDataType",
+        "brief": "The type of command which was last issued to the EPS."
+    },
+    "DP.POWER.NUM_CONSEC_FAILED_EPS_COMMANDS": {
+        "block_id": 53,
+        "block_index": 11,
+        "dp_id": 54283,
+        "data_type": "uint8_t",
+        "brief": "The number of consecutive EPS command failures. Used to detect possible malfunctions in the EPS."
+    },
+    "DP.POWER.EPS_OCP_STATE_CORRECT": {
+        "block_id": 53,
+        "block_index": 12,
+        "dp_id": 54284,
+        "data_type": "bool",
+        "brief": "This flag shall be true if a command to set the EPS OCP state succeeds. If the EPS fails to return the expected OCP state, this will be false. It shall also be false from the time a OCP update is requested, until a successful update is detected."
     }
 }

@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-23
+ * @date 2021-02-25
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -360,6 +360,14 @@ bool DataPool_get(
         return true;
 
 
+    /* DP.MISSION.NEXT_OPMODE */
+    case 0xd004:
+        *pp_data_out = &DP.MISSION.NEXT_OPMODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_MISSION_OPMODE;
+        *p_data_size_out = sizeof(Mission_OpMode);
+        return true;
+
+
     /* DP.POWER.INITIALISED */
     case 0xd401:
         *pp_data_out = &DP.POWER.INITIALISED;
@@ -405,6 +413,54 @@ bool DataPool_get(
         *pp_data_out = &DP.POWER.REQUESTED_OCP_STATE;
         *p_data_type_out = DATAPOOL_DATATYPE_EPS_OCPSTATE;
         *p_data_size_out = sizeof(Eps_OcpState);
+        return true;
+
+
+    /* DP.POWER.UPDATE_EPS_HK */
+    case 0xd407:
+        *pp_data_out = &DP.POWER.UPDATE_EPS_HK;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.POWER.UPDATE_EPS_CFG */
+    case 0xd408:
+        *pp_data_out = &DP.POWER.UPDATE_EPS_CFG;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.POWER.UPDATE_EPS_OCP_STATE */
+    case 0xd409:
+        *pp_data_out = &DP.POWER.UPDATE_EPS_OCP_STATE;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.POWER.LAST_EPS_COMMAND */
+    case 0xd40a:
+        *pp_data_out = &DP.POWER.LAST_EPS_COMMAND;
+        *p_data_type_out = DATAPOOL_DATATYPE_EPS_UARTDATATYPE;
+        *p_data_size_out = sizeof(Eps_UartDataType);
+        return true;
+
+
+    /* DP.POWER.NUM_CONSEC_FAILED_EPS_COMMANDS */
+    case 0xd40b:
+        *pp_data_out = &DP.POWER.NUM_CONSEC_FAILED_EPS_COMMANDS;
+        *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
+        *p_data_size_out = sizeof(uint8_t);
+        return true;
+
+
+    /* DP.POWER.EPS_OCP_STATE_CORRECT */
+    case 0xd40c:
+        *pp_data_out = &DP.POWER.EPS_OCP_STATE_CORRECT;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
         return true;
 
     
@@ -662,6 +718,12 @@ bool DataPool_get_symbol_str(
         return true;
 
 
+    /* DP.MISSION.NEXT_OPMODE */
+    case 0xd004:
+        *pp_symbol_str_out = strdup("DP.MISSION.NEXT_OPMODE");
+        return true;
+
+
     /* DP.POWER.INITIALISED */
     case 0xd401:
         *pp_symbol_str_out = strdup("DP.POWER.INITIALISED");
@@ -695,6 +757,42 @@ bool DataPool_get_symbol_str(
     /* DP.POWER.REQUESTED_OCP_STATE */
     case 0xd406:
         *pp_symbol_str_out = strdup("DP.POWER.REQUESTED_OCP_STATE");
+        return true;
+
+
+    /* DP.POWER.UPDATE_EPS_HK */
+    case 0xd407:
+        *pp_symbol_str_out = strdup("DP.POWER.UPDATE_EPS_HK");
+        return true;
+
+
+    /* DP.POWER.UPDATE_EPS_CFG */
+    case 0xd408:
+        *pp_symbol_str_out = strdup("DP.POWER.UPDATE_EPS_CFG");
+        return true;
+
+
+    /* DP.POWER.UPDATE_EPS_OCP_STATE */
+    case 0xd409:
+        *pp_symbol_str_out = strdup("DP.POWER.UPDATE_EPS_OCP_STATE");
+        return true;
+
+
+    /* DP.POWER.LAST_EPS_COMMAND */
+    case 0xd40a:
+        *pp_symbol_str_out = strdup("DP.POWER.LAST_EPS_COMMAND");
+        return true;
+
+
+    /* DP.POWER.NUM_CONSEC_FAILED_EPS_COMMANDS */
+    case 0xd40b:
+        *pp_symbol_str_out = strdup("DP.POWER.NUM_CONSEC_FAILED_EPS_COMMANDS");
+        return true;
+
+
+    /* DP.POWER.EPS_OCP_STATE_CORRECT */
+    case 0xd40c:
+        *pp_symbol_str_out = strdup("DP.POWER.EPS_OCP_STATE_CORRECT");
         return true;
 
 

@@ -324,33 +324,17 @@ typedef struct _Eps_HkData {
 typedef enum _Eps_State {
 
     /**
-     * @brief State in which the Eps module will initialise the EPS by sending
-     * the configuration data.
-     * 
-     * No commands may be sent in this state.
-     */
-    EPS_STATE_INIT_SEND_CFG = 0,
-
-    /**
-     * @brief State in which the Eps module waits for the EPS to reply with the
-     * configuration data sent in EPS_STATE_INIT_SEND_CFG.
-     * 
-     * No commands may be sent in this state.
-     */
-    EPS_STATE_INIT_WAIT_CFG_REPLY = 1,
-
-    /**
      * @brief Idle state, in which the Eps module waits for commands from the
      * user. 
      */
-    EPS_STATE_IDLE = 2,
+    EPS_STATE_IDLE = 1,
 
     /**
      * @brief State in which the Eps module will send a request to the EPS.
      * 
      * No commands may be sent in this state.
      */
-    EPS_STATE_REQUEST = 3,
+    EPS_STATE_REQUEST = 2,
 
     /**
      * @brief State in which the Eps module is waiting for the reply from the
@@ -358,7 +342,7 @@ typedef enum _Eps_State {
      * 
      * No commands may be sent in this state.
      */
-    EPS_STATE_WAIT_REPLY = 4
+    EPS_STATE_WAIT_REPLY = 3
 
 } Eps_State;
 
@@ -438,18 +422,24 @@ typedef enum _Eps_CommandStatus {
      * @brief Indicates that no command has been completed yet.
      */
     EPS_COMMAND_NONE = 0,
+    
+    /**
+     * @brief Indicates that the Eps is still waiting for the EPS to reply to
+     * the last command.
+     */
+    EPS_COMMAND_IN_PROGRESS = 1,
 
     /**
      * @brief Indicates that a command has finished successfully.
      */
-    EPS_COMMAND_SUCCESS = 1,
+    EPS_COMMAND_SUCCESS = 2,
 
     /**
      * @brief Indicates that a command has failed.
      * 
      * See `DP.EPS.ERROR_CODE` for the cause of this failure.
      */
-    EPS_COMMAND_FAILURE = 2
+    EPS_COMMAND_FAILURE = 3
 
 } Eps_CommandStatus;
 
@@ -474,6 +464,14 @@ bool Eps_init(void);
  * cause of the error.
  */
 bool Eps_step(void);
+
+/**
+ * @brief Send the EPS configuration.
+ * 
+ * @return bool True on success, false on error. See DP.EPS.ERROR_CODE for the
+ * cause of the error.
+ */
+bool Eps_send_config(void);
 
 /**
  * @brief Sends a Housekeeping data collection request to the EPS.

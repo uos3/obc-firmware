@@ -30,6 +30,7 @@
 
 /* Internal includes */
 #include "applications/mission/Mission_errors.h"
+#include "applications/mission/Mission_events.h"
 
 /* -------------------------------------------------------------------------   
  * ENUMS

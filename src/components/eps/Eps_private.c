@@ -43,7 +43,10 @@ void Eps_build_uart_header(
     /* Set the data type */
     p_header_out[EPS_UART_HEADER_DATA_TYPE_POS] = (uint8_t)data_type_in;
 
-    /* Set the payload length */
+    /* Set the payload length. Use pragma to disable the warning about not
+     * using all the enum variants, we can't have a TM packet here. */
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wswitch-enum"
     switch (data_type_in) {
         case EPS_UART_DATA_TYPE_TC_COLLECT_HK_DATA:
             p_header_out[EPS_UART_HEADER_PAYLOAD_LENGTH_POS]
@@ -64,12 +67,13 @@ void Eps_build_uart_header(
             DEBUG_ERR("Unimplmented payload length for Eps UART type %d", data_type_in);
             break;
     }
+    #pragma GCC diagnostic pop
 
     /* Increment the frame number, wrapping at 255 to 0. */
     if (DP.EPS.UART_FRAME_NUMBER >= 255) {
         DP.EPS.UART_FRAME_NUMBER = 0;
     }
     else {
-        DP.EPS.UART_FRAME_NUMBER += 1;
+        DP.EPS.UART_FRAME_NUMBER++;
     }
 }

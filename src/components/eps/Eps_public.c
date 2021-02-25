@@ -40,51 +40,23 @@ bool Eps_init(void) {
     /* TODO: Initialise the UART */
 
     /* Set first state as init */
-    DP.EPS.STATE = EPS_STATE_INIT_SEND_CFG;
+    DP.EPS.STATE = EPS_STATE_IDLE;
 
     return true;
 }
 
 bool Eps_step(void) {
-    /* If we're not initialise (and not in an init state) warn the user.
+    /* If we're not initialised warn the user.
      * Technically not an error because the step functions should be callable 
-     * when not iniailised, but this should be visible during testing. */
-    if (!DP.EPS.INITIALISED 
-        && 
-        !((DP.EPS.STATE == EPS_STATE_INIT_SEND_CFG)
-        ||
-        (DP.EPS.STATE == EPS_STATE_INIT_WAIT_CFG_REPLY))
-    ) {
+     * when not iniailised, but this should be visible during testing.
+     * TODO: is this true? */
+    if (!DP.EPS.INITIALISED) {
         DEBUG_WRN("Eps is not initialised or in one of the initialisation states.");
         return true;
     }
 
     /* Main state machine */
     switch (DP.EPS.STATE) {
-        case EPS_STATE_INIT_SEND_CFG:
-            /* TODO: Serialise config and send over UART */
-
-            /* Advance to the next state */
-            DP.EPS.STATE = EPS_STATE_INIT_WAIT_CFG_REPLY;
-
-            /* Explicit fallthrough allowed here so that as much progress is
-             * made as possible in a single cycle. */
-            __attribute__ ((fallthrough));
-        case EPS_STATE_INIT_WAIT_CFG_REPLY:
-            /* TODO: Wait for reply from EPS over UART */
-
-            /* TODO: Compare the recieved config to the one we keep, to check
-             * the EPS loaded it correctly. */
-
-            /* Set the initialised flag */
-            DP.EPS.INITIALISED = true;
-
-            /* Advance to the next state */
-            DP.EPS.STATE = EPS_STATE_IDLE;
-
-            /* Explicit fallthrough allowed here so that as much progress is
-             * made as possible in a single cycle. */
-            __attribute__ ((fallthrough));
         case EPS_STATE_IDLE:
 
             /* Check for new request to send */
@@ -124,6 +96,8 @@ bool Eps_step(void) {
 
             /* TODO: Set the replied data in the DP */
 
+            /* TODO: If the request was HK raise the new HK event */
+
             /* Return to idle. */
             DP.EPS.STATE = EPS_STATE_IDLE;
 
@@ -134,6 +108,12 @@ bool Eps_step(void) {
             DP.EPS.ERROR_CODE = EPS_ERROR_INVALID_STATE;
             return false;
     }
+
+    return true;
+}
+
+bool Eps_send_config(void) {
+    /* TODO: build config frame and send it */
 
     return true;
 }
@@ -178,6 +158,9 @@ bool Eps_collect_hk_data(void) {
 
     /* Set the length of the request */
     DP.EPS.EPS_REQUEST_LENGTH = length;
+
+    /* Set that the status is in progress, so new commands can't be raised */
+    DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
 
     /* Set the new request flag */
     DP.EPS.NEW_REQUEST = true;
@@ -249,6 +232,9 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
     /* Set the length of the request */
     DP.EPS.EPS_REQUEST_LENGTH = length;
 
+    /* Set that the status is in progress, so new commands can't be raised */
+    DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
+
     /* Set the new request flag */
     DP.EPS.NEW_REQUEST = true;
 
@@ -296,6 +282,9 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
 
     /* Set the length of the request */
     DP.EPS.EPS_REQUEST_LENGTH = length;
+
+    /* Set that the status is in progress, so new commands can't be raised */
+    DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
 
     /* Set the new request flag */
     DP.EPS.NEW_REQUEST = true;

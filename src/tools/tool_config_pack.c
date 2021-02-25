@@ -88,38 +88,38 @@ int main(int argc, char **pp_argv) {
     bool cfg_ok = true;
 
     /* Set all components of the cfg data */
-    toml_datum_t version = toml_int_in(p_config, "version");
+    toml_datum_t version = toml_int_in(p_config, "VERSION");
     if (!version.ok) {
-        DEBUG_ERR("Missing TOML parameter: version");
+        DEBUG_ERR("Missing TOML parameter: VERSION");
         cfg_ok = false;
     }
     else {
-        cfg_data.version = (uint8_t)version.u.i;
+        cfg_data.VERSION = (uint8_t)version.u.i;
     }
 
     toml_datum_t power_task_timer_duration_s = toml_int_in(
         p_config, 
-        "power_task_timer_duration_s"
+        "POWER_TASK_TIMER_DURATION_S"
     );
     if (!power_task_timer_duration_s.ok) {
-        DEBUG_ERR("Missing TOML parameter: power_task_timer_duration_s");
+        DEBUG_ERR("Missing TOML parameter: POWER_TASK_TIMER_DURATION_S");
         cfg_ok = false;
     }
     else {
-        cfg_data.power_task_timer_duration_s 
+        cfg_data.POWER_TASK_TIMER_DURATION_S 
             = (uint16_t)power_task_timer_duration_s.u.i;
     }
 
     toml_datum_t power_op_mode_ocp_rail_config = toml_int_in(
         p_config, 
-        "power_op_mode_ocp_rail_config"
+        "POWER_OP_MODE_OCP_STATE_CONFIG"
     );
     if (!power_op_mode_ocp_rail_config.ok) {
-        DEBUG_ERR("Missing TOML parameter: power_op_mode_ocp_rail_config");
+        DEBUG_ERR("Missing TOML parameter: POWER_OP_MODE_OCP_STATE_CONFIG");
         cfg_ok = false;
     }
     else {
-        cfg_data.power_op_mode_ocp_rail_config 
+        cfg_data.POWER_OP_MODE_OCP_STATE_CONFIG 
             = (uint32_t)power_op_mode_ocp_rail_config.u.i;
     }
 

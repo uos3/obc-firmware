@@ -58,23 +58,34 @@
  * 
  * The configuration data stores any parameter that may need to be adjsted by
  * ground control.
+ * 
+ * NOTE: This structure should be as flat as possible (no nested structs), as
+ * nesting requires word alignment which can make the config file larger than
+ * it needs to be.
  */
 typedef struct _MemStoreManager_ConfigData {
     /**
      * @brief The version number of the configuration data.
      */
-    uint8_t version;
+    uint8_t VERSION;
 
     /**
      * @brief Duration of the Power app's primary task timer, in seconds.
      */
-    uint16_t power_task_timer_duration_s;
+    uint16_t POWER_TASK_TIMER_DURATION_S;
+
+    /**
+     * @brief Maximum number of failed EPS commands the power app will allow
+     * before ...
+     * TODO: What to do
+     */
+    uint8_t POWER_MAX_NUM_FAILED_EPS_COMMANDS;
 
     /**
      * @brief The bit vector which defines which OCP rails shall be enabled
      * during which OpModes (except the OBC and EPS rail, which are always on).
      */
-    Power_OpModeOcpStateConfig power_op_mode_ocp_rail_config;
+    Power_OpModeOcpStateConfig POWER_OP_MODE_OCP_STATE_CONFIG;
 
 } MemStoreManager_ConfigData;
 

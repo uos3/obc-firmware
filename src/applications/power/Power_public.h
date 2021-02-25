@@ -34,7 +34,7 @@
  * 
  * This is a bit vector summarising the table in OpModePowerTable_Working.xlsm.
  * Use the Power_get_ocp_rail_for_op_mode() funcion to map between this value
- * and another.
+ * and Eps_OcpState values.
  */
 typedef uint32_t Power_OpModeOcpStateConfig;
 
@@ -57,5 +57,15 @@ bool Power_init(void);
  * the cause of an error.
  */
 bool Power_step(void);
+
+/**
+ * @brief Requests that the Power app update the EPS housekeeping packet
+ * outside of the standard task execution.
+ * 
+ * This is useful for acquiring EPS HK data before any tasks are started - i.e.
+ * in BU init. The event EVT_EPS_NEW_HK_DATA will be emmitted when the data is
+ * available, and is stored in DP.EPS.HK_DATA.
+ */
+void Power_request_eps_hk(void);
 
 #endif /* H_POWER_PUBLIC_H */

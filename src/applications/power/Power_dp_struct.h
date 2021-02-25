@@ -87,6 +87,59 @@ typedef struct _Power_Dp {
      */
     Eps_OcpState REQUESTED_OCP_STATE;
 
+    /**
+     * @brief Flag which when true will cause the Power app to request a new
+     * EPS HK packet from the EPS outside of the standard task operation. See
+     * Power_request_eps_hk().
+     * 
+     * This flag is reset when the Power app successfully sends the HK request
+     * to the EPS.
+     * 
+     * @dp 7
+     */
+    bool UPDATE_EPS_HK;
+
+    /**
+     * @brief Flag which when true will cause the Power app to send an updated
+     * configuration file to the EPS.
+     *
+     * @dp 8 
+     */
+    bool UPDATE_EPS_CFG;
+
+    /**
+     * @brief Flag which when true will cause the Power app to send an updated
+     * OCP state to the EPS.
+     * 
+     * @dp 9
+     */
+    bool UPDATE_EPS_OCP_STATE;
+
+    /**
+     * @brief The type of command which was last issued to the EPS. 
+     * 
+     * @dp 10
+     */
+    Eps_UartDataType LAST_EPS_COMMAND;
+
+    /**
+     * @brief The number of consecutive EPS command failures. Used to detect
+     * possible malfunctions in the EPS.
+     * 
+     * @dp 11
+     */
+    uint8_t NUM_CONSEC_FAILED_EPS_COMMANDS;
+
+    /**
+     * @brief This flag shall be true if a command to set the EPS OCP state
+     * succeeds. If the EPS fails to return the expected OCP state, this will
+     * be false. It shall also be false from the time a OCP update is
+     * requested, until a successful update is detected.
+     * 
+     * @dp 12
+     */
+    bool EPS_OCP_STATE_CORRECT;
+
 } Power_Dp;
 
 #endif /* H_POWER_DP_STRUCT_H */

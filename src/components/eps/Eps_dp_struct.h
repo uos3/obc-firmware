@@ -112,6 +112,9 @@ typedef struct _Eps_Dp {
     /**
      * @brief The status of the most recently sent command.
      * 
+     * When the user has finished processing this flag it is their
+     * responsibility to clear the value (set to EPS_COMMAND_STATUS_NONE).
+     * 
      * @dp 11
      */
     Eps_CommandStatus COMMAND_STATUS;

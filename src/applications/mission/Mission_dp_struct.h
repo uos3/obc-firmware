@@ -50,6 +50,17 @@ typedef struct _Mission_Dp {
      */
     Mission_OpMode OPMODE;
 
+    /**
+     * @brief The next OpMode that will be set when the current mode change is
+     * complete. 
+     * 
+     * If there is no mode change happening this value shall be the same as
+     * DP.MISSION.OPMODE.
+     * 
+     * @dp 4
+     */
+    Mission_OpMode NEXT_OPMODE;
+
 } Mission_Dp;
 
 #endif /* H_MISSION_DP_STRUCT_H */

@@ -38,4 +38,40 @@
  */
 #define POWER_ERROR_TASK_TIMER_NOT_STARTED ((ErrorCode)(MOD_ID_POWER | 2))
 
+/**
+ * @brief Couldn't disable the timer associated with the primary task. See
+ * DP.POWER.TIMER_ERROR_CODE for root cause.
+ */
+#define POWER_ERROR_TASK_TIMER_NOT_DISABLED ((ErrorCode)(MOD_ID_POWER | 3))
+
+/**
+ * @brief Indicates an error with the event manager occured. Check
+ * DP.EVENT_MANAGER.ERROR_CODE for root cause.
+ */
+#define POWER_ERROR_EVENTMANAGER_ERROR ((ErrorCode)(MOD_ID_POWER | 4))
+
+/**
+ * @brief A call to Eps_collect_hk_data() failed. See DP.EPS.ERROR_CODE for the
+ * error cause.
+ */
+#define POWER_ERROR_EPS_COLLECT_HK_FAILED ((ErrorCode)(MOD_ID_POWER | 5))
+
+/**
+ * @brief A call to Eps_send_config() failed. See DP.EPS.ERROR_CODE for the
+ * error cause.
+ */
+#define POWER_ERROR_EPS_SEND_CONFIG_FAILED ((ErrorCode)(MOD_ID_POWER | 6))
+
+/**
+ * @brief A call to Eps_set_ocp_state() failed. See DP.EPS.ERROR_CODE for the
+ * error cause.
+ */
+#define POWER_ERROR_EPS_SET_OCP_STATE_FAILED ((ErrorCode)(MOD_ID_POWER | 7))
+
+/**
+ * @brief The value of DP.POWER.LAST_EPS_COMMAND is unrecognised by the Power
+ * app.
+ */
+#define POWER_ERROR_UNRECOGNISED_LAST_EPS_COMMAND ((ErrorCode)(MOD_ID_POWER | 9))
+
 #endif /* H_POWER_ERRORS_H */

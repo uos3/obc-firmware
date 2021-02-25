@@ -36,9 +36,12 @@
 #define EVT_EPS_COMMAND_COMPLETE ((Event)(MOD_ID_EPS | 1))
 
 /**
- * @brief Event indiciating a command to the EPS failed, either through timeout
- * or incorrect reply. See `DP.EPS.ERROR_CODE` for cause.
+ * @brief Event which is fired when a new HK data packet is recieved from the
+ * EPS. 
+ * 
+ * NOTE: Many consumers may be looking for this event, so the user must _NOT_
+ * poll for it, instead use the EventManager_is_event_raised() function.
  */
-#define EVT_EPS_COMMAND_FAILED ((Event)(MOD_ID_EPS | 2))
+#define EVT_EPS_NEW_HK_DATA ((Event)(MOD_ID_EPS | 2))
 
 #endif /* H_EPS_EVENTS_H */
