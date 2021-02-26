@@ -30,10 +30,11 @@ bool Power_init(void) {
     
     /* Check that required modules are initialised. Note EPS is not required to
      * be init since it must go through it's state machine to initialise. */
-    /* TODO: Check MemStoreMgr init? */
     if (!DP.INITIALISED ||
         !DP.EVENTMANAGER.INITIALISED ||
-        !DP.MISSION.INITIALISED
+        !DP.MEMSTOREMANAGER.INITIALISED ||
+        !DP.MISSION.INITIALISED ||
+        !DP.EPS.INITIALISED
     ) {
         DEBUG_ERR("Required module not initialised");
         DP.POWER.ERROR_CODE = POWER_ERROR_DEPENDENCY_NOT_INIT;
@@ -55,13 +56,6 @@ bool Power_init(void) {
 bool Power_step(void) {
     ErrorCode error = ERROR_NONE;
     bool is_event_raised = false;
-
-    /* Must wait for EPS to be initialised before doing anything. This requires
-     * (possibly many) calls to Eps_step as it has to establish communications
-     * with the EPS MCU. */
-    if (!DP.EPS.INITIALISED) {
-        return true;
-    }
 
     /* If there is a mode change underway we raise the update OCP rail flag, so
      * that this mode change is reflected in the EPS OCP rails. Also unset the

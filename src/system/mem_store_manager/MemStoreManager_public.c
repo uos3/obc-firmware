@@ -40,6 +40,8 @@ bool MemStoreManager_init(void) {
         return false;
     }
 
+    DP.MEMSTOREMANAGER.INITIALISED = true;
+
     return true;
 }
 
