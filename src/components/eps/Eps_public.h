@@ -126,6 +126,8 @@
  */
 #define EPS_MAX_UART_PAYLOAD_LENGTH (EPS_MAX_UART_FRAME_LENGTH - EPS_UART_HEADER_LENGTH)
 
+#define EPS_BATT_CMD_DISABLE_HEATER ((Eps_BattCmd){5, 1})
+
 /* -------------------------------------------------------------------------   
  * STRUCTURES
  * ------------------------------------------------------------------------- */

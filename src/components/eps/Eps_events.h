@@ -44,4 +44,10 @@
  */
 #define EVT_EPS_NEW_HK_DATA ((Event)(MOD_ID_EPS | 2))
 
+/**
+ * @brief Event which is fired when a new request is ready to be processed by
+ * the Eps's step function.
+ */
+#define EVT_EPS_NEW_REQUEST ((Event)(MOD_ID_EPS | 3))
+
 #endif /* H_EPS_EVENTS_H */

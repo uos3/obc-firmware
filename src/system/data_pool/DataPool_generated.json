@@ -139,38 +139,45 @@
         "data_type": "bool",
         "brief": "True when the data contained in DP.IMU.TEMPERATURE_DATA is valid."
     },
-    "DP.MEMSTOREMANAGER.ERROR_CODE": {
+    "DP.MEMSTOREMANAGER.INITIALISED": {
         "block_id": 4,
         "block_index": 1,
         "dp_id": 4097,
+        "data_type": "bool",
+        "brief": "Flag indicating whether or not the MemStoreManager is initialised."
+    },
+    "DP.MEMSTOREMANAGER.ERROR_CODE": {
+        "block_id": 4,
+        "block_index": 2,
+        "dp_id": 4098,
         "data_type": "ErrorCode",
         "brief": "Error code for the MemStoreManager"
     },
     "DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE": {
         "block_id": 4,
-        "block_index": 2,
-        "dp_id": 4098,
+        "block_index": 3,
+        "dp_id": 4099,
         "data_type": "ErrorCode",
         "brief": "Error code from the EEPROM driver."
     },
     "DP.MEMSTOREMANAGER.CFG_FILE_1_OK": {
         "block_id": 4,
-        "block_index": 3,
-        "dp_id": 4099,
+        "block_index": 4,
+        "dp_id": 4100,
         "data_type": "bool",
         "brief": "Indicates if the first configuration file is OK."
     },
     "DP.MEMSTOREMANAGER.CFG_FILE_2_OK": {
         "block_id": 4,
-        "block_index": 4,
-        "dp_id": 4100,
+        "block_index": 5,
+        "dp_id": 4101,
         "data_type": "bool",
         "brief": "Indicates if the second configuration file is OK."
     },
     "DP.MEMSTOREMANAGER.CFG_FILE_3_OK": {
         "block_id": 4,
-        "block_index": 5,
-        "dp_id": 4101,
+        "block_index": 6,
+        "dp_id": 4102,
         "data_type": "bool",
         "brief": "Indicates if the third configuration file is OK."
     },

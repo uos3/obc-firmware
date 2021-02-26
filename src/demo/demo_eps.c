@@ -26,19 +26,6 @@
 #include "drivers/timer/Timer_public.h"
 
 /* -------------------------------------------------------------------------   
- * FUNCTIONS
- * ------------------------------------------------------------------------- */
-
-void get_str_from_bytes(uint8_t *p_bytes_in, char *p_str_out, int length) {
-    char byte[4];
-
-    for (int i = 0; i < length; i++) {
-        sprintf(byte, "%02X ", p_bytes_in[i]);
-        strcat(p_str_out, byte);
-    }
-}
-
-/* -------------------------------------------------------------------------   
  * MAIN
  * ------------------------------------------------------------------------- */
 
@@ -92,7 +79,7 @@ int main(void) {
                 Debug_exit(1);
             }
 
-            get_str_from_bytes(
+            Debug_hex_string(
                 DP.EPS.EPS_REQUEST, 
                 request_str, 
                 DP.EPS.EPS_REQUEST_LENGTH

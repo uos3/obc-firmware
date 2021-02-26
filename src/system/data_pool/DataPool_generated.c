@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-25
+ * @date 2021-02-26
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -200,8 +200,16 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.MEMSTOREMANAGER.ERROR_CODE */
+    /* DP.MEMSTOREMANAGER.INITIALISED */
     case 0x1001:
+        *pp_data_out = &DP.MEMSTOREMANAGER.INITIALISED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.ERROR_CODE */
+    case 0x1002:
         *pp_data_out = &DP.MEMSTOREMANAGER.ERROR_CODE;
         *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
         *p_data_size_out = sizeof(ErrorCode);
@@ -209,7 +217,7 @@ bool DataPool_get(
 
 
     /* DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE */
-    case 0x1002:
+    case 0x1003:
         *pp_data_out = &DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE;
         *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
         *p_data_size_out = sizeof(ErrorCode);
@@ -217,7 +225,7 @@ bool DataPool_get(
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_1_OK */
-    case 0x1003:
+    case 0x1004:
         *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_1_OK;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -225,7 +233,7 @@ bool DataPool_get(
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_2_OK */
-    case 0x1004:
+    case 0x1005:
         *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_2_OK;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -233,7 +241,7 @@ bool DataPool_get(
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_3_OK */
-    case 0x1005:
+    case 0x1006:
         *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_3_OK;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
@@ -598,32 +606,38 @@ bool DataPool_get_symbol_str(
         return true;
 
 
-    /* DP.MEMSTOREMANAGER.ERROR_CODE */
+    /* DP.MEMSTOREMANAGER.INITIALISED */
     case 0x1001:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.INITIALISED");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.ERROR_CODE */
+    case 0x1002:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.ERROR_CODE");
         return true;
 
 
     /* DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE */
-    case 0x1002:
+    case 0x1003:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE");
         return true;
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_1_OK */
-    case 0x1003:
+    case 0x1004:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_1_OK");
         return true;
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_2_OK */
-    case 0x1004:
+    case 0x1005:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_2_OK");
         return true;
 
 
     /* DP.MEMSTOREMANAGER.CFG_FILE_3_OK */
-    case 0x1005:
+    case 0x1006:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_3_OK");
         return true;
 

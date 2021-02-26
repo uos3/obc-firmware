@@ -46,5 +46,10 @@
  */
 #define EPS_ERROR_SEND_TC_WHEN_NOT_IDLE ((ErrorCode)(MOD_ID_EPS | 3))
 
+/**
+ * @brief Indicates an error occured with the event manager.
+ */
+#define EPS_ERROR_EVENTMANAGER_ERROR ((ErrorCode)(MOD_ID_EPS | 4))
+
 
 #endif /* H_EPS_ERRORS_H */

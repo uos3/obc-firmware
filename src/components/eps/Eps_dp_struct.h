@@ -64,6 +64,7 @@ typedef struct _Eps_Dp {
     /**
      * @brief Flag indicating that there's a new request to send to the EPS.
      * 
+     * TODO: remove
      * @dp 5
      */
     bool NEW_REQUEST;

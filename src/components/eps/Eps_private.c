@@ -63,8 +63,16 @@ void Eps_build_uart_header(
                 = EPS_UART_TC_SEND_BATT_CMD_PL_LENGTH;
             break;
 
+        case EPS_UART_DATA_TYPE_TC_SET_CONFIG:
+            p_header_out[EPS_UART_HEADER_PAYLOAD_LENGTH_POS]
+                = EPS_UART_TC_SET_CONFIG_PL_LENGTH;
+            break;
+
         default:
-            DEBUG_ERR("Unimplmented payload length for Eps UART type %d", data_type_in);
+            DEBUG_ERR(
+                "Unimplmented payload length for Eps UART type %d", 
+                data_type_in
+            );
             break;
     }
     #pragma GCC diagnostic pop

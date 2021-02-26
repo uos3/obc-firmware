@@ -152,79 +152,9 @@ bool Power_step(void) {
         }
     }
 
-    /* If there's a request to update the EPS config process it. This takes
-     * priority over any other command as it will affect the execution of the
-     * others.  */
-    if (DP.POWER.UPDATE_EPS_CFG) {
-        /* If the EPS is still working on a command (or we haven't read the
-         * latest command status stop wait for it to be processed) */
-        if (DP.EPS.COMMAND_STATUS == EPS_COMMAND_NONE) {
-            /* Send the config to the EPS */
-            if (!Eps_send_config()) {
-                DEBUG_ERR("Error sending new EPS configuration");
-                DP.POWER.ERROR_CODE = POWER_ERROR_EPS_SEND_CONFIG_FAILED;
-                return false;
-            }
-
-            /* Set the last command to the EPS */
-            DP.POWER.LAST_EPS_COMMAND = EPS_UART_DATA_TYPE_TC_SET_CONFIG;
-
-            /* If the request is sent successfully clear the update flag */
-            DP.POWER.UPDATE_EPS_CFG = false;
-            DEBUG_TRC("Updated EPS config sent");
-        }
-    }
-
-    /* If there's a request to update the EPS OCP state process it */
-    if (DP.POWER.UPDATE_EPS_OCP_STATE) {
-        /* If the EPS is still working on a command (or we haven't read the
-         * latest command status stop wait for it to be processed) */
-        if (DP.EPS.COMMAND_STATUS == EPS_COMMAND_NONE) {
-            /* Get the OCP state based on the mode at the end of the current
-             * state change. */
-            DP.POWER.REQUESTED_OCP_STATE = Power_get_ocp_state_for_op_mode(
-                CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
-                DP.MISSION.NEXT_OPMODE
-            );
-
-            /* Send the new state to the Eps */
-            if (!Eps_set_ocp_state(DP.POWER.REQUESTED_OCP_STATE)) {
-                DEBUG_ERR("Error sending updated OCP state to EPS");
-                DP.POWER.ERROR_CODE = POWER_ERROR_EPS_SET_OCP_STATE_FAILED;
-                return false;
-            }
-
-            /* Set the last command to the EPS */
-            DP.POWER.LAST_EPS_COMMAND = EPS_UART_DATA_TYPE_TC_SET_OCP_STATE;
-
-            /* If the request is sent successfully clear the update flag */
-            DP.POWER.UPDATE_EPS_OCP_STATE = false;
-            DEBUG_TRC("Updated EPS OCP state sent");
-        }
-    }
-
-    /* If there's a request to update the EPS HK data process it */
-    if (DP.POWER.UPDATE_EPS_HK) {
-        /* If the EPS is still working on a command (or we haven't read the
-         * latest command status stop wait for it to be processed) */
-        if (DP.EPS.COMMAND_STATUS == EPS_COMMAND_NONE) {
-            /* Send the request to the Eps */
-            if (!Eps_collect_hk_data()) {
-                DEBUG_ERR("Error requesting new EPS HK packet");
-                DP.POWER.ERROR_CODE = POWER_ERROR_EPS_COLLECT_HK_FAILED;
-                return false;
-            }
-
-            /* Set the last command to the EPS */
-            DP.POWER.LAST_EPS_COMMAND = EPS_UART_DATA_TYPE_TC_COLLECT_HK_DATA;
-
-            /* If the request is sent successfully clear the update flag */
-            DP.POWER.UPDATE_EPS_HK = false;
-            DEBUG_TRC("Update EPS HK request sent");
-        }
-    }
-
-    /* Check for the event that signals the EPS has finished a command */
+    /* Check for the event that signals the EPS has finished a command. This
+     * comes before any raising of new commands so we can clear the EPS command
+     * status flag first, allowing us to set new commands in this cycle. */
     if (!EventManager_poll_event(
         EVT_EPS_COMMAND_COMPLETE,
         &is_event_raised
@@ -301,6 +231,96 @@ bool Power_step(void) {
 
         /* Clear the EPS command status flag */
         DP.EPS.COMMAND_STATUS = EPS_COMMAND_NONE;
+    }
+
+    /* If there's a request to update the EPS config process it. This takes
+     * priority over any other command as it will affect the execution of the
+     * others.  */
+    if (DP.POWER.UPDATE_EPS_CFG) {
+        /* If the EPS is still working on a command (or we haven't read the
+         * latest command status stop wait for it to be processed) */
+        if (DP.EPS.COMMAND_STATUS == EPS_COMMAND_NONE) {
+            /* Send the config to the EPS */
+            if (!Eps_send_config()) {
+                DEBUG_ERR("Error sending new EPS configuration");
+                DP.POWER.ERROR_CODE = POWER_ERROR_EPS_SEND_CONFIG_FAILED;
+                return false;
+            }
+
+            /* Set the last command to the EPS */
+            DP.POWER.LAST_EPS_COMMAND = EPS_UART_DATA_TYPE_TC_SET_CONFIG;
+
+            /* If the request is sent successfully clear the update flag */
+            DP.POWER.UPDATE_EPS_CFG = false;
+            DEBUG_TRC("Updated EPS config sent");
+        }
+        else {
+            DEBUG_TRC("EPS CFG update requested but EPS is executing a command");
+        }
+    }
+
+    /* If there's a request to update the EPS OCP state process it */
+    if (DP.POWER.UPDATE_EPS_OCP_STATE) {
+        /* If the EPS is still working on a command (or we haven't read the
+         * latest command status stop wait for it to be processed) */
+        if (DP.EPS.COMMAND_STATUS == EPS_COMMAND_NONE) {
+            /* Get the OCP state based on the mode at the end of the current
+             * state change. */
+            DP.POWER.REQUESTED_OCP_STATE = Power_get_ocp_state_for_op_mode(
+                CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
+                DP.MISSION.NEXT_OPMODE
+            );
+
+            /* Send the new state to the Eps */
+            if (!Eps_set_ocp_state(DP.POWER.REQUESTED_OCP_STATE)) {
+                DEBUG_ERR("Error sending updated OCP state to EPS");
+                DP.POWER.ERROR_CODE = POWER_ERROR_EPS_SET_OCP_STATE_FAILED;
+                return false;
+            }
+
+            /* Set the last command to the EPS */
+            DP.POWER.LAST_EPS_COMMAND = EPS_UART_DATA_TYPE_TC_SET_OCP_STATE;
+
+            /* If the request is sent successfully clear the update flag */
+            DP.POWER.UPDATE_EPS_OCP_STATE = false;
+            DEBUG_TRC("Updated EPS OCP state sent");
+            DEBUG_DBG(
+                "DP.POWER.REQUESTED_OCP_STATE: %d%d%d%d%d%d",
+                DP.POWER.REQUESTED_OCP_STATE.radio_tx,
+                DP.POWER.REQUESTED_OCP_STATE.radio_rx_camera,
+                DP.POWER.REQUESTED_OCP_STATE.eps_mcu,
+                DP.POWER.REQUESTED_OCP_STATE.obc,
+                DP.POWER.REQUESTED_OCP_STATE.gnss_rx,
+                DP.POWER.REQUESTED_OCP_STATE.gnss_lna
+            );
+        }
+        else {
+            DEBUG_TRC("EPS OCP update requested but EPS is executing a command");
+        }
+    }
+
+    /* If there's a request to update the EPS HK data process it */
+    if (DP.POWER.UPDATE_EPS_HK) {
+        /* If the EPS is still working on a command (or we haven't read the
+         * latest command status stop wait for it to be processed) */
+        if (DP.EPS.COMMAND_STATUS == EPS_COMMAND_NONE) {
+            /* Send the request to the Eps */
+            if (!Eps_collect_hk_data()) {
+                DEBUG_ERR("Error requesting new EPS HK packet");
+                DP.POWER.ERROR_CODE = POWER_ERROR_EPS_COLLECT_HK_FAILED;
+                return false;
+            }
+
+            /* Set the last command to the EPS */
+            DP.POWER.LAST_EPS_COMMAND = EPS_UART_DATA_TYPE_TC_COLLECT_HK_DATA;
+
+            /* If the request is sent successfully clear the update flag */
+            DP.POWER.UPDATE_EPS_HK = false;
+            DEBUG_TRC("Update EPS HK request sent");
+        }
+        else {
+            DEBUG_TRC("EPS HK update requested but EPS is executing a command");
+        }
     }
 
     /* If there's an updated EPS HK packet perform the generic low voltage

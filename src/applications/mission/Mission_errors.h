@@ -21,4 +21,14 @@
 /* Internal includes */
 #include "system/kernel/Kernel_errors.h"
 
+/* -------------------------------------------------------------------------   
+ * ERRORS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief A required dependent module (DataPool, EventManager, MemStoreManager)
+ * is not initialised.
+ */
+#define MISSION_ERROR_DEPENDENCY_NOT_INIT ((ErrorCode)(MOD_ID_MISSION | 1))
+
 #endif /* H_MISSION_ERRORS_H */

@@ -10,7 +10,6 @@ add_executable(test_all_modules
 target_link_libraries(test_all_modules
     ${STANDARD_LINK_LIBS}
     ${CMOCKA_LIBRARY}
-    EventManager
     Crypto
     Power
 )
@@ -21,6 +20,14 @@ add_executable(test_mem_store_mgr_config
 )
 target_link_libraries(test_mem_store_mgr_config
     ${STANDARD_LINK_LIBS}
-    Eeprom
-    MemStoreManager
+)
+
+add_executable(test_power
+    ${STARTUP_SOUCRE}
+    test_power.c
+)
+target_link_libraries(test_power
+    ${STANDARD_LINK_LIBS}
+    Power
+    Mission
 )

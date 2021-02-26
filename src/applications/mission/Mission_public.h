@@ -28,6 +28,9 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
+/* External includes */
+#include <stdbool.h>
+
 /* Internal includes */
 #include "applications/mission/Mission_errors.h"
 #include "applications/mission/Mission_events.h"
@@ -83,5 +86,25 @@ typedef enum _Mission_OpMode {
     MISSION_OPMODE_PICTURE_TAKING = 7
 
 } Mission_OpMode;
+
+/* -------------------------------------------------------------------------   
+ * FUNCTIONS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Initialise the main Mission application.
+ * 
+ * @return bool True on succes, false on error. See DP.MISSION.ERROR_CODE for
+ * cause. 
+ */
+bool Mission_init(void);
+
+/**
+ * @brief Step the Mission app
+ * 
+ * @return True on succes, false on error. See DP.MISSION.ERROR_CODE for
+ * cause. 
+ */
+bool Mission_step(void);
 
 #endif /* H_MISSION_PUBLIC_H */

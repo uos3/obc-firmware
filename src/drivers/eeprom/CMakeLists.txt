@@ -13,5 +13,9 @@ else()
 endif()
 
 target_link_libraries(Eeprom
-    ${STANDARD_LINK_LIBS}
+    Kernel
+    Debug
+    Board
+    DataPool
+    EventManager
 )

@@ -153,6 +153,11 @@ typedef uint8_t Eps_OcpByte;
  */
 #define EPS_UART_TC_SEND_BATT_CMD_PL_LENGTH (2)
 
+/**
+ * @brief Length of the payload for EPS_UART_DATA_TYPE_TC_SET_CONFIG.
+ */
+#define EPS_UART_TC_SET_CONFIG_PL_LENGTH (sizeof(Eps_ConfigData))
+
 /* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */

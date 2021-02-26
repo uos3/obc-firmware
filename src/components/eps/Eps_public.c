@@ -39,13 +39,21 @@ bool Eps_init(void) {
 
     /* TODO: Initialise the UART */
 
-    /* Set first state as init */
+    /* Set first state as idle */
     DP.EPS.STATE = EPS_STATE_IDLE;
+
+    /* Set the EPS as initialised */
+    DP.EPS.INITIALISED = true;
 
     return true;
 }
 
 bool Eps_step(void) {
+    bool is_event_raised = false;
+    #ifdef DEBUG_MODE
+    char p_hex_str[512] = "";
+    #endif
+
     /* If we're not initialised warn the user.
      * Technically not an error because the step functions should be callable 
      * when not iniailised, but this should be visible during testing.
@@ -60,7 +68,12 @@ bool Eps_step(void) {
         case EPS_STATE_IDLE:
 
             /* Check for new request to send */
-            if (DP.EPS.NEW_REQUEST) {
+            if (!EventManager_poll_event(EVT_EPS_NEW_REQUEST, &is_event_raised)) {
+                DEBUG_ERR("EventManager error while polling new request event");
+                DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+                return false;
+            }
+            if (is_event_raised) {
                 /* If there is one move to the sending request state */
                 DP.EPS.STATE = EPS_STATE_REQUEST;
             }
@@ -76,8 +89,16 @@ bool Eps_step(void) {
 
             /* TODO: Send the EPS request over the UART */
 
-            /* Unset the new request flag */
-            DP.EPS.NEW_REQUEST = false;
+            /* Print the message */
+            #ifdef DEBUG_MODE
+            Debug_hex_string(
+                DP.EPS.EPS_REQUEST, 
+                p_hex_str, 
+                DP.EPS.EPS_REQUEST_LENGTH
+            );
+            DEBUG_DBG("EPS message = %s", p_hex_str);
+            p_hex_str[0] = '\0';
+            #endif
 
             /* Advance to next state */
             DP.EPS.STATE = EPS_STATE_WAIT_REPLY;
@@ -89,10 +110,16 @@ bool Eps_step(void) {
 
             /* TODO: Wait for reply from EPS over UART */
 
-            /* TODO: Raise the completed event */
+            /* Raise the completed event */
+            if (!EventManager_raise_event(EVT_EPS_COMMAND_COMPLETE)) {
+                DEBUG_ERR("EventManager error while raising command complete event");
+                DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+                return false;
+            }
 
             /* TODO: If the reply is as expected set the status to OK, if not 
-             * set the status to failure and raise the failed event. */
+             * set the status to failure. */
+            DP.EPS.COMMAND_STATUS = EPS_COMMAND_SUCCESS;
 
             /* TODO: Set the replied data in the DP */
 
@@ -113,7 +140,54 @@ bool Eps_step(void) {
 }
 
 bool Eps_send_config(void) {
-    /* TODO: build config frame and send it */
+    uint8_t request_frame[EPS_MAX_UART_FRAME_LENGTH];
+    size_t length 
+        = EPS_UART_HEADER_LENGTH + EPS_UART_TC_SET_CONFIG_PL_LENGTH;
+
+    /* Check Eps is initialised. Unlike the step function it is an error to
+     * call this function before the EPS init sequence is finished. */
+    if (!DP.EPS.INITIALISED) {
+        DEBUG_ERR("Cannot send new command when Eps is not initialised");
+        DP.EPS.ERROR_CODE = EPS_ERROR_NOT_INITIALISED;
+        return false;
+    }
+
+    /* Check we are in idle mode, as can only issue new commands in idle */
+    if (DP.EPS.STATE != EPS_STATE_IDLE) {
+        DEBUG_ERR(
+            "Cannot issue TC_COLLECT_HK_DATA to EPS as Eps is not in the IDLE state"
+        );
+        DP.EPS.ERROR_CODE = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        return false;
+    }
+
+    /* Build the header for a new SET_CONFIG request */
+    Eps_build_uart_header(
+        EPS_UART_DATA_TYPE_TC_SET_CONFIG,
+        request_frame
+    );
+
+    /* TODO: build the config struct and add it to the frame */
+
+    /* Set the frame in the datapool */
+    memcpy(
+        (void* )DP.EPS.EPS_REQUEST, 
+        (void *)request_frame, 
+        length
+    );
+
+    /* Set the length of the request */
+    DP.EPS.EPS_REQUEST_LENGTH = length;
+    
+    /* Set that the status is in progress, so new commands can't be raised */
+    DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
+
+    /* Raise the new request event */
+    if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
+        DEBUG_ERR("EventManager error while raising new request event");
+        DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+        return false;
+    }
 
     return true;
 }
@@ -162,8 +236,12 @@ bool Eps_collect_hk_data(void) {
     /* Set that the status is in progress, so new commands can't be raised */
     DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
 
-    /* Set the new request flag */
-    DP.EPS.NEW_REQUEST = true;
+    /* Raise the new request event */
+    if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
+        DEBUG_ERR("EventManager error while raising new request event");
+        DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+        return false;
+    }
 
     return true;
 }
@@ -235,8 +313,12 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
     /* Set that the status is in progress, so new commands can't be raised */
     DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
 
-    /* Set the new request flag */
-    DP.EPS.NEW_REQUEST = true;
+    /* Raise the new request event */
+    if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
+        DEBUG_ERR("EventManager error while raising new request event");
+        DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+        return false;
+    }
 
     return true;
 }
@@ -286,8 +368,12 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
     /* Set that the status is in progress, so new commands can't be raised */
     DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
 
-    /* Set the new request flag */
-    DP.EPS.NEW_REQUEST = true;
+    /* Raise the new request event */
+    if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
+        DEBUG_ERR("EventManager error while raising new request event");
+        DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+        return false;
+    }
 
     return true;
 }

@@ -135,6 +135,15 @@ void Debug_log_tm4c(
  */
 void Debug_exit(int error_code);
 
+/**
+ * @brief Returns a hex-formatted string representing the bytes given.
+ * 
+ * @param p_bytes_in The bytes to print
+ * @param p_str_out The formatted string
+ * @param length_in The length of the bytes
+ */
+void Debug_hex_string(uint8_t *p_bytes_in, char *p_str_out, uint32_t length_in);
+
 /* -------------------------------------------------------------------------   
  * MACROS
  * ------------------------------------------------------------------------- */
