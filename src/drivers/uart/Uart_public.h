@@ -94,6 +94,18 @@ ErrorCode Uart_init(void);
 ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in);
 
 /**
+ * @brief Initialise the uDMA for UART transfer. This initialisation contains
+ * TI functions which are only used once or infrequently to set up the uDMA
+ * channel. Transfer address, size, and transfer modes must be set using
+ * uDMAChannelTransferSet and uDMAChannelEnable before each new transfer, but
+ * are not contained within this init function. Therefore, this function
+ * should only be called once (or infrequently if re-initialisation required).
+ * 
+ * @return ErrorCode 
+ */
+ErrorCode Uart_udma_init(void);
+
+/**
  * @brief IF STATE MACHINE
  * 
  * @return ErrorCode 

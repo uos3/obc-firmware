@@ -34,9 +34,10 @@
 #include "drivers/uart/Uart_private_tm4c.c"
 
 /* External */
-#include "driverlib/gpio.h" /* Might be needed later for UART */
+#include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
+#include "driverlib/udma.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -146,7 +147,70 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_number_in) {
         return ERROR_NONE;
 }
 
+ErrorCode Uart_udma_init(void) {
+    uint8_t udma_control_table[1024];
+    
+    if (!SysCtlPeripheralReady(SYSCTL_PERIPH_UDMA)) {
+        DBG_ERR("Attempted to initialise uDMA while peripheral not ready.");
+        return UART_ERROR_UDMA_PERIPHERAL_NOT_READY;
+    }
+
+    uDMAEnable();
+    uDMAControlBaseSet(udma_control_table);
+
+    udma_initialised = true;
+
+    return ERROR_NONE;
+}
+
+ErrorCode Uart_send_bytes(
+    Uart_DeviceId uart_id_in,
+    uint8_t *p_data_in, 
+    size_t length_in
+) {
+    /* Pointer to UART device */
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+
+    if (!udma_initialised) {
+        DBG_ERR("Attempted to send bytes while uDMA not initialised.");
+        return UART_ERROR_UDMA_NOT_INITIALISED;
+    }
+
+    /* Check that the ID number of the UART is acceptable, return an error
+     * if not. */
+    if (uart_id_in >= UART_NUM_UARTS) {
+        DEBUG_ERR("The UART ID number was greater than the number of UARTs");
+        return UART_ERROR_MAX_NUM_UARTS;
+    }
+    
+    /* Set the transfer addresses, size, and mode. */
+    uDMAChannelTransferSet(UDMA_PRI_SELECT,
+        UDMA_MODE_AUTO,
+        p_uart_device->gpio_pin_rx,
+        p_uart_device->gpio_pin_tx,
+        length_in
+    );
+
+    /* Enable the channel. Software-initiated transfers require a channel
+     * request to begin the transfer.
+     * TODO: Check this */
+    uDMAChannelEnable(UDMA_CHANNEL_SW);
+    uDMAChannelRequest(UDMA_CHANNEL_SW);
+
+    if (uDMAErrorStatusGet() != 0) {
+        /* Check the uDMA error status, return an error if non-zero */
+        DBG_ERR("Unknown uDMA error");
+        /* TODO: Return an error */
+    }
+    else {
+        /* if uDMAErrorStatusGet() returns a 0, no error is pending, so return
+         * ERROR_NONE. */
+        return ERROR_NONE;
+    }
+}
+
 ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out) {
+    /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
 
     /* Check that the ID number of the UART is acceptable, return an error
