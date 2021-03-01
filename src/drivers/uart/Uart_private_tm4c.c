@@ -40,7 +40,7 @@
  * GLOBALS
  * ------------------------------------------------------------------------- */
 
-Uart_Device UART_PINS[UART_NUM_UARTS] = {
+Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
     {
         /* UART 1 (GNSS) */
         SYSCTL_PERIPH_GPIOA,

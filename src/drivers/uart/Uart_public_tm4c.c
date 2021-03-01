@@ -27,6 +27,9 @@
 #include "drivers/uart/Uart_public.h"
 #include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_errors.h"
+#include "drivers/gpio/Gpio_public.h"
+
+#include "drivers/gpio/Gpio_public_tm4c.c"
 
 #include "drivers/uart/Uart_private_tm4c.c"
 
@@ -43,9 +46,43 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode Uart_init(uint8_t uart_id_number_in) {
+ErrorCode Uart_init(void) {
+    /* Call specific init functions for all Uart devices (GNSS, CAM, PWR in
+     * that respective order, see UART DEVICE INDEX in Uart_public.h) */
+    Uart_init_specific(UART_DEVICE_ID_GNSS);
+    Uart_init_specific(UART_DEVICE_ID_CAM);
+    Uart_init_specific(UART_DEVICE_ID_PWR);
+
+    for (int i = 0; i < UART_NUM_UARTS; ++i) {
+        /* Pointer to the UART */
+        Uart_Device *p_uart_device = &UART_DEVICES[i];
+        /* Looping through the UART devices, call a warning if the specific
+         * UART failed to initialise, and continue.
+         * In the case of 1 (or multiple) devices failing to initialise,
+         * Uart_init_specific can be called to initialise that device. */
+        if (!p_uart_device->initialised) {
+            DEBUG_WRN("Warning: UART device index %d failed to initialise", i);
+        }
+    }
+
+    return ERROR_NONE;
+}
+
+ErrorCode Uart_init_specific(Uart_DeviceId uart_id_number_in) {
     /* Pointer to the UART */
-    Uart_Device *p_uart_device = &UART_PINS[uart_id_number_in];
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
+    uint32_t gpio_pins_init[2];
+
+    Gpio_init(p_uart_device->gpio_pin_tx, 1, GPIO_MODE_INPUT);
+    Gpio_init(p_uart_device->gpio_pin_rx, 1, GPIO_MODE_OUTPUT);
+
+    GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
+        GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
+        /* TODO: Check the bitwise OR is used correctly. The parameter is the
+         * "bit-packed representation of the pins" from TI manual page 283. */
+        GPIOPinTypeUART(p_uart_device->gpio_base,
+            p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
+        );
 
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
@@ -98,14 +135,6 @@ ErrorCode Uart_init(uint8_t uart_id_number_in) {
             }
         }
 
-        GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
-        GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
-        /* TODO: Check the bitwise OR is used correctly. The parameter is the
-         * "bit-packed representation of the pins" from TI manual page 283. */
-        GPIOPinTypeUART(p_uart_device->gpio_base,
-            p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
-        );
-
         /* TODO: Set baud rate? (Or check what default value is, or what
          * value is required by UoS3) */
     }
@@ -118,7 +147,7 @@ ErrorCode Uart_init(uint8_t uart_id_number_in) {
 }
 
 ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out) {
-    Uart_Device *p_uart_device = &UART_PINS[uart_id_number_in];
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
 
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
@@ -155,7 +184,7 @@ ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out) {
 }
 
 ErrorCode Uart_put_char(uint8_t uart_id_number_in, char byte_out) {
-    Uart_Device *p_uart_device = &UART_PINS[uart_id_number_in];
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
 
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
@@ -192,7 +221,7 @@ ErrorCode Uart_put_char(uint8_t uart_id_number_in, char byte_out) {
 }
 
 ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, char *buffer_out) {
-    Uart_Device *p_uart_device = &UART_PINS[uart_id_number_in];
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
 
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */

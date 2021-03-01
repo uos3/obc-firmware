@@ -32,8 +32,24 @@
  * ------------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------   
+ * DEFINES
+ * ------------------------------------------------------------------------- */
+
+typedef uint8_t Uart_DeviceId;
+
+#define UART_DEVICE_ID_GNSS (0)
+#define UART_DEVICE_ID_CAM (1)
+#define UART_DEVICE_ID_PWR (2)
+
+/* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */
+
+typedef enum _UART_DEVICE_INDEX {
+    UART_DEVICE_GNSS = 0,
+    UART_DEVICE_CAM,
+    UART_DEVICE_PWR,
+};
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
@@ -59,70 +75,6 @@ typedef struct _Uart_Device {
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief Initialises the specified UART peripheral.
- * 
- * @param uart_id_number_in UART peripheral ID number.
- * @return ErrorCode 
- */
-ErrorCode Uart_init(uint8_t uart_id_number_in);
-
-/**
- * @brief Receieves a byte from the RX FIFO of the specified UART peripheral.
- * 
- * @param uart_id_number_in UART peripheral ID number.
- * @param is_blocking_in bool to check if the function should be nonblocking.
- * @param recvd_byte_out Byte received from the UART peripheral.
- * @return ErrorCode 
- */
-ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out);
-
-/**
- * @brief Sends a byte from the specified UART peripheral.
- * 
- * @param uart_id_number_in UART peripheral ID number.
- * @param is_blocking_in bool to check if the function should be nonblocking.
- * @param byte_out Byte to send.
- * @return ErrorCode 
- */
-ErrorCode Uart_put_char(uint8_t uart_id_number_in, char byte_out);
-
-/**
- * @brief Sends a buffer with a specified length from the specified UART
- *  peripheral.
- * 
- * @param uart_id_number_in UART peripheral ID number.
- * @param is_blocking_in bool to check if the function should be nonblocking.
- * @param buffer_length_in Length of buffer to send (in bytes).
- * @param buffer_out Pointer to the buffer/string to send.
- * @return ErrorCode 
- */
-ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, char *buffer_out);
-
-/**
- * @brief Checks the TX FIFO busy status of the specified UART peripheral.
- * 
- * @param uart_id_number_in UART peripheral ID number.
- * @return ErrorCode 
- */
-ErrorCode Uart_busy_check_tx(uint8_t uart_id_number_in);
-
-/**
- * @brief Checks the RX FIFO busy status of the specified UART peripheral.
- * 
- * @param uart_id_number_in UART peripheral ID number.
- * @return ErrorCode 
- */
-ErrorCode Uart_busy_check_rx(uint8_t uart_id_number_in);
-
-/* -------------------------------------------------------------------------   
- * INTERFACE 2.0
- * ------------------------------------------------------------------------- */
-
-typedef uint8_t Uart_DeviceId;
-
-#define UART_DEVICE_ID_GNSS (0)
-
-/**
  * @brief Initialises the all used UART peripherals.
  * 
  * If not all UARTs are initialised correctly an error is returned for
@@ -131,7 +83,7 @@ typedef uint8_t Uart_DeviceId;
  *
  * @return ErrorCode If no error, ERROR_NONE, otherwise UART_ERROR_x.
  */
-// ErrorCode Uart_init(void);
+ErrorCode Uart_init(void);
 
 /**
  * @brief Initialise (or re-init) a specific UART device.
@@ -184,5 +136,57 @@ ErrorCode Uart_recv_bytes(
     uint8_t *p_data_out,
     size_t length_in
 );
+
+/* -------------------------------------------------------------------------   
+ * TODO: FUNCTIONS BELOW ARE TEMPORARY - WILL BE REPLACED BY NEW INTERFACE
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Receieves a byte from the RX FIFO of the specified UART peripheral.
+ * 
+ * @param uart_id_number_in UART peripheral ID number.
+ * @param is_blocking_in bool to check if the function should be nonblocking.
+ * @param recvd_byte_out Byte received from the UART peripheral.
+ * @return ErrorCode 
+ */
+ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out);
+
+/**
+ * @brief Sends a byte from the specified UART peripheral.
+ * 
+ * @param uart_id_number_in UART peripheral ID number.
+ * @param is_blocking_in bool to check if the function should be nonblocking.
+ * @param byte_out Byte to send.
+ * @return ErrorCode 
+ */
+ErrorCode Uart_put_char(uint8_t uart_id_number_in, char byte_out);
+
+/**
+ * @brief Sends a buffer with a specified length from the specified UART
+ *  peripheral.
+ * 
+ * @param uart_id_number_in UART peripheral ID number.
+ * @param is_blocking_in bool to check if the function should be nonblocking.
+ * @param buffer_length_in Length of buffer to send (in bytes).
+ * @param buffer_out Pointer to the buffer/string to send.
+ * @return ErrorCode 
+ */
+ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, char *buffer_out);
+
+/**
+ * @brief Checks the TX FIFO busy status of the specified UART peripheral.
+ * 
+ * @param uart_id_number_in UART peripheral ID number.
+ * @return ErrorCode 
+ */
+ErrorCode Uart_busy_check_tx(uint8_t uart_id_number_in);
+
+/**
+ * @brief Checks the RX FIFO busy status of the specified UART peripheral.
+ * 
+ * @param uart_id_number_in UART peripheral ID number.
+ * @return ErrorCode 
+ */
+ErrorCode Uart_busy_check_rx(uint8_t uart_id_number_in);
 
 #endif /* H_UART_PUBLIC_H */
