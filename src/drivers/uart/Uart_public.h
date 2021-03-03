@@ -67,6 +67,8 @@ typedef struct _Uart_Device {
     uint32_t uart_pin_tx_func;
     uint8_t gpio_pin_rx;
     uint8_t gpio_pin_tx;
+    uint32_t uart_status;
+    uint32_t udma_mode;
     bool initialised;
 } Uart_Device;
 
@@ -111,6 +113,11 @@ ErrorCode Uart_udma_init(void);
  * @return ErrorCode 
  */
 ErrorCode Uart_step(void);
+
+Uart_udma_interrupt_handler(
+    Uart_DeviceId uart_id_in,
+    size_t length_in
+);
 
 /**
  * @brief Send bytes

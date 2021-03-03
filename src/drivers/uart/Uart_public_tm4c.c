@@ -163,6 +163,40 @@ ErrorCode Uart_udma_init(void) {
     return ERROR_NONE;
 }
 
+Uart_udma_interrupt_handler(
+    Uart_DeviceId uart_id_in,
+    size_t length_in
+) {
+    /* Pointer to UART device */
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+
+    p_uart_device->uart_status = UARTIntStatus(p_uart_device->uart_base, true);
+    p_uart_device->udma_mode = uDMAChannelModeGet(UDMA_CHANNEL_UART0RX | UDMA_PRI_SELECT);
+
+    UARTIntClear(p_uart_device->uart_base, p_uart_device->uart_status);
+
+    if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
+        /* TODO: Count RX pings? */
+
+        uDMAChannelTransferSet(UDMA_CHANNEL_UART0RX | UDMA_PRI_SELECT,
+            UDMA_MODE_AUTO,
+            p_uart_device->gpio_pin_rx,
+            p_uart_device->gpio_pin_tx,
+            length_in);
+    }
+
+    if (!uDMAChannelIsEnabled(UDMA_CHANNEL_UART0TX)) {
+        uDMAChannelTransferSet(UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
+            UDMA_MODE_AUTO,
+            p_uart_device->gpio_pin_tx,
+            p_uart_device->gpio_pin_rx,
+            length_in
+        );
+
+        uDMAChannelEnable(UDMA_CHANNEL_UART0TX);
+    }
+}
+
 ErrorCode Uart_send_bytes(
     Uart_DeviceId uart_id_in,
     uint8_t *p_data_in, 
@@ -182,9 +216,18 @@ ErrorCode Uart_send_bytes(
         DEBUG_ERR("The UART ID number was greater than the number of UARTs");
         return UART_ERROR_MAX_NUM_UARTS;
     }
+
+    UARTEnable(p_uart_device->uart_base);
+    UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
+
+    uDMAChannelAttributeDisable(UDMA_CHANNEL_UART0TX,
+        UDMA_ATTR_ALTSELECT | UDMA_ATTR_USEBURST | UDMA_ATTR_HIGH_PRIORITY | UDMA_ATTR_REQMASK
+    );
+
+    uDMAChannelControlSet(UDMA_CHANNEL_UART0RX | UDMA_PRI_SELECT, UDMA_SIZE_8);
     
     /* Set the transfer addresses, size, and mode. */
-    uDMAChannelTransferSet(UDMA_PRI_SELECT,
+    uDMAChannelTransferSet(UDMA_CHANNEL_UART0RX | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
         p_uart_device->gpio_pin_rx,
         p_uart_device->gpio_pin_tx,
