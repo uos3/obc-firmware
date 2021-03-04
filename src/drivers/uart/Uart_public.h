@@ -114,7 +114,7 @@ ErrorCode Uart_udma_init(void);
  */
 ErrorCode Uart_step(void);
 
-Uart_udma_interrupt_handler(
+ErrorCode Uart_udma_interrupt_handler(
     Uart_DeviceId uart_id_in,
     size_t length_in
 );

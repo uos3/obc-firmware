@@ -136,6 +136,16 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_number_in) {
             }
         }
 
+        /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
+         * controller when more data should be transferred.
+         * TODO: currently arbitrary at 4 (so when FIFO IS 1/2 full), check if
+         * another may be more suitable. */
+        UARTFIFOLevelSet(p_uart_device->uart_base, UART_FIFO_TX4_8, UART_FIFO_RX4_8);
+
+        /* Enable the UART and uDMA interface for TX and RX */
+        UARTEnable(p_uart_device->uart_base);
+        UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
+
         /* TODO: Set baud rate? (Or check what default value is, or what
          * value is required by UoS3) */
     }
@@ -148,7 +158,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_number_in) {
 }
 
 ErrorCode Uart_udma_init(void) {
-    uint8_t udma_control_table[1024];
     
     if (!SysCtlPeripheralReady(SYSCTL_PERIPH_UDMA)) {
         DBG_ERR("Attempted to initialise uDMA while peripheral not ready.");
@@ -156,44 +165,32 @@ ErrorCode Uart_udma_init(void) {
     }
 
     uDMAEnable();
-    uDMAControlBaseSet(udma_control_table);
+    uDMAControlBaseSet(UDMA_CONTROL_TABLE);
 
-    udma_initialised = true;
+    UDMA_INITIALISED = true;
 
     return ERROR_NONE;
 }
 
-Uart_udma_interrupt_handler(
+ErrorCode Uart_udma_interrupt_handler(
     Uart_DeviceId uart_id_in,
     size_t length_in
 ) {
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
+    /* Get the interrupt status of the UART */
     p_uart_device->uart_status = UARTIntStatus(p_uart_device->uart_base, true);
-    p_uart_device->udma_mode = uDMAChannelModeGet(UDMA_CHANNEL_UART0RX | UDMA_PRI_SELECT);
-
+    /* Clear any pending UART status. No UART interrupts should be enabled, as
+     * both RX and TX are using uDMA. */
     UARTIntClear(p_uart_device->uart_base, p_uart_device->uart_status);
 
+    /* Check the uDMA control table to check that the transfer is complete */
+    p_uart_device->udma_mode = uDMAChannelModeGet(UDMA_CHANNEL_UART0RX | UDMA_PRI_SELECT);
+
+    /* The transfer is complete if the mode is "STOP" */
     if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
-        /* TODO: Count RX pings? */
-
-        uDMAChannelTransferSet(UDMA_CHANNEL_UART0RX | UDMA_PRI_SELECT,
-            UDMA_MODE_AUTO,
-            p_uart_device->gpio_pin_rx,
-            p_uart_device->gpio_pin_tx,
-            length_in);
-    }
-
-    if (!uDMAChannelIsEnabled(UDMA_CHANNEL_UART0TX)) {
-        uDMAChannelTransferSet(UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
-            UDMA_MODE_AUTO,
-            p_uart_device->gpio_pin_tx,
-            p_uart_device->gpio_pin_rx,
-            length_in
-        );
-
-        uDMAChannelEnable(UDMA_CHANNEL_UART0TX);
+        /* TODO: Count total number of complete transfers? */
     }
 }
 
@@ -205,7 +202,7 @@ ErrorCode Uart_send_bytes(
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
-    if (!udma_initialised) {
+    if (!UDMA_INITIALISED) {
         DBG_ERR("Attempted to send bytes while uDMA not initialised.");
         return UART_ERROR_UDMA_NOT_INITIALISED;
     }
@@ -217,28 +214,75 @@ ErrorCode Uart_send_bytes(
         return UART_ERROR_MAX_NUM_UARTS;
     }
 
-    UARTEnable(p_uart_device->uart_base);
-    UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
-
-    uDMAChannelAttributeDisable(UDMA_CHANNEL_UART0TX,
-        UDMA_ATTR_ALTSELECT | UDMA_ATTR_USEBURST | UDMA_ATTR_HIGH_PRIORITY | UDMA_ATTR_REQMASK
-    );
-
-    uDMAChannelControlSet(UDMA_CHANNEL_UART0RX | UDMA_PRI_SELECT, UDMA_SIZE_8);
+    /* Configure the control parameters for the UART TX channel.
+     * UDMA_ARB_4 to match the FIFO trigger threshold. */
+    uDMAChannelControlSet(UDMA_CHANNEL_UART1TX | UDMA_PRI_SELECT,
+        length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4);
     
-    /* Set the transfer addresses, size, and mode. */
-    uDMAChannelTransferSet(UDMA_CHANNEL_UART0RX | UDMA_PRI_SELECT,
+    /* Set the transfer addresses, size, and mode for TX */
+    uDMAChannelTransferSet(UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
-        p_uart_device->gpio_pin_rx,
+        &p_data_in,
         p_uart_device->gpio_pin_tx,
-        length_in
-    );
+        length_in);
 
     /* Enable the channel. Software-initiated transfers require a channel
      * request to begin the transfer.
      * TODO: Check this */
-    uDMAChannelEnable(UDMA_CHANNEL_SW);
-    uDMAChannelRequest(UDMA_CHANNEL_SW);
+    uDMAChannelEnable(UDMA_CHANNEL_UART0TX);
+
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMATX);
+
+    if (uDMAErrorStatusGet() != 0) {
+        /* Check the uDMA error status, return an error if non-zero */
+        DBG_ERR("Unknown uDMA error");
+        /* TODO: Return an error */
+    }
+    else {
+        /* if uDMAErrorStatusGet() returns a 0, no error is pending, so return
+         * ERROR_NONE. */
+        return ERROR_NONE;
+    }
+}
+
+ErrorCode Uart_recv_bytes(
+    Uart_DeviceId uart_id_in,
+    uint8_t *p_data_out,
+    size_t length_in
+) {
+    /* Pointer to UART device */
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+
+    if (!UDMA_INITIALISED) {
+        DBG_ERR("Attempted to send bytes while uDMA not initialised.");
+        return UART_ERROR_UDMA_NOT_INITIALISED;
+    }
+
+    /* Check that the ID number of the UART is acceptable, return an error
+     * if not. */
+    if (uart_id_in >= UART_NUM_UARTS) {
+        DEBUG_ERR("The UART ID number was greater than the number of UARTs");
+        return UART_ERROR_MAX_NUM_UARTS;
+    }
+
+    /* Configure the control parameters for the UART TX channel.
+     * UDMA_ARB_4 to match the FIFO trigger threshold. */
+    uDMAChannelControlSet(UDMA_CHANNEL_UART1RX | UDMA_PRI_SELECT,
+        length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4);
+    
+    /* Set the transfer addresses, size, and mode for TX */
+    uDMAChannelTransferSet(UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
+        UDMA_MODE_AUTO,
+        p_uart_device->gpio_pin_tx,
+        &p_data_out,
+        length_in);
+
+    /* Enable the channel. Software-initiated transfers require a channel
+     * request to begin the transfer.
+     * TODO: Check this */
+    uDMAChannelEnable(UDMA_CHANNEL_UART0RX);
+
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
 
     if (uDMAErrorStatusGet() != 0) {
         /* Check the uDMA error status, return an error if non-zero */
