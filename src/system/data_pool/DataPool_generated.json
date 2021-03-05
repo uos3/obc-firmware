@@ -293,6 +293,13 @@
         "data_type": "Mission_OpMode",
         "brief": "The next OpMode that will be set when the current mode change is complete."
     },
+    "DP.MISSION.OPMODE_CHANGE_IN_PROGRESS": {
+        "block_id": 52,
+        "block_index": 5,
+        "dp_id": 53253,
+        "data_type": "bool",
+        "brief": "Indicates whether or not a change in the OPMODE is in progress."
+    },
     "DP.POWER.INITIALISED": {
         "block_id": 53,
         "block_index": 1,
@@ -376,5 +383,12 @@
         "dp_id": 54284,
         "data_type": "bool",
         "brief": "This flag shall be true if a command to set the EPS OCP state succeeds. If the EPS fails to return the expected OCP state, this will be false. It shall also be false from the time a OCP update is requested, until a successful update is detected."
+    },
+    "DP.POWER.OPMODE_CHANGE_IN_PROGRESS": {
+        "block_id": 53,
+        "block_index": 13,
+        "dp_id": 54285,
+        "data_type": "bool",
+        "brief": "Flag which is true while the Power app is performing the actions needed to change OPMODE, namely:  - Updating the OCP state of the EPS."
     }
 }

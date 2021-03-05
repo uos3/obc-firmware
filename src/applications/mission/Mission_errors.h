@@ -31,4 +31,15 @@
  */
 #define MISSION_ERROR_DEPENDENCY_NOT_INIT ((ErrorCode)(MOD_ID_MISSION | 1))
 
+/**
+ * @brief The Mission module hasn't been initialised.
+ */
+#define MISSION_ERROR_NOT_INIT ((ErrorCode)(MOD_ID_MISSION | 2))
+
+/**
+ * @brief An error occured while using the EventManager. See
+ * DP.EVENTMANAGER.ERROR_CODE for cause.
+ */
+#define MISSION_ERROR_EVENTMANAGER_ERROR ((ErrorCode)(MOD_ID_MISSION | 3))
+
 #endif /* H_MISSION_ERRORS_H */

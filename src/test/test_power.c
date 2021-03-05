@@ -126,10 +126,22 @@ int main(void) {
             Debug_exit(13);
         }
 
-        /* If no events "sleep" */
+        /* If no move to next mode, to test mode switching */
         if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0) {
-            DEBUG_INF("No events, sleeping");
-            run_loop = false;
+            if (DP.MISSION.OPMODE < MISSION_OPMODE_PICTURE_TAKING) {                
+                if (!Mission_start_opmode_change(DP.MISSION.OPMODE + 1)) {
+                    Debug_exit(14);
+                }
+
+                DEBUG_INF(
+                    "No events, setting OPMODE to %d", 
+                    DP.MISSION.NEXT_OPMODE
+                );
+            }
+            else {
+                DEBUG_INF("Final OPMODE reached, exiting");
+                run_loop = false;
+            }
         }
 
     }

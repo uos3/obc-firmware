@@ -102,9 +102,22 @@ bool Mission_init(void);
 /**
  * @brief Step the Mission app
  * 
- * @return True on succes, false on error. See DP.MISSION.ERROR_CODE for
+ * @return bool True on succes, false on error. See DP.MISSION.ERROR_CODE for
  * cause. 
  */
 bool Mission_step(void);
+
+#ifdef DEBUG_MODE
+/**
+ * @brief Begin a change in OPMODE.
+ * 
+ * Note: This function is for development testing only.
+ * 
+ * @param opmode_in The OPMODE to change to
+ * @return bool True on succes, false on error. See DP.MISSION.ERROR_CODE for
+ * cause. 
+ */
+bool Mission_start_opmode_change(Mission_OpMode opmode_in);
+#endif
 
 #endif /* H_MISSION_PUBLIC_H */

@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-02-26
+ * @date 2021-03-01
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -376,6 +376,14 @@ bool DataPool_get(
         return true;
 
 
+    /* DP.MISSION.OPMODE_CHANGE_IN_PROGRESS */
+    case 0xd005:
+        *pp_data_out = &DP.MISSION.OPMODE_CHANGE_IN_PROGRESS;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
     /* DP.POWER.INITIALISED */
     case 0xd401:
         *pp_data_out = &DP.POWER.INITIALISED;
@@ -467,6 +475,14 @@ bool DataPool_get(
     /* DP.POWER.EPS_OCP_STATE_CORRECT */
     case 0xd40c:
         *pp_data_out = &DP.POWER.EPS_OCP_STATE_CORRECT;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.POWER.OPMODE_CHANGE_IN_PROGRESS */
+    case 0xd40d:
+        *pp_data_out = &DP.POWER.OPMODE_CHANGE_IN_PROGRESS;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
         return true;
@@ -738,6 +754,12 @@ bool DataPool_get_symbol_str(
         return true;
 
 
+    /* DP.MISSION.OPMODE_CHANGE_IN_PROGRESS */
+    case 0xd005:
+        *pp_symbol_str_out = strdup("DP.MISSION.OPMODE_CHANGE_IN_PROGRESS");
+        return true;
+
+
     /* DP.POWER.INITIALISED */
     case 0xd401:
         *pp_symbol_str_out = strdup("DP.POWER.INITIALISED");
@@ -807,6 +829,12 @@ bool DataPool_get_symbol_str(
     /* DP.POWER.EPS_OCP_STATE_CORRECT */
     case 0xd40c:
         *pp_symbol_str_out = strdup("DP.POWER.EPS_OCP_STATE_CORRECT");
+        return true;
+
+
+    /* DP.POWER.OPMODE_CHANGE_IN_PROGRESS */
+    case 0xd40d:
+        *pp_symbol_str_out = strdup("DP.POWER.OPMODE_CHANGE_IN_PROGRESS");
         return true;
 
 

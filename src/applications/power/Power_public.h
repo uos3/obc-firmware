@@ -23,6 +23,7 @@
 /* Internal includes */
 #include "applications/power/Power_dp_struct.h"
 #include "applications/power/Power_errors.h"
+#include "applications/power/Power_events.h"
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
@@ -64,7 +65,8 @@ bool Power_step(void);
  * 
  * This is useful for acquiring EPS HK data before any tasks are started - i.e.
  * in BU init. The event EVT_EPS_NEW_HK_DATA will be emmitted when the data is
- * available, and is stored in DP.EPS.HK_DATA.
+ * available, and is stored in DP.EPS.HK_DATA. Do not poll for this event, as
+ * it is used by the Power app too.
  */
 void Power_request_eps_hk(void);
 

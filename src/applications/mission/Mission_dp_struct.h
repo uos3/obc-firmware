@@ -61,6 +61,13 @@ typedef struct _Mission_Dp {
      */
     Mission_OpMode NEXT_OPMODE;
 
+    /**
+     * @brief Indicates whether or not a change in the OPMODE is in progress.
+     * 
+     * @dp 5
+     */
+    bool OPMODE_CHANGE_IN_PROGRESS;
+
 } Mission_Dp;
 
 #endif /* H_MISSION_DP_STRUCT_H */

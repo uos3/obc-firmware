@@ -140,6 +140,15 @@ typedef struct _Power_Dp {
      */
     bool EPS_OCP_STATE_CORRECT;
 
+    /**
+     * @brief Flag which is true while the Power app is performing the actions
+     * needed to change OPMODE, namely:
+     *  - Updating the OCP state of the EPS.
+     * 
+     * @dp 13
+     */
+    bool OPMODE_CHANGE_IN_PROGRESS;
+
 } Power_Dp;
 
 #endif /* H_POWER_DP_STRUCT_H */

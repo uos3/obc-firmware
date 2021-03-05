@@ -70,6 +70,7 @@ bool Power_step(void) {
         return false;
     }
     if (is_event_raised) {
+        DP.POWER.OPMODE_CHANGE_IN_PROGRESS = true;
         DP.POWER.UPDATE_EPS_OCP_STATE = true;
         DP.POWER.EPS_OCP_STATE_CORRECT = false;
     }
@@ -221,12 +222,29 @@ bool Power_step(void) {
                 == EPS_UART_DATA_TYPE_TC_SET_OCP_STATE
             ) {
                 DP.POWER.EPS_OCP_STATE_CORRECT = true;
+
+                /* If this was part of an opmode change emmit the change
+                 * complete event and reset the change flag */
+                if (DP.POWER.OPMODE_CHANGE_IN_PROGRESS) {
+                    if (!EventManager_raise_event(
+                        EVT_POWER_OPMODE_CHANGE_ACTIVITIES_COMPLETE
+                    )) {
+                        DEBUG_ERR(
+                            "Couldn't raise OPMODE change complete event"
+                        );
+                        DP.POWER.ERROR_CODE 
+                            = POWER_ERROR_EPS_SET_OCP_STATE_FAILED;
+                        return false;
+                    }
+                }
             }
         }
         else {
             /* If it's anything else raise a warning, this indicates something
              * is going wrong in the state machine */
-            DEBUG_WRN("EPS command complete event was raised, but command status is not success or failure");
+            DEBUG_WRN(
+                "EPS command complete event was raised, but command status is not success or failure"
+            );
         }
 
         /* Clear the EPS command status flag */
@@ -327,7 +345,7 @@ bool Power_step(void) {
      * check, provided we are not in CFU. Switching to LP in CFU is dangerous
      * and could leave the spacecraft in a misconfigured state. */
     if (DP.MISSION.OPMODE != MISSION_OPMODE_CONFIG_FILE_UPDATE) {
-        /* Not we use is_event_raised here not poll as some others may be
+        /* Note we use is_event_raised here not poll as some others may be
          * looking for this event too */
         if (!EventManager_is_event_raised(
             EVT_EPS_NEW_HK_DATA,

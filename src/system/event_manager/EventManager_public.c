@@ -116,6 +116,8 @@ bool EventManager_raise_event(Event event_in) {
      * function */
     Kernel_disable_interrupts();
 
+    DEBUG_TRC("EVENT: 0x%04X", event_in);
+
     /* Check that init has been called */
     if (DP.EVENTMANAGER.INITIALISED == false) {
         /* Debug log */
