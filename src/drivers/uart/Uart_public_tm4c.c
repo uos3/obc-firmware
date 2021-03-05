@@ -72,18 +72,17 @@ ErrorCode Uart_init(void) {
 ErrorCode Uart_init_specific(Uart_DeviceId uart_id_number_in) {
     /* Pointer to the UART */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
-    uint32_t gpio_pins_init[2];
-
+    
+    /* Initialise the GPIO pins as their respective mode */
     Gpio_init(p_uart_device->gpio_pin_tx, 1, GPIO_MODE_INPUT);
     Gpio_init(p_uart_device->gpio_pin_rx, 1, GPIO_MODE_OUTPUT);
 
+    /* Configure the GPIO pins */
     GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
-        GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
-        /* TODO: Check the bitwise OR is used correctly. The parameter is the
-         * "bit-packed representation of the pins" from TI manual page 283. */
-        GPIOPinTypeUART(p_uart_device->gpio_base,
-            p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
-        );
+    GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
+    GPIOPinTypeUART(p_uart_device->gpio_base,
+        p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
+    );
 
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
@@ -137,10 +136,10 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_number_in) {
         }
 
         /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
-         * controller when more data should be transferred.
-         * TODO: currently arbitrary at 4 (so when FIFO IS 1/2 full), check if
-         * another may be more suitable. */
-        UARTFIFOLevelSet(p_uart_device->uart_base, UART_FIFO_TX4_8, UART_FIFO_RX4_8);
+         * controller when more data should be transferred. These are defined
+         * in Uart_private.h and are currently arbitrary
+         * (see TODO in Uart_private.h for more info). */
+        UARTFIFOLevelSet(p_uart_device->uart_base, UART_TX_FIFO_THRESHOLD, UART_RX_FIFO_THRESHOLD);
 
         /* Enable the UART and uDMA interface for TX and RX */
         UARTEnable(p_uart_device->uart_base);
@@ -159,11 +158,27 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_number_in) {
 
 ErrorCode Uart_udma_init(void) {
     
+    /* Check that the uDMA peripheral is ready, if not, then enable the
+     * peripheral. */
     if (!SysCtlPeripheralReady(SYSCTL_PERIPH_UDMA)) {
-        DBG_ERR("Attempted to initialise uDMA while peripheral not ready.");
-        return UART_ERROR_UDMA_PERIPHERAL_NOT_READY;
+        SysCtlPeripheralReset(SYSCTL_PERIPH_UDMA);
+        SysCtlPeripheralEnable(SYSCTL_PERIPH_UDMA);
     }
 
+    for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
+            if (SysCtlPeripheralReady(SYSCTL_PERIPH_UDMA)) {
+                /* If the peripheral is ready, break out of the loop */
+                break;
+            }
+            if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+                /* If the maximium number of peripheral ready checks has been
+                 * reached, raise an error. */
+                DEBUG_ERR("Failed to enable uDMA peripheral");
+                return UART_ERROR_PERIPHERAL_READY_FAILED;
+            }
+        }
+
+    /* Enable the uDMA channels */
     uDMAEnable();
     uDMAControlBaseSet(UDMA_CONTROL_TABLE);
 
@@ -215,8 +230,12 @@ ErrorCode Uart_send_bytes(
     }
 
     /* Configure the control parameters for the UART TX channel.
-     * UDMA_ARB_4 to match the FIFO trigger threshold. */
-    uDMAChannelControlSet(UDMA_CHANNEL_UART1TX | UDMA_PRI_SELECT,
+     * UDMA_ARB_4 to match the FIFO trigger threshold.
+     * UDMA_ARB_4 refers to the arbitratoin size, which is the number
+     * of bytes transferred per trigger. This may not be necessary in AUTO
+     * mode, but if we decide to use BASIC mode, this value may be required,
+     * so will be kept in for now. */
+    uDMAChannelControlSet(UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
         length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4);
     
     /* Set the transfer addresses, size, and mode for TX */
@@ -226,13 +245,14 @@ ErrorCode Uart_send_bytes(
         p_uart_device->gpio_pin_tx,
         length_in);
 
-    /* Enable the channel. Software-initiated transfers require a channel
-     * request to begin the transfer.
-     * TODO: Check this */
+    /* Enable the uDMA channel for the transfer to occur. */
     uDMAChannelEnable(UDMA_CHANNEL_UART0TX);
 
+    /* Enable the UART interrupt.
+     * TODO: Check this */
     UARTIntEnable(p_uart_device->uart_base, UART_INT_DMATX);
 
+    /* TODO: Potentially move this into separete function Uart_get_status(). */
     if (uDMAErrorStatusGet() != 0) {
         /* Check the uDMA error status, return an error if non-zero */
         DBG_ERR("Unknown uDMA error");
@@ -295,6 +315,12 @@ ErrorCode Uart_recv_bytes(
         return ERROR_NONE;
     }
 }
+
+
+/* -------------------------------------------------------------------------   
+ * FUNCTIONS BELOW ARE PART OF THE OLD INTERFACE. WILL MOST LIKELY BE DISCARED,
+ * BUT KEPT FOR NOW AS A REFERENCE/JUST IN CASE UDMA IS NOT A VIABLE OPTION.
+ * ------------------------------------------------------------------------- */
 
 ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out) {
     /* Pointer to UART device */
