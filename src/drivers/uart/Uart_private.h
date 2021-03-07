@@ -32,6 +32,13 @@
  * GLOBALS
  * ------------------------------------------------------------------------- */
 
+/*
+extern Uart_Device UART_DEVICES;
+*/
+
+bool UDMA_INITIALISED = false;
+unsigned char UDMA_CONTROL_TABLE[1024];
+
 /* -------------------------------------------------------------------------   
  * DEFINES
  * ------------------------------------------------------------------------- */
@@ -43,6 +50,12 @@
  * an error.
  * TODO: This is currently arbitrary */
 #define UART_MAX_NUM_PERIPHERAL_READY_CHECKS (10)
+
+/* FIFO threshold levels for RX and TX to tell the uDMA when to begin the new
+ * burst transfer. TODO: These are currently arbitrary, must check what
+ * threshold would be most suitable. */
+#define UART_TX_FIFO_THRESHOLD (UART_FIFO_TX4_8)
+#define UART_RX_FIFO_THRESHOLD (UART_FIFO_RX4_8)
 
 /* -------------------------------------------------------------------------   
  * STRUCTS

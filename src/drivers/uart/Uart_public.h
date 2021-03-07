@@ -32,8 +32,24 @@
  * ------------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------   
+ * DEFINES
+ * ------------------------------------------------------------------------- */
+
+typedef uint8_t Uart_DeviceId;
+
+#define UART_DEVICE_ID_GNSS (0)
+#define UART_DEVICE_ID_CAM (1)
+#define UART_DEVICE_ID_PWR (2)
+
+/* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */
+
+typedef enum _UART_DEVICE_INDEX {
+    UART_DEVICE_GNSS = 0,
+    UART_DEVICE_CAM,
+    UART_DEVICE_PWR,
+};
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
@@ -51,6 +67,8 @@ typedef struct _Uart_Device {
     uint32_t uart_pin_tx_func;
     uint8_t gpio_pin_rx;
     uint8_t gpio_pin_tx;
+    uint32_t uart_status;
+    uint32_t udma_mode;
     bool initialised;
 } Uart_Device;
 
@@ -59,12 +77,88 @@ typedef struct _Uart_Device {
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief Initialises the specified UART peripheral.
+ * @brief Initialises the all used UART peripherals.
  * 
- * @param uart_id_number_in UART peripheral ID number.
+ * If not all UARTs are initialised correctly an error is returned for
+ * monitoring purposes only. If all UARTs fail to initialise an error is also
+ * returned, but indicates failure of the UART system itself.
+ *
+ * @return ErrorCode If no error, ERROR_NONE, otherwise UART_ERROR_x.
+ */
+ErrorCode Uart_init(void);
+
+/**
+ * @brief Initialise (or re-init) a specific UART device.
+ * 
+ * @param uart_id_in The device to re-initialise.
+ * @return ErrorCode TODO
+ */
+ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in);
+
+/**
+ * @brief Initialise the uDMA for UART transfer. This initialisation contains
+ * TI functions which are only used once or infrequently to set up the uDMA
+ * channel. Transfer address, size, and transfer modes must be set using
+ * uDMAChannelTransferSet and uDMAChannelEnable before each new transfer, but
+ * are not contained within this init function. Therefore, this function
+ * should only be called once (or infrequently if re-initialisation required).
+ * 
  * @return ErrorCode 
  */
-ErrorCode Uart_init(uint8_t uart_id_number_in);
+ErrorCode Uart_udma_init(void);
+
+/**
+ * @brief IF STATE MACHINE
+ * 
+ * @return ErrorCode 
+ */
+ErrorCode Uart_step(void);
+
+ErrorCode Uart_udma_interrupt_handler(
+    Uart_DeviceId uart_id_in,
+    size_t length_in
+);
+
+/**
+ * @brief Send bytes
+ * 
+ * Event EVT_UART_SEND_COMPLETE is raised when the bytes have been sent to the
+ * device. This could either be successful or it could fail, so use
+ * Uart_get_status() for the device to check.
+ * 
+ * @param uart_id_in 
+ * @param p_data_in 
+ * @param length_in 
+ * @return ErrorCode 
+ */
+ErrorCode Uart_send_bytes(
+    Uart_DeviceId uart_id_in,
+    uint8_t *p_data_in, 
+    size_t length_in
+);
+
+/**
+ * @brief Did it work?
+ * 
+ * @param uart_id_in 
+ * @param p_status_out 
+ * @return ErrorCode 
+ */
+ErrorCode Uart_get_status(
+    Uart_DeviceId uart_id_in,
+    void *p_status_out
+);
+
+
+ErrorCode Uart_recv_bytes(
+    Uart_DeviceId uart_id_in,
+    uint8_t *p_data_out,
+    size_t length_in
+);
+
+/* -------------------------------------------------------------------------   
+ * TODO: FUNCTIONS BELOW ARE TEMPORARY - WILL BE REPLACED BY NEW INTERFACE
+ * ------------------------------------------------------------------------- */
 
 /**
  * @brief Receieves a byte from the RX FIFO of the specified UART peripheral.
@@ -113,76 +207,5 @@ ErrorCode Uart_busy_check_tx(uint8_t uart_id_number_in);
  * @return ErrorCode 
  */
 ErrorCode Uart_busy_check_rx(uint8_t uart_id_number_in);
-
-/* -------------------------------------------------------------------------   
- * INTERFACE 2.0
- * ------------------------------------------------------------------------- */
-
-typedef uint8_t Uart_DeviceId;
-
-#define UART_DEVICE_ID_GNSS (0)
-
-/**
- * @brief Initialises the all used UART peripherals.
- * 
- * If not all UARTs are initialised correctly an error is returned for
- * monitoring purposes only. If all UARTs fail to initialise an error is also
- * returned, but indicates failure of the UART system itself.
- *
- * @return ErrorCode If no error, ERROR_NONE, otherwise UART_ERROR_x.
- */
-// ErrorCode Uart_init(void);
-
-/**
- * @brief Initialise (or re-init) a specific UART device.
- * 
- * @param uart_id_in The device to re-initialise.
- * @return ErrorCode TODO
- */
-ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in);
-
-/**
- * @brief IF STATE MACHINE
- * 
- * @return ErrorCode 
- */
-ErrorCode Uart_step(void);
-
-/**
- * @brief Send bytes
- * 
- * Event EVT_UART_SEND_COMPLETE is raised when the bytes have been sent to the
- * device. This could either be successful or it could fail, so use
- * Uart_get_status() for the device to check.
- * 
- * @param uart_id_in 
- * @param p_data_in 
- * @param length_in 
- * @return ErrorCode 
- */
-ErrorCode Uart_send_bytes(
-    Uart_DeviceId uart_id_in,
-    uint8_t *p_data_in, 
-    size_t length_in
-);
-
-/**
- * @brief Did it work?
- * 
- * @param uart_id_in 
- * @param p_status_out 
- * @return ErrorCode 
- */
-ErrorCode Uart_get_status(
-    Uart_DeviceId uart_id_in,
-    void *p_status_out
-);
-
-
-ErrorCode Uart_recv_bytes(
-    Uart_DeviceId uart_id_in,
-    uint8_t *p_data_out,
-    size_t length_in
-);
 
 #endif /* H_UART_PUBLIC_H */

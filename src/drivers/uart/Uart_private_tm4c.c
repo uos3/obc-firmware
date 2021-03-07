@@ -35,12 +35,13 @@
 #include "driverlib/pin_map.h"
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
+#include "driverlib/udma.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
  * ------------------------------------------------------------------------- */
 
-Uart_Device UART_PINS[UART_NUM_UARTS] = {
+Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
     {
         /* UART 1 (GNSS) */
         SYSCTL_PERIPH_GPIOA,
@@ -51,6 +52,8 @@ Uart_Device UART_PINS[UART_NUM_UARTS] = {
         GPIO_PA1_U0TX,
         GPIO_PIN_0,
         GPIO_PIN_1,
+        0x000,
+        UDMA_MODE_STOP,
         false
     },
 
@@ -64,6 +67,8 @@ Uart_Device UART_PINS[UART_NUM_UARTS] = {
         GPIO_PC7_U3TX,
         GPIO_PIN_6,
         GPIO_PIN_7,
+        0x000,
+        UDMA_MODE_STOP,
         false
     },
 
@@ -77,6 +82,8 @@ Uart_Device UART_PINS[UART_NUM_UARTS] = {
         GPIO_PE1_U7TX,
         GPIO_PIN_0,
         GPIO_PIN_1,
+        0x000,
+        UDMA_MODE_STOP,
         false
     },
 
