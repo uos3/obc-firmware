@@ -105,7 +105,7 @@ def gen_module_ids_table(root_dir, db):
     # hacky, however the file is actually generated so it's format is
     # guarenteed to be regular, hense using a regex is acceptable here.
     regex = re.compile(
-        r'(\S+)\smodule\s\((\S+)\sgroup\)[^\#]+#define\s(\S+)\s[^0]+(0x\d{2})',
+        r'(\S+)\smodule\s\((\S+)\sgroup\)[^\#]+#define\s(\S+)\s[^0]+(0x[0-9A-Fa-f]{2})',
         flags=re.M|re.S
     )
     
@@ -115,8 +115,8 @@ def gen_module_ids_table(root_dir, db):
             'symbol': match.group(3).strip(),
             'module_name': match.group(1).strip(),
             'group_name': match.group(2).strip(),
-            'id': int(match.group(4), 0),
-            'shifted_id': int(match.group(4), 0) << shift
+            'id': int(match.group(4), 16),
+            'shifted_id': int(match.group(4), 16) << shift
         })
 
     return db

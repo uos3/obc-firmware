@@ -129,7 +129,7 @@ def gen_mod_ids_file(defs, version, source_name):
  * the OBC kernel (main system) is module ID 0 - meaning that an event starting
  * with 0b000000 came from the kernel itself. In a 16-bit unsigned integer this
  * leaves 10 bits available for constants, a total of 1024 different 
- * possibilities. 6 bits of module ID allows for up to 128 modules.
+ * possibilities. 6 bits of module ID allows for up to 64 modules.
  * 
  * This file defines those IDs for the source code. There is a corresponding
  * document {source_name} on the sharepoint which

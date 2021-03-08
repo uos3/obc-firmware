@@ -27,6 +27,7 @@
 /* Internal includes */
 #include "system/event_manager/EventManager_dp_struct.h"
 #include "system/mem_store_manager/MemStoreManager_dp_struct.h"
+#include "system/opmode_manager/OpModeManager_dp_struct.h"
 #include "components/imu/Imu_dp_struct.h"
 #include "components/eps/Eps_dp_struct.h"
 #include "applications/mission/Mission_dp_struct.h"
@@ -101,6 +102,13 @@ typedef struct _DataPool {
      * @dp_module Power
      */
     Power_Dp POWER;
+
+    /**
+     * @brief DataPool parameters for the OpModeManager module.
+     * 
+     * @dp_module OpModeManager
+     */
+    OpModeManager_Dp OPMODEMANAGER;
 
 } DataPool;
 

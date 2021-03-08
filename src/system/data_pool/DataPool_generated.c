@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-03-01
+ * @date 2021-03-08
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -487,6 +487,46 @@ bool DataPool_get(
         *p_data_size_out = sizeof(bool);
         return true;
 
+
+    /* DP.OPMODEMANAGER.INITIALISED */
+    case 0x2801:
+        *pp_data_out = &DP.OPMODEMANAGER.INITIALISED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.OPMODEMANAGER.ERROR_CODE */
+    case 0x2802:
+        *pp_data_out = &DP.OPMODEMANAGER.ERROR_CODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
+        *p_data_size_out = sizeof(ErrorCode);
+        return true;
+
+
+    /* DP.OPMODEMANAGER.OPMODE */
+    case 0x2803:
+        *pp_data_out = &DP.OPMODEMANAGER.OPMODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_OPMODEMANAGER_OPMODE;
+        *p_data_size_out = sizeof(OpModeManager_OpMode);
+        return true;
+
+
+    /* DP.OPMODEMANAGER.NEXT_OPMODE */
+    case 0x2804:
+        *pp_data_out = &DP.OPMODEMANAGER.NEXT_OPMODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_OPMODEMANAGER_OPMODE;
+        *p_data_size_out = sizeof(OpModeManager_OpMode);
+        return true;
+
+
+    /* DP.OPMODEMANAGER.OPMODE_CHANGE_IN_PROGRESS */
+    case 0x2805:
+        *pp_data_out = &DP.OPMODEMANAGER.OPMODE_CHANGE_IN_PROGRESS;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
     
     default:
         DEBUG_ERR("Invalid DP ID: %d", id_in);
@@ -835,6 +875,36 @@ bool DataPool_get_symbol_str(
     /* DP.POWER.OPMODE_CHANGE_IN_PROGRESS */
     case 0xd40d:
         *pp_symbol_str_out = strdup("DP.POWER.OPMODE_CHANGE_IN_PROGRESS");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.INITIALISED */
+    case 0x2801:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.INITIALISED");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.ERROR_CODE */
+    case 0x2802:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.ERROR_CODE");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.OPMODE */
+    case 0x2803:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.OPMODE");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.NEXT_OPMODE */
+    case 0x2804:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.NEXT_OPMODE");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.OPMODE_CHANGE_IN_PROGRESS */
+    case 0x2805:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.OPMODE_CHANGE_IN_PROGRESS");
         return true;
 
 

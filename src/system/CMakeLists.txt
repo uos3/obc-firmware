@@ -8,3 +8,6 @@ add_subdirectory(event_manager)
 
 # MemStoreManager module
 add_subdirectory(mem_store_manager)
+
+# OpModeManager
+add_subdirectory(opmode_manager)
