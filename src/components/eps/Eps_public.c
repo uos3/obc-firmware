@@ -178,7 +178,6 @@ bool Eps_send_config(void) {
     size_t length_without_crc 
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_SET_CONFIG_PL_LENGTH;
     size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
-    Crypto_Crc16 crc;
 
     /* Check Eps is initialised. Unlike the step function it is an error to
      * call this function before the EPS init sequence is finished. */
@@ -205,16 +204,11 @@ bool Eps_send_config(void) {
 
     /* TODO: build the config struct and add it to the frame */
 
-    /* Calculate the CRC of the frame header + payload */
-    Crypto_get_crc16(
+    /* Add the CRC to the frame */
+    Eps_append_crc_to_frame(
         request_frame,
-        length_without_crc,
-        &crc
+        length_without_crc
     );
-
-    /* Add the CRC to the end of the frame */
-    request_frame[length_without_crc] = (uint8_t)((crc >> 8) & 0xFF);
-    request_frame[length_without_crc + 1] = (uint8_t)(crc & 0xFF);
 
     /* Set the frame in the datapool */
     memcpy(
@@ -244,7 +238,6 @@ bool Eps_collect_hk_data(void) {
     size_t length_without_crc
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_COLLECT_HK_DATA_PL_LENGTH;
     size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
-    Crypto_Crc16 crc;
 
     /* Check Eps is initialised. Unlike the step function it is an error to
      * call this function before the EPS init sequence is finished. */
@@ -272,16 +265,11 @@ bool Eps_collect_hk_data(void) {
     /* There's no payload data for the COLLECT_HK command, so no need for
      * anything else. */
 
-    /* Calculate the CRC of the frame header + payload */
-    Crypto_get_crc16(
+    /* Add the CRC to the frame */
+    Eps_append_crc_to_frame(
         request_frame,
-        length_without_crc,
-        &crc
+        length_without_crc
     );
-
-    /* Add the CRC to the end of the frame */
-    request_frame[length_without_crc] = (uint8_t)((crc >> 8) & 0xFF);
-    request_frame[length_without_crc + 1] = (uint8_t)(crc & 0xFF);
 
     /* Set the frame in the datapool */
     memcpy(
@@ -312,7 +300,6 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
     size_t length_without_crc
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_SET_OCP_STATE_PL_LENGTH;
     size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
-    Crypto_Crc16 crc;
 
     /* Check Eps is initialised. Unlike the step function it is an error to
      * call this function before the EPS init sequence is finished. */
@@ -364,16 +351,11 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
      * particular command */
     request_frame[EPS_UART_HEADER_LENGTH] = state_byte;
 
-    /* Calculate the CRC of the frame header + payload */
-    Crypto_get_crc16(
+    /* Add the CRC to the frame */
+    Eps_append_crc_to_frame(
         request_frame,
-        length_without_crc,
-        &crc
+        length_without_crc
     );
-
-    /* Add the CRC to the end of the frame */
-    request_frame[length_without_crc] = (uint8_t)((crc >> 8) & 0xFF);
-    request_frame[length_without_crc + 1] = (uint8_t)(crc & 0xFF);
 
     /* Set the frame in the datapool */
     memcpy(
@@ -403,7 +385,6 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
     size_t length_without_crc
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_SEND_BATT_CMD_PL_LENGTH;
     size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
-    Crypto_Crc16 crc;
 
     /* Check Eps is initialised. Unlike the step function it is an error to
      * call this function before the EPS init sequence is finished. */
@@ -432,16 +413,11 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
     request_frame[EPS_UART_HEADER_LENGTH] = batt_cmd_in.type;
     request_frame[EPS_UART_HEADER_LENGTH + 1] = batt_cmd_in.value;
 
-    /* Calculate the CRC of the frame header + payload */
-    Crypto_get_crc16(
+    /* Add the CRC to the frame */
+    Eps_append_crc_to_frame(
         request_frame,
-        length_without_crc,
-        &crc
+        length_without_crc
     );
-
-    /* Add the CRC to the end of the frame */
-    request_frame[length_without_crc] = (uint8_t)((crc >> 8) & 0xFF);
-    request_frame[length_without_crc + 1] = (uint8_t)(crc & 0xFF);
 
     /* Set the frame in the datapool */
     memcpy(

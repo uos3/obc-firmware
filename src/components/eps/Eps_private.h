@@ -176,6 +176,22 @@ void Eps_build_uart_header(
 );
 
 /**
+ * @brief Append the CRC to the end of the given data frame.
+ * 
+ * After appending the length of the frame will be length_without_crc_in +
+ * EPS_UART_CRC_LENGTH.
+ * 
+ * NOTE: The frame buffer must be large enough to contain the frame + the crc.
+ * 
+ * @param p_frame_in Frame to append the CRC to
+ * @param length_without_crc_in The length of the frame without the CRC
+ */
+void Eps_append_crc_to_frame(
+    uint8_t *p_frame_in,
+    size_t length_without_crc_in
+);
+
+/**
  * @brief Check that the given UART frame is correct by recomputing the CRC
  * and checking it with the CRC in the frame.
  * 

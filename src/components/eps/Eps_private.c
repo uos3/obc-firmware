@@ -52,6 +52,24 @@ void Eps_build_uart_header(
     }
 }
 
+void Eps_append_crc_to_frame(
+    uint8_t *p_frame_in,
+    size_t length_without_crc_in
+) {
+    Crypto_Crc16 crc;
+
+    /* Calculate the CRC of the frame header + payload */
+    Crypto_get_crc16(
+        p_frame_in,
+        length_without_crc_in,
+        &crc
+    );
+
+    /* Add the CRC to the end of the frame */
+    p_frame_in[length_without_crc_in] = (uint8_t)((crc >> 8) & 0xFF);
+    p_frame_in[length_without_crc_in + 1] = (uint8_t)(crc & 0xFF);
+}
+
 bool Eps_check_uart_frame(
     uint8_t *p_frame_in,
     size_t length_in
