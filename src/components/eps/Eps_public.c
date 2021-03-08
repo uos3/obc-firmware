@@ -42,6 +42,10 @@ bool Eps_init(void) {
     /* Set first state as idle */
     DP.EPS.STATE = EPS_STATE_IDLE;
 
+    /* Set the initial frame number to 1. Frame number 0 is reserved for
+     * unsolicited TM packets */
+    DP.EPS.UART_FRAME_NUMBER = 1;
+
     /* Set the EPS as initialised */
     DP.EPS.INITIALISED = true;
 
@@ -68,7 +72,10 @@ bool Eps_step(void) {
         case EPS_STATE_IDLE:
 
             /* Check for new request to send */
-            if (!EventManager_poll_event(EVT_EPS_NEW_REQUEST, &is_event_raised)) {
+            if (!EventManager_poll_event(
+                EVT_EPS_NEW_REQUEST, 
+                &is_event_raised
+            )) {
                 DEBUG_ERR("EventManager error while polling new request event");
                 DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
                 return false;
@@ -86,6 +93,32 @@ bool Eps_step(void) {
              * made as possible in a single cycle. */
             __attribute__ ((fallthrough));
         case EPS_STATE_REQUEST:
+
+            /* Check that the CRC in the frame to be sent is correct */
+            if (!Eps_check_uart_frame(
+                DP.EPS.EPS_REQUEST, 
+                DP.EPS.EPS_REQUEST_LENGTH
+            )) {
+                DEBUG_ERR(
+                    "CRC of request frame to be sent is incorrect, dropping"
+                );
+                DP.EPS.ERROR_CODE = EPS_ERROR_INVALID_REQUEST_CRC;
+                /* Move the state back to IDLE, we are dropping the request
+                 * here and the user must try again. Signal this with the
+                 * completed event but the failed status. */
+                if (!EventManager_raise_event(EVT_EPS_COMMAND_COMPLETE)) {
+                    DEBUG_ERR(
+                        "EventManager error while raising command complete event"
+                    );
+                    /* An error during an error is bad, but we don't want to
+                     * hide the fact that the root cause was the invalid CRC,
+                     * so allow the path to continue here without changing
+                     * ERROR_CODE and without returning false here */
+                }
+                DP.EPS.COMMAND_STATUS = EPS_COMMAND_FAILURE;
+                DP.EPS.STATE = EPS_STATE_IDLE;
+                return false;
+            }
 
             /* TODO: Send the EPS request over the UART */
 
@@ -114,6 +147,7 @@ bool Eps_step(void) {
             if (!EventManager_raise_event(EVT_EPS_COMMAND_COMPLETE)) {
                 DEBUG_ERR("EventManager error while raising command complete event");
                 DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+                /* TODO: return to IDLE here and set command as failed? */
                 return false;
             }
 
@@ -141,8 +175,10 @@ bool Eps_step(void) {
 
 bool Eps_send_config(void) {
     uint8_t request_frame[EPS_MAX_UART_FRAME_LENGTH];
-    size_t length 
+    size_t length_without_crc 
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_SET_CONFIG_PL_LENGTH;
+    size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
+    Crypto_Crc16 crc;
 
     /* Check Eps is initialised. Unlike the step function it is an error to
      * call this function before the EPS init sequence is finished. */
@@ -169,15 +205,26 @@ bool Eps_send_config(void) {
 
     /* TODO: build the config struct and add it to the frame */
 
+    /* Calculate the CRC of the frame header + payload */
+    Crypto_get_crc16(
+        request_frame,
+        length_without_crc,
+        &crc
+    );
+
+    /* Add the CRC to the end of the frame */
+    request_frame[length_without_crc] = (uint8_t)((crc >> 8) & 0xFF);
+    request_frame[length_without_crc + 1] = (uint8_t)(crc & 0xFF);
+
     /* Set the frame in the datapool */
     memcpy(
         (void* )DP.EPS.EPS_REQUEST, 
         (void *)request_frame, 
-        length
+        length_with_crc
     );
 
     /* Set the length of the request */
-    DP.EPS.EPS_REQUEST_LENGTH = length;
+    DP.EPS.EPS_REQUEST_LENGTH = length_with_crc;
     
     /* Set that the status is in progress, so new commands can't be raised */
     DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
@@ -194,9 +241,11 @@ bool Eps_send_config(void) {
 
 bool Eps_collect_hk_data(void) {
     uint8_t request_frame[EPS_MAX_UART_FRAME_LENGTH];
-    size_t length 
+    size_t length_without_crc
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_COLLECT_HK_DATA_PL_LENGTH;
-    
+    size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
+    Crypto_Crc16 crc;
+
     /* Check Eps is initialised. Unlike the step function it is an error to
      * call this function before the EPS init sequence is finished. */
     if (!DP.EPS.INITIALISED) {
@@ -223,15 +272,26 @@ bool Eps_collect_hk_data(void) {
     /* There's no payload data for the COLLECT_HK command, so no need for
      * anything else. */
 
+    /* Calculate the CRC of the frame header + payload */
+    Crypto_get_crc16(
+        request_frame,
+        length_without_crc,
+        &crc
+    );
+
+    /* Add the CRC to the end of the frame */
+    request_frame[length_without_crc] = (uint8_t)((crc >> 8) & 0xFF);
+    request_frame[length_without_crc + 1] = (uint8_t)(crc & 0xFF);
+
     /* Set the frame in the datapool */
     memcpy(
         (void* )DP.EPS.EPS_REQUEST, 
         (void *)request_frame, 
-        length
+        length_with_crc
     );
 
     /* Set the length of the request */
-    DP.EPS.EPS_REQUEST_LENGTH = length;
+    DP.EPS.EPS_REQUEST_LENGTH = length_with_crc;
 
     /* Set that the status is in progress, so new commands can't be raised */
     DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
@@ -249,8 +309,10 @@ bool Eps_collect_hk_data(void) {
 bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
     uint8_t request_frame[EPS_MAX_UART_FRAME_LENGTH];
     uint8_t state_byte = 0;
-    size_t length 
+    size_t length_without_crc
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_SET_OCP_STATE_PL_LENGTH;
+    size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
+    Crypto_Crc16 crc;
 
     /* Check Eps is initialised. Unlike the step function it is an error to
      * call this function before the EPS init sequence is finished. */
@@ -275,7 +337,9 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
         request_frame
     );
 
-    /* Pack the state down into the single byte */
+    /* Pack the state down into the single byte. The ordering here is
+     * important, and follows the numerical ordering of the rails, which is
+     * defined by the EPS_OCP_RAIL_x_SHIFT values. */
     state_byte |= (uint8_t)(
         (uint8_t)ocp_state_in.radio_tx << EPS_OCP_RAIL_RADIO_TX_SHIFT
     );
@@ -300,15 +364,26 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
      * particular command */
     request_frame[EPS_UART_HEADER_LENGTH] = state_byte;
 
+    /* Calculate the CRC of the frame header + payload */
+    Crypto_get_crc16(
+        request_frame,
+        length_without_crc,
+        &crc
+    );
+
+    /* Add the CRC to the end of the frame */
+    request_frame[length_without_crc] = (uint8_t)((crc >> 8) & 0xFF);
+    request_frame[length_without_crc + 1] = (uint8_t)(crc & 0xFF);
+
     /* Set the frame in the datapool */
     memcpy(
         (void* )DP.EPS.EPS_REQUEST, 
         (void *)request_frame, 
-        length
+        length_with_crc
     );
 
     /* Set the length of the request */
-    DP.EPS.EPS_REQUEST_LENGTH = length;
+    DP.EPS.EPS_REQUEST_LENGTH = length_with_crc;
 
     /* Set that the status is in progress, so new commands can't be raised */
     DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
@@ -325,8 +400,10 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
 
 bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
     uint8_t request_frame[EPS_MAX_UART_FRAME_LENGTH];
-    size_t length
+    size_t length_without_crc
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_SEND_BATT_CMD_PL_LENGTH;
+    size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
+    Crypto_Crc16 crc;
 
     /* Check Eps is initialised. Unlike the step function it is an error to
      * call this function before the EPS init sequence is finished. */
@@ -355,15 +432,26 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
     request_frame[EPS_UART_HEADER_LENGTH] = batt_cmd_in.type;
     request_frame[EPS_UART_HEADER_LENGTH + 1] = batt_cmd_in.value;
 
+    /* Calculate the CRC of the frame header + payload */
+    Crypto_get_crc16(
+        request_frame,
+        length_without_crc,
+        &crc
+    );
+
+    /* Add the CRC to the end of the frame */
+    request_frame[length_without_crc] = (uint8_t)((crc >> 8) & 0xFF);
+    request_frame[length_without_crc + 1] = (uint8_t)(crc & 0xFF);
+
     /* Set the frame in the datapool */
     memcpy(
         (void* )DP.EPS.EPS_REQUEST, 
         (void *)request_frame, 
-        length
+        length_with_crc
     );
 
     /* Set the length of the request */
-    DP.EPS.EPS_REQUEST_LENGTH = length;
+    DP.EPS.EPS_REQUEST_LENGTH = length_with_crc;
 
     /* Set that the status is in progress, so new commands can't be raised */
     DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;

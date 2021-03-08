@@ -51,5 +51,17 @@
  */
 #define EPS_ERROR_EVENTMANAGER_ERROR ((ErrorCode)(MOD_ID_EPS | 4))
 
+/**
+ * @brief The CRC of the request frame to be sent is incorrect. The frame will
+ * be dropped and the user must try again.
+ */
+#define EPS_ERROR_INVALID_REQUEST_CRC ((ErrorCode)(MOD_ID_EPS | 5))
+
+/**
+ * @brief The CRC of the reply frame sent by the EPS is incorrect. The frame 
+ * will be dropped and the user must send their request again.
+ */
+#define EPS_ERROR_INVALID_REPLY_CRC ((ErrorCode)(MOD_ID_EPS | 6))
+
 
 #endif /* H_EPS_ERRORS_H */

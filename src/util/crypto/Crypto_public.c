@@ -41,8 +41,8 @@ void Crypto_get_crc32(
     *p_crc_out = 0xFFFFFFFF;
     
     /* Divide input data by the polynomial, byte at a time */
-    for (int32_t i = 0; i < length_in; ++i) {
-        table_idx = (*p_crc_out ^ p_data_in[i]) & 0xFF;
+    for (size_t i = 0; i < length_in; ++i) {
+        table_idx = (uint8_t)((*p_crc_out ^ p_data_in[i]) & 0xFF);
         *p_crc_out = CRYPTO_CRC32_TABLE[table_idx] ^ (*p_crc_out >> 8);
     }
 
@@ -67,8 +67,9 @@ void Crypto_get_crc16(
         /* Table index is based off of a shift of the CRC with an XOR of the
          * current byte, plus an AND with a byte to ensure the index doesn't go
          * over 256. */
-        table_idx = ((*p_crc_out >> 8) ^ p_data_in[i]) & 0x00FF;
-        *p_crc_out 
-            = ((*p_crc_out << 8) & 0xFF00) ^ CRYPTO_CRC16_TABLE[table_idx];
+        table_idx = (uint8_t)(((*p_crc_out >> 8) ^ p_data_in[i]) & 0xFF);
+        *p_crc_out = (uint8_t)(
+            ((*p_crc_out << 8) & 0xFF00) ^ CRYPTO_CRC16_TABLE[table_idx]
+        );
     }
 }

@@ -212,10 +212,10 @@ void Debug_exit(int error_code) {
     #endif
 }
 
-void Debug_hex_string(uint8_t *p_bytes_in, char *p_str_out, uint32_t length_in) {
+void Debug_hex_string(uint8_t *p_bytes_in, char *p_str_out, size_t length_in) {
     char byte[4];
 
-    for (int i = 0; i < length_in; i++) {
+    for (size_t i = 0; i < length_in; i++) {
         sprintf(byte, "%02X ", p_bytes_in[i]);
         strcat(p_str_out, byte);
     }

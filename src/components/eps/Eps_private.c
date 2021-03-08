@@ -43,45 +43,33 @@ void Eps_build_uart_header(
     /* Set the data type */
     p_header_out[EPS_UART_HEADER_DATA_TYPE_POS] = (uint8_t)data_type_in;
 
-    /* Set the payload length. Use pragma to disable the warning about not
-     * using all the enum variants, we can't have a TM packet here. */
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wswitch-enum"
-    switch (data_type_in) {
-        case EPS_UART_DATA_TYPE_TC_COLLECT_HK_DATA:
-            p_header_out[EPS_UART_HEADER_PAYLOAD_LENGTH_POS]
-                = EPS_UART_TC_COLLECT_HK_DATA_PL_LENGTH;
-            break;
-        
-        case EPS_UART_DATA_TYPE_TC_SET_OCP_STATE:
-            p_header_out[EPS_UART_HEADER_PAYLOAD_LENGTH_POS]
-                = EPS_UART_TC_SET_OCP_STATE_PL_LENGTH;
-            break;
-
-        case EPS_UART_DATA_TYPE_TC_SEND_BATT_CMD:
-            p_header_out[EPS_UART_HEADER_PAYLOAD_LENGTH_POS]
-                = EPS_UART_TC_SEND_BATT_CMD_PL_LENGTH;
-            break;
-
-        case EPS_UART_DATA_TYPE_TC_SET_CONFIG:
-            p_header_out[EPS_UART_HEADER_PAYLOAD_LENGTH_POS]
-                = EPS_UART_TC_SET_CONFIG_PL_LENGTH;
-            break;
-
-        default:
-            DEBUG_ERR(
-                "Unimplmented payload length for Eps UART type %d", 
-                data_type_in
-            );
-            break;
-    }
-    #pragma GCC diagnostic pop
-
-    /* Increment the frame number, wrapping at 255 to 0. */
+    /* Increment the frame number, wrapping at 255 to 1. */
     if (DP.EPS.UART_FRAME_NUMBER >= 255) {
-        DP.EPS.UART_FRAME_NUMBER = 0;
+        DP.EPS.UART_FRAME_NUMBER = 1;
     }
     else {
         DP.EPS.UART_FRAME_NUMBER++;
     }
+}
+
+bool Eps_check_uart_frame(
+    uint8_t *p_frame_in,
+    size_t length_in
+) {
+    Crypto_Crc16 new_crc;
+
+    /* Recompute the CRC for the frame, excluding the CRC bytes which are at
+     * the end */
+    Crypto_get_crc16(
+        p_frame_in,
+        length_in - EPS_UART_CRC_LENGTH,
+        &new_crc
+    );
+
+    /* Check that the new CRC and the old CRC match */
+    return (
+        (((new_crc >> 8) & 0xFF) == p_frame_in[length_in - 2])
+        &&
+        ((new_crc & 0xFF) == p_frame_in[length_in - 1])
+    );
 }

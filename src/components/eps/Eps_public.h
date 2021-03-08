@@ -88,6 +88,7 @@
 #include <stdbool.h>
 
 /* Internal includes */
+#include "util/crypto/Crypto_public.h"
 #include "components/eps/Eps_errors.h"
 #include "components/eps/Eps_events.h"
 
@@ -103,7 +104,7 @@
 /**
  * @brief The length (in bytes) of the UART frame header.
  */
-#define EPS_UART_HEADER_LENGTH (3)
+#define EPS_UART_HEADER_LENGTH (2)
 
 /**
  * @brief Position of the frame number byte within the UART header.
@@ -116,15 +117,16 @@
 #define EPS_UART_HEADER_DATA_TYPE_POS (1)
 
 /**
- * @brief Position of the payload length byte within the UART header.
+ * @brief The length of the CRC used in the UART frame.
  */
-#define EPS_UART_HEADER_PAYLOAD_LENGTH_POS (2)
+#define EPS_UART_CRC_LENGTH (sizeof(Crypto_Crc16))
 
 /**
  * @brief The maximum length (in bytes) of a UART frame payload data section, 
- * i.e. the whole frame - the header.
+ * i.e. the whole frame - the header - the crc.
  */
-#define EPS_MAX_UART_PAYLOAD_LENGTH (EPS_MAX_UART_FRAME_LENGTH - EPS_UART_HEADER_LENGTH)
+#define EPS_MAX_UART_PAYLOAD_LENGTH \
+    (EPS_MAX_UART_FRAME_LENGTH - EPS_UART_HEADER_LENGTH - EPS_UART_CRC_LENGTH)
 
 #define EPS_BATT_CMD_DISABLE_HEATER ((Eps_BattCmd){5, 1})
 

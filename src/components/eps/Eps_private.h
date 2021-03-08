@@ -175,4 +175,17 @@ void Eps_build_uart_header(
     uint8_t *p_header_out
 );
 
+/**
+ * @brief Check that the given UART frame is correct by recomputing the CRC
+ * and checking it with the CRC in the frame.
+ * 
+ * @param p_frame_in The frame to check
+ * @param length_in The length of the frame (including CRC bytes)
+ * @return bool True if the frame is valid (CRCs match), false otherwise
+ */
+bool Eps_check_uart_frame(
+    uint8_t *p_frame_in,
+    size_t length_in
+);
+
 #endif /* H_EPS_PRIVATE_H */
