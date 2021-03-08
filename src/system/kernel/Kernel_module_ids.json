@@ -48,10 +48,16 @@
         "module_id": 7
     },
     {
-        "definition": "MOD_ID_TCPROCESSOR",
+        "definition": "MOD_ID_TCROUTER",
         "group_name": "System",
-        "module_name": "TcProcessor",
+        "module_name": "TcRouter",
         "module_id": 8
+    },
+    {
+        "definition": "MOD_ID_PUSSERVICE",
+        "group_name": "System",
+        "module_name": "PusService",
+        "module_id": 9
     },
     {
         "definition": "MOD_ID_BOARD",
@@ -112,6 +118,12 @@
         "group_name": "Drivers",
         "module_name": "Wdt",
         "module_id": 25
+    },
+    {
+        "definition": "MOD_ID_UDMA",
+        "group_name": "Drivers",
+        "module_name": "Udma",
+        "module_id": 26
     },
     {
         "definition": "MOD_ID_ANTENNA",
@@ -202,5 +214,17 @@
         "group_name": "Applications",
         "module_name": "Power",
         "module_id": 53
+    },
+    {
+        "definition": "MOD_ID_THERMAL",
+        "group_name": "Applications",
+        "module_name": "Thermal",
+        "module_id": 54
+    },
+    {
+        "definition": "MOD_ID_COMMS",
+        "group_name": "Applications",
+        "module_name": "Comms",
+        "module_id": 55
     }
 ]

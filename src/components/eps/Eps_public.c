@@ -212,7 +212,7 @@ bool Eps_send_config(void) {
 
     /* Set the frame in the datapool */
     memcpy(
-        (void* )DP.EPS.EPS_REQUEST, 
+        (void *)DP.EPS.EPS_REQUEST, 
         (void *)request_frame, 
         length_with_crc
     );
@@ -273,7 +273,7 @@ bool Eps_collect_hk_data(void) {
 
     /* Set the frame in the datapool */
     memcpy(
-        (void* )DP.EPS.EPS_REQUEST, 
+        (void *)DP.EPS.EPS_REQUEST, 
         (void *)request_frame, 
         length_with_crc
     );
@@ -359,7 +359,7 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
 
     /* Set the frame in the datapool */
     memcpy(
-        (void* )DP.EPS.EPS_REQUEST, 
+        (void *)DP.EPS.EPS_REQUEST, 
         (void *)request_frame, 
         length_with_crc
     );
@@ -421,7 +421,7 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
 
     /* Set the frame in the datapool */
     memcpy(
-        (void* )DP.EPS.EPS_REQUEST, 
+        (void *)DP.EPS.EPS_REQUEST, 
         (void *)request_frame, 
         length_with_crc
     );
