@@ -26,6 +26,7 @@
 /* Standard library includes */
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
@@ -142,7 +143,7 @@ void Debug_exit(int error_code);
  * @param p_str_out The formatted string
  * @param length_in The length of the bytes
  */
-void Debug_hex_string(uint8_t *p_bytes_in, char *p_str_out, uint32_t length_in);
+void Debug_hex_string(uint8_t *p_bytes_in, char *p_str_out, size_t length_in);
 
 /* -------------------------------------------------------------------------   
  * MACROS

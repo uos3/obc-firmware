@@ -68,7 +68,7 @@ void Crypto_get_crc16(
          * current byte, plus an AND with a byte to ensure the index doesn't go
          * over 256. */
         table_idx = (uint8_t)(((*p_crc_out >> 8) ^ p_data_in[i]) & 0xFF);
-        *p_crc_out = (uint8_t)(
+        *p_crc_out = (uint16_t)(
             ((*p_crc_out << 8) & 0xFF00) ^ CRYPTO_CRC16_TABLE[table_idx]
         );
     }
