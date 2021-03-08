@@ -117,6 +117,12 @@
 
 
 /**
+ * @brief Shifted module ID for the OpModeManager module (System group).
+ */
+#define MOD_ID_OPMODEMANAGER ((uint16_t)(0x0A<<KERNEL_MOD_ID_SHIFT))
+
+
+/**
  * @brief Shifted module ID for the Board module (Drivers group).
  */
 #define MOD_ID_BOARD ((uint16_t)(0x10<<KERNEL_MOD_ID_SHIFT))

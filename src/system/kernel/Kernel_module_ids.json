@@ -60,6 +60,12 @@
         "module_id": 9
     },
     {
+        "definition": "MOD_ID_OPMODEMANAGER",
+        "group_name": "System",
+        "module_name": "OpModeManager",
+        "module_id": 10
+    },
+    {
         "definition": "MOD_ID_BOARD",
         "group_name": "Drivers",
         "module_name": "Board",
