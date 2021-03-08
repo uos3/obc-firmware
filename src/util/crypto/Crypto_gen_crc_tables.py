@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from pprint import pprint
 from datetime import datetime
+from pprint import pprint
 
 def main():
     '''
@@ -26,7 +27,11 @@ def main():
     # and shows better error correction capability over standard CRC-32 (IEEE).
     crc32_table = get_crc_table(32, 0x1EDC6F41)
 
-    gen_table_file(crc32_table)
+    # Get the 16 bit table, using CRC-16/CCITT-FALSE polynomial, as used by
+    # ECSS-E-ST-70-41C. 
+    crc16_table = get_crc16_ccitt_table()
+
+    gen_table_file(crc32_table, crc16_table)
 
 def get_crc_table(width, polynomial):
     '''
@@ -62,6 +67,27 @@ def get_crc_table(width, polynomial):
     # Return the table
     return table
 
+def get_crc16_ccitt_table():
+    '''
+    Compute the CRC16-CCITT table based on ECSS-E-ST-70-41C, B1.6
+    '''
+
+    table = [0]*256
+
+    for i in range(256):
+        crc = 0
+        xor_1 = 0x1021
+        xor_2 = 0x1231
+
+        for j in range(8):
+            if (i & (1 << j)) != 0:
+                xor = (xor_1 << j) if j < 4 else (xor_2 << j - 4)
+                crc = crc ^ xor
+        
+        table[i] = crc
+
+    return table
+
 def reflect(x, width):
     '''
     Reflect the given value
@@ -69,18 +95,23 @@ def reflect(x, width):
     b = '{:0{width}b}'.format(x, width=width)
     return int(b[::-1], 2)
 
-def gen_table_file(crc32_table):
+def gen_table_file(crc32_table, crc16_table):
     '''
     Generate the table source file
     '''
     newline = '\n'
 
-    lines = [
+    lines32 = [
         f'    0x{a:08X}, 0x{b:08X}, 0x{c:08X}, 0x{d:08X},' 
         for a, b, c, d in chunks(crc32_table, 4)
     ]
+    lines32[-1] = lines32[-1][:-1]
 
-    lines[-1] = lines[-1][:-1]
+    lines16 = [
+        f'    0x{a:04X}, 0x{b:04X}, 0x{c:04X}, 0x{d:04X},' 
+        for a, b, c, d in chunks(crc16_table, 4)
+    ]
+    lines16[-1] = lines16[-1][:-1]
 
     source = \
 f'''
@@ -110,7 +141,11 @@ f'''
  * ------------------------------------------------------------------------- */
 
 const Crypto_Crc32 CRYPTO_CRC32_TABLE[256] = {{
-{newline.join(lines)}
+{newline.join(lines32)}
+}};
+
+const Crypto_Crc16 CRYPTO_CRC16_TABLE[256] = {{
+{newline.join(lines16)}
 }};
 '''
 

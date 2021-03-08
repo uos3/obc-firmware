@@ -35,6 +35,11 @@
  */
 typedef uint32_t Crypto_Crc32;
 
+/**
+ * @brief 16 bit CRC code.
+ */
+typedef uint16_t Crypto_Crc16;
+
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
@@ -53,6 +58,22 @@ void Crypto_get_crc32(
     uint8_t *p_data_in, 
     size_t length_in, 
     Crypto_Crc32 *p_crc_out
+);
+
+/**
+ * @brief Calculate the 16 bit CRC for the given string, using the CRC-32C
+ * algorithm.
+ * 
+ * This CRC uses reflected input and output.
+ * 
+ * @param p_data_in Pointer to the data to calculate the CRC for
+ * @param length_in The length of the p_data_in pointer
+ * @param p_crc_out Pointer to the CRC value to output.
+ */
+void Crypto_get_crc16(
+    uint8_t *p_data_in,
+    size_t length_in,
+    Crypto_Crc16 *p_crc_out
 );
 
 #endif /* H_CRYPTO_PUBLIC_H */

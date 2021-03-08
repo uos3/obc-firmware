@@ -42,4 +42,11 @@
  */
 extern const Crypto_Crc32 CRYPTO_CRC32_TABLE[256];
 
+/**
+ * @brief Pre-computed CRC table for 16 bit CRCs.
+ * 
+ * This table is generated at compile time by Crypto_gen_crc_tables.py.
+ */
+extern const Crypto_Crc16 CRYPTO_CRC16_TABLE[256];
+
 #endif /* H_CRYPTO_PRIVATE_H */
