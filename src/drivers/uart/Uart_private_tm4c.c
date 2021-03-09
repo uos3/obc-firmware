@@ -52,6 +52,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PA1_U0TX,
         GPIO_PIN_0,
         GPIO_PIN_1,
+        UDMA_CHANNEL_UART0TX,
+        UDMA_CHANNEL_UART0RX,
         0x000,
         UDMA_MODE_STOP,
         false
@@ -67,6 +69,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PC7_U3TX,
         GPIO_PIN_6,
         GPIO_PIN_7,
+        UDMA_CHANNEL_UART1TX,
+        UDMA_CHANNEL_UART1RX,
         0x000,
         UDMA_MODE_STOP,
         false
@@ -82,6 +86,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PE1_U7TX,
         GPIO_PIN_0,
         GPIO_PIN_1,
+        UDMA_CH1_UART2TX, /* TODO: Check TI channel assignments */
+        UDMA_CH0_UART2RX,
         0x000,
         UDMA_MODE_STOP,
         false
