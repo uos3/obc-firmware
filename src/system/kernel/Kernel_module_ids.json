@@ -66,6 +66,12 @@
         "module_id": 10
     },
     {
+        "definition": "MOD_ID_TMMANAGER",
+        "group_name": "System",
+        "module_name": "TmManager",
+        "module_id": 11
+    },
+    {
         "definition": "MOD_ID_BOARD",
         "group_name": "Drivers",
         "module_name": "Board",
