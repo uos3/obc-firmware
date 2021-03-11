@@ -25,7 +25,7 @@ jobs:
       - name: Flash EEPROM
         run: |
           cd obc-firmware
-          ./build -c --config "config/$(ls config/ | grep uos3_config_file_* | tail -1)" tool_config_flash
+          ./build -c tool_config_flash
           ./builds/debug/bin/tool_config_flash.exe
 
       # Run build script
