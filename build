@@ -83,6 +83,11 @@ def main():
     # Get the command line args
     args = parse_args()
 
+    # Check for use of deprecated config flag
+    if args.config is not None:
+        error('Use of --config is deprecated, use config/default_config_files.cmake instead!')
+        exit(1)
+
     # If the list_features flag is set print them and then exit
     if args.list_features:
         list_features()
@@ -150,8 +155,7 @@ def main():
         args.target, 
         args.tests, 
         args.features, 
-        args.cmake_target,
-        args.config
+        args.cmake_target
     )
 
     # Copy binaries into the build dir
@@ -237,7 +241,7 @@ def parse_args():
     )
     parser.add_argument(
         '--config',
-        help='Specify the config binary file to use for tool_config_flash',
+        help='DEPRECATED - use config/default_config_files.cmake instead',
         nargs='?'
     )
     parser.add_argument(
@@ -273,8 +277,7 @@ def build(
     target, 
     tests, 
     features, 
-    make_targets,
-    config
+    make_targets
 ):
     '''
     Run the build process (CMake then make) in the given directory.
@@ -306,8 +309,6 @@ def build(
     cmake_cmd.extend(feature_defines)
     if clean:
         cmake_cmd.append('--clean-first')
-    if config is not None:
-        cmake_cmd.append(f'-DUOS3_CFG_FILE_PATH={config}')
     cmake_cmd.append('../../../')
 
     print(cmake_cmd)

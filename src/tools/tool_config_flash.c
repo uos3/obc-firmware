@@ -52,18 +52,8 @@ extern MemStoreManager_ConfigFile _binary_cfg_file_start;
 int main(void) {
 
     /* Init system critical modules */
-    if (!DataPool_init()) {
-        Debug_exit(1);
-    }
-    if (!Board_init()) {
-        Debug_exit(1);
-    }
-    if (!Debug_init()) {
-        Debug_exit(1);
-    }
-    if (!EventManager_init()) {
-        Debug_exit(1);
-    }
+    Kernel_init_critical_modules();
+
     if (Eeprom_init() != ERROR_NONE) {
         Debug_exit(1);
     }

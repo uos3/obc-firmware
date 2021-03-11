@@ -16,6 +16,12 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
+/* Standard includes */
+#ifdef DEBUG_MODE
+#include <string.h>
+#include <stdio.h>
+#endif
+
 /* Internal includes */
 #include "util/debug/Debug_public.h"
 #include "system/data_pool/DataPool_public.h"
@@ -35,9 +41,22 @@ MemStoreManager_ConfigData CFG;
  * ------------------------------------------------------------------------- */
 
 bool MemStoreManager_init(void) {
-    /* Load config files */
-    if (!MemStoreManager_config_load()) {
-        return false;
+    /* If the use software image config flag is raised this indicates that the
+     * EEPROM is unusable, so we shouldn't load from it. */
+    if (DP.MEMSTOREMANAGER.USE_BACKUP_CFG) {
+        /* Copy the backup to the global config file.
+         * 
+         * Note: there's no check of the CRC here, because if it's corrupted
+         * that will be detected as a part of the software image integrity
+         * check, and therefore we won't be running an image if it has a
+         * corrupted backup config.
+         */
+        CFG = _binary_backup_cfg_file_start.data;
+    }
+    else {
+        if (!MemStoreManager_config_load()) {
+            return false;
+        }
     }
 
     DP.MEMSTOREMANAGER.INITIALISED = true;
@@ -118,9 +137,22 @@ bool MemStoreManager_config_update(MemStoreManager_ConfigFile *p_cfg_file_in) {
 
 #ifdef DEBUG_MODE
 void MemStoreManager_debug_print_cfg(void) {
+    char mode_app_list[256] = {0};
+    char buff[16] = {0};
     DEBUG_INF("Loaded Configuration File:");
     DEBUG_INF("    VERSION: %d", CFG.VERSION);
     DEBUG_INF("    POWER_TASK_TIMER_DURATION_S: %u", CFG.POWER_TASK_TIMER_DURATION_S);
     DEBUG_INF("    POWER_OP_MODE_OCP_STATE_CONFIG: %u", (uint32_t)CFG.POWER_OP_MODE_OCP_STATE_CONFIG);
+    DEBUG_INF("    OPMODE_APPID_TABLE: [");
+    for (int mode = 0; mode < OPMODEMANAGER_NUM_OPMODES; mode++) {
+        mode_app_list[0] = '\0';
+        for (int i = 0; i < OPMODEMANAGER_MAX_NUM_APPS_IN_MODE; i++) {
+            buff[0] = '\0';
+            sprintf(buff, "0x%02X ", CFG.OPMODE_APPID_TABLE[mode][i]);
+            strcat(mode_app_list, buff);
+        }
+        DEBUG_INF("        %d: %s", mode, mode_app_list);
+    }
+    DEBUG_INF("    ]");
 }
 #endif

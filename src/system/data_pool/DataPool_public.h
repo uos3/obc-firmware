@@ -52,7 +52,7 @@ extern DataPool DP;
  * 
  * @return bool Return code, true indicates success.
  */
-bool DataPool_init(void);
+void DataPool_init(void);
 
 #endif /* H_DATAPOOL_PUBLIC_H */
 

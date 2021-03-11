@@ -81,6 +81,11 @@
  */
 #define I2C_MAX_NUM_MASTER_BUSY_MINOR_CHECKS (5)
 
+/**
+ * @brief Currently have 2 enabled I2C modules, 0 (temp) and 2 (IMU).
+ */
+#define I2C_NUM_ENABLED_MODULES (2)
+
 /* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */
@@ -371,6 +376,11 @@ extern I2c I2C;
  * @brief The array of modules available on the TM4C. 
  */
 extern I2c_Module I2C_MODULES[I2C_NUM_MODULES];
+
+/**
+ * @brief The array of enabled modules for the I2C driver.
+ */
+extern uint32_t I2C_ENABLED_MODULES[I2C_NUM_ENABLED_MODULES];
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS

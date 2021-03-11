@@ -45,9 +45,11 @@
 #include <stdbool.h>
 
 /* Internal includes */
+#include "system/kernel/Kernel_public.h"
+#include "system/opmode_manager/OpModeManager_public.h"
+#include "applications/power/Power_public.h"
 #include "system/mem_store_manager/MemStoreManager_errors.h"
 #include "system/mem_store_manager/MemStoreManager_events.h"
-#include "applications/power/Power_public.h"
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
@@ -87,6 +89,31 @@ typedef struct _MemStoreManager_ConfigData {
      */
     Power_OpModeOcpStateConfig POWER_OP_MODE_OCP_STATE_CONFIG;
 
+    /**
+     * @brief Table defining which app is active in which OpMode.
+     * 
+     * Note on efficiency:
+     * 
+     * With this config we specify the entire table of OpMode/AppIds,
+     * including those which don't have any apps. This is pretty inefficient as
+     * we need to include a bunch of 0 bytes. However, the alternative requires
+     * us storing an array of:
+     *   - mode number
+     *   - number of apps in the mode
+     *   - the app ids themselves
+     * 
+     * Which obviously must be of variable length, therefore we must specify 
+     * the length of the table. In total, for 8 modes and 2 a maximum of 2 app
+     * per mode, we get 16 bytes for the full table, or 11 bytes for the more 
+     * efficient method (with the current OPMODE). In addition having a 
+     * dynamically sized item in the config requires heap allocating some of 
+     * the config. We would like to avoid this if at all possible. If the 
+     * maximum number of modes increases we may have to switch to the other 
+     * method, as that would require 24 bytes, more than twice the dynamic 
+     * method.
+     */
+    Kernel_AppId OPMODE_APPID_TABLE[OPMODEMANAGER_NUM_OPMODES][OPMODEMANAGER_MAX_NUM_APPS_IN_MODE];
+
 } MemStoreManager_ConfigData;
 
 /**
@@ -122,7 +149,13 @@ extern MemStoreManager_ConfigData CFG;
  * @brief Initialise the MemStoreManager.
  * 
  * This function:
- * 1. Loads the configuration from the EEPROM.
+ *  1. Checks the validity of all config files
+ *  2. Loads the first non-corrupted file
+ *  3. If all files are corrupted, it will load the default files.
+ * 
+ * If the EEPROM driver failed to initialise the backups can be loaded by
+ * setting the DP.MEMSTOREMANAGER.USE_BACKUP_CFG flag before calling this
+ * function. 
  * 
  * On an error the DP.MEMSTOREMANAGER.ERROR_CODE value will be set.
  * 

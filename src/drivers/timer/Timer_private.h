@@ -45,6 +45,16 @@
 #define TIMER_MAX_NUM_PERIPH_READY_CHECKS (10)
 
 /* -------------------------------------------------------------------------   
+ * GLOBALS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief True if the timer module is disabled due to not being able to enable
+ * the peripherals.
+ */
+extern bool TIMER_MODULE_DISABLED;
+
+/* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */
 

@@ -34,10 +34,7 @@
 int main(void) {
 
     /* Initialise the datapool */
-    int32_t dp_init_ret = DataPool_init();
-    if (!dp_init_ret) {
-        Debug_exit(1);
-    }
+    DataPool_init();
 
     /* Get a member of the data pool */
     bool dp_is_init = DP.INITIALISED;
@@ -56,9 +53,7 @@ int main(void) {
     }
     
     /* Init the board */
-    if (!Board_init()) {
-        Debug_exit(1);
-    }
+    Board_init();
 
     /* Init the debug system */
     if (!Debug_init()) {
@@ -66,7 +61,6 @@ int main(void) {
     }
 
     /* Print these out */
-    DEBUG_INF("DataPool_init() = %d\n", dp_init_ret);
     DEBUG_INF("dp_is_init = %d", dp_is_init);
     DEBUG_INF("p_dp_is_init = %p", (void *)p_dp_is_init);
     DEBUG_INF("*p_dp_is_init = %d", *p_dp_is_init);

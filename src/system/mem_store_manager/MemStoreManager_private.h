@@ -18,6 +18,14 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
+/* System includes */
+#include <stdint.h>
+#include <stdbool.h>
+
+/* Internal includes */
+#include "system/mem_store_manager/MemStoreManager_public.h"
+#include "system/mem_store_manager/MemStoreManager_events.h"
+
 /* -------------------------------------------------------------------------   
  * DEFINES
  * ------------------------------------------------------------------------- */
@@ -28,6 +36,22 @@
  * NOTE: This value is arbitraray.
  */
 #define MEMSTOREMANAGER_NUM_CONFIG_FILES (3)
+
+/* -------------------------------------------------------------------------   
+ * GLOBALS  
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Location of the backup software image configuration file.
+ * 
+ * The config file is passed in at link time from a raw binary file created by
+ * tool_config_pack. See
+ * http://downloads.ti.com/docs/esd/SPRUI03/using-linker-symbols-in-c-c-applications-slau1318080.html
+ * for some info on linker symbols and how to use them.
+ * 
+ * The name used here is set by the linker itself and can't be changed.
+ */
+extern MemStoreManager_ConfigFile _binary_backup_cfg_file_start;
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS

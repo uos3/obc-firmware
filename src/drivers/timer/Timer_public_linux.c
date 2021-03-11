@@ -80,6 +80,8 @@ static volatile sig_atomic_t TIMER_LINUX_STATE[TIMER_NUM_TIMERS] = { 0 };
  */
 static struct itimerspec TIMER_TIME[TIMER_NUM_TIMERS];
 
+bool TIMER_MODULE_DISABLED = false;
+
 /* -------------------------------------------------------------------------   
  * FUNCTION PROTOTYPES
  * ------------------------------------------------------------------------- */
@@ -429,6 +431,9 @@ ErrorCode Timer_init(void) {
     struct sigevent sig_evt;
     struct itimerspec timer_spec;
 
+    /* Set the module as enabled at the start */
+    TIMER_MODULE_DISABLED = false;
+
     /* Build signal for the timers */
     sigemptyset(&sig_act.sa_mask);
     sig_act.sa_sigaction = Timer_signal_handler;
@@ -437,9 +442,9 @@ ErrorCode Timer_init(void) {
     /* Install the timer signal handler */
     if (sigaction(TIMER_SIGNAL, &sig_act, NULL)) {
         DEBUG_ERR("Couldn't set signal handler for Timer");
-        /* Not technically the right error but don't want to add new error
-         * definitions, and this one is *kind of* similar in contex. */
-        return TIMER_ERROR_PERIPH_ENABLE_FAILED;
+        /* If we can't do this the module is effectively disabled */
+        TIMER_MODULE_DISABLED = true;
+        return TIMER_MODULE_DISABLED;
     }
 
     /* Create timer to send the signal */
@@ -448,9 +453,9 @@ ErrorCode Timer_init(void) {
     sig_evt.sigev_value.sival_ptr = NULL;
     if (timer_create(CLOCK_REALTIME, &sig_evt, &TIMER_TIMER)) {
         DEBUG_ERR("Couldn't create Timer");
-        /* Not technically the right error but don't want to add new error
-         * definitions, and this one is *kind of* similar in contex. */
-        return TIMER_ERROR_PERIPH_ENABLE_FAILED;
+        /* If we can't do this the module is effectively disabled */
+        TIMER_MODULE_DISABLED = true;
+        return TIMER_MODULE_DISABLED;
     }
 
     /* Disable the timer for now */
@@ -460,9 +465,9 @@ ErrorCode Timer_init(void) {
     timer_spec.it_interval.tv_nsec = 0L;
     if (timer_settime(TIMER_TIMER, 0, &timer_spec, NULL)) {
         DEBUG_ERR("Couldn't initialise Timer to zero");
-        /* Not technically the right error but don't want to add new error
-         * definitions, and this one is *kind of* similar in contex. */
-        return TIMER_ERROR_PERIPH_ENABLE_FAILED;
+        /* If we can't do this the module is effectively disabled */
+        TIMER_MODULE_DISABLED = true;
+        return TIMER_MODULE_DISABLED;
     }
 
     return ERROR_NONE;
@@ -472,6 +477,11 @@ ErrorCode Timer_start_one_shot(
     double duration_s_in, 
     Event *p_timer_event_out
 ) {
+    /* Check for disabled module */
+    if (TIMER_MODULE_DISABLED) {
+        return TIMER_ERROR_MODULE_DISABLED;
+    }
+
     return Timer_set(duration_s_in, false, p_timer_event_out);
 }
 
@@ -479,11 +489,21 @@ ErrorCode Timer_start_periodic(
     double duration_s_in, 
     Event *p_timer_event_out
 ) {
+    /* Check for disabled module */
+    if (TIMER_MODULE_DISABLED) {
+        return TIMER_ERROR_MODULE_DISABLED;
+    }
+
     return Timer_set(duration_s_in, true, p_timer_event_out);
 }
 
 ErrorCode Timer_disable(Event timer_event_in) {
     
+    /* Check for disabled module */
+    if (TIMER_MODULE_DISABLED) {
+        return TIMER_ERROR_MODULE_DISABLED;
+    }
+
     /* Timer events are linear from the first timer, so just subtract the
      * first one to get the index of the timer */
     int timer = (int)(timer_event_in - EVT_TIMER_00A_COMPLETE);
@@ -509,6 +529,11 @@ ErrorCode Timer_disable(Event timer_event_in) {
 
 void Timer_disable_all(void) {
     int timer;
+
+    /* Check for disabled module */
+    if (TIMER_MODULE_DISABLED) {
+        return TIMER_ERROR_MODULE_DISABLED;
+    }
 
     /* Just set the state to 0 */
     for (timer = 0; timer < TIMER_NUM_TIMERS; ++timer) {

@@ -28,11 +28,8 @@
 /**
  * @brief Event raised when a change to the OPMODE is started.
  * 
- * OpMode changes don't happen immediately, as it may take time for the EPS to
- * activate the OCP rails during state changes. It is desired that when in the
- * correct OPMODE the rails should be on, therefore time is given to allow the
- * Power and Eps modules to change the EPS OPC state. A new mode is only set
- * when this state change is completed.
+ * OpMode changes take a non-zero amount of time to complete. Please see
+ * SSS_OpModeTransition for more information.
  */
 #define EVT_OPMODEMANAGER_OPMODE_CHANGE_STARTED ((Event)(MOD_ID_OPMODEMANAGER | 1))
 

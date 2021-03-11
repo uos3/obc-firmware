@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-03-08
+ * @date 2021-03-11
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -243,6 +243,14 @@ bool DataPool_get(
     /* DP.MEMSTOREMANAGER.CFG_FILE_3_OK */
     case 0x1006:
         *pp_data_out = &DP.MEMSTOREMANAGER.CFG_FILE_3_OK;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.USE_BACKUP_CFG */
+    case 0x1007:
+        *pp_data_out = &DP.MEMSTOREMANAGER.USE_BACKUP_CFG;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
         return true;
@@ -504,8 +512,16 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.OPMODEMANAGER.OPMODE */
+    /* DP.OPMODEMANAGER.STATE */
     case 0x2803:
+        *pp_data_out = &DP.OPMODEMANAGER.STATE;
+        *p_data_type_out = DATAPOOL_DATATYPE_OPMODEMANAGER_STATE;
+        *p_data_size_out = sizeof(OpModeManager_State);
+        return true;
+
+
+    /* DP.OPMODEMANAGER.OPMODE */
+    case 0x2804:
         *pp_data_out = &DP.OPMODEMANAGER.OPMODE;
         *p_data_type_out = DATAPOOL_DATATYPE_OPMODEMANAGER_OPMODE;
         *p_data_size_out = sizeof(OpModeManager_OpMode);
@@ -513,16 +529,16 @@ bool DataPool_get(
 
 
     /* DP.OPMODEMANAGER.NEXT_OPMODE */
-    case 0x2804:
+    case 0x2805:
         *pp_data_out = &DP.OPMODEMANAGER.NEXT_OPMODE;
         *p_data_type_out = DATAPOOL_DATATYPE_OPMODEMANAGER_OPMODE;
         *p_data_size_out = sizeof(OpModeManager_OpMode);
         return true;
 
 
-    /* DP.OPMODEMANAGER.OPMODE_CHANGE_IN_PROGRESS */
-    case 0x2805:
-        *pp_data_out = &DP.OPMODEMANAGER.OPMODE_CHANGE_IN_PROGRESS;
+    /* DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE */
+    case 0x2806:
+        *pp_data_out = &DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
         return true;
@@ -695,6 +711,12 @@ bool DataPool_get_symbol_str(
     /* DP.MEMSTOREMANAGER.CFG_FILE_3_OK */
     case 0x1006:
         *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.CFG_FILE_3_OK");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.USE_BACKUP_CFG */
+    case 0x1007:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.USE_BACKUP_CFG");
         return true;
 
 
@@ -890,21 +912,27 @@ bool DataPool_get_symbol_str(
         return true;
 
 
-    /* DP.OPMODEMANAGER.OPMODE */
+    /* DP.OPMODEMANAGER.STATE */
     case 0x2803:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.STATE");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.OPMODE */
+    case 0x2804:
         *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.OPMODE");
         return true;
 
 
     /* DP.OPMODEMANAGER.NEXT_OPMODE */
-    case 0x2804:
+    case 0x2805:
         *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.NEXT_OPMODE");
         return true;
 
 
-    /* DP.OPMODEMANAGER.OPMODE_CHANGE_IN_PROGRESS */
-    case 0x2805:
-        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.OPMODE_CHANGE_IN_PROGRESS");
+    /* DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE */
+    case 0x2806:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE");
         return true;
 
 

@@ -20,6 +20,7 @@
 
 /* Internal includes */
 #include "system/kernel/Kernel_module_ids.h"
+#include "system/kernel/Kernel_public.h"
 #include "system/opmode_manager/OpModeManager_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -47,9 +48,16 @@ typedef struct _OpModeManager_Dp {
     ErrorCode ERROR_CODE;
 
     /**
-     * @brief The current mission Operational Mode (OPMODE)
+     * @brief The current state of the OpModeManager.
      * 
      * @dp 3
+     */
+    OpModeManager_State STATE;
+
+    /**
+     * @brief The current mission Operational Mode (OPMODE)
+     * 
+     * @dp 4
      */
     OpModeManager_OpMode OPMODE;
 
@@ -60,16 +68,21 @@ typedef struct _OpModeManager_Dp {
      * If there is no mode change happening this value shall be the same as
      * DP.OPMODEMANAGER.OPMODE.
      * 
-     * @dp 4
+     * @dp 5
      */
     OpModeManager_OpMode NEXT_OPMODE;
 
     /**
-     * @brief Indicates whether or not a change in the OPMODE is in progress.
+     * @brief Flag which will be raised by the TC handler responsible for
+     * accepting OpMode change TCs.
      * 
-     * @dp 5
+     * When true NEXT_OPMODE will contain the mode requested to be transitioned
+     * into.
+     * 
+     * @dp 6
      */
-    bool OPMODE_CHANGE_IN_PROGRESS;
+    bool TC_REQUEST_NEW_OPMODE;
+    
 
 } OpModeManager_Dp;
 

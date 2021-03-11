@@ -38,12 +38,8 @@
 int main(void) {
 
     /* Init system */
-    if (!DataPool_init()) {
-        Debug_exit(1);
-    }
-    if (!Board_init()) {
-        Debug_exit(1);
-    }
+    DataPool_init();
+    Board_init();
     if (!Debug_init()) {
         Debug_exit(1);
     }

@@ -35,16 +35,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-bool Board_init(void) {
-    /* Check that the datapool has been init */
-    if (!DP.INITIALISED) {
-        /* Can't print a debug statement here since the debug system relies on
-         * the clock being setup.
-         * 
-         * FIXME: Trigger hardfault? */
-        return false;
-    }
-
+void Board_init(void) {
     /* Nothing needs to be done on linux */
     
     /* On the TM4C we need to initialise the system clock.

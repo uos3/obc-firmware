@@ -73,7 +73,9 @@ bool Debug_init(void) {
 
     /* If on UNIX set the init time */
     #ifdef TARGET_UNIX
-    clock_gettime(CLOCK_MONOTONIC_RAW, &DEBUG_INIT_TIME);
+    if (clock_gettime(CLOCK_MONOTONIC_RAW, &DEBUG_INIT_TIME) != 0) {
+        return false;
+    }
     #endif
     /* If on TM4C */
     #ifdef TARGET_TM4C

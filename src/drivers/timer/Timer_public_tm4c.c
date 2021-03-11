@@ -37,7 +37,11 @@
 ErrorCode Timer_init(void) {
     uint8_t block;
     uint8_t checks;
+    uint8_t num_failed_peripherals = 0;
     bool ready;
+
+    /* Set the timer module as enabled at the start */
+    TIMER_MODULE_DISABLED = false;
 
     /* Enable all timer blocks */
     /* TODO: Dynamically enable/disable timers when not in use? */
@@ -59,11 +63,13 @@ ErrorCode Timer_init(void) {
             }
         }
 
-        /* If the peripheral isn't ready issue error */
+        /* If the peripheral isn't ready increment the counter for the number
+         * of failed peripherals. If only some of them fail we can still do a
+         * lot of the work of this module! */
         if (!ready) {
-            /* TODO: Mark the module as disabled? */
-            DEBUG_ERR("Could not enable Timer block %d", block);
-            return TIMER_ERROR_PERIPH_ENABLE_FAILED;
+            DEBUG_WRN("Could not enable Timer block %d", block);
+            /* TODO: generate failure TM */
+            num_failed_peripherals++;
         }
 
         /* Register the interrupts for the timers */
@@ -80,6 +86,17 @@ ErrorCode Timer_init(void) {
         
     }
 
+    /* Check if the number of failed peripherals matches the number of timers
+     * we have, if so none of them are working and we must error out and 
+     * disable the timer driver. */
+    if (num_failed_peripherals >= TIMER_NUM_BLOCKS) {
+        DEBUG_ERR(
+            "All timer peripherals failed to initialise, disabling timer module"
+        );
+        TIMER_MODULE_DISABLED = true;
+        return TIMER_ERROR_MODULE_DISABLED;
+    }
+
     /* Timer configuration is performed when a timer is started */
 
     return ERROR_NONE;
@@ -89,6 +106,11 @@ ErrorCode Timer_start_one_shot(
     double duration_s_in, 
     Event *p_timer_event_out
 ) {
+    /* Check for disabled module */
+    if (TIMER_MODULE_DISABLED) {
+        return TIMER_ERROR_MODULE_DISABLED;
+    }
+
     ErrorCode error = Timer_configure_timer_for_duration(
         duration_s_in,
         false,
@@ -106,6 +128,11 @@ ErrorCode Timer_start_periodic(
     double duration_s_in, 
     Event *p_timer_event_out
 ) {
+    /* Check for disabled module */
+    if (TIMER_MODULE_DISABLED) {
+        return TIMER_ERROR_MODULE_DISABLED;
+    }
+
     ErrorCode error = Timer_configure_timer_for_duration(
         duration_s_in,
         true,
@@ -123,6 +150,11 @@ ErrorCode Timer_disable(Event timer_event_in) {
     int timer_idx, i;
     bool timer_found = false;
     Timer_Timer *p_timer;
+
+    /* Check for disabled module */
+    if (TIMER_MODULE_DISABLED) {
+        return TIMER_ERROR_MODULE_DISABLED;
+    }
 
     /* Check the event is one of the timer events */
     if (timer_event_in < EVT_TIMER_00A_COMPLETE 
@@ -179,6 +211,11 @@ ErrorCode Timer_disable(Event timer_event_in) {
 
 void Timer_disable_all(void) {
     int timer_idx;
+
+    /* Check for disabled module */
+    if (TIMER_MODULE_DISABLED) {
+        return TIMER_ERROR_MODULE_DISABLED;
+    }
     
     /* Loop over all timers and disable them if they are enabled */
     for (timer_idx = 0; timer_idx < TIMER_NUM_TIMERS; ++timer_idx) {

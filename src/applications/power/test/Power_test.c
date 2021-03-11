@@ -83,8 +83,7 @@ static int Power_test_setup(void **state) {
     (void) state;
 
     /* Init DataPool, EventManager, memstoremanager */
-    assert_true(DataPool_init());
-    assert_true(EventManager_init());
+    Kernel_init_critical_modules();
     assert_true(Eeprom_init() == ERROR_NONE);
     assert_true(MemStoreManager_init());
     /* FIXME: Replace with Mission_init() function */

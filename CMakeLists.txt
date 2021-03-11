@@ -20,7 +20,23 @@ elseif(${UOS3_TARGET_LAUNCHPAD})
 endif()
 
 # Option to enable test building or not
-option(UOS3_BUILD_TESTS "If set cmocka tests will be build" OFF)
+option(UOS3_BUILD_TESTS "If set tests will be built" OFF)
+
+# Include the config file names
+include(config/default_config_files.cmake)
+
+# Define a copy of add_executable, which will copy the backup config file to
+# the binary's dir. This is required as the linker will look for this file.
+function (add_executable _name)
+    _add_executable(${ARGV})
+    if (TARGET ${_name})
+        add_custom_command(TARGET ${_name} PRE_LINK
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${PROJECT_SOURCE_DIR}/config/${UOS3_BACKUP_CONFIG_FILE_NAME}"
+                "${CMAKE_CURRENT_BINARY_DIR}/backup_cfg_file"
+        )
+    endif()
+endfunction()
 
 # Export compile commands so VSCode can use the right definitions
 set(CMAKE_EXPORT_COMPILE_COMMANDS "1")
@@ -133,6 +149,7 @@ add_subdirectory(src/components)
 add_subdirectory(src/applications)
 add_subdirectory(src/demo)
 add_subdirectory(src/tools)
+add_subdirectory(src/obc_firmware)
 
 # Build the tests if required
 if(${UOS3_BUILD_TESTS})

@@ -181,6 +181,13 @@
         "data_type": "bool",
         "brief": "Indicates if the third configuration file is OK."
     },
+    "DP.MEMSTOREMANAGER.USE_SOFTWARE_IMG_CFG": {
+        "block_id": 4,
+        "block_index": 7,
+        "dp_id": 4103,
+        "data_type": "bool",
+        "brief": "Flag which can be set during the boot process if the EEPROM is not functioning, and therefore we must use the redundent config stored as apart of the software image."
+    },
     "DP.EPS.INITIALISED": {
         "block_id": 34,
         "block_index": 1,
@@ -405,25 +412,32 @@
         "data_type": "ErrorCode",
         "brief": "Stores errors that occur during operation."
     },
-    "DP.OPMODEMANAGER.OPMODE": {
+    "DP.OPMODEMANAGER.STATE": {
         "block_id": 10,
         "block_index": 3,
         "dp_id": 10243,
+        "data_type": "OpModeManager_State",
+        "brief": "The current state of the OpModeManager."
+    },
+    "DP.OPMODEMANAGER.OPMODE": {
+        "block_id": 10,
+        "block_index": 4,
+        "dp_id": 10244,
         "data_type": "OpModeManager_OpMode",
         "brief": "The current mission Operational Mode (OPMODE)"
     },
     "DP.OPMODEMANAGER.NEXT_OPMODE": {
         "block_id": 10,
-        "block_index": 4,
-        "dp_id": 10244,
+        "block_index": 5,
+        "dp_id": 10245,
         "data_type": "OpModeManager_OpMode",
         "brief": "The next OpMode that will be set when the current mode change is complete."
     },
-    "DP.OPMODEMANAGER.OPMODE_CHANGE_IN_PROGRESS": {
+    "DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE": {
         "block_id": 10,
-        "block_index": 5,
-        "dp_id": 10245,
+        "block_index": 6,
+        "dp_id": 10246,
         "data_type": "bool",
-        "brief": "Indicates whether or not a change in the OPMODE is in progress."
+        "brief": "Flag which will be raised by the TC handler responsible for accepting OpMode change TCs."
     }
 }

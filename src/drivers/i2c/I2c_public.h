@@ -121,13 +121,10 @@ typedef struct _I2c_Device {
  * driver. 
  * 
  * Before calling this function the system clock will have been initialised.
- * 
- * @param p_modules_in A pointer to an array of module indexes to initialise.
- * @param num_modules_in The number of modules to initialise (size of 
- *        p_modules_in).
+ *
  * @return ErrorCode Return code.
  */
-ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in);
+ErrorCode I2c_init(void);
 
 /**
  * @brief Step the I2C driver, performing any queued actions.

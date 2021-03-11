@@ -27,9 +27,10 @@
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief Indicates that a timer peripheral couldn't be enabled.
+ * @brief Indicates that the timer module has been disabled as no timer
+ * peripheral could be enabled.
  */
-#define TIMER_ERROR_PERIPH_ENABLE_FAILED ((ErrorCode)(MOD_ID_TIMER | 1))
+#define TIMER_ERROR_MODULE_DISABLED ((ErrorCode)(MOD_ID_TIMER | 1))
 
 /**
  * @brief Raised if attempting to start a timer with a duration longer than is

@@ -39,10 +39,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
-    /* Mark these as unused */
-    (void) p_modules_in;
-    (void) num_modules_in;
+ErrorCode I2c_init(void) {
 
     /* Set the initialised flag to true */
     I2C.initialised = true;

@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-03-08
+ * @date 2021-03-11
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -69,6 +69,7 @@ typedef enum _DataPool_DataType {
     DATAPOOL_DATATYPE_EVENT,
     DATAPOOL_DATATYPE_EPS_OCPSTATE,
     DATAPOOL_DATATYPE_EPS_UARTDATATYPE,
+    DATAPOOL_DATATYPE_OPMODEMANAGER_STATE,
     DATAPOOL_DATATYPE_OPMODEMANAGER_OPMODE
 } DataPool_DataType;
 

@@ -33,7 +33,6 @@ bool Power_init(void) {
     if (!DP.INITIALISED ||
         !DP.EVENTMANAGER.INITIALISED ||
         !DP.MEMSTOREMANAGER.INITIALISED ||
-        !DP.MISSION.INITIALISED ||
         !DP.EPS.INITIALISED
     ) {
         DEBUG_ERR("Required module not initialised");

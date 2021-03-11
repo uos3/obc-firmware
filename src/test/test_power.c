@@ -24,6 +24,7 @@
 #include "util/debug/Debug_public.h"
 #include "drivers/board/Board_public.h"
 #include "drivers/eeprom/Eeprom_public.h"
+#include "system/kernel/Kernel_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "system/mem_store_manager/MemStoreManager_public.h"
@@ -40,15 +41,7 @@ int main(void) {
     bool run_loop = true;
 
     /* Init system critical modules */
-    if (!DataPool_init()) {
-        Debug_exit(1);
-    }
-    if (!Board_init()) {
-        Debug_exit(2);
-    }
-    if (!Debug_init()) {
-        Debug_exit(3);
-    }
+    Kernel_init_critical_modules();
     if (!EventManager_init()) {
         Debug_exit(4);
     }

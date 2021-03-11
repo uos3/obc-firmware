@@ -180,7 +180,7 @@ static void EventManager_test_errors(void **state) {
     (void) state;
 
     /* Init DataPool */
-    assert_true(DataPool_init());
+    DataPool_init();
 
     DEBUG_INF("Testing EventManager error codes");
 
@@ -217,7 +217,7 @@ static int EventManager_test_setup(void **state) {
     (void) state;
 
     /* Init DataPool */
-    assert_true(DataPool_init());
+    DataPool_init();
     
     if (!EventManager_init()) {
         return -1;

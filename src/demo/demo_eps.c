@@ -20,6 +20,7 @@
 /* Internal includes */
 #include "util/debug/Debug_public.h"
 #include "drivers/board/Board_public.h"
+#include "system/kernel/Kernel_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "components/eps/Eps_public.h"
@@ -38,18 +39,7 @@ int main(void) {
     char request_str[EPS_MAX_UART_FRAME_LENGTH*3 + 1] = {0};
 
     /* Init system critical modules */
-    if (!DataPool_init()) {
-        Debug_exit(1);
-    }
-    if (!Board_init()) {
-        Debug_exit(1);
-    }
-    if (!Debug_init()) {
-        Debug_exit(1);
-    }
-    if (!EventManager_init()) {
-        Debug_exit(1);
-    }
+    Kernel_init_critical_modules();
 
     DEBUG_INF("Eps Demo");
 

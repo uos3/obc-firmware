@@ -44,13 +44,13 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode I2c_init(uint32_t *p_modules_in, size_t num_modules_in) {
+ErrorCode I2c_init(void) {
 
     /* Loop through each module */
-    for (size_t i = 0; i < num_modules_in; ++i) {
+    for (size_t i = 0; i < I2C_NUM_ENABLED_MODULES; ++i) {
 
         /* Get a reference to the module to init */
-        I2c_Module *p_module = &I2C_MODULES[p_modules_in[i]];
+        I2c_Module *p_module = &I2C_MODULES[I2C_ENABLED_MODULES[i]];
 
         /* If the module is already initialised issue warning but don't do
          * anything 

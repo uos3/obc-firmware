@@ -123,6 +123,40 @@ int main(int argc, char **pp_argv) {
             = (uint32_t)power_op_mode_ocp_rail_config.u.i;
     }
 
+    toml_array_t *p_opmode_appid_table = toml_array_in(
+        p_config,
+        "OPMODE_APPID_TABLE"
+    );
+    if (!p_opmode_appid_table) {
+        DEBUG_ERR("Missing TOML parameter: OPMODE_APPID_TABLE");
+        cfg_ok = false;
+    }
+    else {
+        for (int mode = 0; mode < OPMODEMANAGER_NUM_OPMODES; ++mode) {
+            toml_array_t *p_mode_appid_array = toml_array_at(
+                p_opmode_appid_table,
+                mode
+            );
+            if (!p_mode_appid_array) {
+                DEBUG_ERR("Missing APPID array for OPMODE %d", mode);
+                cfg_ok = false;
+            }
+            else {
+                for (int i = 0; i < OPMODEMANAGER_MAX_NUM_APPS_IN_MODE; ++i) {
+                    toml_datum_t app_id = toml_int_at(p_mode_appid_array, i);
+                    if (!app_id.ok) {
+                        DEBUG_ERR("Invalid APPID[%d] for OPMODE %d", i, mode);
+                        cfg_ok = false;
+                    }
+                    else {
+                        cfg_data.OPMODE_APPID_TABLE[mode][i] 
+                            = (Kernel_AppId)app_id.u.i;
+                    }
+                }
+            }
+        }
+    }
+
     /* Exit if config loading didn't work */
     if (!cfg_ok) {
         DEBUG_ERR("Missing TOML parameters, cannot pack config");

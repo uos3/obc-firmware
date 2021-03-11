@@ -111,9 +111,11 @@ bool MemStoreManager_config_load(void) {
     else {
         DP.MEMSTOREMANAGER.ERROR_CODE 
             = MEMSTOREMANAGER_ERROR_ALL_CFG_FILES_CORRUPTED;
+
+        DEBUG_WRN("Loading backup config file from software image");
         
-        /* TODO: Load defaults */
-        return false;
+        /* Load the backup config file */
+        CFG = _binary_backup_cfg_file_start.data;
     }
 
     return true;

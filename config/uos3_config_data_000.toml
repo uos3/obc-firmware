@@ -8,3 +8,32 @@ POWER_TASK_TIMER_DURATION_S = 300
 # TODO: Issue this reference.
 POWER_OP_MODE_OCP_STATE_CONFIG = 4039954176
 
+# Configuration of which Apps will run in each OpMode
+#
+# NOTE: See MemStoreManager_public.h for an explanation of the efficiency of
+# this storage method.
+OPMODE_APPID_TABLE = [
+    # Boot Up - none
+    [0, 0],
+
+    # Antenna Deploy - Deployment
+    [50, 0],
+
+    # Nominal Functioning - Payload, Beacon
+    [51, 48],
+
+    # Low Power - none
+    [0, 0],
+
+    # Safe - none
+    [0, 0],
+
+    # Data Downlink - none
+    [0, 0],
+
+    # Config File Update - none
+    [0, 0],
+
+    # Picture Taking - Picture
+    [49, 0]
+]

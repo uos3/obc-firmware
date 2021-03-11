@@ -45,7 +45,7 @@
 /**
  * @brief Initialise the board driver by configuring the system clock.
  */
-bool Board_init(void);
+void Board_init(void);
 
 
 #endif /* H_BOARD_PUBLIC_H */

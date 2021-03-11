@@ -25,6 +25,7 @@
 /* Internal includes */
 #include "util/debug/Debug_public.h"
 #include "drivers/board/Board_public.h"
+#include "system/kernel/Kernel_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "components/imu/Imu_public.h"
@@ -35,24 +36,12 @@
 
 int main(void) {
     /* Init system critical modules */
-    if (!DataPool_init()) {
-        Debug_exit(1);
-    }
-    if (!Board_init()) {
-        Debug_exit(1);
-    }
-    if (!Debug_init()) {
-        Debug_exit(1);
-    }
-    if (!EventManager_init()) {
-        Debug_exit(1);
-    }
+    Kernel_init_critical_modules();
 
     DEBUG_INF("IMU Demo");
 
     /* Init the I2C driver */
-    uint32_t i2c_modules[] = {0x02};
-    ErrorCode i2c_error = I2c_init((uint32_t *)i2c_modules, 1);
+    ErrorCode i2c_error = I2c_init();
     if (i2c_error != ERROR_NONE) {
         DEBUG_ERR("I2C error code: %d", i2c_error);
         Debug_exit(1);

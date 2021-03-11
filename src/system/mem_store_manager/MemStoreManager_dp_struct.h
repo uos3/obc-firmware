@@ -67,6 +67,16 @@ typedef struct _MemStoreManager_Dp {
      * @dp 6
      */
     bool CFG_FILE_3_OK;
+
+    /**
+     * @brief Flag which can be set during the boot process if the EEPROM is
+     * not functioning, and therefore we must use the redundent config stored
+     * as apart of the software image.
+     * 
+     * @dp 7
+     */
+    bool USE_BACKUP_CFG;
+
 } MemStoreManager_Dp;
 
 #endif /* H_MEMSTOREMANAGER_DP_STRUCT_H */

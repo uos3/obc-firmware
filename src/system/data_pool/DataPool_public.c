@@ -34,13 +34,15 @@ DataPool DP;
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-bool DataPool_init(void) {
+void DataPool_init(void) {
 
-    /* Zero the DataPool */
+    /* Zero the DataPool.
+     * 
+     * memset doesn't define any errors, so we can't detect if something goes
+     * wrong. Therefore this function is in fallible.
+     */
     memset(&DP, 0, sizeof(DP));
 
     /* Set the DP initialised flag */
     DP.INITIALISED = true;
-
-    return true;
 }

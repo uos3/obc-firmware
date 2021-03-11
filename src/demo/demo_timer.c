@@ -20,6 +20,7 @@
 /* Internal includes */
 #include "util/debug/Debug_public.h"
 #include "drivers/board/Board_public.h"
+#include "system/kernel/Kernel_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "drivers/timer/Timer_public.h"
@@ -45,18 +46,7 @@ int main(void) {
     bool timer_disabled = false;
     
     /* Init system critical modules */
-    if (!DataPool_init()) {
-        Debug_exit(1);
-    }
-    if (!Board_init()) {
-        Debug_exit(1);
-    }
-    if (!Debug_init()) {
-        Debug_exit(1);
-    }
-    if (!EventManager_init()) {
-        Debug_exit(1);
-    }
+    Kernel_init_critical_modules();
 
 
     DEBUG_INF("Timer Demo");
