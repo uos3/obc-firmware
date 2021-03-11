@@ -155,13 +155,21 @@ int main(void) {
     }
 
     /* Init the MemStoreManager */
-    if (MemStoreManager_init()) {
-        DEBUG_ERR("Init passed when not expected, test failed!");
+    if (!MemStoreManager_init()) {
+        DEBUG_ERR("Init failed when not expected, test failed!");
         print_cfg_status();
         Debug_exit(1);
     }
-    DEBUG_INF("MemStoreManager init failed as expected");
+    DEBUG_INF("MemStoreManager init passed as expected");
     print_cfg_status();
+    if (!DP.MEMSTOREMANAGER.CFG_FILE_1_OK 
+        &&
+        !DP.MEMSTOREMANAGER.CFG_FILE_2_OK
+        &&
+        !DP.MEMSTOREMANAGER.CFG_FILE_3_OK 
+    ) {
+        DEBUG_INF("All files are corrupted but config init passed, inidcating backup file loaded correctly");
+    }
 
     DEBUG_INF("Corrupted config files were detected, performing update");
 
