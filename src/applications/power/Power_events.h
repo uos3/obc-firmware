@@ -27,9 +27,9 @@
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief Event which signals that the activities required for an OPMODE change
- * (for this app) are complete.
+ * @brief Event which signals that an OCP state change which was requested as a
+ * part of an OPMODE transition has been completed.
  */
-#define EVT_POWER_OPMODE_CHANGE_ACTIVITIES_COMPLETE ((Event)(MOD_ID_POWER | 1))
+#define EVT_POWER_OPMODE_CHANGE_OCP_STATE_CHANGE_COMPLETE ((Event)(MOD_ID_POWER | 1))
 
 #endif /* H_POWER_EVENTS_H */

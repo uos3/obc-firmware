@@ -30,7 +30,6 @@
 #include "system/opmode_manager/OpModeManager_dp_struct.h"
 #include "components/imu/Imu_dp_struct.h"
 #include "components/eps/Eps_dp_struct.h"
-#include "applications/mission/Mission_dp_struct.h"
 #include "applications/power/Power_dp_struct.h"
 
 /* -------------------------------------------------------------------------
@@ -88,13 +87,6 @@ typedef struct _DataPool {
      * @dp_module Eps
      */
     Eps_Dp EPS;
-
-    /**
-     * @brief DataPool parameters for the Mission app.
-     * 
-     * @dp_module Mission
-     */
-    Mission_Dp MISSION;
 
     /**
      * @brief DataPool parameters for the Power app.

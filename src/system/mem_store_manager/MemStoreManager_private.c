@@ -22,6 +22,12 @@
 #include "system/mem_store_manager/MemStoreManager_private.h"
 
 /* -------------------------------------------------------------------------   
+ * GLOBALS
+ * ------------------------------------------------------------------------- */
+
+MemStoreManager_PersistentData persistent_data;
+
+/* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
@@ -41,44 +47,68 @@ bool MemStoreManager_config_check_crc(
 }
 
 bool MemStoreManager_config_load(void) {
+    ErrorCode error;
+    bool load_error = false;
+
     /* Load first config file */
     MemStoreManager_ConfigFile cfg_file_1;
-    Eeprom_read(
+    error = Eeprom_read(
         EEPROM_ADDR_CFG_FILE_1,
         (uint32_t *)&cfg_file_1,
         sizeof(MemStoreManager_ConfigFile)
     );
+    if (error != ERROR_NONE) {
+        DEBUG_ERR("EEPROM load error on file 1: 0x04X", error);
+        load_error = true;
+        DP.MEMSTOREMANAGER.CFG_FILE_1_OK = false;
+    }
+    else {
+        /* Check the CRC of the first config file */
+        DP.MEMSTOREMANAGER.CFG_FILE_1_OK = MemStoreManager_config_check_crc(
+            &cfg_file_1
+        );
+    }
 
-    /* Check the CRC of the first config file */
-    DP.MEMSTOREMANAGER.CFG_FILE_1_OK = MemStoreManager_config_check_crc(
-        &cfg_file_1
-    );
 
     /* Load second config file */
     MemStoreManager_ConfigFile cfg_file_2;
-    Eeprom_read(
+    error = Eeprom_read(
         EEPROM_ADDR_CFG_FILE_2,
         (uint32_t *)&cfg_file_2,
         sizeof(MemStoreManager_ConfigFile)
     );
+    if (error != ERROR_NONE) {
+        DEBUG_ERR("EEPROM load error on file 2: 0x04X", error);
+        load_error = true;
+        DP.MEMSTOREMANAGER.CFG_FILE_2_OK = true;
+    }
+    else {
+        /* Check the CRC of the second config file */
+        DP.MEMSTOREMANAGER.CFG_FILE_2_OK = MemStoreManager_config_check_crc(
+            &cfg_file_2
+        );
+    }
 
-    /* Check the CRC of the second config file */
-    DP.MEMSTOREMANAGER.CFG_FILE_2_OK = MemStoreManager_config_check_crc(
-        &cfg_file_2
-    );
 
     /* Load first config file */
     MemStoreManager_ConfigFile cfg_file_3;
-    Eeprom_read(
+    error = Eeprom_read(
         EEPROM_ADDR_CFG_FILE_3,
         (uint32_t *)&cfg_file_3,
         sizeof(MemStoreManager_ConfigFile)
     );
+    if (error != ERROR_NONE) {
+        DEBUG_ERR("EEPROM load error on file 3: 0x04X", error);
+        load_error = true;
+        DP.MEMSTOREMANAGER.CFG_FILE_2_OK = false;
+    }
+    else {
+        /* Check the CRC of the first config file */
+        DP.MEMSTOREMANAGER.CFG_FILE_3_OK = MemStoreManager_config_check_crc(
+            &cfg_file_3
+        );
+    }
 
-    /* Check the CRC of the first config file */
-    DP.MEMSTOREMANAGER.CFG_FILE_3_OK = MemStoreManager_config_check_crc(
-        &cfg_file_3
-    );
 
     /* If any config file is not OK raise error event */
     if (!DP.MEMSTOREMANAGER.CFG_FILE_1_OK
@@ -121,7 +151,37 @@ bool MemStoreManager_config_load(void) {
         
         /* Load the backup config file */
         CFG = _binary_backup_cfg_file_start.data;
+
+        /* Raise all files corrupted event */
     }
+
+    return true;
+}
+
+bool MemStoreManager_load_pers_data(void) {
+    ErrorCode error;
+    bool pers_block_1_ok = false;
+    bool pers_block_2_ok = false;
+    bool pers_block_3_ok = false;
+
+    /* Load first pers data block */
+    MemStoreManager_PersistentData pers_data_1;
+    error = Eeprom_read(
+        EEPROM_ADDR_PERS_DATA_1,
+        (uint32_t *)&pers_data_1,
+        sizeof(MemStoreManager_PersistentData)
+    );
+    if (error != ERROR_NONE) {
+        DEBUG_ERR("EEPROM load error on pers block 1: 0x%04X", error);
+    }
+    else {
+        
+    }
+
+    return true;
+}
+
+bool MemStoreManager_write_pers_data(void) {
 
     return true;
 }

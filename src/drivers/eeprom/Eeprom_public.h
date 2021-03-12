@@ -34,6 +34,7 @@
 
 /* Internal includes */
 #include "drivers/eeprom/Eeprom_errors.h"
+#include "system/opmode_manager/OpModeManager_public.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -53,6 +54,21 @@
  * @brief Address of the third config file copy.
  */
 #define EEPROM_ADDR_CFG_FILE_3 (0x300)
+
+/**
+ * @brief The address of the first persistent data block.
+ */
+#define EEPROM_ADDR_PERS_DATA_1 (0x400)
+
+/**
+ * @brief The address of the first persistent data block.
+ */
+#define EEPROM_ADDR_PERS_DATA_2 (0x500)
+
+/**
+ * @brief The address of the first persistent data block.
+ */
+#define EEPROM_ADDR_PERS_DATA_3 (0x600)
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS

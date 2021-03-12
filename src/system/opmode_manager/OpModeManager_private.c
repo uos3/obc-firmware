@@ -21,6 +21,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "drivers/timer/Timer_public.h"
 #include "system/kernel/Kernel_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/mem_store_manager/MemStoreManager_public.h"
@@ -160,6 +161,246 @@ bool OpModeManager_call_active_app_steps(void) {
                 /* TODO: raise error event? */
                 break;
         }
+    }
+
+    return true;
+}
+
+bool OpModeManager_step_graceful_transition(void) {
+    int i;
+    Kernel_AppId app_id;
+    bool app_in_next_mode;
+    ErrorCode error;
+    bool wait_off_timeout_fired = false;
+    bool is_ocp_change_complete = false;
+
+    /* Switch on the current graceful transition */
+    switch (DP.OPMODEMANAGER.GRACE_TRANS_STATE) {
+        case OPMODEMANAGER_GRACETRANSSTATE_INIT:
+
+            /* Start the transition timeout timer */
+            error = Timer_start_one_shot(
+                OPMODEMANAGER_GRACE_TRANS_TIMEOUT_S,
+                &DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT
+            );
+            if (error != ERROR_NONE) {
+                /* If we couldn't start a timer we will record the RTC value at
+                 * this point and compare it in the future. We set the event as
+                 * EVT_NONE as this will switch timeout behaviour from checking
+                 * for timer event to checking for RTC value. */
+                DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT = EVT_NONE;
+                /* TODO: record RTC value */
+                DEBUG_WRN(
+                    "Couldn't register timer for graceful transition timeout, falling back on RTC"
+                );
+            }
+
+
+            /* Request stop all user apps which are not active in the next mode */
+            for (i = 0; i < OPMODEMANAGER_MAX_NUM_APPS_IN_MODE; ++i) {
+                /* Reset the app in next mode flag */
+                app_in_next_mode = false;
+
+                /* Get the app id */
+                app_id = CFG.OPMODE_APPID_TABLE[DP.OPMODEMANAGER.OPMODE][i];
+
+                /* If the app id is 0 skip to the next one */
+                if (app_id = 0) {
+                    continue;
+                }
+                else {
+                    /* If the app id is 0 or the app is in the next mode skip to 
+                     * the next one */
+                    if ((app_id == 0)
+                        ||
+                        (DP.OPMODEMANAGER.APP_IN_NEXT_MODE[i])
+                    ) {
+                        continue;
+                    }
+                    else {
+                        /* TODO: request off for app */
+                    }
+                }
+            }
+
+            /* set next state */
+            DP.OPMODEMANAGER.GRACE_TRANS_STATE 
+                = OPMODEMANAGER_GRACETRANSSTATE_WAIT_ACTIVE_OFF;
+
+            /* Explicit fallthrough allowed here so that as much progress is
+             * made as possible in a single cycle. */
+            __attribute__ ((fallthrough));
+        case OPMODEMANAGER_GRACETRANSSTATE_WAIT_ACTIVE_OFF:
+
+            /* Check for timeout, either using the timer event or if that is
+             * None use the RTC time */
+            if (DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT != EVT_NONE) {
+                if (!EventManager_poll_event(
+                    DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT,
+                    &wait_off_timeout_fired
+                )) {
+                    DEBUG_ERR(
+                        "EventManager error while polling for graceful transition event timeout"
+                    );
+                    DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                    /* We want to try and guarentee that this will continue, so
+                     * we will ignore the error and *assume* that the timeout 
+                     * has fired. While this may result in error loss it is
+                     * more important to make sure the transition actually
+                     * completes. */
+                    wait_off_timeout_fired = true;
+                }
+            }
+            else {
+                /* TODO: Check RTC */
+            }
+
+            /* Check all active apps to make sure they are off, if the timeout
+             * hasn't fired */
+            if (!wait_off_timeout_fired) {
+                for (i = 0; i < OPMODEMANAGER_MAX_NUM_APPS_IN_MODE; ++i) {
+                    /* Reset the app in next mode flag */
+                    app_in_next_mode = false;
+
+                    /* Get the app id */
+                    app_id = CFG.OPMODE_APPID_TABLE[DP.OPMODEMANAGER.OPMODE][i];
+
+                    /* If the app id is 0 skip to the next one */
+                    if (app_id = 0) {
+                        continue;
+                    }
+                    else {
+                        /* If the app id is 0 or the app is in the next mode skip to 
+                         * the next one */
+                        if ((app_id == 0)
+                            ||
+                            (DP.OPMODEMANAGER.APP_IN_NEXT_MODE[i])
+                        ) {
+                            continue;
+                        }
+                        else {
+                            /* TODO: Check that the app's state is OFF. If not 
+                             * return now, giving time for the transition to
+                             * complete. */
+                        }
+                    }
+                }
+
+                /* If all apps are off disable the timer */
+                if (DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT != EVT_NONE) {
+                    error = Timer_disable(
+                        DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT
+                    );
+                    if (error != ERROR_NONE) {
+                        DEBUG_ERR("Couldn't disable timeout: 0x%04X", error);
+                        /* we will just continue, and try to finish the
+                         * transition */
+                    }
+                }
+            }
+            else {
+                /* If the timeout was fired we need to force all non-continuing
+                 * and not already off apps to be off */
+                for (i = 0; i < OPMODEMANAGER_MAX_NUM_APPS_IN_MODE; ++i) {
+                    /* Reset the app in next mode flag */
+                    app_in_next_mode = false;
+
+                    /* Get the app id */
+                    app_id = CFG.OPMODE_APPID_TABLE[DP.OPMODEMANAGER.OPMODE][i];
+
+                    /* If the app id is 0 skip to the next one */
+                    if (app_id = 0) {
+                        continue;
+                    }
+                    else {
+                        /* If the app id is 0 or the app is in the next mode skip to 
+                         * the next one */
+                        if ((app_id == 0)
+                            ||
+                            (DP.OPMODEMANAGER.APP_IN_NEXT_MODE[i])
+                        ) {
+                            continue;
+                        }
+                        else {
+                            /* TODO: If the app isn't in OFF force it off */
+                        }
+                    }
+                }
+            }
+
+            /* Request the EPS OCP state to be changed */
+            Power_request_ocp_state_for_next_opmode();
+
+            /* Set to the next state */
+            DP.OPMODEMANAGER.GRACE_TRANS_STATE 
+                = OPMODEMANAGER_GRACETRANSSTATE_WAIT_OCP_CHANGE;
+
+            /* Explicit fallthrough allowed here so that as much progress is
+             * made as possible in a single cycle. */
+            __attribute__ ((fallthrough));
+        case OPMODEMANAGER_GRACETRANSSTATE_WAIT_OCP_CHANGE:
+
+            /* Wait for the Power app to signal OCP change success */
+            if (!EventManager_poll_event(
+                EVT_POWER_OPMODE_CHANGE_OCP_STATE_CHANGE_COMPLETE,
+                &is_ocp_change_complete
+            )) {
+                DEBUG_ERR(
+                    "EventManager error while polling for OCP state change"
+                );
+                DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                /* If an error occured while checking for this event we should
+                 * try and wait until we can actually do this check
+                 * successfully, as it isn't safe to enter the next mode until
+                 * the power rails are correct. */
+                return false;
+            }
+
+            /* If the change is not complete */
+            if (!is_ocp_change_complete) {
+                return true;
+            }
+
+            /* If it is complete set the new mode and activate all the new
+             * apps */
+            DP.OPMODEMANAGER.OPMODE = DP.OPMODEMANAGER.NEXT_OPMODE;
+            
+            OpModeManager_activate_apps();
+
+            /* Raise the opmode change event. This will trigger the TM for this
+             * event to be generated. */
+            if (!EventManager_raise_event(
+                EVT_OPMODEMANAGER_OPMODE_CHANGED
+            )) {
+                DEBUG_ERR(
+                    "EventManager error while raising change complete event"
+                );
+                DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                /* If the event raising fails we should try to raise the TM
+                 * ourselves */
+                /* TODO: raise TM */
+            }
+            DEBUG_INF(
+                "OPMODE transition to %d complete", 
+                DP.OPMODEMANAGER.OPMODE
+            );
+
+            /* Set the main state into executing, the transition is done. */
+            DP.OPMODEMANAGER.STATE = OPMODEMANAGER_STATE_EXECUTING;
+
+            /* Reset the graceful transition state back to the begining */
+            DP.OPMODEMANAGER.GRACE_TRANS_STATE 
+                = OPMODEMANAGER_GRACETRANSSTATE_INIT;
+
+            break;
+        default:
+            DEBUG_ERR(
+                "Invalid DP.OPMODEMANAGER.GRACE_TRANS_STATE: %d", 
+                DP.OPMODEMANAGER.GRACE_TRANS_STATE
+            );
+            DP.OPMODEMANAGER.ERROR_CODE 
+                = OPMODEMANAGER_ERROR_INVALID_GRACE_TRANS_STATE;
+            return false;
     }
 
     return true;

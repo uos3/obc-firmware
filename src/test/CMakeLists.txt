@@ -12,6 +12,7 @@ target_link_libraries(test_all_modules
     ${CMOCKA_LIBRARY}
     Crypto
     Power
+    OpModeManager
 )
 
 add_executable(test_mem_store_mgr_config
@@ -29,5 +30,5 @@ add_executable(test_power
 target_link_libraries(test_power
     ${STANDARD_LINK_LIBS}
     Power
-    Mission
+    OpModeManager
 )

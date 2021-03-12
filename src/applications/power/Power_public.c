@@ -56,6 +56,9 @@ bool Power_step(void) {
     ErrorCode error = ERROR_NONE;
     bool is_event_raised = false;
 
+    /* FIXME: Remove dependence on CFU? */
+
+    #if 0
     /* If there is a mode change underway we raise the update OCP rail flag, so
      * that this mode change is reflected in the EPS OCP rails. Also unset the
      * EPS_OCP_STATE_CORRECT flag, as this is used by Mission to check if the
@@ -73,6 +76,7 @@ bool Power_step(void) {
         DP.POWER.UPDATE_EPS_OCP_STATE = true;
         DP.POWER.EPS_OCP_STATE_CORRECT = false;
     }
+    #endif
 
     /* If the configuration has been changed in the previous cycle disable the
      * old task timer and clear the event in the data pool. This is required
@@ -111,7 +115,7 @@ bool Power_step(void) {
      * check task runs in all modes except CFU, since updating the CFU will
      * affect the behaviour of the module. Therefore we don't start if we're in
      * CFU */
-    if ((DP.MISSION.OPMODE != MISSION_OPMODE_CONFIG_FILE_UPDATE)
+    if ((DP.OPMODEMANAGER.OPMODE != OPMODEMANAGER_OPMODE_CONFIG_FILE_UPDATE)
         &&
         (DP.POWER.TASK_TIMER_EVENT != EVT_NONE)
     ) {
@@ -129,7 +133,7 @@ bool Power_step(void) {
 
     /* Check for firing of the task timer event. As with the above we only do
      * this if we're not in CFU mode. */
-    if (DP.MISSION.OPMODE != MISSION_OPMODE_CONFIG_FILE_UPDATE) {
+    if (DP.OPMODEMANAGER.OPMODE != OPMODEMANAGER_OPMODE_CONFIG_FILE_UPDATE) {
         /* Poll for the event */
         if (!EventManager_poll_event(
             DP.POWER.TASK_TIMER_EVENT,
@@ -226,7 +230,7 @@ bool Power_step(void) {
                  * complete event and reset the change flag */
                 if (DP.POWER.OPMODE_CHANGE_IN_PROGRESS) {
                     if (!EventManager_raise_event(
-                        EVT_POWER_OPMODE_CHANGE_ACTIVITIES_COMPLETE
+                        EVT_POWER_OPMODE_CHANGE_OCP_STATE_CHANGE_COMPLETE
                     )) {
                         DEBUG_ERR(
                             "Couldn't raise OPMODE change complete event"
@@ -235,6 +239,7 @@ bool Power_step(void) {
                             = POWER_ERROR_EPS_SET_OCP_STATE_FAILED;
                         return false;
                     }
+                    DP.POWER.OPMODE_CHANGE_IN_PROGRESS = false;
                 }
             }
         }
@@ -285,7 +290,7 @@ bool Power_step(void) {
              * state change. */
             DP.POWER.REQUESTED_OCP_STATE = Power_get_ocp_state_for_op_mode(
                 CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
-                DP.MISSION.NEXT_OPMODE
+                DP.OPMODEMANAGER.NEXT_OPMODE
             );
 
             /* Send the new state to the Eps */
@@ -343,7 +348,7 @@ bool Power_step(void) {
     /* If there's an updated EPS HK packet perform the generic low voltage
      * check, provided we are not in CFU. Switching to LP in CFU is dangerous
      * and could leave the spacecraft in a misconfigured state. */
-    if (DP.MISSION.OPMODE != MISSION_OPMODE_CONFIG_FILE_UPDATE) {
+    if (DP.OPMODEMANAGER.OPMODE != OPMODEMANAGER_OPMODE_CONFIG_FILE_UPDATE) {
         /* Note we use is_event_raised here not poll as some others may be
          * looking for this event too */
         if (!EventManager_is_event_raised(
@@ -372,4 +377,13 @@ void Power_request_eps_hk(void) {
     }
 
     DP.POWER.UPDATE_EPS_HK = true;
+}
+
+void Power_request_ocp_state_for_next_opmode(void) {
+    DP.POWER.REQUESTED_OCP_STATE = Power_get_ocp_state_for_op_mode(
+        CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
+        DP.OPMODEMANAGER.NEXT_OPMODE
+    );
+    DP.POWER.UPDATE_EPS_OCP_STATE = true;
+    DP.POWER.OPMODE_CHANGE_IN_PROGRESS = true;
 }

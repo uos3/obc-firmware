@@ -24,12 +24,13 @@
 #include "util/debug/Debug_public.h"
 #include "drivers/board/Board_public.h"
 #include "drivers/eeprom/Eeprom_public.h"
+#include "drivers/timer/Timer_public.h"
 #include "system/kernel/Kernel_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "system/mem_store_manager/MemStoreManager_public.h"
+#include "system/opmode_manager/OpModeManager_public.h"
 #include "components/eps/Eps_public.h"
-#include "applications/mission/Mission_public.h"
 #include "applications/power/Power_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -37,7 +38,7 @@
  * ------------------------------------------------------------------------- */
 
 int main(void) {
-    ErrorCode eeprom_error = ERROR_NONE;
+    ErrorCode error = ERROR_NONE;
     bool run_loop = true;
 
     /* Init system critical modules */
@@ -51,6 +52,11 @@ int main(void) {
     if (!MemStoreManager_init()) {
         Debug_exit(6);
     }
+    error = Timer_init();
+    if (error != ERROR_NONE) {
+        DEBUG_ERR("Timer init error 0x%04X", error);
+        Debug_exit(1);
+    }
 
     DEBUG_INF("---- Power Test ----");
     DEBUG_INF("Basic initialisation complete");
@@ -61,11 +67,11 @@ int main(void) {
     }
     DEBUG_INF("Eps initialised");
 
-    /* Init the mission app */
-    if (!Mission_init()) {
+    /* Init the opmode manager */
+    if (!OpModeManager_init()) {
         Debug_exit(8);
     }
-    DEBUG_INF("Mission initialised");
+    DEBUG_INF("OpModeManager initialised");
 
     /* Init the power app */
     if (!Power_init()) {
@@ -94,10 +100,10 @@ int main(void) {
 
         /* ---- APPLICATIONS ---- */
 
-        if (!Mission_step()) {
+        if (!OpModeManager_step()) {
             DEBUG_ERR(
-                "Mission_step() failed! DP.MISSION.ERROR_CODE = 0x%04X",
-                DP.MISSION.ERROR_CODE
+                "OpModeManager_step() failed! DP.OPMODEMANAGER.ERROR_CODE = 0x%04X",
+                DP.OPMODEMANAGER.ERROR_CODE
             );
             Debug_exit(11);
         }
@@ -121,15 +127,18 @@ int main(void) {
 
         /* If no move to next mode, to test mode switching */
         if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0) {
-            if (DP.MISSION.OPMODE < MISSION_OPMODE_PICTURE_TAKING) {                
-                if (!Mission_start_opmode_change(DP.MISSION.OPMODE + 1)) {
-                    Debug_exit(14);
-                }
+            if (DP.OPMODEMANAGER.OPMODE < OPMODEMANAGER_OPMODE_PICTURE_TAKING) {                
+                
+                /* Trigger OpMode transition if not already in one */
+                if (DP.OPMODEMANAGER.NEXT_OPMODE == DP.OPMODEMANAGER.OPMODE) {
+                    DP.OPMODEMANAGER.NEXT_OPMODE = DP.OPMODEMANAGER.OPMODE + 1;
+                    DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE = true;
 
-                DEBUG_INF(
-                    "No events, setting OPMODE to %d", 
-                    DP.MISSION.NEXT_OPMODE
-                );
+                    DEBUG_INF(
+                        "No events, setting OPMODE to %d", 
+                        DP.OPMODEMANAGER.NEXT_OPMODE
+                    );
+                }
             }
             else {
                 DEBUG_INF("Final OPMODE reached, exiting");

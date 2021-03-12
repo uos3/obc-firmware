@@ -39,8 +39,10 @@ bool OpModeManager_init(void) {
         return false;
     }
 
-    /* Set the initial OpMode */
+    /* Set the initial and next OpMode. Next OpMode is set when a transition is
+     * requested, and otherwise should be the current OpMode */
     DP.OPMODEMANAGER.OPMODE = OPMODEMANAGER_OPMODE_BOOT_UP;
+    DP.OPMODEMANAGER.NEXT_OPMODE = OPMODEMANAGER_OPMODE_BOOT_UP;
     
     /* Activate the apps for the first opmode (since it's bootup this should be
      * no apps, but we do this in case an app is added in the future.) */
@@ -56,6 +58,9 @@ bool OpModeManager_init(void) {
 
 bool OpModeManager_step(void) {
     bool is_event_raised = false;
+    int i, j;
+    Kernel_AppId app_id;
+    bool app_in_next_mode;
 
     if (!DP.OPMODEMANAGER.INITIALISED) {
         DEBUG_ERR("OpModeManager not initialised");
@@ -89,11 +94,43 @@ bool OpModeManager_step(void) {
 
             DEBUG_INF("TC requested graceful OpMode transition");
         }
+
+        /* Unset the TC flag */
+        DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE = false;
     }
 
     /* Finally check app requests for transitions */
     if (!OpModeManager_check_app_trans_reqs()) {
         return false;
+    }
+
+    /* If there is a transition to perform calculate whether or not each app in
+     * the current mode is active in the next mode */
+    if (DP.OPMODEMANAGER.OPMODE != DP.OPMODEMANAGER.NEXT_OPMODE) {
+        for (i = 0; i < OPMODEMANAGER_MAX_NUM_APPS_IN_MODE; ++i) {
+            /* Reset the in next mode flag for this app */
+            DP.OPMODEMANAGER.APP_IN_NEXT_MODE[i] = false;
+
+            /* Get the app id */
+            app_id = CFG.OPMODE_APPID_TABLE[DP.OPMODEMANAGER.OPMODE][i];
+
+            /* If the app id is 0 skip to the next one */
+            if (app_id = 0) {
+                continue;
+            }
+            else {
+                /* Search for this app in the next mode */
+                for (j = 0; OPMODEMANAGER_MAX_NUM_APPS_IN_MODE; ++j) {
+                    if (app_id 
+                        == 
+                        CFG.OPMODE_APPID_TABLE[DP.OPMODEMANAGER.NEXT_OPMODE][j]
+                    ) {
+                        DP.OPMODEMANAGER.APP_IN_NEXT_MODE[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     /* Step through the state machine */
@@ -124,8 +161,64 @@ bool OpModeManager_step(void) {
             break;
         case OPMODEMANAGER_STATE_GRACEFUL_TRANSITION:
 
+            /* Run the graceful transition substate machine */
+            if (!OpModeManager_step_graceful_transition()) {
+                return false;
+            }
+
             break;
         case OPMODEMANAGER_STATE_EMERGENCY_TRANSITION:
+
+            /* Force stop all user apps which are not active in the next mode */
+            for (i = 0; i < OPMODEMANAGER_MAX_NUM_APPS_IN_MODE; ++i) {
+                /* Reset the app in next mode flag */
+                app_in_next_mode = false;
+
+                /* Get the app id */
+                app_id = CFG.OPMODE_APPID_TABLE[DP.OPMODEMANAGER.OPMODE][i];
+
+                /* If the app id is 0 or the app is in the next mode skip to 
+                 * the next one */
+                if ((app_id == 0)
+                    ||
+                    (DP.OPMODEMANAGER.APP_IN_NEXT_MODE[i])
+                ) {
+                    continue;
+                }
+                else {
+                    /* TODO: Force stop */
+                }
+            }
+
+            /* Set the next power state */
+            Power_request_ocp_state_for_next_opmode();
+
+            /* Set the new OPMODE */
+            DP.OPMODEMANAGER.OPMODE = DP.OPMODEMANAGER.NEXT_OPMODE;
+
+            /* Activate any apps required in the new opmode */
+            OpModeManager_activate_apps();
+
+            /* Raise the opmode change event. This will trigger the TM for this
+             * event to be generated. */
+            if (!EventManager_raise_event(
+                EVT_OPMODEMANAGER_OPMODE_CHANGED
+            )) {
+                DEBUG_ERR(
+                    "EventManager error while raising change complete event"
+                );
+                DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                /* If the event raising fails we should try to raise the TM
+                 * ourselves */
+                /* TODO: raise TM */
+            }
+            DEBUG_INF(
+                "OPMODE emergency transition to %d complete", 
+                DP.OPMODEMANAGER.OPMODE
+            );
+
+            /* Set manager into executing */
+            DP.OPMODEMANAGER.STATE = OPMODEMANAGER_STATE_EXECUTING;
 
             break;
         default:

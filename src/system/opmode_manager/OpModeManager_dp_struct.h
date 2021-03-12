@@ -82,6 +82,29 @@ typedef struct _OpModeManager_Dp {
      * @dp 6
      */
     bool TC_REQUEST_NEW_OPMODE;
+
+    /**
+     * @brief The state of a graceful transition.
+     * 
+     * @dp 7
+     */
+    OpModeManager_GraceTransState GRACE_TRANS_STATE;
+
+    /**
+     * @brief The event associated with a graceful transition timeout.
+     * 
+     * @dp 8
+     */
+    Event GRACE_TRANS_TIMEOUT_EVENT;
+
+    /**
+     * @brief Array, in which each element is true if it's corresponding app in
+     * the CFG.OPMODE_APPID_TABLE is present in the next mode. Calcualted once
+     * at the start of an OPMODE transition.
+     * 
+     * @dp 9
+     */
+    bool APP_IN_NEXT_MODE[OPMODEMANAGER_MAX_NUM_APPS_IN_MODE];
     
 
 } OpModeManager_Dp;

@@ -64,6 +64,16 @@ bool MemStoreManager_init(void) {
     return true;
 }
 
+bool MemStoreManager_step(void) {
+    /* If the update pers data flag is set write the persistent data to the
+     * EEPROM */
+    if (DP.MEMSTOREMANAGER.PERS_DATA_UPDATED) {
+        if (!MemStoreManager_write_pers_data()) {
+            return false;
+        }
+    }
+}
+
 bool MemStoreManager_config_update(MemStoreManager_ConfigFile *p_cfg_file_in) {
     ErrorCode eeprom_error;
 
@@ -133,6 +143,53 @@ bool MemStoreManager_config_update(MemStoreManager_ConfigFile *p_cfg_file_in) {
     }
 
     return true;
+}
+
+MemStoreManager_PersistentData MemStoreManager_get_pers_data(void) {
+    Crypto_Crc32 new_crc;
+    
+    /* Check CRC of the persistent data */
+    Crypto_get_crc32(
+        (uint8_t *)(&persistent_data), 
+        sizeof(MemStoreManager_PersistentData),
+        &new_crc
+    );
+
+    if (new_crc != persistent_data.crc) {
+        DEBUG_WRN("Peristent data corruption detected, refreshing from EEPROM");
+        if (!MemStoreManager_load_pers_data()) {
+            /* TODO: error handling, probably want to not do anything,
+             * likelyhood of all data being corrupted is extremely low */
+        }
+    }
+
+    /* Return a copy of the data */
+    return persistent_data;
+}
+
+void MemStoreManager_set_pers_data(
+    MemStoreManager_PersistentData pers_data_in
+) {
+    Crypto_Crc32 new_crc;
+    
+    /* Recompute the crc */
+    Crypto_get_crc32(
+        (uint8_t *)(&pers_data_in), 
+        sizeof(MemStoreManager_PersistentData),
+        &new_crc
+    );
+
+    /* If the CRC is different than the old one overwrite the data and set the
+     * update flag, if not then there's nothing we need to do */
+    if (new_crc != persistent_data.crc) {
+        persistent_data = pers_data_in;
+        DP.MEMSTOREMANAGER.PERS_DATA_UPDATED = true;
+    }
+    else {
+        DEBUG_WRN(
+            "Persistent data set was called but CRCs are the same, skipping"
+        );
+    }
 }
 
 #ifdef DEBUG_MODE

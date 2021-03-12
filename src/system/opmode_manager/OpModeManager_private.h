@@ -25,6 +25,20 @@
 #include "system/opmode_manager/OpModeManager_public.h"
 
 /* -------------------------------------------------------------------------   
+ * DEFINES
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Timeout for a graceful tansition to complete.
+ * 
+ * If the timout passes before all apps have gracefully stopped they will be
+ * forced to stop.
+ * 
+ * TODO: should this be configurable?
+ */
+#define OPMODEMANAGER_GRACE_TRANS_TIMEOUT_S ((double)(1.0))
+
+/* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
@@ -51,5 +65,13 @@ bool OpModeManager_check_app_trans_reqs(void);
  * cause. 
  */
 bool OpModeManager_call_active_app_steps(void);
+
+/**
+ * @brief Step the graceful transition substate machine.
+ * 
+ * @return True on success, false on error. See DP.OPMODEMANAGER.ERROR_CODE for
+ * cause. 
+ */
+bool OpModeManager_step_graceful_transition(void);
 
 #endif /* H_OPMODEMANAGER_PRIVATE_H */

@@ -53,6 +53,14 @@
  */
 extern MemStoreManager_ConfigFile _binary_backup_cfg_file_start;
 
+/**
+ * @brief The persistent data loaded in memory.
+ * 
+ * The user may not access this directly, instead they must use the get and set
+ * public functions.
+ */
+extern MemStoreManager_PersistentData persistent_data;
+
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
@@ -85,5 +93,19 @@ bool MemStoreManager_config_check_crc(
  * @return bool True on success, false on failure.
  */
 bool MemStoreManager_config_load(void);
+
+/**
+ * @brief Loads the persistent data from the EEPROM.
+ * 
+ * @return bool True on success, false on failure.
+ */
+bool MemStoreManager_load_pers_data(void);
+
+/**
+ * @brief Writes the current persistent data to the EEPROM.
+ * 
+ * @return bool True on success, false on failure.
+ */
+bool MemStoreManager_write_pers_data(void);
 
 #endif /* H_MEMSTOREMANAGER_PRIVATE_H */

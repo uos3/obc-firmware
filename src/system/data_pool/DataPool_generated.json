@@ -181,12 +181,19 @@
         "data_type": "bool",
         "brief": "Indicates if the third configuration file is OK."
     },
-    "DP.MEMSTOREMANAGER.USE_SOFTWARE_IMG_CFG": {
+    "DP.MEMSTOREMANAGER.USE_BACKUP_CFG": {
         "block_id": 4,
         "block_index": 7,
         "dp_id": 4103,
         "data_type": "bool",
         "brief": "Flag which can be set during the boot process if the EEPROM is not functioning, and therefore we must use the redundent config stored as apart of the software image."
+    },
+    "DP.MEMSTOREMANAGER.PERS_DATA_UPDATED": {
+        "block_id": 4,
+        "block_index": 8,
+        "dp_id": 4104,
+        "data_type": "bool",
+        "brief": "Flag which when set will cause the MemStoreManager to write the newly updated persistent data to the EEPROM."
     },
     "DP.EPS.INITIALISED": {
         "block_id": 34,
@@ -271,41 +278,6 @@
         "dp_id": 34828,
         "data_type": "Eps_HkData",
         "brief": "Most up-to-date housekeeping data returned by the EPS."
-    },
-    "DP.MISSION.INITIALISED": {
-        "block_id": 52,
-        "block_index": 1,
-        "dp_id": 53249,
-        "data_type": "bool",
-        "brief": "Flag indicating if the Mission App has been initialised (true) or not (false)."
-    },
-    "DP.MISSION.ERROR_CODE": {
-        "block_id": 52,
-        "block_index": 2,
-        "dp_id": 53250,
-        "data_type": "ErrorCode",
-        "brief": "Stores errors that occur during operation."
-    },
-    "DP.MISSION.OPMODE": {
-        "block_id": 52,
-        "block_index": 3,
-        "dp_id": 53251,
-        "data_type": "Mission_OpMode",
-        "brief": "The current mission Operational Mode (OPMODE)"
-    },
-    "DP.MISSION.NEXT_OPMODE": {
-        "block_id": 52,
-        "block_index": 4,
-        "dp_id": 53252,
-        "data_type": "Mission_OpMode",
-        "brief": "The next OpMode that will be set when the current mode change is complete."
-    },
-    "DP.MISSION.OPMODE_CHANGE_IN_PROGRESS": {
-        "block_id": 52,
-        "block_index": 5,
-        "dp_id": 53253,
-        "data_type": "bool",
-        "brief": "Indicates whether or not a change in the OPMODE is in progress."
     },
     "DP.POWER.INITIALISED": {
         "block_id": 53,
@@ -439,5 +411,26 @@
         "dp_id": 10246,
         "data_type": "bool",
         "brief": "Flag which will be raised by the TC handler responsible for accepting OpMode change TCs."
+    },
+    "DP.OPMODEMANAGER.GRACE_TRANS_STATE": {
+        "block_id": 10,
+        "block_index": 7,
+        "dp_id": 10247,
+        "data_type": "OpModeManager_GraceTransState",
+        "brief": "The state of a graceful transition."
+    },
+    "DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT": {
+        "block_id": 10,
+        "block_index": 8,
+        "dp_id": 10248,
+        "data_type": "Event",
+        "brief": "The event associated with a graceful transition timeout."
+    },
+    "DP.OPMODEMANAGER.APP_IN_NEXT_MODE[OPMODEMANAGER_MAX_NUM_APPS_IN_MODE]": {
+        "block_id": 10,
+        "block_index": 9,
+        "dp_id": 10249,
+        "data_type": "bool",
+        "brief": "Array, in which each element is true if it's corresponding app in the CFG.OPMODE_APPID_TABLE is present in the next mode. Calcualted once at the start of an OPMODE transition."
     }
 }

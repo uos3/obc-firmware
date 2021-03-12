@@ -6,4 +6,5 @@ add_library(OpModeManager
 )
 target_link_libraries(OpModeManager
     ${STANDARD_LINK_LIBS}
+    Timer
 )

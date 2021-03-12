@@ -77,6 +77,14 @@ typedef struct _MemStoreManager_Dp {
      */
     bool USE_BACKUP_CFG;
 
+    /**
+     * @brief Flag which when set will cause the MemStoreManager to write the
+     * newly updated persistent data to the EEPROM.
+     * 
+     * @dp 8
+     */
+    bool PERS_DATA_UPDATED;
+
 } MemStoreManager_Dp;
 
 #endif /* H_MEMSTOREMANAGER_DP_STRUCT_H */

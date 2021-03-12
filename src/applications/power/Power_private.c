@@ -20,10 +20,10 @@
 #include <stdbool.h>
 
 /* Internal includes */
+#include "system/opmode_manager/OpModeManager_public.h"
 #include "applications/power/Power_public.h"
 #include "applications/power/Power_private.h"
 #include "components/eps/Eps_public.h"
-#include "applications/mission/Mission_public.h"
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
@@ -31,7 +31,7 @@
 
 Eps_OcpState Power_get_ocp_state_for_op_mode(
     Power_OpModeOcpStateConfig config_in,
-    Mission_OpMode op_mode_in
+    OpModeManager_OpMode op_mode_in
 ) {
     Eps_OcpState state;
     uint32_t lsb_shift;

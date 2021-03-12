@@ -64,6 +64,9 @@
  * NOTE: This structure should be as flat as possible (no nested structs), as
  * nesting requires word alignment which can make the config file larger than
  * it needs to be.
+ * 
+ * NOTE: UPPER_SNAKE_CASE is used here as this data is treated as global
+ * read-only state, i.e. is accessed through CFG.VERSION.
  */
 typedef struct _MemStoreManager_ConfigData {
     /**
@@ -133,7 +136,42 @@ typedef struct _MemStoreManager_ConfigFile {
      * @brief The CRC of the configuration file.
      */
     uint32_t crc;
+
 } MemStoreManager_ConfigFile;
+
+/**
+ * @brief The persistent data stored in the EEPROM that is used to monitor
+ * overall mission progression.
+ */
+typedef struct _MemStoreManager_PersistentData {
+
+    /**
+     * @brief Number of times the OBC has reset
+     */
+    uint16_t num_obc_resets;
+
+    /**
+     * @brief The number of attempts made at deploying the antenna
+     */
+    uint8_t num_antenna_deploy_attempts;
+
+    /**
+     * @brief Whether or not the antenna has successfully deployed.
+     */
+    bool antenna_deployed;
+
+    /**
+     * @brief The OpMode before the last reset
+     */
+    OpModeManager_OpMode last_opmode;
+
+    /**
+     * @brief CRC of the persistant data, used to scrub for errors in the
+     * persistant data.
+     */
+    Crypto_Crc32 crc;
+
+} MemStoreManager_PersistentData;
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -185,6 +223,35 @@ bool MemStoreManager_step(void);
  * @return bool True on success, false on failure.
  */
 bool MemStoreManager_config_update(MemStoreManager_ConfigFile *p_cfg_file_in);
+
+/**
+ * @brief Get a modifiable copy of the persistent data.
+ * 
+ * The persistent data can change at any point in execution, so the user must
+ * call this function immediately before processing or modifying the data
+ * contained within it.
+ * 
+ * This function will check for corruption of the data and make corrections if
+ * needed. 
+ * 
+ * @return The current persistent data.
+ */
+MemStoreManager_PersistentData MemStoreManager_get_pers_data(void);
+
+/**
+ * @brief Set the persistent data.
+ * 
+ * If the user wishes to modify the persistent data they must first use
+ * MemStoreManager_get_pers_data to get an up-to-date version of the data, then
+ * they must modify that copy, and finally save it using this function.
+ * 
+ * This function will automatically set the new CRC of the data.
+ * 
+ * @param pers_data_in The data to set
+ */
+void MemStoreManager_set_pers_data(
+    MemStoreManager_PersistentData pers_data_in
+);
 
 #ifdef DEBUG_MODE
 /**

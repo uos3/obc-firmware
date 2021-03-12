@@ -21,7 +21,7 @@
 /* Internal includes */
 #include "applications/power/Power_public.h"
 #include "components/eps/Eps_public.h"
-#include "applications/mission/Mission_public.h"
+#include "system/opmode_manager/OpModeManager_public.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -70,7 +70,7 @@
  */
 Eps_OcpState Power_get_ocp_state_for_op_mode(
     Power_OpModeOcpStateConfig config_in,
-    Mission_OpMode op_mode_in
+    OpModeManager_OpMode op_mode_in
 );
 
 #endif /* H_POWER_PRIVATE_H */

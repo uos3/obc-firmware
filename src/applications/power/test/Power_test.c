@@ -25,7 +25,7 @@
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "system/mem_store_manager/MemStoreManager_public.h"
-#include "applications/mission/Mission_public.h"
+#include "system/opmode_manager/OpModeManager_public.h"
 #include "components/eps/Eps_public.h"
 #include "applications/power/Power_public.h"
 #include "applications/power/Power_private.h"
@@ -47,7 +47,7 @@ static int Power_test_get_ocp_state_for_op_mode(void **state) {
     /* Get a mode that should be all off */
     ocp_state = Power_get_ocp_state_for_op_mode(
         CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
-        MISSION_OPMODE_ANTENNA_DEPLOY
+        OPMODEMANAGER_OPMODE_ANTENNA_DEPLOY
     );
     
     /* Check that it's all off except EPS/OBC */
@@ -61,7 +61,7 @@ static int Power_test_get_ocp_state_for_op_mode(void **state) {
     /* Get a mode that should be all on */
     ocp_state = Power_get_ocp_state_for_op_mode(
         CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
-        MISSION_OPMODE_NOMINAL_FUNCTIONING
+        OPMODEMANAGER_OPMODE_NOMINAL_FUNCTIONING
     );
     
     /* Check that it's all on */
@@ -71,6 +71,8 @@ static int Power_test_get_ocp_state_for_op_mode(void **state) {
     assert_true(ocp_state.obc);
     assert_true(ocp_state.gnss_rx);
     assert_true(ocp_state.gnss_lna);
+
+    return 0;
 }
 
 /**
@@ -86,8 +88,7 @@ static int Power_test_setup(void **state) {
     Kernel_init_critical_modules();
     assert_true(Eeprom_init() == ERROR_NONE);
     assert_true(MemStoreManager_init());
-    /* FIXME: Replace with Mission_init() function */
-    DP.MISSION.INITIALISED = true;
+    assert_true(OpModeManager_init());
     assert_true(Eps_init());
     
     /* Init the power app */

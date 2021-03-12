@@ -70,4 +70,13 @@ bool Power_step(void);
  */
 void Power_request_eps_hk(void);
 
+/**
+ * @brief Sends a request to the EPS to change the OCP state to be ready for
+ * the next OPMODE.
+ * 
+ * This function must be infallible as it is called as a part of the emergency
+ * opmode transition.
+ */
+void Power_request_ocp_state_for_next_opmode(void);
+
 #endif /* H_POWER_PUBLIC_H */

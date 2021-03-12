@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-03-11
+ * @date 2021-03-12
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -256,6 +256,14 @@ bool DataPool_get(
         return true;
 
 
+    /* DP.MEMSTOREMANAGER.PERS_DATA_UPDATED */
+    case 0x1008:
+        *pp_data_out = &DP.MEMSTOREMANAGER.PERS_DATA_UPDATED;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
     /* DP.EPS.INITIALISED */
     case 0x8801:
         *pp_data_out = &DP.EPS.INITIALISED;
@@ -349,46 +357,6 @@ bool DataPool_get(
         *pp_data_out = &DP.EPS.HK_DATA;
         *p_data_type_out = DATAPOOL_DATATYPE_EPS_HKDATA;
         *p_data_size_out = sizeof(Eps_HkData);
-        return true;
-
-
-    /* DP.MISSION.INITIALISED */
-    case 0xd001:
-        *pp_data_out = &DP.MISSION.INITIALISED;
-        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
-        *p_data_size_out = sizeof(bool);
-        return true;
-
-
-    /* DP.MISSION.ERROR_CODE */
-    case 0xd002:
-        *pp_data_out = &DP.MISSION.ERROR_CODE;
-        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
-        *p_data_size_out = sizeof(ErrorCode);
-        return true;
-
-
-    /* DP.MISSION.OPMODE */
-    case 0xd003:
-        *pp_data_out = &DP.MISSION.OPMODE;
-        *p_data_type_out = DATAPOOL_DATATYPE_MISSION_OPMODE;
-        *p_data_size_out = sizeof(Mission_OpMode);
-        return true;
-
-
-    /* DP.MISSION.NEXT_OPMODE */
-    case 0xd004:
-        *pp_data_out = &DP.MISSION.NEXT_OPMODE;
-        *p_data_type_out = DATAPOOL_DATATYPE_MISSION_OPMODE;
-        *p_data_size_out = sizeof(Mission_OpMode);
-        return true;
-
-
-    /* DP.MISSION.OPMODE_CHANGE_IN_PROGRESS */
-    case 0xd005:
-        *pp_data_out = &DP.MISSION.OPMODE_CHANGE_IN_PROGRESS;
-        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
-        *p_data_size_out = sizeof(bool);
         return true;
 
 
@@ -539,6 +507,30 @@ bool DataPool_get(
     /* DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE */
     case 0x2806:
         *pp_data_out = &DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.OPMODEMANAGER.GRACE_TRANS_STATE */
+    case 0x2807:
+        *pp_data_out = &DP.OPMODEMANAGER.GRACE_TRANS_STATE;
+        *p_data_type_out = DATAPOOL_DATATYPE_OPMODEMANAGER_GRACETRANSSTATE;
+        *p_data_size_out = sizeof(OpModeManager_GraceTransState);
+        return true;
+
+
+    /* DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT */
+    case 0x2808:
+        *pp_data_out = &DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT;
+        *p_data_type_out = DATAPOOL_DATATYPE_EVENT;
+        *p_data_size_out = sizeof(Event);
+        return true;
+
+
+    /* DP.OPMODEMANAGER.APP_IN_NEXT_MODE[OPMODEMANAGER_MAX_NUM_APPS_IN_MODE] */
+    case 0x2809:
+        *pp_data_out = &DP.OPMODEMANAGER.APP_IN_NEXT_MODE[OPMODEMANAGER_MAX_NUM_APPS_IN_MODE];
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
         return true;
@@ -720,6 +712,12 @@ bool DataPool_get_symbol_str(
         return true;
 
 
+    /* DP.MEMSTOREMANAGER.PERS_DATA_UPDATED */
+    case 0x1008:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.PERS_DATA_UPDATED");
+        return true;
+
+
     /* DP.EPS.INITIALISED */
     case 0x8801:
         *pp_symbol_str_out = strdup("DP.EPS.INITIALISED");
@@ -789,36 +787,6 @@ bool DataPool_get_symbol_str(
     /* DP.EPS.HK_DATA */
     case 0x880c:
         *pp_symbol_str_out = strdup("DP.EPS.HK_DATA");
-        return true;
-
-
-    /* DP.MISSION.INITIALISED */
-    case 0xd001:
-        *pp_symbol_str_out = strdup("DP.MISSION.INITIALISED");
-        return true;
-
-
-    /* DP.MISSION.ERROR_CODE */
-    case 0xd002:
-        *pp_symbol_str_out = strdup("DP.MISSION.ERROR_CODE");
-        return true;
-
-
-    /* DP.MISSION.OPMODE */
-    case 0xd003:
-        *pp_symbol_str_out = strdup("DP.MISSION.OPMODE");
-        return true;
-
-
-    /* DP.MISSION.NEXT_OPMODE */
-    case 0xd004:
-        *pp_symbol_str_out = strdup("DP.MISSION.NEXT_OPMODE");
-        return true;
-
-
-    /* DP.MISSION.OPMODE_CHANGE_IN_PROGRESS */
-    case 0xd005:
-        *pp_symbol_str_out = strdup("DP.MISSION.OPMODE_CHANGE_IN_PROGRESS");
         return true;
 
 
@@ -933,6 +901,24 @@ bool DataPool_get_symbol_str(
     /* DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE */
     case 0x2806:
         *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.GRACE_TRANS_STATE */
+    case 0x2807:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.GRACE_TRANS_STATE");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT */
+    case 0x2808:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.APP_IN_NEXT_MODE[OPMODEMANAGER_MAX_NUM_APPS_IN_MODE] */
+    case 0x2809:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.APP_IN_NEXT_MODE[OPMODEMANAGER_MAX_NUM_APPS_IN_MODE]");
         return true;
 
 
