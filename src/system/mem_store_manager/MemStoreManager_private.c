@@ -87,6 +87,12 @@ bool MemStoreManager_config_load(void) {
         ||
         !DP.MEMSTOREMANAGER.CFG_FILE_3_OK
     ) {
+        DEBUG_WRN(
+            "Corrupted configuration file(s) found! Configs OK: (%d, %d, %d)",
+            DP.MEMSTOREMANAGER.CFG_FILE_1_OK,
+            DP.MEMSTOREMANAGER.CFG_FILE_2_OK,
+            DP.MEMSTOREMANAGER.CFG_FILE_3_OK
+        );
         if (!EventManager_raise_event(
             EVT_MEMSTOREMANAGER_CORRUPTED_CFG_FILE_FOUND
         )) {
@@ -94,7 +100,6 @@ bool MemStoreManager_config_load(void) {
                 = MEMSTOREMANAGER_ERROR_EVENTMANAGER_ERROR;
             return false;
         }
-        DEBUG_WRN("Corrupted configuration file found!");
     }
 
     /* Load first non-corrupted config file */

@@ -139,7 +139,7 @@ def gen_errors_table(root_dir, db):
     # The use of a regex here is very hacky, and is likely to be a major source
     # of errors, however I have yet to find a better way to do this.
     regex = re.compile(
-        r'@brief((?:(?!\*\/).)*)[^#]+#define\s(\S+)\s+\({2}ErrorCode\)\(?(\S+)\s+\|\s+((?:0x)?\d+)\)',
+        r'@brief((?:(?!\*\/).)*)[^#]+#define\s(\S+)\s+\({2}ErrorCode\)\(?(\S+)\s*\|\s*((?:0x)?\d+)\)',
         flags=re.M|re.S
     )
 
@@ -195,7 +195,7 @@ def gen_events_table(root_dir, db):
     # The use of a regex here is very hacky, and is likely to be a major source
     # of errors, however I have yet to find a better way to do this.
     regex = re.compile(
-        r'@brief((?:(?!\*\/).)*)[^#]+#define\s(\S+)\s+\({2}Event\)\(?(\S+)\s+\|\s+((?:0x)?\d+)\)',
+        r'@brief((?:(?!\*\/).)*)[^#]+#define\s(\S+)\s+\({2}Event\)\(?(\S+)\s*\|\s*((?:0x)?\d+)\)',
         flags=re.M|re.S
     )
 

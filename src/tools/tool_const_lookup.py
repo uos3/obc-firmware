@@ -5,13 +5,14 @@ ErrorCodes.
 
 import argparse
 from pathlib import Path
+from collections import Counter
 from tinydb import TinyDB, where
 from rich.console import Console
 from rich.padding import Padding
 
-def const_lookup(value, const_type=None):
+def const_lookup(search, const_type=None):
     '''
-    Read the const_db.json TinyDB to look for the given value.
+    Read the const_db.json TinyDB to look for the given value or module name.
 
     Additionally if the type of the constant is known narrow down the search.
     '''
@@ -22,9 +23,13 @@ def const_lookup(value, const_type=None):
     # Open database
     db = open_database(root_dir)
 
-    # Get the integer value to search for
-    if value is not int:
-        value = int(value, 0)
+    # See if the search is a constant or is a module name
+    module_name = None
+    try:
+        value = int(search, 0)
+    except ValueError:
+        module_name = search
+        value = None
 
     # Matches dictionary
     matches = {table:[] for table in db.tables()}
@@ -32,7 +37,11 @@ def const_lookup(value, const_type=None):
     # Search
     if const_type is None:
         for table_name in db.tables():
-            table_matches = db.table(table_name).search(where('value') == value)
+            # Match for constants
+            if value is not None:
+                table_matches = db.table(table_name).search(where('value') == value)
+            else:
+                table_matches = db.table(table_name).search(where('module') == module_name)
             if len(table_matches) > 0:
                 matches[table_name].extend(table_matches)
 
@@ -69,11 +78,7 @@ def print_matches(matches):
     if len(matches['events']) == 0:
         console.print('    [i]None[/i]')
     else:
-        if len(matches['events']) > 1:
-            print('')
-            console.print('    [red][bold]WARNING[/bold] Multiple Events with the same value detected![/red]')
-            console.print('            [red]This must be corrected in the header definition so there is no conflict![/red]')
-        console.print('')
+        _print_duplicate_warnings(console, matches['events'], 'Events')
         for event in matches['events']:
             _print_const(console, event)
     console.print('')
@@ -83,11 +88,7 @@ def print_matches(matches):
     if len(matches['errors']) == 0:
         console.print('    [i]None[/i]')
     else:
-        if len(matches['errors']) > 1:
-            print('')
-            console.print('    [red][bold]WARNING[/bold] Multiple ErrorCodes with the same value detected![/red]')
-            console.print('            [red]This must be corrected in the header definition so there is no conflict![/red]')
-        console.print('')
+        _print_duplicate_warnings(console, matches['errors'], 'Errors')
         for error in matches['errors']:
             _print_const(console, error)
     console.print('')
@@ -97,11 +98,7 @@ def print_matches(matches):
     if len(matches['datapool']) == 0:
         console.print('    [i]None[/i]')
     else:
-        if len(matches['datapool']) > 1:
-            print('')
-            console.print('    [red][bold]WARNING[/bold] Multiple DataPool parameters with the same value detected![/red]')
-            console.print('            [red]This must be corrected in the header definition so there is no conflict![/red]')
-        console.print('')
+        _print_duplicate_warnings(console, matches['datapool'], 'DataPool')
         for dp in matches['datapool']:
             _print_const(console, dp)
     console.print('')
@@ -114,6 +111,22 @@ def _print_const(console, const):
     desc = Padding(const['description'], (0, 0, 0, 8))
     console.print(desc)
 
+def _print_duplicate_warnings(console, const_list, const_name):
+    '''
+    Searches const_list for repeated values and prints a warning highlighting
+    them. 
+    '''
+    counts = dict(Counter([c['value'] for c in const_list]))
+    duplicates = {const:count for (const, count) in counts.items() if count > 1}
+    
+    if len(duplicates) > 0:
+        console.print(f'    [red][bold]WARNING[/bold] Multiple {const_name} parameters with the same value detected![/red]')
+        console.print('            [red]This must be corrected in the header definition so there is no conflict![/red]')
+
+    for (const, count) in duplicates.items():
+        console.print(f'            [red]0x{const:04X} is duplicated {count} times')
+
+    console.print('')
 
 def _parse_args():
     '''
@@ -129,8 +142,8 @@ def _parse_args():
         nargs='?'
     )
     parser.add_argument(
-        'value',
-        help='The value of the constant to lookup. Hex must be prefixed with 0x.',
+        'search',
+        help='The search term to lookup. Numeric values (inlcuind hex prepended with 0x) will be interpreted as constants, strings as module names',
         nargs=1
     )
 
@@ -139,6 +152,6 @@ def _parse_args():
 if __name__ == '__main__':
     args = _parse_args()
 
-    matches = const_lookup(args.value[0], const_type=args.const_type)
+    matches = const_lookup(args.search[0], const_type=args.const_type)
 
     print_matches(matches)

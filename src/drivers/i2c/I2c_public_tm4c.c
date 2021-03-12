@@ -58,7 +58,7 @@ ErrorCode I2c_init(void) {
         if (p_module->initialised) {
             DEBUG_WRN(
                 "I2c_init() called on module %d when already initialised.", 
-                p_modules_in[i]
+                I2C_ENABLED_MODULES[i]
             );
 
             /* Go to the next module in the list */
@@ -93,7 +93,10 @@ ErrorCode I2c_init(void) {
              */
             if (!enabled) {
                 /* TODO: Mark the module as disabled? */
-                DEBUG_ERR("Could not enable I2C module %d", p_modules_in[i]);
+                DEBUG_ERR(
+                    "Could not enable I2C module %d", 
+                    I2C_ENABLED_MODULES[i]
+                );
                 return I2C_ERROR_I2C_PERIPH_ENABLE_FAILED;
             }
         }
@@ -124,7 +127,7 @@ ErrorCode I2c_init(void) {
                 /* TODO: Mark the module as disabled? */
                 DEBUG_ERR(
                     "Could not enable GPIO module for I2C module %d", 
-                    p_modules_in[i]
+                    I2C_ENABLED_MODULES[i]
                 );
                 return I2C_ERROR_GPIO_PERIPH_ENABLE_FAILED;
             }
@@ -357,14 +360,7 @@ ErrorCode I2c_device_send_bytes(
     char *p_hex_string = (char *)malloc(sizeof(char) * 3 * length_in);
     char buf[4] = {0};
 
-    /* Print bytes except last into the string */
-    for (int i = 0; i < length_in - 1; ++i) {
-        sprintf((char *)buf, "%02X ", p_data_in[i]);
-        strcat(p_hex_string, (char *)buf);
-    }
-
-    sprintf((char *)buf, "%02X", p_data_in[length_in - 1]);
-    strcat(p_hex_string, (char *)buf);
+    Debug_hex_string(p_data_in, p_hex_string, length_in);
 
     DEBUG_DBG(
         "I2C send (%02X, %02X): %s", 
