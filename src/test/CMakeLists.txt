@@ -32,12 +32,3 @@ target_link_libraries(test_power
     Power
     OpModeManager
 )
-
-add_executable(test_gpio
-    ${STARTUP_SOUCRE}
-    test_gpio.c
-)
-target_link_libraries(test_gpio
-    ${STANDARD_LINK_LIBS}
-    Gpio
-)
