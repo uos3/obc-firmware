@@ -39,6 +39,5 @@ add_executable(test_gpio
 )
 target_link_libraries(test_gpio
     ${STANDARD_LINK_LIBS}
-    GPio
-    OpModeManager
+    Gpio
 )
