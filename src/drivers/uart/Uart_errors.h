@@ -3,7 +3,7 @@
  * 
  * @file Gpio_public.h
  * @author Leon Galanakis (lg5g16@soton.ac.uk)
- * @brief Public header for the GPIO driver.
+ * @brief Public header for the UART driver.
  * 
  * @version 0.1
  * @date 2020-12-06
@@ -50,17 +50,5 @@
  * could not be sent.
  */
 #define UART_ERROR_PUT_CHAR_FAILED ((ErrorCode)MOD_ID_UART | 4)
-
-/**
- * @brief TODO: Attempted to initialise the uDMA before the peripheral is
- * ready.
- */
-#define UART_ERROR_UDMA_PERIPHERAL_NOT_READY ((ErrorCode)MOD_ID_UART | 5)
-
-/**
- * @brief TODO: Attempted to send or receive bytes while the uDMA has not yet
- * been initialised.
- */
-#define UART_ERROR_UDMA_NOT_INITIALISED ((ErrorCode)MOD_ID_UART | 6)
 
 #endif /* H_UART_ERRORS_H */

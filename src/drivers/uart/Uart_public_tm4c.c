@@ -28,6 +28,8 @@
 #include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_errors.h"
 #include "drivers/gpio/Gpio_public.h"
+#include "drivers/udma/Udma_errors.h"
+#include "drivers/udma/Udma_public.h"
 
 #include "drivers/gpio/Gpio_public_tm4c.c"
 
@@ -156,59 +158,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         return ERROR_NONE;
 }
 
-ErrorCode Uart_udma_init(void) {
-    
-    /* Check that the uDMA peripheral is ready, if not, then enable the
-     * peripheral. */
-    if (!SysCtlPeripheralReady(SYSCTL_PERIPH_UDMA)) {
-        SysCtlPeripheralReset(SYSCTL_PERIPH_UDMA);
-        SysCtlPeripheralEnable(SYSCTL_PERIPH_UDMA);
-    }
-
-    for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
-            if (SysCtlPeripheralReady(SYSCTL_PERIPH_UDMA)) {
-                /* If the peripheral is ready, break out of the loop */
-                break;
-            }
-            if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
-                /* If the maximium number of peripheral ready checks has been
-                 * reached, raise an error. */
-                DEBUG_ERR("Failed to enable uDMA peripheral");
-                return UART_ERROR_PERIPHERAL_READY_FAILED;
-            }
-        }
-
-    /* Enable the uDMA channels */
-    uDMAEnable();
-    uDMAControlBaseSet(UDMA_CONTROL_TABLE);
-
-    UDMA_INITIALISED = true;
-
-    return ERROR_NONE;
-}
-
-ErrorCode Uart_udma_interrupt_handler(
-    Uart_DeviceId uart_id_in,
-    size_t length_in
-) {
-    /* Pointer to UART device */
-    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
-
-    /* Get the interrupt status of the UART */
-    p_uart_device->uart_status = UARTIntStatus(p_uart_device->uart_base, true);
-    /* Clear any pending UART status. No UART interrupts should be enabled, as
-     * both RX and TX are using uDMA. */
-    UARTIntClear(p_uart_device->uart_base, p_uart_device->uart_status);
-
-    /* Check the uDMA control table to check that the transfer is complete */
-    p_uart_device->udma_mode = uDMAChannelModeGet(p_uart_device->udma_channel_rx | UDMA_PRI_SELECT);
-
-    /* The transfer is complete if the mode is "STOP" */
-    if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
-        /* TODO: Count total number of complete transfers? */
-    }
-}
-
 ErrorCode Uart_send_bytes(
     Uart_DeviceId uart_id_in,
     uint8_t *p_data_in, 
@@ -219,7 +168,7 @@ ErrorCode Uart_send_bytes(
 
     if (!UDMA_INITIALISED) {
         DBG_ERR("Attempted to send bytes while uDMA not initialised.");
-        return UART_ERROR_UDMA_NOT_INITIALISED;
+        return UDMA_ERROR_NOT_INITIALISED;
     }
 
     /* Check that the ID number of the UART is acceptable, return an error
@@ -270,7 +219,7 @@ ErrorCode Uart_recv_bytes(
 
     if (!UDMA_INITIALISED) {
         DBG_ERR("Attempted to send bytes while uDMA not initialised.");
-        return UART_ERROR_UDMA_NOT_INITIALISED;
+        return UDMA_ERROR_NOT_INITIALISED;
     }
 
     /* Check that the ID number of the UART is acceptable, return an error
@@ -313,7 +262,7 @@ ErrorCode Uart_get_status(uint8_t uart_id_in, uint8_t *p_status_out) {
 
     if (!UDMA_INITIALISED) {
         DBG_ERR("Attempted to send bytes while uDMA not initialised.");
-        return UART_ERROR_UDMA_NOT_INITIALISED;
+        return UDMA_ERROR_NOT_INITIALISED;
     }
 
     /* Check that the ID number of the UART is acceptable, return an error

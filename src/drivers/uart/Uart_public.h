@@ -98,31 +98,7 @@ ErrorCode Uart_init(void);
 ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in);
 
 /**
- * @brief Initialise the uDMA for UART transfer. This initialisation contains
- * TI functions which are only used once or infrequently to set up the uDMA
- * channel. Transfer address, size, and transfer modes must be set using
- * uDMAChannelTransferSet and uDMAChannelEnable before each new transfer, but
- * are not contained within this init function. Therefore, this function
- * should only be called once (or infrequently if re-initialisation required).
- * 
- * @return ErrorCode 
- */
-ErrorCode Uart_udma_init(void);
-
-/**
- * @brief IF STATE MACHINE
- * 
- * @return ErrorCode 
- */
-ErrorCode Uart_step(void);
-
-ErrorCode Uart_udma_interrupt_handler(
-    Uart_DeviceId uart_id_in,
-    size_t length_in
-);
-
-/**
- * @brief Send bytes
+ * @brief Send bytes to a UART device
  * 
  * Event EVT_UART_SEND_COMPLETE is raised when the bytes have been sent to the
  * device. This could either be successful or it could fail, so use
@@ -131,7 +107,7 @@ ErrorCode Uart_udma_interrupt_handler(
  * @param uart_id_in 
  * @param p_data_in 
  * @param length_in 
- * @return ErrorCode 
+ * @return ErrorCode If no error, ERROR_NONE, otherwise UART_ERROR_x. 
  */
 ErrorCode Uart_send_bytes(
     Uart_DeviceId uart_id_in,
@@ -140,23 +116,32 @@ ErrorCode Uart_send_bytes(
 );
 
 /**
- * @brief Did it work?
+ * @brief Receive bytes from a UART device
+ * 
+ * @param uart_id_in 
+ * @param p_data_out 
+ * @param length_in 
+ * @return ErrorCode If no error, ERROR_NONE, otherwise UART_ERROR_x.
+ */
+ErrorCode Uart_recv_bytes(
+    Uart_DeviceId uart_id_in,
+    uint8_t *p_data_out,
+    size_t length_in
+);
+
+/**
+ * @brief Gets the status of the UART to check if the uDMA transfer completed
+ * successfuly.
  * 
  * @param uart_id_in 
  * @param p_status_out 
- * @return ErrorCode 
+ * @return ErrorCode If no error, ERROR_NONE, otherwise UART_ERROR_x.
  */
 ErrorCode Uart_get_status(
     Uart_DeviceId uart_id_in,
     uint8_t *p_status_out
 );
 
-
-ErrorCode Uart_recv_bytes(
-    Uart_DeviceId uart_id_in,
-    uint8_t *p_data_out,
-    size_t length_in
-);
 
 /* -------------------------------------------------------------------------   
  * TODO: FUNCTIONS BELOW ARE TEMPORARY - WILL BE REPLACED BY NEW INTERFACE
