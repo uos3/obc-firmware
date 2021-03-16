@@ -27,6 +27,7 @@
 #include "drivers/gpio/Gpio_public.h"
 #include "drivers/gpio/Gpio_private.h"
 #include "drivers/gpio/Gpio_errors.h"
+#include "util/debug/Debug_public.h"
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
