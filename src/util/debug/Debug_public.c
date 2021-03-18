@@ -94,10 +94,19 @@ bool Debug_init(void) {
     }
 
     /* Enable the GPIO for the LED, so we can signal the device is booted and
-     * debug initialised */
+     * debug initialised. On the launchpad the LEDs are on port F, but on the 
+     * TOBC they're on PB1. */
+    #ifdef TARGET_TM4C_LAUNCHPAD
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2);
+    #elif TARGET_TM4C_TOBC
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+    GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE, GPIO_PIN_1);
+    #endif
 
+    /* On the launchpad we use UART1 which is available on the header, but on 
+     * the TOBC we use UART4 which is broken out on the PC104 header stack */
+    #ifdef TARGET_TM4C_LAUNCHPAD
     /* Enable the GPIO peripheral for UART1 and UART1 itself */
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
@@ -106,17 +115,35 @@ bool Debug_init(void) {
     GPIOPinConfigure(GPIO_PB0_U1RX);
     GPIOPinConfigure(GPIO_PB1_U1TX);
     GPIOPinTypeUART(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+    #elif TARGET_TM4C_TOBC
+    /* Enable the GPIO peripheral for UART1 and UART1 itself */
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART4);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+
+    /* Configure the GPIO for UART output */
+    GPIOPinConfigure(GPIO_PC4_U4RX);
+    GPIOPinConfigure(GPIO_PC5_U4TX);
+    GPIOPinTypeUART(GPIO_PORTC_BASE, GPIO_PIN_4 | GPIO_PIN_5);
+    #endif
 
     /* Configure the UART for 115,200, 8-N-1 operation. */
     UARTConfigSetExpClk(
+        #ifdef TARGET_TM4C_LAUNCHPAD
         UART1_BASE, 
+        #elif TARGET_TM4C_TOBC
+        UART4_BASE,
+        #endif
         SysCtlClockGet(), 
         115200,
         (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE)
     );
 
     /* Turn the LED on to show the device is ready */
+    #ifdef TARGET_TM4C_LAUNCHPAD
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
+    #elif TARGET_TM4C_TOBC
+    GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_PIN_1);
+    #endif
     #endif
 
     return true;
@@ -199,7 +226,14 @@ void Debug_log_tm4c(
 
     /* Iterate over the string and print the characters to the UART */
     for (size_t i = 0; i < strlen(str); ++i) {
-        UARTCharPut(UART1_BASE, str[i]);
+        UARTCharPut(
+            #ifdef TARGET_TM4C_LAUNCHPAD
+            UART1_BASE, 
+            #elif TARGET_TM4C_TOBC
+            UART4_BASE,
+            #endif
+            str[i]
+        );
     }
 }
 #endif
