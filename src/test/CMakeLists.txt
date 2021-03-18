@@ -42,3 +42,13 @@ target_link_libraries(test_gpio
     Gpio
     Led
 )
+
+if(${UOS3_TARGET_LAUNCHPAD} OR ${UOS3_TARGET_TOBC})
+    add_executable(test_boot_reg
+        ${STARTUP_SOURCE}
+        test_boot_reg.c
+    )
+    target_link_libraries(test_boot_reg
+        ${STANDARD_LINK_LIBS}
+    )
+endif()
