@@ -186,7 +186,7 @@ def main():
             info(f'Flashing {flash_path}')
 
             flash = subprocess.run([
-                './flash', flash_path
+                './flash', args.target, flash_path
             ])
             if flash.returncode != 0:
                 exit(flash.returncode)

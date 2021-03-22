@@ -57,6 +57,26 @@ def main():
     if not elf_path.suffix == '.elf':
         error(f'Expected a .elf file, found {elf_path}')
 
+    # Flash to the correct board using either GDB for the TOBC or lm4flash for 
+    # the launchpad
+    flash_ok = False
+    if args.target == 'launchpad':
+        flash_ok = flash_launchpad(elf_path)
+    elif args.target == 'tobc':
+        flash_ok = flash_tobc(elf_path)
+
+    if not flash_ok:
+        error('Could not flash binary to target')
+        return 1
+    
+    ok('Binary successfully flashed to target')
+    return 0
+
+def flash_launchpad(elf_path):
+    '''
+    Flash the launchpad using lm4flash with the given ELF file path.
+    '''
+
     # Get the binary path by replacing .elf with .bin
     bin_path = elf_path.with_suffix('.bin')
 
@@ -73,6 +93,7 @@ def main():
 
     if objcopy.returncode != 0:
         error('Could not convert from ELF to binary format')
+        return False
     else:
         ok('ELF converted to binary format')
 
@@ -84,11 +105,27 @@ def main():
         bin_path
     ])
 
-    if lm4flash.returncode != 0:
-        error('Could not flash the binary')
-    else:
-        ok('Binary flashed')
-    
+    return lm4flash.returncode == 0
+
+def flash_tobc(elf_path):
+    '''
+    Use gdb to flash the TOBC with the given elf file, which should be 
+    connected to the host via the BlackMagic probe
+    '''
+
+    info('Launching arm-none-eabi-gdb and flashing')
+
+    # Use gdb to flash the file
+    gdb = subprocess.run([
+        'arm-none-eabi-gdb',
+        '-nx',
+        '--batch',
+        '-ex', 'target extended-remote /dev/serial/by-id/usb-Black_Sphere_Technologies_Black_Magic_Probe_79A779DC-if00',
+        '-x', 'blackmagic.gdb',
+        elf_path
+    ])
+
+    return gdb.returncode == 0
 
 def parse_args():
     '''
@@ -97,6 +134,10 @@ def parse_args():
 
     # Create argparser
     parser = argparse.ArgumentParser(description='Build the OBC firmware.')
+    parser.add_argument(
+        'target',
+        help='The target board to flash to, either `launchpad` or `tobc`'        
+    )
     parser.add_argument(
         'elf',
         help='The path to the ELF image to flash'
