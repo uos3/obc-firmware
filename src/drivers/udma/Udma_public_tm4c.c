@@ -27,11 +27,8 @@
 #include "drivers/uart/Uart_public.h"
 #include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_errors.h"
-#include "drivers/gpio/Gpio_public.h"
 #include "drivers/udma/Udma_errors.h"
 #include "drivers/udma/Udma_public.h"
-
-#include "drivers/gpio/Gpio_public_tm4c.c"
 
 #include "drivers/uart/Uart_private_tm4c.c"
 
@@ -49,7 +46,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode Uart_udma_init(void) {
+ErrorCode Udma_init(void) {
     
     /* Check that the uDMA peripheral is ready, if not, then enable the
      * peripheral. */
@@ -80,7 +77,7 @@ ErrorCode Uart_udma_init(void) {
     return ERROR_NONE;
 }
 
-ErrorCode Uart_udma_interrupt_handler(
+ErrorCode Udma_interrupt_handler(
     Uart_DeviceId uart_id_in,
     size_t length_in
 ) {
@@ -99,7 +96,6 @@ ErrorCode Uart_udma_interrupt_handler(
     /* The transfer is complete if the mode is "STOP" */
     if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
         /* TODO: Count total number of complete transfers? */
+        return 0;
     }
 }
-
-

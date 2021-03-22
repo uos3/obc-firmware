@@ -43,6 +43,18 @@ target_link_libraries(test_gpio
     Led
 )
 
+add_executable(test_uart
+    ${STARTUP_SOUCRE}
+    test_uart.c
+)
+target_link_libraries(test_uart
+    ${STANDARD_LINK_LIBS}
+    Uart
+    Udma
+    Gpio
+    Led
+)
+
 if(${UOS3_TARGET_LAUNCHPAD} OR ${UOS3_TARGET_TOBC})
     add_executable(test_boot_reg
         ${STARTUP_SOURCE}

@@ -21,12 +21,6 @@
 #include <stdbool.h>
 
 /* Internal includes */
-#include "drivers/gpio/Gpio_errors.h"
-#include "drivers/gpio/Gpio_private.h"
-#include "drivers/gpio/Gpio_public.h"
-#include "components/led/Led_errors.h"
-#include "components/led/Led_private.h"
-#include "components/led/Led_public.h"
 #include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_public.h"
 #include "drivers/udma/Udma_public.h"

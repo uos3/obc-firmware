@@ -20,3 +20,6 @@ add_subdirectory(timer)
 
 # Watchdog module
 add_subdirectory(wdt)
+
+#Udma module
+add_subdirectory(udma)

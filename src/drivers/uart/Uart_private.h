@@ -36,9 +36,6 @@
 extern Uart_Device UART_DEVICES;
 */
 
-bool UDMA_INITIALISED = false;
-unsigned char UDMA_CONTROL_TABLE[1024];
-
 /* -------------------------------------------------------------------------   
  * DEFINES
  * ------------------------------------------------------------------------- */
