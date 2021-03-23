@@ -106,8 +106,17 @@ void obc_firmware_step_system(void) {
 
     /* TODO: step parameter monitor */
 
-    /* TODO: step opmode manager */
+    /* Step opmode manager */
     if (!OpModeManager_step()) {
+        /* TODO: register error with FDIR */
+    }
+
+    /* Step MemStoreManager
+     *
+     * This is done at the end of the cycle so that any modifications made to
+     * persistent data are written at the end of the cycle, rather than halfway
+     * through which could result in some data being missed */
+    if (!MemStoreManager_step()) {
         /* TODO: register error with FDIR */
     }
 }
