@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-03-18
+ * @date 2021-03-23
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -256,9 +256,33 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.MEMSTOREMANAGER.PERS_DATA_UPDATED */
+    /* DP.MEMSTOREMANAGER.PERS_DATA_DIRTY */
     case 0x1008:
-        *pp_data_out = &DP.MEMSTOREMANAGER.PERS_DATA_UPDATED;
+        *pp_data_out = &DP.MEMSTOREMANAGER.PERS_DATA_DIRTY;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.PERS_FILE_1_OK */
+    case 0x1009:
+        *pp_data_out = &DP.MEMSTOREMANAGER.PERS_FILE_1_OK;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.PERS_FILE_2_OK */
+    case 0x100a:
+        *pp_data_out = &DP.MEMSTOREMANAGER.PERS_FILE_2_OK;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.PERS_FILE_3_OK */
+    case 0x100b:
+        *pp_data_out = &DP.MEMSTOREMANAGER.PERS_FILE_3_OK;
         *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
         *p_data_size_out = sizeof(bool);
         return true;
@@ -712,9 +736,27 @@ bool DataPool_get_symbol_str(
         return true;
 
 
-    /* DP.MEMSTOREMANAGER.PERS_DATA_UPDATED */
+    /* DP.MEMSTOREMANAGER.PERS_DATA_DIRTY */
     case 0x1008:
-        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.PERS_DATA_UPDATED");
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.PERS_DATA_DIRTY");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.PERS_FILE_1_OK */
+    case 0x1009:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.PERS_FILE_1_OK");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.PERS_FILE_2_OK */
+    case 0x100a:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.PERS_FILE_2_OK");
+        return true;
+
+
+    /* DP.MEMSTOREMANAGER.PERS_FILE_3_OK */
+    case 0x100b:
+        *pp_symbol_str_out = strdup("DP.MEMSTOREMANAGER.PERS_FILE_3_OK");
         return true;
 
 

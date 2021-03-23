@@ -201,6 +201,7 @@ int main(void) {
     DEBUG_INF("MemStoreManager initialised");
     print_cfg_status();
     MemStoreManager_debug_print_cfg();
+    MemStoreManager_debug_print_pers();
 
     DEBUG_INF("Test passed!");
 

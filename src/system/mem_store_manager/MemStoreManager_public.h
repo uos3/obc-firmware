@@ -165,18 +165,34 @@ typedef struct _MemStoreManager_PersistentData {
      */
     OpModeManager_OpMode last_opmode;
 
+} MemStoreManager_PersistentData;
+
+/**
+ * @brief The persistent file stored in the EEPROM, containing the CRC of the
+ * data itself.
+ */
+typedef struct _MemStoreManager_PersistentFile {
+
+    /**
+     * @brief The data stored in this file
+     */
+    MemStoreManager_PersistentData data;
+
     /**
      * @brief CRC of the persistant data, used to scrub for errors in the
      * persistant data.
      */
     Crypto_Crc32 crc;
 
-} MemStoreManager_PersistentData;
+} MemStoreManager_PersistentFile;
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
  * ------------------------------------------------------------------------- */
 
+/**
+ * @brief Global configuration file instance.
+ */
 extern MemStoreManager_ConfigData CFG;
 
 /* -------------------------------------------------------------------------   
@@ -203,6 +219,11 @@ bool MemStoreManager_init(void);
 
 /**
  * @brief Step the memory and storage manager.
+ * 
+ * This function is responsible for:
+ *  - Scrubbing any corruption to the in-memory config file instance
+ *  - Writing any changes to the persistant data to the EEPROM
+ *  - TODO: Maintaing buffer
  * 
  * On an error the DP.MEMSTOREMANAGER.ERROR_CODE value will be set.
  * 
@@ -259,6 +280,12 @@ void MemStoreManager_set_pers_data(
  * debug UART.
  */
 void MemStoreManager_debug_print_cfg(void);
+
+/**
+ * @brief Debug function to print the current persisitent data to the primary
+ * debug UART.
+ */
+void MemStoreManager_debug_print_pers(void);
 #endif
 
 #endif /* H_MEMSTOREMANAGER_PUBLIC_H */

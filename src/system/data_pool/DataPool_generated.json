@@ -188,12 +188,33 @@
         "data_type": "bool",
         "brief": "Flag which can be set during the boot process if the EEPROM is not functioning, and therefore we must use the redundent config stored as apart of the software image."
     },
-    "DP.MEMSTOREMANAGER.PERS_DATA_UPDATED": {
+    "DP.MEMSTOREMANAGER.PERS_DATA_DIRTY": {
         "block_id": 4,
         "block_index": 8,
         "dp_id": 4104,
         "data_type": "bool",
-        "brief": "Flag which when set will cause the MemStoreManager to write the newly updated persistent data to the EEPROM."
+        "brief": "Flag which indicates that the persistent data has been modified since the previous call to MemStoreManager_step, and should be written to the EEPROM."
+    },
+    "DP.MEMSTOREMANAGER.PERS_FILE_1_OK": {
+        "block_id": 4,
+        "block_index": 9,
+        "dp_id": 4105,
+        "data_type": "bool",
+        "brief": "Indicates if the first persistent file is OK."
+    },
+    "DP.MEMSTOREMANAGER.PERS_FILE_2_OK": {
+        "block_id": 4,
+        "block_index": 10,
+        "dp_id": 4106,
+        "data_type": "bool",
+        "brief": "Indicates if the second persistent file is OK."
+    },
+    "DP.MEMSTOREMANAGER.PERS_FILE_3_OK": {
+        "block_id": 4,
+        "block_index": 11,
+        "dp_id": 4107,
+        "data_type": "bool",
+        "brief": "Indicates if the third persistent file is OK."
     },
     "DP.EPS.INITIALISED": {
         "block_id": 34,

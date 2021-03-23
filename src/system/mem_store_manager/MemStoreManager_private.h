@@ -54,12 +54,12 @@
 extern MemStoreManager_ConfigFile _binary_backup_cfg_file_start;
 
 /**
- * @brief The persistent data loaded in memory.
+ * @brief The persistent file loaded in memory.
  * 
  * The user may not access this directly, instead they must use the get and set
  * public functions.
  */
-extern MemStoreManager_PersistentData persistent_data;
+extern MemStoreManager_PersistentFile PERS;
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
@@ -79,6 +79,19 @@ bool MemStoreManager_config_check_crc(
 );
 
 /**
+ * @brief Check that the computed CRC of the persistent file matches that of
+ * the stored CRC in the persistent file.
+ * 
+ * Note no error code is set on failure, as this is a simple pass/fail check.
+ * 
+ * @param p_pers_file_in Persistent file to check.
+ * @return bool True on success, false on failure.
+ */
+bool MemStoreManager_check_pers_crc(
+    MemStoreManager_PersistentFile *p_pers_file_in
+);
+
+/**
  * @brief Load the configuration files from the EEPROM.
  * 
  * This function loads the config data by reading config files from the EEPROM.
@@ -92,10 +105,15 @@ bool MemStoreManager_config_check_crc(
  * 
  * @return bool True on success, false on failure.
  */
-bool MemStoreManager_config_load(void);
+bool MemStoreManager_load_config(void);
 
 /**
  * @brief Loads the persistent data from the EEPROM.
+ * 
+ * If a persistent data file is found to be corrupted it will be overwritten
+ * with a good file. If all files are corrupted this function will attempt to
+ * restore the EEPROM files from the one that is already in memory. If the
+ * in-memory file is invalid a blank file will be used instead.
  * 
  * @return bool True on success, false on failure.
  */

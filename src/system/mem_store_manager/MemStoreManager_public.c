@@ -54,9 +54,14 @@ bool MemStoreManager_init(void) {
         CFG = _binary_backup_cfg_file_start.data;
     }
     else {
-        if (!MemStoreManager_config_load()) {
+        if (!MemStoreManager_load_config()) {
             return false;
         }
+    }
+
+    /* Load the persistent data */
+    if (!MemStoreManager_load_pers_data()) {
+        return false;
     }
 
     DP.MEMSTOREMANAGER.INITIALISED = true;
@@ -67,11 +72,13 @@ bool MemStoreManager_init(void) {
 bool MemStoreManager_step(void) {
     /* If the update pers data flag is set write the persistent data to the
      * EEPROM */
-    if (DP.MEMSTOREMANAGER.PERS_DATA_UPDATED) {
+    if (DP.MEMSTOREMANAGER.PERS_DATA_DIRTY) {
         if (!MemStoreManager_write_pers_data()) {
             return false;
         }
     }
+
+    return true;
 }
 
 bool MemStoreManager_config_update(MemStoreManager_ConfigFile *p_cfg_file_in) {
@@ -150,12 +157,12 @@ MemStoreManager_PersistentData MemStoreManager_get_pers_data(void) {
     
     /* Check CRC of the persistent data */
     Crypto_get_crc32(
-        (uint8_t *)(&persistent_data), 
+        (uint8_t *)(&PERS.data), 
         sizeof(MemStoreManager_PersistentData),
         &new_crc
     );
 
-    if (new_crc != persistent_data.crc) {
+    if (new_crc != PERS.crc) {
         DEBUG_WRN("Peristent data corruption detected, refreshing from EEPROM");
         if (!MemStoreManager_load_pers_data()) {
             /* TODO: error handling, probably want to not do anything,
@@ -164,7 +171,7 @@ MemStoreManager_PersistentData MemStoreManager_get_pers_data(void) {
     }
 
     /* Return a copy of the data */
-    return persistent_data;
+    return PERS.data;
 }
 
 void MemStoreManager_set_pers_data(
@@ -181,9 +188,10 @@ void MemStoreManager_set_pers_data(
 
     /* If the CRC is different than the old one overwrite the data and set the
      * update flag, if not then there's nothing we need to do */
-    if (new_crc != persistent_data.crc) {
-        persistent_data = pers_data_in;
-        DP.MEMSTOREMANAGER.PERS_DATA_UPDATED = true;
+    if (new_crc != PERS.crc) {
+        PERS.data = pers_data_in;
+        PERS.crc = new_crc;
+        DP.MEMSTOREMANAGER.PERS_DATA_DIRTY = true;
     }
     else {
         DEBUG_WRN(
@@ -211,5 +219,13 @@ void MemStoreManager_debug_print_cfg(void) {
         DEBUG_INF("        %d: %s", mode, mode_app_list);
     }
     DEBUG_INF("    ]");
+}
+
+void MemStoreManager_debug_print_pers(void) {
+    DEBUG_INF("Current Persistent File:");
+    DEBUG_INF("    num_obc_resets: %d", PERS.data.num_obc_resets);
+    DEBUG_INF("    num_antenna_deploy_attempts: %d", PERS.data.num_antenna_deploy_attempts);
+    DEBUG_INF("    antenna_deployed: %d", PERS.data.antenna_deployed);
+    DEBUG_INF("    last_opmode: %d", PERS.data.last_opmode);
 }
 #endif

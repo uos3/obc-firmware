@@ -45,4 +45,26 @@
  */
 #define MEMSTOREMANAGER_ERROR_ALL_CFG_FILES_CORRUPTED ((ErrorCode)(MOD_ID_MEMSTOREMANAGER | 4))
 
+/**
+ * @brief Unable to load config files as EEPROM load failed. See
+ * DP.MEMESTOREMANAGER.EEPROM_ERROR_CODE for root cause.
+ */
+#define MEMSTOREMANAGER_ERROR_CFG_EEPROM_LOAD_FAILED ((ErrorCode)(MOD_ID_MEMSTOREMANAGER | 5))
+
+/**
+ * @brief All stored persistent data files are corrupted.
+ */
+#define MEMSTOREMANAGER_ERROR_ALL_PERS_FILES_CORRUPTED ((ErrorCode)(MOD_ID_MEMSTOREMANAGER | 6))
+
+/**
+ * @brief Unable to load persistent files as the EEPROM load failed. See
+ * DP.MEMSTOREMANAGER.EEPROM_ERROR_CODE for root cause.
+ */
+#define MEMSTOREMANAGER_ERROR_PERS_EEPROM_LOAD_FAILED ((ErrorCode)(MOD_ID_MEMSTOREMANAGER | 7))
+
+/**
+ * @brief Attempted to write an invalid persistent data file to the EEPROM.
+ */
+#define MEMSTOREMANAGER_ERROR_WRITE_INVALID_PERS ((ErrorCode)(MOD_ID_MEMSTOREMANAGER | 8))
+
 #endif /* H_MEMSTOREMANAGER_ERRORS_H */

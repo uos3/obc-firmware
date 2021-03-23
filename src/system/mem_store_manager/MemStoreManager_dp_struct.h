@@ -78,12 +78,34 @@ typedef struct _MemStoreManager_Dp {
     bool USE_BACKUP_CFG;
 
     /**
-     * @brief Flag which when set will cause the MemStoreManager to write the
-     * newly updated persistent data to the EEPROM.
+     * @brief Flag which indicates that the persistent data has been modified
+     * since the previous call to MemStoreManager_step, and should be written
+     * to the EEPROM.
      * 
      * @dp 8
      */
-    bool PERS_DATA_UPDATED;
+    bool PERS_DATA_DIRTY;
+
+    /**
+     * @brief Indicates if the first persistent file is OK.
+     * 
+     * @dp 9
+     */
+    bool PERS_FILE_1_OK;
+
+    /**
+     * @brief Indicates if the second persistent file is OK.
+     * 
+     * @dp 10
+     */
+    bool PERS_FILE_2_OK;
+
+    /**
+     * @brief Indicates if the third persistent file is OK.
+     * 
+     * @dp 11
+     */
+    bool PERS_FILE_3_OK;
 
 } MemStoreManager_Dp;
 
