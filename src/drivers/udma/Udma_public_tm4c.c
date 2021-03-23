@@ -29,6 +29,7 @@
 #include "drivers/uart/Uart_errors.h"
 #include "drivers/udma/Udma_errors.h"
 #include "drivers/udma/Udma_public.h"
+#include "system/event_manager/EventManager_public.h"
 
 #include "drivers/uart/Uart_private_tm4c.c"
 
@@ -95,7 +96,11 @@ ErrorCode Udma_interrupt_handler(
 
     /* The transfer is complete if the mode is "STOP" */
     if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
-        /* TODO: Count total number of complete transfers? */
+        EventManager_raise_event(EVT_UDMA_TRANSFER_COMPLETE);
+        /* TODO: Count total number of complete transfers?
+         * Also, need to check when to remove the event. Currently in uart_test
+         * the event is removed after the test is complete, however would it be
+         * better practice to remove the event somewhere in the udma module? */
         return 0;
     }
 }

@@ -25,6 +25,7 @@
 #include "drivers/uart/Uart_public.h"
 #include "drivers/udma/Udma_public.h"
 #include "util/debug/Debug_public.h"
+#include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -35,6 +36,11 @@ int main(void) {
     size_t data_size = 8;
     uint8_t send_data[data_size];
     uint8_t recv_data[data_size];
+    bool *send_check;
+    bool *recv_check;
+
+    send_check = false;
+    recv_check = false;
     /* TODO: Unfinished */
 
     /* Initialise the UART devices. */
@@ -59,19 +65,36 @@ int main(void) {
         DEBUG_ERR("Failed to send bytes to UART device.");
     }
 
-    /* Receive the data from the UART TX associated with the UART device. */
-    if (Uart_recv_bytes(UART_DEVICE_ID_CAM, recv_data, data_size) != ERROR_NONE) {
-        DEBUG_ERR("Failed to receive bytes from UART device.");
-    }
-
-    /* Loop through the data size, making sure that the data received from the
-     * TX is the same as what was sent to the RX (the raspberry pi should re
-     * echo the data it received, and send the same data back) */
-    for (i = 0; i < data_size; ++i) {
-        if (recv_data[i] != send_data[i]) {
-            DEBUG_ERR("Unexpected receive data - should be the same as sent.");
-            break;
+    if (EventManager_is_event_raised(EVT_UDMA_TRANSFER_COMPLETE, send_check)) {
+        if (send_check) {
+            /* Receive the data from the UART TX associated with the UART device. */
+            if (Uart_recv_bytes(UART_DEVICE_ID_CAM, recv_data, data_size) != ERROR_NONE) {
+                DEBUG_ERR("Failed to receive bytes from UART device.");
+            }
+            else {
+                if(EventManager_is_event_raised(EVT_UDMA_TRANSFER_COMPLETE, recv_check)) {
+                    if (recv_check) {
+                        /* Loop through the data size, making sure that the data received from the
+                        * TX is the same as what was sent to the RX (the raspberry pi should re
+                        * echo the data it received, and send the same data back) */
+                        for (i = 0; i < data_size; ++i) {
+                            if (recv_data[i] != send_data[i]) {
+                                DEBUG_ERR("Unexpected receive data - should be the same as sent.");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
+        else {
+            DEBUG_ERR("Bytes not sent.");
+            return 1;
+        }
+    }
+    else {
+        DEBUG_ERR("EventManager_is_event_raised failed.");
+        return 1;
     }
 
     /* Return 0 if no errors occured up to this point. */

@@ -14,4 +14,5 @@ endif()
 target_link_libraries(Udma
     ${STANDARD_LINK_LIBS}
     Uart
+    EventManager
 )
