@@ -5,4 +5,5 @@ add_library(Kernel
 )
 target_link_libraries(Kernel
     Debug
+    Board
 )

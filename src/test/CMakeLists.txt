@@ -53,6 +53,7 @@ target_link_libraries(test_uart
     Udma
     Gpio
     Led
+    EventManager
 )
 
 if(${UOS3_TARGET_LAUNCHPAD} OR ${UOS3_TARGET_TOBC})

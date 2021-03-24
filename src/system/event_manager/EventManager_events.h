@@ -44,5 +44,12 @@
  */
 #define EVT_EVENTMANAGER_ERROR ((Event)(MOD_ID_EVENTMANAGER | 1))
 
+/**
+ * @brief Event associated with the uDMA completing a transfer over either
+ * UART or SPI.
+ * 
+ */
+#define EVT_UDMA_TRANSFER_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 2))
+
 
 #endif /* H_EVENTMANAGER_EVENTS_H */
