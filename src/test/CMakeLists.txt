@@ -64,3 +64,13 @@ if(${UOS3_TARGET_LAUNCHPAD} OR ${UOS3_TARGET_TOBC})
         ${STANDARD_LINK_LIBS}
     )
 endif()
+
+add_executable(test_delay
+    ${STARTUP_SOURCE}
+    test_delay.c
+)
+target_link_libraries(test_delay
+    ${STANDARD_LINK_LIBS}
+    Delay
+    Rtc
+)

@@ -23,3 +23,9 @@ add_subdirectory(wdt)
 
 #Udma module
 add_subdirectory(udma)
+
+# Delay
+add_subdirectory(delay)
+
+# RTC
+add_subdirectory(rtc)

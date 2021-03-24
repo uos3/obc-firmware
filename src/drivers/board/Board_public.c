@@ -69,6 +69,4 @@ void Board_init(void) {
 
     /* Set the DP flag */
     DP.BOARD_INITIALISED = true;
-
-    return true;
 }
