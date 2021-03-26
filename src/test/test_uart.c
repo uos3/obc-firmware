@@ -61,14 +61,16 @@ int main(void) {
 
     /* Send the data to the UART RX associated with the UART device.
      * TODO: Change which device for send and receive below. */
-    if (Uart_send_bytes(UART_DEVICE_ID_CAM, send_data, data_size) != ERROR_NONE) {
+    if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
+        Udma_interrupt_handler(UART_DEVICE_ID_TEST, data_size);
         DEBUG_ERR("Failed to send bytes to UART device.");
     }
 
     if (EventManager_is_event_raised(EVT_UDMA_TRANSFER_COMPLETE, send_check)) {
         if (send_check) {
             /* Receive the data from the UART TX associated with the UART device. */
-            if (Uart_recv_bytes(UART_DEVICE_ID_CAM, recv_data, data_size) != ERROR_NONE) {
+            if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
+                Udma_interrupt_handler(UART_DEVICE_ID_TEST, data_size);
                 DEBUG_ERR("Failed to receive bytes from UART device.");
             }
             else {

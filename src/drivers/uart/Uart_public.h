@@ -40,6 +40,7 @@ typedef uint8_t Uart_DeviceId;
 #define UART_DEVICE_ID_GNSS (0)
 #define UART_DEVICE_ID_CAM (1)
 #define UART_DEVICE_ID_PWR (2)
+#define UART_DEVICE_ID_TEST (3)
 
 /* -------------------------------------------------------------------------   
  * ENUMS
@@ -49,6 +50,7 @@ typedef enum _UART_DEVICE_INDEX {
     UART_DEVICE_GNSS = 0,
     UART_DEVICE_CAM,
     UART_DEVICE_PWR,
+    UART_DEVICE_TEST,
 };
 
 /* -------------------------------------------------------------------------   

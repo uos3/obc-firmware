@@ -93,7 +93,22 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         false
     },
 
-    /* TODO: Add debugging UARTs */
+    {
+        /* UART 4 (TEST) */
+        SYSCTL_PERIPH_GPIOB,
+        SYSCTL_PERIPH_UART0,
+        GPIO_PORTB_BASE,
+        UART0_BASE,
+        GPIO_PCTL_PB0_U1RX,
+        GPIO_PCTL_PB1_U1TX,
+        GPIO_PIN_0,
+        GPIO_PIN_1,
+        UDMA_CHANNEL_UART0TX, /* TODO: Check TI channel assignments */
+        UDMA_CHANNEL_UART0RX,
+        0x000,
+        UDMA_MODE_STOP,
+        false
+    },
 };
 
 /* -------------------------------------------------------------------------   
