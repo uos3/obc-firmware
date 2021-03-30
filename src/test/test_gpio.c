@@ -37,7 +37,7 @@ int main(void) {
     /* TODO: Unfinished */
 
     /* Initialise the LED. */
-    if (Gpio_init(LED_LEDS[LED_TEMP_1].gpio_pin, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
+    if (Gpio_init(LED_LEDS[LED_LAUNCHPAD].gpio_pin, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise GPIO pin");
     }
 

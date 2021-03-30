@@ -39,5 +39,6 @@
 /* LEDs are connected to pins B1 and C2 (see "TOBC Diagram" on sharepoint) */
 Led_Module LED_LEDS[LED_NUMBER_OF_LEDS] = {
     {GPIO_PINB1, false},
-    {GPIO_PINC2, false}
+    {GPIO_PINC2, false},
+    {GPIO_PINF1, false}
 };
