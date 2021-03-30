@@ -31,25 +31,73 @@
 uint64_t Rtc_timestamp_to_ms(
     Rtc_Timestamp *p_timestamp_in
 ) {
-    return (*p_timestamp_in / (RTC_SEC_TO_SUBSEC / RTC_SEC_TO_MILLISEC));
+    double divisor = (double)RTC_SEC_TO_SUBSEC / (double)RTC_SEC_TO_MILLISEC;
+    double ms = (double)(*p_timestamp_in)/divisor;
+    return (uint64_t)ms;
 }
 
 Rtc_Timestamp Rtc_timestamp_from_ms(
     uint64_t milliseconds_in
 ) {
-    return (milliseconds_in * (RTC_SEC_TO_SUBSEC / RTC_SEC_TO_MILLISEC));
+    double multiplier = (double)RTC_SEC_TO_SUBSEC/(double)RTC_SEC_TO_MILLISEC;
+    double ms = (double)(milliseconds_in)*multiplier;
+    return (Rtc_Timestamp)ms;
+}
+
+void Rtc_timestamp_to_bytes(
+    Rtc_Timestamp *p_timestamp_in,
+    uint8_t *p_bytes_out
+) {
+    uint8_t byte;
+
+    #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    for (byte = 0; byte < RTC_TIMESTAMP_NUM_BYTES; ++byte) {
+        p_bytes_out[byte] = (uint8_t)(
+            (*p_timestamp_in >> ((RTC_TIMESTAMP_NUM_BYTES - 1 - byte) * 8))
+            & 0xFF
+        );
+    }
+    #else
+    for (byte = 0; byte < RTC_TIMESTAMP_NUM_BYTES; ++byte) {
+        p_bytes_out[byte] = (uint8_t)((*p_timestamp_in >> (byte * 8)) & 0xFF);
+    }
+    #endif
+}
+
+Rtc_Timestamp Rtc_timestamp_from_bytes(
+    uint8_t *p_bytes_in
+) {
+    uint8_t byte;
+    Rtc_Timestamp timestamp = 0;
+
+    #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    for (byte = 0; byte < RTC_TIMESTAMP_NUM_BYTES; ++byte) {
+        timestamp = (timestamp << 8) | p_bytes_in[byte];
+    }
+    #else
+    for (byte = 0; byte < RTC_TIMESTAMP_NUM_BYTES; ++byte) {
+        timestamp = (timestamp << 8) 
+            | p_bytes_in[RTC_TIMESTAMP_NUM_BYTES - 1 - byte];
+    }
+    #endif
+
+    return timestamp;
 }
 
 uint64_t Rtc_timespan_to_ms(
     Rtc_Timespan *p_timespan_in
 ) {
-    return (*p_timespan_in / (RTC_SEC_TO_SUBSEC / RTC_SEC_TO_MILLISEC));
+    double divisor = (double)RTC_SEC_TO_SUBSEC / (double)RTC_SEC_TO_MILLISEC;
+    double ms = (double)(*p_timespan_in)/divisor;
+    return (uint64_t)ms;
 }
 
 Rtc_Timespan Rtc_timespan_from_ms(
     uint64_t milliseconds_in
 ) {
-    return (milliseconds_in * (RTC_SEC_TO_SUBSEC / RTC_SEC_TO_MILLISEC));
+    double multiplier = (double)RTC_SEC_TO_SUBSEC/(double)RTC_SEC_TO_MILLISEC;
+    double ms = (double)(milliseconds_in)*multiplier;
+    return (Rtc_Timespan)ms;
 }
 
 ErrorCode Rtc_is_timespan_ellapsed(

@@ -25,6 +25,7 @@
 #include "system/event_manager/test/EventManager_test.c"
 #include "util/crypto/test/Crypto_test.c"
 #include "applications/power/test/Power_test.c"
+#include "drivers/rtc/test/Rtc_test.c"
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -59,6 +60,13 @@ int main(void) {
     ret |= cmocka_run_group_tests_name(
         "Power",
         power_tests,
+        NULL, NULL
+    );
+
+    /* Rtc tests */
+    ret |= cmocka_run_group_tests_name(
+        "Rtc",
+        rtc_tests,
         NULL, NULL
     );
     

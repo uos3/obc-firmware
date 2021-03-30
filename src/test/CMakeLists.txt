@@ -13,6 +13,7 @@ target_link_libraries(test_all_modules
     Crypto
     Power
     OpModeManager
+    Rtc
 )
 
 add_executable(test_mem_store_mgr_config

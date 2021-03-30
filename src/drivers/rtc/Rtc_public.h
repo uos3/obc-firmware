@@ -46,6 +46,17 @@
 #include "drivers/rtc/Rtc_errors.h"
 
 /* -------------------------------------------------------------------------   
+ * DEFINES
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Number of bytes used to represent a timestamp when serialized.
+ * 
+ * 6 bytes are chosen as detailed in the `Rtc_Timestamp` doc comment.
+ */
+#define RTC_TIMESTAMP_NUM_BYTES (6)
+
+/* -------------------------------------------------------------------------   
  * TYPES
  * ------------------------------------------------------------------------- */
 
@@ -54,7 +65,7 @@
  * a precision of 1/32768ths of a second.
  * 
  * The TM4C's RTC has 15-bit subsecond precision, therefore defining the
- * precision of the Rtc_Time value. In total 48 bits are allocated for
+ * precision of the Rtc_Timestamp value. In total 48 bits are allocated for
  * timekeeping. A 64 bit unsigned int is therefore required to store this.
  * 
  * Using only 32 bits would limit the maximum duration of an Rtc_Time value to
@@ -63,6 +74,9 @@
  * timestamps 48 bits is chosen, which gives a maximum timespan of ~272 years,
  * far in excess of the expected lifetime of the mission, while still being an
  * even integer number of bytes, something which is desired for communications.
+ * 
+ * Use `Rtc_timestamp_to_bytes` to get the representation of the timestamp as a
+ * string of bytes.
  */
 typedef uint64_t Rtc_Timestamp;
 
@@ -80,6 +94,8 @@ typedef uint64_t Rtc_Timespan;
 
 /**
  * @brief Initialise the Rtc module.
+ * 
+ * This will reset the RTC to 0.
  * 
  * @return ErrorCode ERROR_NONE on success, other values indicate an error.
  */
@@ -108,6 +124,9 @@ void Rtc_set_seconds(uint32_t seconds_in);
  * @brief Convert the given Rtc_Timestamp struct into a number of milliseconds 
  * since RTC init.
  * 
+ * Note: Converting back to a timestamp using `Rtc_timestamp_from_ms` is not
+ * guarenteed to produce the same value due to rounding/flooring errors.
+ * 
  * @param p_time_in Pointer to the `Rtc_Timestamp` struct to convert.
  * @return uint64_t Number of whole milliseconds since RTC init.
  */
@@ -119,6 +138,9 @@ uint64_t Rtc_timestamp_to_ms(
  * @brief Convert the given number of milliseconds since RTC init to an
  * `Rtc_Timestamp` struct.
  * 
+ * Note: Converting back to a ms value using `Rtc_timestamp_to_ms` is not
+ * guarenteed to produce the same value due to rounding/flooring errors.
+ * 
  * @param milliseconds_in The number of milliseconds since RTC init.
  * @return Rtc_Timestamp The calculated Rtc_Timestamp.
  */
@@ -127,7 +149,33 @@ Rtc_Timestamp Rtc_timestamp_from_ms(
 );
 
 /**
+ * @brief Convert the given timestamp into a sequence of bytes.
+ * 
+ * @param p_timestamp_in The timestamp to convert
+ * @param p_bytes_out Pointer to the bytes array to populate. The array must
+ * contain at least RTC_TIMESTAMP_NUM_BYTES bytes.
+ */
+void Rtc_timestamp_to_bytes(
+    Rtc_Timestamp *p_timestamp_in,
+    uint8_t *p_bytes_out
+);
+
+/**
+ * @brief Convert a sequence of bytes into a timestamp.
+ * 
+ * @param p_bytes_in Pointer to the bytes to convert. The array must contain
+ * RTC_TIMESTAMP_NUM_BYTES.
+ * @return Rtc_Timestamp The converted timestamp.
+ */
+Rtc_Timestamp Rtc_timestamp_from_bytes(
+    uint8_t *p_bytes_in
+);
+
+/**
  * @brief Convert the given timespan to milliseconds
+ * 
+ * Note: Converting back to a timespan using `Rtc_timespan_from_ms` is not
+ * guarenteed to produce the same value due to rounding/flooring errors.
  * 
  * @param p_timespan_in Pointer to the timespan to convert
  * @return uint64_t The duration of the timespan in whole milliseconds
@@ -138,6 +186,9 @@ uint64_t Rtc_timespan_to_ms(
 
 /**
  * @brief Convert a duration in milliseconds to a timespan.
+ * 
+ * Note: Converting back to a ms value using `Rtc_timespan_to_ms` is not
+ * guarenteed to produce the same value due to rounding/flooring errors.
  * 
  * @param milliseconds_in Number of milliseconds in the duration.
  * @return Rtc_Timespan The converted timespan
