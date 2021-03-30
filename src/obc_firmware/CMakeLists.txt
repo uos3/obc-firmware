@@ -14,6 +14,7 @@ target_link_libraries(obc_firmware
     Gpio
     Uart
     I2c
+    Rtc
 
     # System
     OpModeManager
