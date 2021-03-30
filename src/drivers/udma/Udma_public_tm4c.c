@@ -30,6 +30,7 @@
 #include "drivers/udma/Udma_errors.h"
 #include "drivers/udma/Udma_public.h"
 #include "system/event_manager/EventManager_public.h"
+#include "util/debug/Debug_public.h"
 
 #include "drivers/uart/Uart_private_tm4c.c"
 

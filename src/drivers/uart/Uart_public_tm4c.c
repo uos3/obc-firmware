@@ -30,6 +30,7 @@
 #include "drivers/gpio/Gpio_public.h"
 #include "drivers/udma/Udma_errors.h"
 #include "drivers/udma/Udma_public.h"
+#include "util/debug/Debug_public.h"
 
 #include "drivers/gpio/Gpio_public_tm4c.c"
 
@@ -167,7 +168,7 @@ ErrorCode Uart_send_bytes(
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
     if (!UDMA_INITIALISED) {
-        DBG_ERR("Attempted to send bytes while uDMA not initialised.");
+        DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
         return UDMA_ERROR_NOT_INITIALISED;
     }
 
@@ -218,7 +219,7 @@ ErrorCode Uart_recv_bytes(
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
     if (!UDMA_INITIALISED) {
-        DBG_ERR("Attempted to send bytes while uDMA not initialised.");
+        DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
         return UDMA_ERROR_NOT_INITIALISED;
     }
 
@@ -261,7 +262,7 @@ ErrorCode Uart_get_status(uint8_t uart_id_in, uint8_t *p_status_out) {
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
     if (!UDMA_INITIALISED) {
-        DBG_ERR("Attempted to send bytes while uDMA not initialised.");
+        DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
         return UDMA_ERROR_NOT_INITIALISED;
     }
 
@@ -276,7 +277,7 @@ ErrorCode Uart_get_status(uint8_t uart_id_in, uint8_t *p_status_out) {
 
     if (*p_status_out != 0) {
         /* Check the uDMA error status, return an error if non-zero */
-        DBG_ERR("Unknown uDMA error");
+        DEBUG_ERR("Unknown uDMA error");
         /* TODO: Return an error */
     }
     else {

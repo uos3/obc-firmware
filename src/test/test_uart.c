@@ -45,12 +45,12 @@ int main(void) {
 
     /* Initialise the UART devices. */
     if (Uart_init() != ERROR_NONE) {
-        DBG_ERR("Failed to initialise the UART devices.");
+        DEBUG_ERR("Failed to initialise the UART devices.");
     }
 
     /* Initialise the uDMA */
     if (Udma_init() != ERROR_NONE) {
-        DBG_ERR("Failed to initialise the uDMA.");
+        DEBUG_ERR("Failed to initialise the uDMA.");
     }
 
     /* Loop through the size of the data to send, and create an array of
@@ -63,7 +63,7 @@ int main(void) {
      * TODO: Change which device for send and receive below. */
     if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
         Udma_interrupt_handler(UART_DEVICE_ID_TEST, data_size);
-        DBG_ERR("Failed to send bytes to UART device.");
+        DEBUG_ERR("Failed to send bytes to UART device.");
     }
 
     if (EventManager_is_event_raised(EVT_UDMA_TRANSFER_COMPLETE, send_check)) {
@@ -71,7 +71,7 @@ int main(void) {
             /* Receive the data from the UART TX associated with the UART device. */
             if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
                 Udma_interrupt_handler(UART_DEVICE_ID_TEST, data_size);
-                DBG_ERR("Failed to receive bytes from UART device.");
+                DEBUG_ERR("Failed to receive bytes from UART device.");
             }
             else {
                 if(EventManager_is_event_raised(EVT_UDMA_TRANSFER_COMPLETE, recv_check)) {
@@ -81,7 +81,7 @@ int main(void) {
                         * echo the data it received, and send the same data back) */
                         for (i = 0; i < data_size; ++i) {
                             if (recv_data[i] != send_data[i]) {
-                                DBG_ERR("Unexpected receive data - should be the same as sent.");
+                                DEBUG_ERR("Unexpected receive data - should be the same as sent.");
                                 break;
                             }
                         }
@@ -90,12 +90,12 @@ int main(void) {
             }
         }
         else {
-            DBG_ERR("Bytes not sent.");
+            DEBUG_ERR("Bytes not sent.");
             return 1;
         }
     }
     else {
-        DBG_ERR("EventManager_is_event_raised failed.");
+        DEBUG_ERR("EventManager_is_event_raised failed.");
         return 1;
     }
 
