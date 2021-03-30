@@ -13,6 +13,13 @@
         "data_type": "bool",
         "brief": "Flag set to true if the Board driver has been initialised, false otherwise."
     },
+    "DP.RTC_INITIALISED": {
+        "block_id": 0,
+        "block_index": 3,
+        "dp_id": 3,
+        "data_type": "bool",
+        "brief": "Flag set if the Rtc driver has been initialised."
+    },
     "DP.EVENTMANAGER.INITIALISED": {
         "block_id": 3,
         "block_index": 1,

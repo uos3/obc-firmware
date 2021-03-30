@@ -37,6 +37,7 @@
 
 /* Internal includes */
 #include "system/data_pool/DataPool_public.h"
+#include "drivers/rtc/Rtc_public.h"
 #include "util/debug/Debug_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -199,6 +200,7 @@ void Debug_log_tm4c(
 
     va_list args;
     va_start(args, p_fmt);
+    Rtc_Timestamp timestamp;
 
     /* String to print into */
     char str[512] = {0};
@@ -208,15 +210,31 @@ void Debug_log_tm4c(
     /* Remove the file path up to src/ */
     char *p_file_stripped = strstr(p_file, "src");
 
-    /* Put the the prefix into the string */
-    sprintf(
-        str,
-        "[---------- %s%s\x1b[0m] %s:%ld ",
-        Debug_level_colours[level], 
-        Debug_level_names[level],
-        p_file_stripped + 4,
-        line
-    );
+    /* Put the the prefix into the string. If the RTC isn't init yet put dashes
+     * out, if it is put the ms value out instead */
+    if (!DP.RTC_INITIALISED) {
+        sprintf(
+            str,
+            "[---------- %s%s\x1b[0m] %s:%ld ",
+            Debug_level_colours[level], 
+            Debug_level_names[level],
+            p_file_stripped + 4,
+            line
+        );
+    }
+    else {
+        timestamp = Rtc_get_timestamp();
+
+        sprintf(
+            str,
+            "[%10lu %s%s\x1b[0m] %s:%ld ",
+            Rtc_timestamp_to_ms(&timestamp),
+            Debug_level_colours[level], 
+            Debug_level_names[level],
+            p_file_stripped + 4,
+            line
+        );
+    }
 
     /* Add the message */
     vsprintf(&str[0] + strlen(str), p_fmt, args);

@@ -53,6 +53,9 @@ ErrorCode Rtc_init(void) {
      * which has to wait for the oscillator to stabilise */
     Delay_ms(RTC_OSCILLATOR_STABILISE_DELAY_MS);
 
+    /* Set the initialised flag */
+    DP.RTC_INITIALISED = true;
+
     return ERROR_NONE;
 }
 
