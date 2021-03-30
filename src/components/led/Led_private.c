@@ -31,6 +31,7 @@
 #include "components/led/Led_public.h"
 #include "components/led/Led_private.h"
 #include "components/led/Led_errors.h"
+#include "drivers/gpio/Gpio_public.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS

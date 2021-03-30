@@ -35,13 +35,17 @@
 
 int main(void) {
     /* TODO: Unfinished */
+    DEBUG_DBG("Test.");
 
     /* Initialise the LED. */
-    if (Gpio_init(LED_LEDS[LED_LAUNCHPAD].gpio_pin, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
+    if (Gpio_init(LED_LAUNCHPAD, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise GPIO pin");
     }
+    else {
+        DEBUG_DBG("LED initialised");
+    }
 
-    Led_set(LED_LEDS[LED_LAUNCHPAD].gpio_pin, true);
+    Led_set(LED_LAUNCHPAD, true);
 
     /* Set the rising interrupt to toggle the LED state when an interrupt is
      * detected. */
