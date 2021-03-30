@@ -77,7 +77,7 @@ int main(void) {
         (double)expected_delay_ms;
 
     DEBUG_INF(
-        "Delay complete, expected %d ms delay, recorded %ld ms delay",
+        "Delay complete, expected %u ms delay, recorded %llu ms delay",
         expected_delay_ms,
         actual_delay_ms  
     );
