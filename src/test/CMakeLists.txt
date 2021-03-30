@@ -1,20 +1,24 @@
 # CMakeLists.txt for tests.
 
-FIND_PACKAGE(CMOCKA REQUIRED)
-INCLUDE_DIRECTORIES(${LIBCMOCKA_INCLUDE_DIR})
+if(NOT ${UOS3_TARGET_TM4C})
+    # test_all_modules only works on unix as cmocka isn't cross-compiled for
+    # the TM4C, so we don't try to build it if we're on that target.
+    FIND_PACKAGE(CMOCKA REQUIRED)
+    INCLUDE_DIRECTORIES(${LIBCMOCKA_INCLUDE_DIR})
 
-add_executable(test_all_modules
-    ${STARTUP_SOURCE}
-    test_all_modules.c
-)
-target_link_libraries(test_all_modules
-    ${STANDARD_LINK_LIBS}
-    ${CMOCKA_LIBRARY}
-    Crypto
-    Power
-    OpModeManager
-    Rtc
-)
+    add_executable(test_all_modules
+        ${STARTUP_SOURCE}
+        test_all_modules.c
+    )
+    target_link_libraries(test_all_modules
+        ${STANDARD_LINK_LIBS}
+        ${CMOCKA_LIBRARY}
+        Crypto
+        Power
+        OpModeManager
+        Rtc
+    )
+endif()
 
 add_executable(test_mem_store_mgr_config
     ${STARTUP_SOURCE}
@@ -45,7 +49,7 @@ target_link_libraries(test_gpio
 )
 
 add_executable(test_uart
-    ${STARTUP_SOUCRE}
+    ${STARTUP_SOURCE}
     test_uart.c
 )
 target_link_libraries(test_uart

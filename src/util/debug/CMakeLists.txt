@@ -5,4 +5,5 @@ add_library(Debug
 )
 target_link_libraries(Debug
     ${TIVAWARE_LIBS}
+    Rtc
 )
