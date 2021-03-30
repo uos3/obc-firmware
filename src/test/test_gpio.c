@@ -39,10 +39,18 @@ int main(void) {
 
     /* Initialise the LED. */
     if (Gpio_init(LED_LAUNCHPAD, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
-        DEBUG_ERR("Failed to initialise GPIO pin");
+        DEBUG_ERR("Failed to initialise LED GPIO pin");
     }
     else {
         DEBUG_DBG("LED initialised");
+    }
+
+    /* Initialise the switch input GPIO pin. */
+    if (Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
+        DEBUG_ERR("Failed to initialise switch GPIO pin");
+    }
+    else {
+        DEBUG_DBG("Switch initialised");
     }
 
     Led_set(LED_LAUNCHPAD, true);
