@@ -26,7 +26,7 @@
 #include "drivers/timer/Timer_public.h"
 #include "drivers/eeprom/Eeprom_public.h"
 #include "drivers/gpio/Gpio_public.h"
-#include "drivers/uart/Uart_public.h"
+#include "drivers/rtc/Rtc_public.h"
 
 /* System */
 #include "system/kernel/Kernel_public.h"
@@ -65,6 +65,17 @@ void obc_firmware_init_early_modules(void) {
      */
     Kernel_init_critical_modules();
 
+    /* Init rtc driver. This is done as early as possible to get the RTC time
+     * as close to reboot as possible. It is possible that the RTC module could
+     * be unresponsive, in which case it wouldn't be available to provide
+     * critical timing information. This would be bad and there's not many ways
+     * we can recover from this. */
+    error = Rtc_init();
+    if (error != ERROR_NONE) {
+        DEBUG_ERR("Rtc_init failed!");
+        /* TODO: Inform FDIR about failure */
+    }
+
     /* After critical modules want to initialise the config provider next */
     error = Eeprom_init();
     if (error != ERROR_NONE) {
@@ -94,8 +105,6 @@ void obc_firmware_init_early_modules(void) {
     }
 
     /* TODO: Init watchdog driver */
-
-    /* TODO: Init rtc driver */
 
     /* TODO: init delay driver */
 
