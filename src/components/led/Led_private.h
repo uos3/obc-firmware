@@ -40,7 +40,7 @@
 
 /* Define the constant number of LEDs occupying pins (currently 2 from TOBC
  * diagram, see sharepoint) */
-#define LED_NUMBER_OF_LEDS (2)
+#define LED_NUMBER_OF_LEDS (3)
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
