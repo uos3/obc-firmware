@@ -43,7 +43,7 @@ int main(void) {
 
     /* Set the rising interrupt to toggle the LED state when an interrupt is
      * detected. */
-    if (Gpio_set_rising_interrupt(LED_LEDS[LED_LAUNCHPAD].gpio_pin, Led_toggle(LED_LEDS[LED_LAUNCHPAD].gpio_pin)) != ERROR_NONE) {
+    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle(LED_LEDS[LED_LAUNCHPAD].gpio_pin)) != ERROR_NONE) {
         DEBUG_ERR("Failed to set rising interrupt on GPIO pin");
     }
 
