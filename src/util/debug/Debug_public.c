@@ -227,7 +227,7 @@ void Debug_log_tm4c(
 
         sprintf(
             str,
-            "[%10lu %s%s\x1b[0m] %s:%ld ",
+            "[%10llu %s%s\x1b[0m] %s:%ld ",
             Rtc_timestamp_to_ms(&timestamp),
             Debug_level_colours[level], 
             Debug_level_names[level],

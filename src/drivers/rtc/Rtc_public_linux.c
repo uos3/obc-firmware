@@ -23,6 +23,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "system/data_pool/DataPool_public.h"
 #include "drivers/delay/Delay_public.h"
 #include "drivers/rtc/Rtc_public.h"
 #include "drivers/rtc/Rtc_private.h"
