@@ -15,6 +15,7 @@
 
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
+#include "util/debug/Debug_public.h"
 #include "obc_firmware/obc_firmware.h"
 
 /* -------------------------------------------------------------------------   
@@ -36,6 +37,9 @@ int main(void) {
 
     /* Do application init */
     obc_firmware_init_applications();
+
+    DEBUG_INF("obc_firmware init complete");
+    DEBUG_INF("---- OBC-FIRMWARE MAIN LOOP ----");
 
     /* ---- MAIN LOOP ---- */
     while (1) {
