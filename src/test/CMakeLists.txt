@@ -1,6 +1,6 @@
 # CMakeLists.txt for tests.
 
-if(NOT ${UOS3_TARGET_TM4C})
+if(NOT DEFINED ${UOS3_TARGET_TM4C})
     # test_all_modules only works on unix as cmocka isn't cross-compiled for
     # the TM4C, so we don't try to build it if we're on that target.
     FIND_PACKAGE(CMOCKA REQUIRED)
