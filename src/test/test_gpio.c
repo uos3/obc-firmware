@@ -35,14 +35,14 @@
 
 int main(void) {
     /* TODO: Unfinished */
-    DEBUG_DBG("Test.");
+    DEBUG_INF("--- GPIO TEST ---");
 
     /* Initialise the LED. */
     if (Gpio_init(LED_LAUNCHPAD, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise LED GPIO pin");
     }
     else {
-        DEBUG_DBG("LED initialised");
+        DEBUG_INF("LED initialised");
     }
 
     /* Initialise the switch input GPIO pin. */

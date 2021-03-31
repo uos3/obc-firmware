@@ -41,7 +41,7 @@ extern Uart_Device UART_DEVICES;
  * ------------------------------------------------------------------------- */
 
 /* Number of UART devices. */
-#define UART_NUM_UARTS (3)
+#define UART_NUM_UARTS (4)
 
 /* Maximum number of times the peripheral ready check will occur before raising
  * an error.
@@ -53,6 +53,11 @@ extern Uart_Device UART_DEVICES;
  * threshold would be most suitable. */
 #define UART_TX_FIFO_THRESHOLD (UART_FIFO_TX4_8)
 #define UART_RX_FIFO_THRESHOLD (UART_FIFO_RX4_8)
+
+
+
+Uart_Device UART_DEVICES[UART_NUM_UARTS];
+
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
