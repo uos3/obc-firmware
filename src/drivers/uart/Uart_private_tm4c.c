@@ -27,6 +27,7 @@
 #include "drivers/uart/Uart_public.h"
 #include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_errors.h"
+#include "drivers/gpio/Gpio_public.h"
 
 /* TI Library Includes */
 #include "driverlib/gpio.h"
@@ -101,8 +102,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART0_BASE,
         GPIO_PCTL_PB0_U1RX,
         GPIO_PCTL_PB1_U1TX,
-        GPIO_PIN_0,
-        GPIO_PIN_1,
+        GPIO_PINB0,
+        GPIO_PINB1,
         UDMA_CHANNEL_UART0TX, /* TODO: Check TI channel assignments */
         UDMA_CHANNEL_UART0RX,
         0x000,

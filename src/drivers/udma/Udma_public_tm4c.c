@@ -32,13 +32,14 @@
 #include "system/event_manager/EventManager_public.h"
 #include "util/debug/Debug_public.h"
 
-#include "drivers/uart/Uart_private_tm4c.c"
-
 /* External */
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
 #include "driverlib/udma.h"
+#include "driverlib/uart.h"
+#include "driverlib/pin_map.h"
+#include "inc/tm4c123gh6pm.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -73,8 +74,6 @@ ErrorCode Udma_init(void) {
     /* Enable the uDMA channels */
     uDMAEnable();
     uDMAControlBaseSet(UDMA_CONTROL_TABLE);
-
-    UDMA_INITIALISED = true;
 
     return ERROR_NONE;
 }

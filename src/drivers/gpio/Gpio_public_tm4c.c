@@ -29,8 +29,6 @@
 #include "drivers/gpio/Gpio_errors.h"
 #include "util/debug/Debug_public.h"
 
-#include "drivers/gpio/Gpio_private_tm4c.c"
-
 /* External */
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
@@ -56,10 +54,7 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
         /* If the GPIO has already been initialised, do not initialise it
          * again, and return a warning message (but not an error) */
         if (p_gpio_pin->initialised) {
-            DEBUG_WRN(
-                "Gpio_init() called on GPIO module %d when already initialised",
-                p_gpio_pins_in[i]
-            );
+            DEBUG_WRN("Gpio_init() called on GPIO module when already initialised");
 
             continue;
         }
@@ -81,7 +76,7 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
                 if (i >= GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS) {
                     /* If the number of attempts has reached the maximum,
                      * raise an error. */
-                    DEBUG_ERR("Failed to enable GPIO %d peripheral", p_gpio_pins_in[i]);
+                    DEBUG_ERR("Failed to enable GPIO peripheral");
                     return GPIO_ERROR_PERIPHERAL_ENABLE_FAILED;
                 }
             }
@@ -105,7 +100,7 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
                 default:
                     /* If the mode is neither GPIO_MODE_INPUT or
                      * GPIO_MODE_OUTPUT, return an error */
-                    DEBUG_ERR("Unexpected mode for GPIO module %d", p_gpio_pins_in[i]);
+                    DEBUG_ERR("Unexpected mode for GPIO module");
                     return GPIO_ERROR_UNEXPECTED_MODE;
             }
             
@@ -119,7 +114,7 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
     }
 
     /* Set the GPIO driver state as initialised */
-    GPIO.initialised = true;
+    /* GPIO.initialised = true; */
     /* If this point has reached without any errors, return ERROR_NONE */
         return ERROR_NONE;
 }

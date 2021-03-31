@@ -54,6 +54,12 @@ extern Gpio GPIO;
  * ready checks. */
 #define GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS (10)
 
+
+
+Gpio_Module GPIO_PINS[GPIO_MAX_NUM_GPIOS];
+
+
+
 /* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */

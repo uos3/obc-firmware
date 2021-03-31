@@ -32,15 +32,14 @@
 #include "drivers/udma/Udma_public.h"
 #include "util/debug/Debug_public.h"
 
-#include "drivers/gpio/Gpio_public_tm4c.c"
-
-#include "drivers/uart/Uart_private_tm4c.c"
-
 /* External */
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
 #include "driverlib/udma.h"
+#include "driverlib/uart.h"
+#include "driverlib/pin_map.h"
+#include "inc/tm4c123gh6pm.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -56,6 +55,7 @@ ErrorCode Uart_init(void) {
     Uart_init_specific(UART_DEVICE_ID_GNSS);
     Uart_init_specific(UART_DEVICE_ID_CAM);
     Uart_init_specific(UART_DEVICE_ID_PWR);
+    Uart_init_specific(UART_DEVICE_ID_TEST);
 
     for (int i = 0; i < UART_NUM_UARTS; ++i) {
         /* Pointer to the UART */
@@ -167,7 +167,7 @@ ErrorCode Uart_send_bytes(
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
-    if (!UDMA_INITIALISED) {
+    if (!p_uart_device->initialised) {
         DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
         return UDMA_ERROR_NOT_INITIALISED;
     }
@@ -218,7 +218,7 @@ ErrorCode Uart_recv_bytes(
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
-    if (!UDMA_INITIALISED) {
+    if (!p_uart_device->initialised) {
         DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
         return UDMA_ERROR_NOT_INITIALISED;
     }
@@ -261,7 +261,7 @@ ErrorCode Uart_get_status(uint8_t uart_id_in, uint8_t *p_status_out) {
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
-    if (!UDMA_INITIALISED) {
+    if (!p_uart_device->initialised) {
         DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
         return UDMA_ERROR_NOT_INITIALISED;
     }
