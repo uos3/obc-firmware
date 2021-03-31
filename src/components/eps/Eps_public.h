@@ -45,10 +45,8 @@
  *  - `EPS_STATE_WAIT_REPLY` - State in which the Eps will wait for the reply
  *    to the most recent request.
  * 
- * The Eps maintains a queue of commands to be sent to the EPS. The operation
- * of this queue is synchronous FIFO, meaning that commands will be sent in the
- * order they are queued up, but a command reply must be recieved before the
- * next command can be sent.
+ * The Eps can only handle one command at a time, so the user must wait until
+ * the currently executing command is completed before sending the next one.
  * 
  * A user can send commands to the EPS by using one of the public functions
  * provided by this module. Data can be retrieved by accessing the appropriate
@@ -117,7 +115,7 @@
 #define EPS_UART_HEADER_DATA_TYPE_POS (1)
 
 /**
- * @brief The length of the CRC used in the UART frame.
+ * @brief The length (in bytes) of the CRC used in the UART frame.
  */
 #define EPS_UART_CRC_LENGTH (sizeof(Crypto_Crc16))
 
@@ -414,7 +412,15 @@ typedef enum _Eps_UartDataType {
      * 
      * Generated with an EPS_UART_DATA_TYPE_TC_SEND_BATT_CMD request.
      */
-    EPS_UART_DATA_TYPE_TM_BATT_REPLY = 132
+    EPS_UART_DATA_TYPE_TM_BATT_REPLY = 132,
+
+    /**
+     * @brief Reply indicating that the OCP rail associated with the
+     * Eps_OcpByte has been tripped.
+     * 
+     * Generated as an unsolicited TM packet by the EPS.
+     */
+    EPS_UART_DATA_TYPE_TM_OCP_TRIP = 133,
     
 } Eps_UartDataType;
 

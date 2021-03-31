@@ -46,7 +46,7 @@ static int Power_test_get_ocp_state_for_op_mode(void **state) {
 
     /* Get a mode that should be all off */
     ocp_state = Power_get_ocp_state_for_op_mode(
-        CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
+        CFG.POWER_OPMODE_OCP_STATE_CONFIG,
         OPMODEMANAGER_OPMODE_ANTENNA_DEPLOY
     );
     
@@ -60,7 +60,7 @@ static int Power_test_get_ocp_state_for_op_mode(void **state) {
 
     /* Get a mode that should be all on */
     ocp_state = Power_get_ocp_state_for_op_mode(
-        CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
+        CFG.POWER_OPMODE_OCP_STATE_CONFIG,
         OPMODEMANAGER_OPMODE_NOMINAL_FUNCTIONING
     );
     

@@ -289,7 +289,7 @@ bool Power_step(void) {
             /* Get the OCP state based on the mode at the end of the current
              * state change. */
             DP.POWER.REQUESTED_OCP_STATE = Power_get_ocp_state_for_op_mode(
-                CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
+                CFG.POWER_OPMODE_OCP_STATE_CONFIG,
                 DP.OPMODEMANAGER.NEXT_OPMODE
             );
 
@@ -381,7 +381,7 @@ void Power_request_eps_hk(void) {
 
 void Power_request_ocp_state_for_next_opmode(void) {
     DP.POWER.REQUESTED_OCP_STATE = Power_get_ocp_state_for_op_mode(
-        CFG.POWER_OP_MODE_OCP_STATE_CONFIG,
+        CFG.POWER_OPMODE_OCP_STATE_CONFIG,
         DP.OPMODEMANAGER.NEXT_OPMODE
     );
     DP.POWER.UPDATE_EPS_OCP_STATE = true;

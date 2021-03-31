@@ -90,7 +90,7 @@ typedef struct _MemStoreManager_ConfigData {
      * @brief The bit vector which defines which OCP rails shall be enabled
      * during which OpModes (except the OBC and EPS rail, which are always on).
      */
-    Power_OpModeOcpStateConfig POWER_OP_MODE_OCP_STATE_CONFIG;
+    Power_OpModeOcpStateConfig POWER_OPMODE_OCP_STATE_CONFIG;
 
     /**
      * @brief Table defining which app is active in which OpMode.

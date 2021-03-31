@@ -112,14 +112,14 @@ int main(int argc, char **pp_argv) {
 
     toml_datum_t power_op_mode_ocp_rail_config = toml_int_in(
         p_config, 
-        "POWER_OP_MODE_OCP_STATE_CONFIG"
+        "POWER_OPMODE_OCP_STATE_CONFIG"
     );
     if (!power_op_mode_ocp_rail_config.ok) {
-        DEBUG_ERR("Missing TOML parameter: POWER_OP_MODE_OCP_STATE_CONFIG");
+        DEBUG_ERR("Missing TOML parameter: POWER_OPMODE_OCP_STATE_CONFIG");
         cfg_ok = false;
     }
     else {
-        cfg_data.POWER_OP_MODE_OCP_STATE_CONFIG 
+        cfg_data.POWER_OPMODE_OCP_STATE_CONFIG 
             = (uint32_t)power_op_mode_ocp_rail_config.u.i;
     }
 
