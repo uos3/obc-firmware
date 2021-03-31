@@ -67,4 +67,16 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS];
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
+void Uart_eps_rx_int_handler(void) {
+    /* get the status of the UDMA transfer, i.e. is it error or success */
+    /* store that as a UART_STATUS level bit of info in device state */
+
+    EventManager_raise_event(EVT_UART_EPS_RX_COMPLETE);
+    /* store event raised flag? */
+}
+
+void Uart_eps_tx_int_handler(void) {
+
+}
+
 #endif /* H_UART_PRIVATE_H */

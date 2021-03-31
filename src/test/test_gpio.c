@@ -34,6 +34,9 @@
  * ------------------------------------------------------------------------- */
 
 int main(void) {
+
+    /* Call kernel init critical */
+
     /* TODO: Unfinished */
     DEBUG_INF("--- GPIO TEST ---");
 

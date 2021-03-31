@@ -44,7 +44,9 @@
 
 Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
     {
-        /* UART 1 (GNSS) */
+        /* UART 1 (GNSS)
+         * TODO: change this to "UART ID 0 (GNSS, UART0)"
+         */
         SYSCTL_PERIPH_GPIOA,
         SYSCTL_PERIPH_UART0,
         GPIO_PORTA_BASE,
@@ -78,7 +80,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
     },
 
     {
-        /* UART 3 (PWR) */
+        /* UART 3 (EPS) */
         SYSCTL_PERIPH_GPIOE,
         SYSCTL_PERIPH_UART7,
         GPIO_PORTE_BASE,
@@ -102,7 +104,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART0_BASE,
         GPIO_PCTL_PB0_U1RX,
         GPIO_PCTL_PB1_U1TX,
-        GPIO_PINB0,
+        GPIO_PINB0, /* use tivaware gpio not driver */
         GPIO_PINB1,
         UDMA_CHANNEL_UART0TX, /* TODO: Check TI channel assignments */
         UDMA_CHANNEL_UART0RX,

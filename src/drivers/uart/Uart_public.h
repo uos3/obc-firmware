@@ -35,23 +35,35 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
+#if 0
+/* Remove */
 typedef uint8_t Uart_DeviceId;
 
+/* Remove */
 #define UART_DEVICE_ID_GNSS (0)
 #define UART_DEVICE_ID_CAM (1)
 #define UART_DEVICE_ID_PWR (2)
 #define UART_DEVICE_ID_TEST (3)
+#endif
 
 /* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */
 
-typedef enum _UART_DEVICE_INDEX {
-    UART_DEVICE_GNSS = 0,
-    UART_DEVICE_CAM,
-    UART_DEVICE_PWR,
-    UART_DEVICE_TEST,
-};
+/* Add indexes */
+typedef enum _Uart_DeviceId {
+    UART_DEVICE_ID_GNSS = 0,
+    UART_DEVICE_ID_CAM,
+    UART_DEVICE_ID_EPS,
+    UART_DEVICE_ID_TEST,
+} Uart_DeviceId;
+
+/* Add status enum */
+typedef enum _Uart_Status {
+    UART_STATUS_NONE = 0,
+    UART_STATUS_IN_PROGRESS = 1,
+    UART_STATUS_UDMA_TRANSFE_ERROR /* add many error kinds */
+} Uart_Status;
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
@@ -59,6 +71,7 @@ typedef enum _UART_DEVICE_INDEX {
 /**
  * @brief Defines a UART.
  * 
+ * TODO: add baud rate
  */
 typedef struct _Uart_Device {
     uint32_t gpio_peripheral;
@@ -71,7 +84,7 @@ typedef struct _Uart_Device {
     uint8_t gpio_pin_tx;
     uint8_t udma_channel_tx;
     uint8_t udma_channel_rx;
-    uint32_t uart_status;
+    uint32_t uart_status; /* Change to Uart_Status enum, for both rx/tx */
     uint32_t udma_mode;
     bool initialised;
 } Uart_Device;
@@ -91,6 +104,14 @@ typedef struct _Uart_Device {
  */
 ErrorCode Uart_init(void);
 
+ErrorCode Uart_step(void);
+    /* In Uart_step():
+     * 
+     * - Check all devices with a status that isn't UART_STATUS_IN_PROGRESS or
+     *   UART_STATUS_NONE 
+     * - if that device's event hasn't been raised, raise it again
+     */
+
 /**
  * @brief Initialise (or re-init) a specific UART device.
  * 
@@ -106,6 +127,8 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in);
  * device. This could either be successful or it could fail, so use
  * Uart_get_status() for the device to check.
  * 
+ * TODO: Change this comment to be about the EVT_UART_device_TX_COMPLETE
+ * 
  * @param uart_id_in 
  * @param p_data_in 
  * @param length_in 
@@ -119,6 +142,9 @@ ErrorCode Uart_send_bytes(
 
 /**
  * @brief Receive bytes from a UART device
+ * 
+ * TODO: Add note on specific event
+ * TODO: Add note on how p_data_out __MUST__ exist statically
  * 
  * @param uart_id_in 
  * @param p_data_out 
@@ -139,6 +165,7 @@ ErrorCode Uart_recv_bytes(
  * @param p_status_out 
  * @return ErrorCode If no error, ERROR_NONE, otherwise UART_ERROR_x.
  */
+/* TODO: Change to Uart_Status */
 ErrorCode Uart_get_status(
     Uart_DeviceId uart_id_in,
     uint8_t *p_status_out

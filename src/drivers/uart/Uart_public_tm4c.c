@@ -50,11 +50,12 @@
  * ------------------------------------------------------------------------- */
 
 ErrorCode Uart_init(void) {
-    /* Call specific init functions for all Uart devices (GNSS, CAM, PWR in
+    /* TODO: Check actions of function match doc comment */
+    /* Call specific init functions for all Uart devices (GNSS, CAM, EPS in
      * that respective order, see UART DEVICE INDEX in Uart_public.h) */
     Uart_init_specific(UART_DEVICE_ID_GNSS);
     Uart_init_specific(UART_DEVICE_ID_CAM);
-    Uart_init_specific(UART_DEVICE_ID_PWR);
+    Uart_init_specific(UART_DEVICE_ID_EPS);
     Uart_init_specific(UART_DEVICE_ID_TEST);
 
     for (int i = 0; i < UART_NUM_UARTS; ++i) {
@@ -99,6 +100,8 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     if (p_uart_device->initialised) {
         DEBUG_WRN("Uart_init called when already initialised");
     }
+    /* TODO: Make the init happen even if already initialised, so we can reinit
+     * modules if needed */
     else {
         /* Initialise the UART peripheral */
         if (!SysCtlPeripheralReady(p_uart_device->uart_peripheral)) {
@@ -142,7 +145,11 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
          * controller when more data should be transferred. These are defined
          * in Uart_private.h and are currently arbitrary
          * (see TODO in Uart_private.h for more info). */
-        UARTFIFOLevelSet(p_uart_device->uart_base, UART_TX_FIFO_THRESHOLD, UART_RX_FIFO_THRESHOLD);
+        UARTFIFOLevelSet(
+            p_uart_device->uart_base, 
+            UART_TX_FIFO_THRESHOLD, 
+            UART_RX_FIFO_THRESHOLD
+        );
 
         /* Enable the UART and uDMA interface for TX and RX */
         UARTEnable(p_uart_device->uart_base);
@@ -164,7 +171,9 @@ ErrorCode Uart_send_bytes(
     uint8_t *p_data_in, 
     size_t length_in
 ) {
-    /* Pointer to UART device */
+    /* Pointer to UART device
+     * TODO: move after UART_NUM_UARTS check
+     */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
     if (!p_uart_device->initialised) {
@@ -184,23 +193,29 @@ ErrorCode Uart_send_bytes(
      * UDMA_ARB_4 refers to the arbitratoin size, which is the number
      * of bytes transferred per trigger. This may not be necessary in AUTO
      * mode, but if we decide to use BASIC mode, this value may be required,
-     * so will be kept in for now. */
-    uDMAChannelControlSet(p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
-        length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4);
+     * so will be kept in for now.
+     * TODO: tidy up func call, and in rx */
+    uDMAChannelControlSet(
+        p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
+        length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4
+    );
     
     /* Set the transfer addresses, size, and mode for TX */
     uDMAChannelTransferSet(p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
         &p_data_in,
-        p_uart_device->gpio_pin_tx,
+        p_uart_device->gpio_pin_tx, /* TODO: Check this, and in rx */
         length_in);
 
     /* Enable the uDMA channel for the transfer to occur. */
     uDMAChannelEnable(p_uart_device->udma_channel_tx);
 
     /* Enable the UART interrupt.
-     * TODO: Check this */
+     * TODO: Check this, and in rx */
     UARTIntEnable(p_uart_device->uart_base, UART_INT_DMATX);
+
+    /* TODO: Check if the transfer failed immedialtey, remove the below, and in
+     * rx */
 
     uint8_t p_uart_status = 0;
     /* Get the status of the UART to ensure the transfer was completed with
@@ -215,7 +230,9 @@ ErrorCode Uart_recv_bytes(
     uint8_t *p_data_out,
     size_t length_in
 ) {
-    /* Pointer to UART device */
+    /* Pointer to UART device
+     * TODO: Move to after check
+     */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
     if (!p_uart_device->initialised) {
@@ -231,7 +248,8 @@ ErrorCode Uart_recv_bytes(
     }
 
     /* Configure the control parameters for the UART RX channel.
-     * UDMA_ARB_4 to match the FIFO trigger threshold. */
+     * UDMA_ARB_4 to match the FIFO trigger threshold. 
+     * TODO: make this the device specific rx channel */
     uDMAChannelControlSet(UDMA_CHANNEL_UART1RX | UDMA_PRI_SELECT,
         length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4);
     

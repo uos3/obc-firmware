@@ -43,9 +43,6 @@ int main(void) {
 
     /* Init system critical modules */
     Kernel_init_critical_modules();
-    if (!EventManager_init()) {
-        Debug_exit(4);
-    }
     if (Eeprom_init() != ERROR_NONE) {
         Debug_exit(5);
     }
