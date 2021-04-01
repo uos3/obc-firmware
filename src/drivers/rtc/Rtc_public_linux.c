@@ -80,7 +80,7 @@ Rtc_Timestamp Rtc_get_timestamp(void) {
     nanosecs = (uint64_t)(
         (current.tv_sec - RTC_EPOCH_TIMESPEC.tv_sec)*1000000000
         +
-        (current.tv_nsec - RTC_EPOCH_TIMESPEC.tv_sec)
+        (current.tv_nsec - RTC_EPOCH_TIMESPEC.tv_nsec)
     );
 
     /* Convert the nanoseconds into a number of subseconds */
@@ -88,5 +88,17 @@ Rtc_Timestamp Rtc_get_timestamp(void) {
 }
 
 void Rtc_set_seconds(uint32_t seconds_in) {
-    RTC_EPOCH_TIMESPEC.tv_sec = RTC_EPOCH_TIMESPEC.tv_sec + seconds_in;
+    int res;
+
+    /* All we have to do is get the current time and set it in the epoch. */
+    res = clock_gettime(CLOCK_REALTIME, &RTC_EPOCH_TIMESPEC);
+
+    /* Check for error */
+    if (res < 0) {
+        DEBUG_ERR("Couldn't reset RTC (linux), errno = %d", errno);
+        Debug_exit(1);
+    }
+
+    /* And add the number of seconds requested here */
+    RTC_EPOCH_TIMESPEC.tv_sec += seconds_in;
 }
