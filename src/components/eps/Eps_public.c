@@ -24,6 +24,8 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+/*#include "drivers/uart/Uart_public.h"
+#include "drivers/udma/Udma_public.h"*/
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "components/eps/Eps_public.h"
@@ -34,10 +36,8 @@
  * ------------------------------------------------------------------------- */
 
 bool Eps_init(void) {
-    /* Initialise the datapool to zero */
-    memset(&DP.EPS, 0, sizeof(Eps_Dp));
 
-    /* TODO: Initialise the UART */
+    /* UART shall be initialised before calling this function */
 
     /* Set first state as idle */
     DP.EPS.STATE = EPS_STATE_IDLE;
@@ -70,6 +70,8 @@ bool Eps_step(void) {
     /* Main state machine */
     switch (DP.EPS.STATE) {
         case EPS_STATE_IDLE:
+
+            /* Check UART for unsolicited TM */
 
             /* Check for new request to send */
             if (!EventManager_poll_event(
@@ -157,7 +159,20 @@ bool Eps_step(void) {
 
             /* TODO: Set the replied data in the DP */
 
-            /* TODO: If the request was HK raise the new HK event */
+            /* TODO: If the request was HK raise the new HK event
+             * FIXME: This is a debugging hack to send the event if the request
+             * was for HK, this shouldn't be done for real. */
+            if (DP.EPS.EPS_REQUEST[EPS_UART_HEADER_DATA_TYPE_POS] 
+                == 
+                EPS_UART_DATA_TYPE_TC_COLLECT_HK_DATA
+            ) {
+                if (!EventManager_raise_event(EVT_EPS_NEW_HK_DATA)) {
+                    DEBUG_ERR("EventManager error while raising new HK event");
+                    DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+                    /* TODO: return to IDLE here and set command as failed? */
+                    return false;
+                }
+            }
 
             /* Return to idle. */
             DP.EPS.STATE = EPS_STATE_IDLE;

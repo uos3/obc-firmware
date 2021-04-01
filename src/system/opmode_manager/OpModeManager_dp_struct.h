@@ -105,6 +105,21 @@ typedef struct _OpModeManager_Dp {
      * @dp 9
      */
     bool APP_IN_NEXT_MODE[OPMODEMANAGER_MAX_NUM_APPS_IN_MODE];
+
+    /**
+     * @brief Event used to signal completion of the Dwell timer in BU mode
+     * 
+     * @dp 10
+     */
+    Event BU_DWELL_TIMER_EVENT;
+
+    /**
+     * @brief If true the BU_DWELL_TIMER_EVENT couldn't be set as the timer
+     * couldn't be started, therefore we will use the RTC instead.
+     * 
+     * @dp 11
+     */
+    bool BU_DWELL_CHECK_RTC;
     
 
 } OpModeManager_Dp;

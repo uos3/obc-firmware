@@ -74,4 +74,19 @@ bool OpModeManager_call_active_app_steps(void);
  */
 bool OpModeManager_step_graceful_transition(void);
 
+/**
+ * @brief Perform the init sequence for the Boot Up (BU) mode.
+ * 
+ * Note: returns void as any errors are handled by this function explicitly.
+ */
+void OpModeManager_bu_init(void);
+
+/**
+ * @brief Step function of the BU mode.
+ * 
+ * @return True on success, false on error. See DP.OPMODEMANAGER.ERROR_CODE for
+ * cause.  
+ */
+bool OpModeManager_bu_step(void);
+
 #endif /* H_OPMODEMANAGER_PRIVATE_H */

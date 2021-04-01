@@ -80,3 +80,16 @@ target_link_libraries(test_delay
     Delay
     Rtc
 )
+
+add_executable(test_bu
+    ${STARTUP_SOURCE}
+    test_bu.c
+)
+target_link_libraries(test_bu
+    ${STANDARD_LINK_LIBS}
+    Delay
+    Rtc
+    Eps
+    Power
+    OpModeManager
+)

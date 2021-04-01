@@ -460,5 +460,19 @@
         "dp_id": 10249,
         "data_type": "bool",
         "brief": "Array, in which each element is true if it's corresponding app in the CFG.OPMODE_APPID_TABLE is present in the next mode. Calcualted once at the start of an OPMODE transition."
+    },
+    "DP.OPMODEMANAGER.BU_DWELL_TIMER_EVENT": {
+        "block_id": 10,
+        "block_index": 10,
+        "dp_id": 10250,
+        "data_type": "Event",
+        "brief": "Event used to signal completion of the Dwell timer in BU mode"
+    },
+    "DP.OPMODEMANAGER.BU_DWELL_CHECK_RTC": {
+        "block_id": 10,
+        "block_index": 11,
+        "dp_id": 10251,
+        "data_type": "bool",
+        "brief": "If true the BU_DWELL_TIMER_EVENT couldn't be set as the timer couldn't be started, therefore we will use the RTC instead."
     }
 }

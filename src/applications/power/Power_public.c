@@ -28,8 +28,7 @@
 
 bool Power_init(void) {
     
-    /* Check that required modules are initialised. Note EPS is not required to
-     * be init since it must go through it's state machine to initialise. */
+    /* Check that required modules are initialised */
     if (!DP.INITIALISED ||
         !DP.EVENTMANAGER.INITIALISED ||
         !DP.MEMSTOREMANAGER.INITIALISED ||

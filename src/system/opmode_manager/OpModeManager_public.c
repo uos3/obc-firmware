@@ -1,6 +1,7 @@
 /**
  * @file OpModeManager_public.c
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
+ * @brief OpModeManager public function implementations.
  * 
  * Task ref: [UT_2.9.10]
  * 
@@ -29,6 +30,8 @@
  * ------------------------------------------------------------------------- */
 
 bool OpModeManager_init(void) {
+    MemStoreManager_PersistentData pers_data;
+    
     /* Check that required modules are initialised */
     if (!DP.INITIALISED ||
         !DP.EVENTMANAGER.INITIALISED ||
@@ -39,10 +42,13 @@ bool OpModeManager_init(void) {
         return false;
     }
 
-    /* Set the initial and next OpMode. Next OpMode is set when a transition is
-     * requested, and otherwise should be the current OpMode */
+    /* Set the initial and next OpMode as BU. Next OpMode is set when a 
+     * transition is requested, and otherwise should be the current OpMode */
     DP.OPMODEMANAGER.OPMODE = OPMODEMANAGER_OPMODE_BOOT_UP;
     DP.OPMODEMANAGER.NEXT_OPMODE = OPMODEMANAGER_OPMODE_BOOT_UP;
+
+    /* Call first mode initialisation function */
+    OpModeManager_bu_init();
     
     /* Activate the apps for the first opmode (since it's bootup this should be
      * no apps, but we do this in case an app is added in the future.) */
@@ -150,12 +156,27 @@ bool OpModeManager_step(void) {
             __attribute__ ((fallthrough));
         case OPMODEMANAGER_STATE_EXECUTING:
 
+
             /* Call all active app step functions for the current mode.
              * 
              * Note: system apps are stepped by the kernel, not OpModeManager.
              */
             if (!OpModeManager_call_active_app_steps()) {
                 return false;
+            }
+
+            /* Call the mode's step function */
+            switch (DP.OPMODEMANAGER.OPMODE) {
+                case OPMODEMANAGER_OPMODE_BOOT_UP:
+                    if (!OpModeManager_bu_step()) {
+                        return false;
+                    }
+                    break;
+                default:
+                    DEBUG_WRN(
+                        "No step function for mode %d", 
+                        DP.OPMODEMANAGER.OPMODE
+                    );
             }
 
             break;

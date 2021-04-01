@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-03-30
+ * @date 2021-04-01
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -567,6 +567,22 @@ bool DataPool_get(
         *p_data_size_out = sizeof(bool);
         return true;
 
+
+    /* DP.OPMODEMANAGER.BU_DWELL_TIMER_EVENT */
+    case 0x280a:
+        *pp_data_out = &DP.OPMODEMANAGER.BU_DWELL_TIMER_EVENT;
+        *p_data_type_out = DATAPOOL_DATATYPE_EVENT;
+        *p_data_size_out = sizeof(Event);
+        return true;
+
+
+    /* DP.OPMODEMANAGER.BU_DWELL_CHECK_RTC */
+    case 0x280b:
+        *pp_data_out = &DP.OPMODEMANAGER.BU_DWELL_CHECK_RTC;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
     
     default:
         DEBUG_ERR("Invalid DP ID: %d", id_in);
@@ -975,6 +991,18 @@ bool DataPool_get_symbol_str(
     /* DP.OPMODEMANAGER.APP_IN_NEXT_MODE[OPMODEMANAGER_MAX_NUM_APPS_IN_MODE] */
     case 0x2809:
         *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.APP_IN_NEXT_MODE[OPMODEMANAGER_MAX_NUM_APPS_IN_MODE]");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.BU_DWELL_TIMER_EVENT */
+    case 0x280a:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.BU_DWELL_TIMER_EVENT");
+        return true;
+
+
+    /* DP.OPMODEMANAGER.BU_DWELL_CHECK_RTC */
+    case 0x280b:
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.BU_DWELL_CHECK_RTC");
         return true;
 
 

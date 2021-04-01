@@ -364,6 +364,18 @@ bool OpModeManager_step_graceful_transition(void) {
             /* If it is complete set the new mode and activate all the new
              * apps */
             DP.OPMODEMANAGER.OPMODE = DP.OPMODEMANAGER.NEXT_OPMODE;
+
+            /* Call the init function of the current mode */
+            switch (DP.OPMODEMANAGER.OPMODE) {
+                case OPMODEMANAGER_OPMODE_BOOT_UP:
+                    OpModeManager_bu_init();
+                    break;
+                default:
+                    DEBUG_WRN(
+                        "No init function found for mode %d",
+                        DP.OPMODEMANAGER.OPMODE
+                    );
+            }
             
             OpModeManager_activate_apps();
 
