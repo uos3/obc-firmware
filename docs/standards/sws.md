@@ -119,7 +119,7 @@ The build system used for the OBC firmware is __`CMake`__. A minimum version of
 
 In the past a combination of Makefiles, bash scripts, and python scripts were
 used to build and flash the software. This has been replaced by CMake and a few
-small bash scripts.
+small python scripts.
 
 ## Module Structure
 
@@ -177,7 +177,9 @@ The following naming conventions apply for the software:
     - Abbreviations _should_ have their first letter capitalised and all 
       subsequent letters are lower case, such as `Gnss` or `Imu`.
     - Module names _should not_ be shortened, for instance `Buffer` is
-      preferred over `Buf`.
+      preferred over `Buf`, except where not shortening would result in
+      excessively long module names, for instance `MemStoreManager` rather than
+      `MemoryStorageManager`.
 
  - Functions __shall__ follow the `<ModuleName>_<function_name>` naming scheme,
    that is the module name in `UpperCamelCase`, followed by the function name
@@ -220,7 +222,7 @@ The following naming conventions apply for the software:
           written to by the function.
         - `elapsed_time_us` for an elapsed time in microseconds.
 
- - Constants and preprocessor definitions __must__ follow the
+ - Constants, globals, and preprocessor definitions __must__ follow the
    `UPPER_SNAKE_CASE` naming scheme.
     - Constants and defines __must__ be prefixed with the module name, such as
       `GNSS_NMEA_LENGTH_BYTES`.
@@ -231,6 +233,17 @@ The following naming conventions apply for the software:
       add to the symbol count and memory usage of the software.
     - Define values __must__ be wrapped in brackets to avoid evaluation issues,
       for instance `#define MY_DEF (12)` over `#define MY_DEF 12`.
+    - Globals __shall__ be declared in a header file as `extern`, and
+      initialised in a source file. For example, in `MyModule_public.h`:
+      ```c
+      extern MyModule_MyStruct MYMODULE_STRUCT;
+      ```
+      and in `MyModule_public.c`:
+      ```c
+      MyModule_MyStruct MYMODULE_STRUCT = {
+        /* struct initialitaion */
+      }
+      ```
 
 ## Commenting
 
@@ -358,7 +371,9 @@ else {
 
 ### File Structure
 
-C source code and header files _should_ use the following format:
+C source code and header files _should_ use the following format. Section
+headings which would not contain any content _should_ be ommitted. Includes in
+the template below are given as examples, and shouldn't be included by default.
 
 ```c
 /**
