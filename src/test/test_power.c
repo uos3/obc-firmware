@@ -114,13 +114,7 @@ int main(void) {
         }
 
         /* Cycle clean up */
-        if (!EventManager_cleanup_events()) {
-            DEBUG_ERR(
-                "EventManager_cleanup_events() failed! DP.EVENTMANAGER.ERROR_CODE = 0x%04X",
-                DP.EVENTMANAGER.ERROR_CODE
-            );
-            Debug_exit(13);
-        }
+        EventManager_cleanup_events();
 
         /* If no move to next mode, to test mode switching */
         if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0) {
@@ -144,6 +138,8 @@ int main(void) {
         }
 
     }
+
+    DEBUG_INF("---- TEST PASSED ----");
 
     /* Cleanup */
     EventManager_destroy();

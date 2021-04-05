@@ -74,15 +74,7 @@ bool Eps_step(void) {
             /* Check UART for unsolicited TM */
 
             /* Check for new request to send */
-            if (!EventManager_poll_event(
-                EVT_EPS_NEW_REQUEST, 
-                &is_event_raised
-            )) {
-                DEBUG_ERR("EventManager error while polling new request event");
-                DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
-                return false;
-            }
-            if (is_event_raised) {
+            if (EventManager_poll_event(EVT_EPS_NEW_REQUEST)) {
                 /* If there is one move to the sending request state */
                 DP.EPS.STATE = EPS_STATE_REQUEST;
             }

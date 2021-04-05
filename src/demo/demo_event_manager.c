@@ -72,11 +72,8 @@ int main(void) {
 
     /* Poll many off the list to verify that the lists will shrink */
     DEBUG_INF("Polling 30 events");
-    bool is_raised = false;
     for (int event = 1; event < 30; event++) {
-        if (!EventManager_poll_event((Event)event, &is_raised)) {
-            Debug_exit(1);   
-        }
+        EventManager_poll_event((Event)event);
     }
 
     /* Print events */
@@ -97,9 +94,7 @@ int main(void) {
     /* Clean up events three times to check that the stale events are polled */
     for (int i = 0; i < 3; i++) {
         DEBUG_INF("Cleaning events");
-        if (!EventManager_cleanup_events()) {
-            Debug_exit(1);
-        }
+        EventManager_cleanup_events();
 
         /* Print events */
         DEBUG_INF("Events:");

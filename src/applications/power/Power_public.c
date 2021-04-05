@@ -53,7 +53,6 @@ bool Power_init(void) {
 
 bool Power_step(void) {
     ErrorCode error = ERROR_NONE;
-    bool is_event_raised = false;
 
     /* FIXME: Remove dependence on CFU? */
 
@@ -82,15 +81,8 @@ bool Power_step(void) {
      * because a config change may result in the task period being changed,
      * therefore we want to restart the timer just in case the period has also
      * changed. Also set the flag to update the EPS's config itself. */
-    if (!EventManager_is_event_raised(
-        EVT_MEMSTOREMANAGER_CFG_UPDATE_SUCCESS,
-        &is_event_raised
-    )) {
-        DEBUG_ERR("EventManager couldn't check for config change event");
-        DP.POWER.ERROR_CODE = POWER_ERROR_EVENTMANAGER_ERROR;
-        return false;
-    }
-    if (is_event_raised) {
+    if (EventManager_is_event_raised(EVT_MEMSTOREMANAGER_CFG_UPDATE_SUCCESS)) {
+
         /* If there's already a timer registered disable it and clear the saved
          * event. This will cause a new timer to be started in the next 
          * section. If there isn't a timer registered don't do anything. */
@@ -134,20 +126,7 @@ bool Power_step(void) {
      * this if we're not in CFU mode. */
     if (DP.OPMODEMANAGER.OPMODE != OPMODEMANAGER_OPMODE_CONFIG_FILE_UPDATE) {
         /* Poll for the event */
-        if (!EventManager_poll_event(
-            DP.POWER.TASK_TIMER_EVENT,
-            &is_event_raised
-        )) {
-            DEBUG_ERR(
-                "EventManager couldn't poll for the task timer event (DP.POWER.TASK_TIMER_EVENT = 0x%04X)", 
-                DP.POWER.TASK_TIMER_EVENT
-            );
-            DP.POWER.ERROR_CODE = POWER_ERROR_EVENTMANAGER_ERROR;
-            return false;
-        }
-
-        /* If the event has fired */
-        if (is_event_raised) {
+        if (EventManager_poll_event(DP.POWER.TASK_TIMER_EVENT)) {
             /* Raise a new update EPS request. This will mean that if something
              * else has also requested an EPS update we won't get two requests
              * coming through in quick succession. */
@@ -158,17 +137,7 @@ bool Power_step(void) {
     /* Check for the event that signals the EPS has finished a command. This
      * comes before any raising of new commands so we can clear the EPS command
      * status flag first, allowing us to set new commands in this cycle. */
-    if (!EventManager_poll_event(
-        EVT_EPS_COMMAND_COMPLETE,
-        &is_event_raised
-    )) {
-        DEBUG_ERR(
-            "EventManager couldn't poll for the Eps command complete event"
-        );
-        DP.POWER.ERROR_CODE = POWER_ERROR_EVENTMANAGER_ERROR;
-        return false;
-    }
-    if (is_event_raised) {
+    if (EventManager_poll_event(EVT_EPS_COMMAND_COMPLETE)) {
         /* If the command failed retry it, and increment the number of failed
          * counters */
         if (DP.EPS.COMMAND_STATUS == EPS_COMMAND_FAILURE) {
@@ -350,17 +319,7 @@ bool Power_step(void) {
     if (DP.OPMODEMANAGER.OPMODE != OPMODEMANAGER_OPMODE_CONFIG_FILE_UPDATE) {
         /* Note we use is_event_raised here not poll as some others may be
          * looking for this event too */
-        if (!EventManager_is_event_raised(
-            EVT_EPS_NEW_HK_DATA,
-            &is_event_raised
-        )) {
-            DEBUG_ERR(
-                "EventManager couldn't check for the Eps new HK data event"
-            );
-            DP.POWER.ERROR_CODE = POWER_ERROR_EVENTMANAGER_ERROR;
-            return false;
-        }
-        if (is_event_raised) {
+        if (EventManager_is_event_raised(EVT_EPS_NEW_HK_DATA)) {
             /* TODO: battery voltage check */
         }
     }

@@ -4,7 +4,7 @@
  * @file EventManager_dp_struct.h
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Provides DataPool parameters for the EventManager
- * @version 1.0
+ * @version 2.0
  * @date 2020-10-30
  * 
  * @copyright Copyright (c) 2020
@@ -59,7 +59,7 @@ typedef struct _EventManager_Dp {
      * 
      * @dp 4
      */
-    uint8_t NUM_RAISED_EVENTS;
+    uint16_t NUM_RAISED_EVENTS;
 
     /**
      * @brief The current size of the allocated event lists.

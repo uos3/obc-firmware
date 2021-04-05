@@ -87,9 +87,7 @@ int main(void) {
         }
 
         /* If the timer has fired exit the loop */
-        if (!EventManager_poll_event(timer_event, &exit_loop)) {
-            Debug_exit(1);
-        }
+        exit_loop = EventManager_poll_event(timer_event);
     }
 
     return 0;

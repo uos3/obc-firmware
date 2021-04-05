@@ -5,7 +5,7 @@
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Provides possible events for the EventManager.
  * 
- * @version 1.0
+ * @version 2.0
  * @date 2020-11-02
  * 
  * @copyright Copyright (c) 2020

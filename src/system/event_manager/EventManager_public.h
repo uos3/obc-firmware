@@ -19,7 +19,7 @@
  *   allowable at one time. 
  * TODO: More detailed reasoning behind 2 cycles.
  * 
- * @version 1.0
+ * @version 2.0
  * @date 2020-10-28
  * 
  * @copyright Copyright (c) UoS3 2020
@@ -55,12 +55,21 @@
  * 
  * This value must be less than the maximum size representable by the
  * DP.EVENTMANAGER.EVENT_LIST_SIZE datatype. This is currently 16 bits, or
- * ~65k, so a value of 256 will not lead to an overflow. See numerical
+ * ~65k, so a value of 1024 will not lead to an overflow. See numerical
  * proection comment in EventManager_raise_event().
  * 
- * TODO: This value is currently arbitrary. 
+ * This value is set to 1024, or 1kB. src/link/tm4c123g.cmake specifies the
+ * heap size of the system to be 8kB, therefore at it's worst the EventManager
+ * could take up 1/8th the heap of the TM4C. It is not known if this is a
+ * reasonable max size, as the full system is not yet functional, it is however
+ * sufficiently large that memory allocation errors shall not be seen during
+ * development. It may be larger than necessary, which could see reduction of
+ * this at a future date.
+ * 
+ * TODO: The appropriate size of the EM shall be determined at the software
+ * functional tests.
  */
-#define EVENTMANAGER_MAX_LIST_SIZE (256)
+#define EVENTMANAGER_MAX_LIST_SIZE (1024)
 
 /**
  * @brief The minimum size of the lists in the EventManager.
@@ -82,6 +91,13 @@
  * The new shrunk list size will be (list size) / (this divisor).
  */
 #define EVENTMANAGER_SHRUNK_LIST_SIZE_DIVISOR (2)
+
+/**
+ * @brief The multiplier used to grow the size of a list.
+ * 
+ * The new list will be (list size) * (this multiplier) in size.
+ */
+#define EVENTMANAGER_GROW_LIST_MULTIPLIER (2)
 
 /**
  * @brief Reserved event code, corresponding to no event.
@@ -171,11 +187,9 @@ bool EventManager_raise_event(Event event_in);
  * Use EventManager_poll_event to check if the event is raised and clear it.
  * 
  * @param event_in The event to check.
- * @param p_is_raised_out true if raised, false if not.
- * @return true The function executed successfully.
- * @return false The function failed to execute.
+ * @return bool True if raised, false if not.
  */
-bool EventManager_is_event_raised(Event event_in, bool *p_is_raised_out);
+bool EventManager_is_event_raised(Event event_in);
 
 /**
  * @brief Poll an event to see if it is raised. If the event is raised clear
@@ -185,11 +199,9 @@ bool EventManager_is_event_raised(Event event_in, bool *p_is_raised_out);
  * clear it.
  * 
  * @param event_in The event to check.
- * @param p_is_raised_out true if raised, false if not.
- * @return true The function executed successfully.
- * @return false The function failed to execute.
+ * @return bool true if raised, false if not.
  */
-bool EventManager_poll_event(Event event_in, bool *p_is_raised_out);
+bool EventManager_poll_event(Event event_in);
 
 /**
  * @brief Clear all the events in the manager.
@@ -200,14 +212,15 @@ bool EventManager_poll_event(Event event_in, bool *p_is_raised_out);
 bool EventManager_clear_all_events(void);
 
 /**
- * @brief Clean up events that have been raised for two or more cycles.
+ * @brief Clean up stale events (those that haven't been polled within a number
+ * of cycles, see EventManager_remove_stale_events).
  * 
  * This function should be executed at the end of the software cycle.
  * 
  * @return true Cleanup executed successfully.
  * @return false Cleanup failed.
  */
-bool EventManager_cleanup_events(void);
+void EventManager_cleanup_events(void);
 
 #ifdef DEBUG_MODE
 /**

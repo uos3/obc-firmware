@@ -55,9 +55,7 @@ int main(void) {
         obc_firmware_step_system();
 
         /* Clean up events */
-        if (!EventManager_cleanup_events()) {
-            /* TODO: register error with FDIR */
-        }
+        EventManager_cleanup_events();
 
         /* If no events after cleanup wait until interrupt occurs (only on
          * TM4C, don't have propper interrupts on linux */

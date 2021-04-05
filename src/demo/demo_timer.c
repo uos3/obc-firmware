@@ -98,20 +98,15 @@ int main(void) {
     /* Run main loop */
     while (run_loop) {
         /* Increment number of 0.25 s events */
-        if (!EventManager_poll_event(timer_0_25_done, &is_raised)) {
-            Debug_exit(1);
-        }
-        if (is_raised) {
+        if (EventManager_poll_event(timer_0_25_done)) {
             num_0_25_timers++;
         }
 
         /* Count number of 1 second timers */
-        if (!EventManager_poll_event(timer_1_done, &is_raised)) {
-            Debug_exit(1);
-        }
-        if (is_raised) {
+        if (EventManager_poll_event(timer_1_done)) {
             num_1_timers++;
         }
+
         if (num_1_timers >= 5 && !timer_disabled) {
             /* Disable the 1 s timer after 5 events counted */
             error = Timer_disable(timer_1_done);
@@ -123,24 +118,16 @@ int main(void) {
         }
 
         /* Count number of 2 s timer events */
-        if (!EventManager_poll_event(timer_2_done, &is_raised)) {
-            Debug_exit(1);
-        }
-        if (is_raised) {
+        if (EventManager_poll_event(timer_2_done)) {
             num_2_timers++;
         }
 
         /* Check for end at 10 s timer */
-        if (!EventManager_poll_event(timer_10_done, &is_raised)) {
-            Debug_exit(1);
-        }
-        if (is_raised) {
+        if (EventManager_poll_event(timer_10_done)) {
             run_loop = false;
         }
 
-        if (!EventManager_cleanup_events()) {
-            Debug_exit(1);
-        }
+        EventManager_cleanup_events();
     }
 
     DEBUG_INF(

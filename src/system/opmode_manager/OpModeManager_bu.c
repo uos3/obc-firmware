@@ -154,30 +154,17 @@ bool OpModeManager_bu_step(void) {
     /* If we're using timer rather than RTC, and there's a valid event in the
      * DP poll for it. */
     else if (DP.OPMODEMANAGER.BU_DWELL_TIMER_EVENT != EVT_NONE) {
-        if (!EventManager_poll_event(
-            DP.OPMODEMANAGER.BU_DWELL_TIMER_EVENT,
-            &dwell_time_ellapsed
-        )) {
-            /* An error here would be one that we can't really handle, but FDIR
-             * should be informed of it */
-            DEBUG_ERR("Error polling for BU_DWELL_TIMER_EVENT event");
-            DP.OPMODEMANAGER.ERROR_CODE 
-                = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
-            return false;
-        }
+        dwell_time_ellapsed = EventManager_poll_event(
+            DP.OPMODEMANAGER.BU_DWELL_TIMER_EVENT
+        );
     }
     /* If we're not doing any dwell time check (i.e. no RTC and no event) we
      * have already passed the dwell time in the init function, but since we've
      * gone into step the other options (AD/SM) haven't happened. We therefore
      * have to check for low battery voltage before we can transition to NF. */
     else {
-        /* Check to see if power has got the new HK data. Note: is_raised can
-         * only fail if the eventmanager isn't initialised, so we can ignore 
-         * any errors */
-        EventManager_is_event_raised(
-            EVT_EPS_NEW_HK_DATA,
-            &eps_new_hk
-        );
+        /* Check to see if power has got the new HK data */
+        eps_new_hk = EventManager_is_event_raised(EVT_EPS_NEW_HK_DATA);
 
         /* If we have new HK check to see if power is requesting LP */
         if (eps_new_hk && DP.POWER.LOW_POWER_MODE_REQUEST) {

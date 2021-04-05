@@ -148,6 +148,9 @@ int main(void) {
         if (DP.OPMODEMANAGER.OPMODE != OPMODEMANAGER_OPMODE_BOOT_UP) {
             run_loop = false;
         }
+
+        /* Do event cleanup */
+        EventManager_cleanup_events();
     }
 
     if (is_activity_timeout) {

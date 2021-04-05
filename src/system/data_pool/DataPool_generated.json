@@ -45,7 +45,7 @@
         "block_id": 3,
         "block_index": 4,
         "dp_id": 3076,
-        "data_type": "uint8_t",
+        "data_type": "uint16_t",
         "brief": "Counter storing the number of raised events."
     },
     "DP.EVENTMANAGER.EVENT_LIST_SIZE": {

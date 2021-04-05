@@ -91,15 +91,7 @@ int main(void) {
             /* Wait for the set gyro offsets command to finish */
             case 0:
                 /* See if success */
-                if (!EventManager_poll_event(
-                    EVT_IMU_SET_GYRO_OFFSETS_SUCCESS, 
-                    &event_raised
-                )) {
-                    Debug_exit(1);
-                }
-
-                /* If success */
-                if (event_raised) {
+                if (EventManager_poll_event(EVT_IMU_SET_GYRO_OFFSETS_SUCCESS)) {
                     /* Print temp */
                     DEBUG_INF("Gyro offsets set");
 
@@ -109,15 +101,10 @@ int main(void) {
                 /* If not success */
                 else {
                     /* See if failed */
-                    if (!EventManager_poll_event(
-                        EVT_IMU_SET_GYRO_OFFSETS_FAILURE, 
-                        &event_raised
+                    if (EventManager_poll_event(
+                        EVT_IMU_SET_GYRO_OFFSETS_FAILURE
                     )) {
-                        Debug_exit(1);
-                    }
-
-                    /* If failed print error and exit */
-                    if (event_raised) {
+                        /* If failed print error and exit */
                         DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
                         Debug_exit(1);
                     }
@@ -138,15 +125,7 @@ int main(void) {
             /* Wait for read complete */
             case 2:
                 /* See if success */
-                if (!EventManager_poll_event(
-                    EVT_IMU_READ_TEMP_SUCCESS, 
-                    &event_raised
-                )) {
-                    Debug_exit(1);
-                }
-
-                /* If success */
-                if (event_raised) {
+                if (EventManager_poll_event(EVT_IMU_READ_TEMP_SUCCESS)) {
                     /* Print temp */
                     DEBUG_INF("temp: %d", DP.IMU.TEMPERATURE_DATA);
 
@@ -156,15 +135,8 @@ int main(void) {
                 /* If not success */
                 else {
                     /* See if failed */
-                    if (!EventManager_poll_event(
-                        EVT_IMU_READ_TEMP_FAILURE, 
-                        &event_raised
-                    )) {
-                        Debug_exit(1);
-                    }
-
-                    /* If failed print error and exit */
-                    if (event_raised) {
+                    if (EventManager_poll_event(EVT_IMU_READ_TEMP_FAILURE)) {
+                        /* If failed print error and exit */
                         DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
                         Debug_exit(1);
                     }
@@ -185,15 +157,7 @@ int main(void) {
             /* Wait for read complete */
             case 4:
                 /* See if success */
-                if (!EventManager_poll_event(
-                    EVT_IMU_READ_GYRO_SUCCESS, 
-                    &event_raised
-                )) {
-                    Debug_exit(1);
-                }
-
-                /* If success */
-                if (event_raised) {
+                if (EventManager_poll_event(EVT_IMU_READ_GYRO_SUCCESS)) {
                     /* Print gyro data */
                     DEBUG_INF("gyro valid: %d", DP.IMU.GYROSCOPE_DATA_VALID);
                     DEBUG_INF("gyro x: %d", DP.IMU.GYROSCOPE_DATA.x);
@@ -206,15 +170,8 @@ int main(void) {
                 /* If not success */
                 else {
                     /* See if failed */
-                    if (!EventManager_poll_event(
-                        EVT_IMU_READ_GYRO_FAILURE, 
-                        &event_raised
-                    )) {
-                        Debug_exit(1);
-                    }
-
-                    /* If failed print error and exit */
-                    if (event_raised) {
+                    if (EventManager_poll_event(EVT_IMU_READ_GYRO_FAILURE)) {
+                        /* If failed print error and exit */
                         DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
                         Debug_exit(1);
                     }
@@ -235,15 +192,7 @@ int main(void) {
             /* Wait for read complete */
             case 6:
                 /* See if success */
-                if (!EventManager_poll_event(
-                    EVT_IMU_READ_MAGNE_SUCCESS, 
-                    &event_raised
-                )) {
-                    Debug_exit(1);
-                }
-
-                /* If success */
-                if (event_raised) {
+                if (EventManager_poll_event(EVT_IMU_READ_MAGNE_SUCCESS)) {
                     /* Print magne data */
                     DEBUG_INF("magne valid: %d", DP.IMU.MAGNETOMETER_DATA_VALID);
                     DEBUG_INF("magne x: %d", DP.IMU.MAGNETOMETER_DATA.x);
@@ -256,15 +205,8 @@ int main(void) {
                 /* If not success */
                 else {
                     /* See if failed */
-                    if (!EventManager_poll_event(
-                        EVT_IMU_READ_MAGNE_FAILURE, 
-                        &event_raised
-                    )) {
-                        Debug_exit(1);
-                    }
-
-                    /* If failed print error and exit */
-                    if (event_raised) {
+                    if (EventManager_poll_event(EVT_IMU_READ_MAGNE_FAILURE)) {
+                        /* If failed print error and exit */
                         DEBUG_ERR("IMU error code: %d", DP.IMU.ERROR_CODE);
                         Debug_exit(1);
                     }
@@ -303,9 +245,7 @@ int main(void) {
         #endif
 
         /* Call event cleanup */
-        if (!EventManager_cleanup_events()) {
-            Debug_exit(1);
-        }
+        EventManager_cleanup_events();
         
         if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0) {
             if (!sleep) {

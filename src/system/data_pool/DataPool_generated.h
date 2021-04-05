@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-04-01
+ * @date 2021-04-05
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -53,7 +53,7 @@ typedef uint16_t DataPool_Id;
 typedef enum _DataPool_DataType {
     DATAPOOL_DATATYPE_BOOL,
     DATAPOOL_DATATYPE_ERRORCODE,
-    DATAPOOL_DATATYPE_UINT8_T,
+    DATAPOOL_DATATYPE_UINT16_T,
     DATAPOOL_DATATYPE_SIZE_T,
     DATAPOOL_DATATYPE_IMU_STATE,
     DATAPOOL_DATATYPE_IMU_SUBSTATE,
@@ -62,6 +62,7 @@ typedef enum _DataPool_DataType {
     DATAPOOL_DATATYPE_IMU_VECUINT8,
     DATAPOOL_DATATYPE_INT16_T,
     DATAPOOL_DATATYPE_EPS_STATE,
+    DATAPOOL_DATATYPE_UINT8_T,
     DATAPOOL_DATATYPE_EPS_COMMANDSTATUS,
     DATAPOOL_DATATYPE_EPS_HKDATA,
     DATAPOOL_DATATYPE_EVENT,
