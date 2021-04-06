@@ -27,6 +27,7 @@
 /* Internal */
 #include "drivers/uart/Uart_public.h"
 #include "drivers/uart/Uart_errors.h"
+#include "system/event_manager/EventManager_events.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -67,16 +68,65 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS];
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-void Uart_eps_rx_int_handler(void) {
-    /* get the status of the UDMA transfer, i.e. is it error or success */
-    /* store that as a UART_STATUS level bit of info in device state */
+/**
+ * @brief Uart GNSS RX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the GNSS device's RX.
+ * 
+ */
+void Uart_gnss_rx_int_handler(void);
+/**
+ * @brief Uart GNSS TX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the GNSS device's TX.
+ * 
+ */
+void Uart_gnss_tx_int_handler(void);
 
-    EventManager_raise_event(EVT_UART_EPS_RX_COMPLETE);
-    /* store event raised flag? */
-}
+/**
+ * @brief Uart CAM RX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the CAM device's RX.
+ * 
+ */
+void Uart_cam_rx_int_handler(void);
+/**
+ * @brief Uart CAM TX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the CAM device's TX.
+ * 
+ */
+void Uart_cam_tx_int_handler(void);
 
-void Uart_eps_tx_int_handler(void) {
+/**
+ * @brief Uart EPS RX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the EPS device's RX.
+ * 
+ */
+void Uart_eps_rx_int_handler(void);
+/**
+ * @brief Uart EPS TX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the EPS device's TX.
+ * 
+ */
+void Uart_eps_tx_int_handler(void);
 
-}
+/**
+ * @brief Uart TEST RX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the TEST device's RX.
+ * 
+ */
+void Uart_test_rx_int_handler(void);
+/**
+ * @brief Uart TEST TX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the TEST device's TX.
+ * 
+ */
+void Uart_test_tx_int_handler(void);
+
 
 #endif /* H_UART_PRIVATE_H */

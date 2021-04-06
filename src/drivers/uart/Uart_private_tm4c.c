@@ -44,9 +44,7 @@
 
 Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
     {
-        /* UART 1 (GNSS)
-         * TODO: change this to "UART ID 0 (GNSS, UART0)"
-         */
+        /* UART ID 0 (GNSS, UART0) */
         SYSCTL_PERIPH_GPIOA,
         SYSCTL_PERIPH_UART0,
         GPIO_PORTA_BASE,
@@ -57,13 +55,15 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PIN_1,
         UDMA_CHANNEL_UART0TX,
         UDMA_CHANNEL_UART0RX,
-        0x000,
+        UART_STATUS_NONE,
+        UART_STATUS_NONE,
         UDMA_MODE_STOP,
+        9600,
         false
     },
 
     {
-        /* UART 2 (CAM) */
+        /* UART ID 1 (CAM) */
         SYSCTL_PERIPH_GPIOC,
         SYSCTL_PERIPH_UART3,
         GPIO_PORTC_BASE,
@@ -74,13 +74,15 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PIN_7,
         UDMA_CHANNEL_UART1TX,
         UDMA_CHANNEL_UART1RX,
-        0x000,
+        UART_STATUS_NONE,
+        UART_STATUS_NONE,
         UDMA_MODE_STOP,
+        9600,
         false
     },
 
     {
-        /* UART 3 (EPS) */
+        /* UART ID 2 (EPS) */
         SYSCTL_PERIPH_GPIOE,
         SYSCTL_PERIPH_UART7,
         GPIO_PORTE_BASE,
@@ -91,25 +93,29 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PIN_1,
         UDMA_CH1_UART2TX, /* TODO: Check TI channel assignments */
         UDMA_CH0_UART2RX,
-        0x000,
+        UART_STATUS_NONE,
+        UART_STATUS_NONE,
         UDMA_MODE_STOP,
+        9600,
         false
     },
 
     {
-        /* UART 4 (TEST) */
+        /* UART ID 3 (TEST) */
         SYSCTL_PERIPH_GPIOB,
         SYSCTL_PERIPH_UART0,
         GPIO_PORTB_BASE,
         UART0_BASE,
         GPIO_PCTL_PB0_U1RX,
         GPIO_PCTL_PB1_U1TX,
-        GPIO_PINB0, /* use tivaware gpio not driver */
-        GPIO_PINB1,
+        GPIO_PIN_0, /* use tivaware gpio not driver */
+        GPIO_PIN_1,
         UDMA_CHANNEL_UART0TX, /* TODO: Check TI channel assignments */
         UDMA_CHANNEL_UART0RX,
-        0x000,
+        UART_STATUS_NONE,
+        UART_STATUS_NONE,
         UDMA_MODE_STOP,
+        9600,
         false
     },
 };
@@ -117,3 +123,111 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
+
+void Uart_gnss_rx_int_handler(void) {
+    Uart_Status p_status_out = UART_STATUS_NONE;
+
+    /* Get the status of the uDMA transfer (error or success) */
+    Uart_get_status(UART_DEVICE_ID_GNSS, p_status_out);
+
+    /* Store the status as a Uart_Status on the UART device (RX Status) */
+    UART_DEVICES[UART_DEVICE_ID_GNSS].uart_status_rx = p_status_out;
+    if (p_status_out == UART_STATUS_COMPLETE) {
+        EventManager_raise_event(EVT_UART_GNSS_RX_COMPLETE);
+    }
+    /* store event raised flag? */
+}
+void Uart_gnss_tx_int_handler(void) {
+    Uart_Status p_status_out = UART_STATUS_NONE;
+
+    /* Get the status of the uDMA transfer (error or success) */
+    Uart_get_status(UART_DEVICE_ID_GNSS, p_status_out);
+
+    /* Store the status as a Uart_Status on the UART device (TX Status) */
+    UART_DEVICES[UART_DEVICE_ID_GNSS].uart_status_tx = p_status_out;
+    if (p_status_out == UART_STATUS_COMPLETE) {
+        EventManager_raise_event(EVT_UART_GNSS_TX_COMPLETE);
+    }
+    /* store event raised flag? */
+}
+
+void Uart_cam_rx_int_handler(void) {
+    Uart_Status p_status_out = UART_STATUS_NONE;
+
+    /* Get the status of the uDMA transfer (error or success) */
+    Uart_get_status(UART_DEVICE_ID_CAM, p_status_out);
+
+    /* Store the status as a Uart_Status on the UART device (RX Status) */
+    UART_DEVICES[UART_DEVICE_ID_CAM].uart_status_rx = p_status_out;
+    if (p_status_out == UART_STATUS_COMPLETE) {
+        EventManager_raise_event(EVT_UART_CAM_RX_COMPLETE);
+    }
+    /* store event raised flag? */
+}
+void Uart_cam_tx_int_handler(void) {
+    Uart_Status p_status_out = UART_STATUS_NONE;
+
+    /* Get the status of the uDMA transfer (error or success) */
+    Uart_get_status(UART_DEVICE_ID_CAM, p_status_out);
+
+    /* Store the status as a Uart_Status on the UART device (TX Status) */
+    UART_DEVICES[UART_DEVICE_ID_CAM].uart_status_tx = p_status_out;
+    if (p_status_out == UART_STATUS_COMPLETE) {
+        EventManager_raise_event(EVT_UART_CAM_TX_COMPLETE);
+    }
+    /* store event raised flag? */
+}
+
+void Uart_eps_rx_int_handler(void) {
+    Uart_Status p_status_out = UART_STATUS_NONE;
+
+    /* Get the status of the uDMA transfer (error or success) */
+    Uart_get_status(UART_DEVICE_ID_EPS, p_status_out);
+
+    /* Store the status as a Uart_Status on the UART device (RX Status) */
+    UART_DEVICES[UART_DEVICE_ID_EPS].uart_status_rx = p_status_out;
+    if (p_status_out == UART_STATUS_COMPLETE) {
+        EventManager_raise_event(EVT_UART_EPS_RX_COMPLETE);
+    }
+    /* store event raised flag? */
+}
+void Uart_eps_tx_int_handler(void) {
+    Uart_Status p_status_out = UART_STATUS_NONE;
+
+    /* Get the status of the uDMA transfer (error or success) */
+    Uart_get_status(UART_DEVICE_ID_EPS, p_status_out);
+
+    /* Store the status as a Uart_Status on the UART device (TX Status) */
+    UART_DEVICES[UART_DEVICE_ID_EPS].uart_status_tx = p_status_out;
+    if (p_status_out == UART_STATUS_COMPLETE) {
+        EventManager_raise_event(EVT_UART_EPS_TX_COMPLETE);
+    }
+    /* store event raised flag? */
+}
+
+void Uart_test_rx_int_handler(void) {
+    Uart_Status p_status_out = UART_STATUS_NONE;
+
+    /* Get the status of the uDMA transfer (error or success) */
+    Uart_get_status(UART_DEVICE_ID_TEST, p_status_out);
+
+    /* Store the status as a Uart_Status on the UART device (RX Status) */
+    UART_DEVICES[UART_DEVICE_ID_TEST].uart_status_rx = p_status_out;
+    if (p_status_out == UART_STATUS_COMPLETE) {
+        EventManager_raise_event(EVT_UART_TEST_RX_COMPLETE);
+    }
+    /* store event raised flag? */
+}
+void Uart_test_tx_int_handler(void) {
+    Uart_Status p_status_out = UART_STATUS_NONE;
+
+    /* Get the status of the uDMA transfer (error or success) */
+    Uart_get_status(UART_DEVICE_ID_TEST, p_status_out);
+
+    /* Store the status as a Uart_Status on the UART device (TX Status) */
+    UART_DEVICES[UART_DEVICE_ID_TEST].uart_status_tx = p_status_out;
+    if (p_status_out == UART_STATUS_COMPLETE) {
+        EventManager_raise_event(EVT_UART_TEST_TX_COMPLETE);
+    }
+    /* store event raised flag? */
+}

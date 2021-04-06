@@ -74,6 +74,13 @@ ErrorCode Uart_init(void) {
 }
 
 ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
+    /* Check that the ID number of the UART is acceptable, return an error
+     * if not. */
+    if (uart_id_in >= UART_NUM_UARTS) {
+        DEBUG_ERR("The UART ID number was greater than the number of UARTs");
+        return UART_ERROR_MAX_NUM_UARTS;
+    }
+
     /* Pointer to the UART */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
     
@@ -88,57 +95,48 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
     );
 
-    /* Check that the ID number of the UART is acceptable, return an error
-     * if not. */
-    if (uart_id_in >= UART_NUM_UARTS) {
-        DEBUG_ERR("The UART ID number was greater than the number of UARTs");
-        return UART_ERROR_MAX_NUM_UARTS;
-    }
 
     /* Check if the UART has already been initialised, give a warning if it has
      * already been initialised, or continue if it has not. */
     if (p_uart_device->initialised) {
         DEBUG_WRN("Uart_init called when already initialised");
     }
-    /* TODO: Make the init happen even if already initialised, so we can reinit
-     * modules if needed */
-    else {
-        /* Initialise the UART peripheral */
-        if (!SysCtlPeripheralReady(p_uart_device->uart_peripheral)) {
-            SysCtlPeripheralReset(p_uart_device->uart_peripheral);
-            SysCtlPeripheralReady(p_uart_device->uart_peripheral);
-        }
 
-        for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
-            if (SysCtlPeripheralReady(p_uart_device->uart_peripheral)) {
-                /* If the peripheral is ready, break out of the loop */
-                break;
-            }
-            if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
-                /* If the maximium number of peripheral ready checks has been
-                 * reached, raise an error. */
-                DEBUG_ERR("Failed to enable UART peripheral");
-                return UART_ERROR_PERIPHERAL_READY_FAILED;
-            }
-        }
+    /* Initialise the UART peripheral */
+    if (!SysCtlPeripheralReady(p_uart_device->uart_peripheral)) {
+        SysCtlPeripheralReset(p_uart_device->uart_peripheral);
+        SysCtlPeripheralReady(p_uart_device->uart_peripheral);
+    }
 
-        /* Initialise the GPIO peripheral if not already */
-        if (!SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
-            SysCtlPeripheralReset(p_uart_device->gpio_peripheral);
-            SysCtlPeripheralReady(p_uart_device->gpio_peripheral);
+    for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
+        if (SysCtlPeripheralReady(p_uart_device->uart_peripheral)) {
+            /* If the peripheral is ready, break out of the loop */
+            break;
         }
+        if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+            /* If the maximium number of peripheral ready checks has been
+                * reached, raise an error. */
+            DEBUG_ERR("Failed to enable UART peripheral");
+            return UART_ERROR_PERIPHERAL_READY_FAILED;
+        }
+    }
 
-        for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
-            if (SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
-                /* If the peripheral is ready, break out of the loop */
-                break;
-            }
-            if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
-                /* If the maximium number of peripheral ready checks has been
-                 * reached, raise an error. */
-                DEBUG_ERR("Failed to enable UART peripheral");
-                return UART_ERROR_PERIPHERAL_READY_FAILED;
-            }
+    /* Initialise the GPIO peripheral if not already */
+    if (!SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
+        SysCtlPeripheralReset(p_uart_device->gpio_peripheral);
+        SysCtlPeripheralReady(p_uart_device->gpio_peripheral);
+    }
+
+    for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
+        if (SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
+            /* If the peripheral is ready, break out of the loop */
+            break;
+        }
+        if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+            /* If the maximium number of peripheral ready checks has been
+                * reached, raise an error. */
+            DEBUG_ERR("Failed to enable UART peripheral");
+            return UART_ERROR_PERIPHERAL_READY_FAILED;
         }
 
         /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
@@ -171,21 +169,19 @@ ErrorCode Uart_send_bytes(
     uint8_t *p_data_in, 
     size_t length_in
 ) {
-    /* Pointer to UART device
-     * TODO: move after UART_NUM_UARTS check
-     */
-    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
-
-    if (!p_uart_device->initialised) {
-        DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
-        return UDMA_ERROR_NOT_INITIALISED;
-    }
-
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
     if (uart_id_in >= UART_NUM_UARTS) {
         DEBUG_ERR("The UART ID number was greater than the number of UARTs");
         return UART_ERROR_MAX_NUM_UARTS;
+    }
+
+    /* Pointer to UART device */
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+
+    if (!p_uart_device->initialised) {
+        DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
+        return UDMA_ERROR_NOT_INITIALISED;
     }
 
     /* Configure the control parameters for the UART TX channel.
@@ -201,11 +197,13 @@ ErrorCode Uart_send_bytes(
     );
     
     /* Set the transfer addresses, size, and mode for TX */
-    uDMAChannelTransferSet(p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
+    uDMAChannelTransferSet(
+        p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
         &p_data_in,
         p_uart_device->gpio_pin_tx, /* TODO: Check this, and in rx */
-        length_in);
+        length_in
+    );
 
     /* Enable the uDMA channel for the transfer to occur. */
     uDMAChannelEnable(p_uart_device->udma_channel_tx);
@@ -214,13 +212,10 @@ ErrorCode Uart_send_bytes(
      * TODO: Check this, and in rx */
     UARTIntEnable(p_uart_device->uart_base, UART_INT_DMATX);
 
-    /* TODO: Check if the transfer failed immedialtey, remove the below, and in
-     * rx */
-
-    uint8_t p_uart_status = 0;
-    /* Get the status of the UART to ensure the transfer was completed with
-     * no issues. */
-    Uart_get_status(uart_id_in, p_uart_status);
+    if (uDMAErrorStatusGet() != 0) {
+        DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
+        return UDMA_ERROR_NONSPECIFIED;
+    }
 
     return ERROR_NONE;
 }
@@ -230,16 +225,6 @@ ErrorCode Uart_recv_bytes(
     uint8_t *p_data_out,
     size_t length_in
 ) {
-    /* Pointer to UART device
-     * TODO: Move to after check
-     */
-    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
-
-    if (!p_uart_device->initialised) {
-        DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
-        return UDMA_ERROR_NOT_INITIALISED;
-    }
-
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
     if (uart_id_in >= UART_NUM_UARTS) {
@@ -247,18 +232,31 @@ ErrorCode Uart_recv_bytes(
         return UART_ERROR_MAX_NUM_UARTS;
     }
 
+    /* Pointer to UART device */
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+
+    if (!p_uart_device->initialised) {
+        DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
+        return UDMA_ERROR_NOT_INITIALISED;
+    }
+
+
     /* Configure the control parameters for the UART RX channel.
      * UDMA_ARB_4 to match the FIFO trigger threshold. 
      * TODO: make this the device specific rx channel */
-    uDMAChannelControlSet(UDMA_CHANNEL_UART1RX | UDMA_PRI_SELECT,
-        length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4);
+    uDMAChannelControlSet(
+        UDMA_CHANNEL_UART1RX | UDMA_PRI_SELECT,
+        length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4
+    );
     
     /* Set the transfer addresses, size, and mode for RX */
-    uDMAChannelTransferSet(UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
+    uDMAChannelTransferSet(
+        UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
         p_uart_device->gpio_pin_rx,
         &p_data_out,
-        length_in);
+        length_in
+    );
 
     /* Enable the channel. Software-initiated transfers require a channel
      * request to begin the transfer.
@@ -267,15 +265,15 @@ ErrorCode Uart_recv_bytes(
 
     UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
 
-    uint8_t p_uart_status = 0;
-    /* Get the status of the UART to ensure the transfer was completed with
-     * no issues. */
-    Uart_get_status(uart_id_in, p_uart_status);
+    if (uDMAErrorStatusGet() != 0) {
+        DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
+        return UDMA_ERROR_NONSPECIFIED;
+    }
 
     return ERROR_NONE;
 }
 
-ErrorCode Uart_get_status(uint8_t uart_id_in, uint8_t *p_status_out) {
+ErrorCode Uart_get_status(uint8_t uart_id_in, Uart_Status p_status_out) {
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
@@ -291,12 +289,12 @@ ErrorCode Uart_get_status(uint8_t uart_id_in, uint8_t *p_status_out) {
         return UART_ERROR_MAX_NUM_UARTS;
     }
 
-    *p_status_out = uDMAErrorStatusGet();
+    p_status_out = uDMAErrorStatusGet();
 
-    if (*p_status_out != 0) {
+    if (p_status_out != 0) {
         /* Check the uDMA error status, return an error if non-zero */
-        DEBUG_ERR("Unknown uDMA error");
-        /* TODO: Return an error */
+        DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
+        return UDMA_ERROR_NONSPECIFIED;
     }
     else {
         /* if uDMAErrorStatusGet() returns a 0, no error is pending, so return

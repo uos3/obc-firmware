@@ -78,6 +78,7 @@ ErrorCode Udma_init(void) {
     return ERROR_NONE;
 }
 
+#if 0
 ErrorCode Udma_interrupt_handler(
     Uart_DeviceId uart_id_in,
     size_t length_in
@@ -104,3 +105,4 @@ ErrorCode Udma_interrupt_handler(
         return 0;
     }
 }
+#endif

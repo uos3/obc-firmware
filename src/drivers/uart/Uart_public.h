@@ -35,17 +35,6 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
-#if 0
-/* Remove */
-typedef uint8_t Uart_DeviceId;
-
-/* Remove */
-#define UART_DEVICE_ID_GNSS (0)
-#define UART_DEVICE_ID_CAM (1)
-#define UART_DEVICE_ID_PWR (2)
-#define UART_DEVICE_ID_TEST (3)
-#endif
-
 /* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */
@@ -53,16 +42,17 @@ typedef uint8_t Uart_DeviceId;
 /* Add indexes */
 typedef enum _Uart_DeviceId {
     UART_DEVICE_ID_GNSS = 0,
-    UART_DEVICE_ID_CAM,
-    UART_DEVICE_ID_EPS,
-    UART_DEVICE_ID_TEST,
+    UART_DEVICE_ID_CAM = 1,
+    UART_DEVICE_ID_EPS = 2,
+    UART_DEVICE_ID_TEST = 3,
 } Uart_DeviceId;
 
 /* Add status enum */
 typedef enum _Uart_Status {
     UART_STATUS_NONE = 0,
-    UART_STATUS_IN_PROGRESS = 1,
-    UART_STATUS_UDMA_TRANSFE_ERROR /* add many error kinds */
+    UART_STATUS_COMPLETE = 1,
+    UART_STATUS_IN_PROGRESS = 2,
+    UART_STATUS_UDMA_TRANSFER_ERROR = 3, /* add many error kinds */
 } Uart_Status;
 
 /* -------------------------------------------------------------------------   
@@ -70,8 +60,6 @@ typedef enum _Uart_Status {
  * ------------------------------------------------------------------------- */
 /**
  * @brief Defines a UART.
- * 
- * TODO: add baud rate
  */
 typedef struct _Uart_Device {
     uint32_t gpio_peripheral;
@@ -84,8 +72,10 @@ typedef struct _Uart_Device {
     uint8_t gpio_pin_tx;
     uint8_t udma_channel_tx;
     uint8_t udma_channel_rx;
-    uint32_t uart_status; /* Change to Uart_Status enum, for both rx/tx */
+    Uart_Status uart_status_tx;
+    Uart_Status uart_status_rx;
     uint32_t udma_mode;
+    uint32_t baud_rate;
     bool initialised;
 } Uart_Device;
 
@@ -94,7 +84,7 @@ typedef struct _Uart_Device {
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief Initialises the all used UART peripherals.
+ * @brief Calls Uart_init_specific for all UART devices.
  * 
  * If not all UARTs are initialised correctly an error is returned for
  * monitoring purposes only. If all UARTs fail to initialise an error is also
@@ -165,10 +155,9 @@ ErrorCode Uart_recv_bytes(
  * @param p_status_out 
  * @return ErrorCode If no error, ERROR_NONE, otherwise UART_ERROR_x.
  */
-/* TODO: Change to Uart_Status */
 ErrorCode Uart_get_status(
     Uart_DeviceId uart_id_in,
-    uint8_t *p_status_out
+    Uart_Status p_status_out
 );
 
 

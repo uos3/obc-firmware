@@ -40,4 +40,11 @@
  */
 #define UDMA_ERROR_NOT_INITIALISED ((ErrorCode)MOD_ID_UART | 2)
 
+/**
+ * @brief This ErrorCode is reserved for when uDMAErrorStatusGet returns a
+ * non-zero error which does not match any other defined error.
+ * 
+ */
+#define UDMA_ERROR_NONSPECIFIED ((ErrorCode)MOD_ID_UART | 3)
+
 #endif /* H_UDMA_ERRORS_H */

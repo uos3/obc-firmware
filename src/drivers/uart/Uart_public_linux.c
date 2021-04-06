@@ -64,7 +64,7 @@ ErrorCode Uart_recv_bytes(
 
 ErrorCode Uart_get_status(
     Uart_DeviceId uart_id_in,
-    uint8_t *p_status_out
+    Uart_Status p_status_out
 ) {
     DEBUG_DBG("UART get status attempted when running on linux, ignoring.");
     return ERROR_NONE;
