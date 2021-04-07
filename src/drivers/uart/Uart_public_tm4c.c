@@ -27,10 +27,12 @@
 #include "drivers/uart/Uart_public.h"
 #include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_errors.h"
+#include "drivers/uart/Uart_events.h"
 #include "drivers/gpio/Gpio_public.h"
 #include "drivers/udma/Udma_errors.h"
 #include "drivers/udma/Udma_public.h"
 #include "util/debug/Debug_public.h"
+#include "system/event_manager/EventManager_public.h"
 
 /* External */
 #include "driverlib/gpio.h"
@@ -208,6 +210,8 @@ ErrorCode Uart_send_bytes(
     /* Enable the uDMA channel for the transfer to occur. */
     uDMAChannelEnable(p_uart_device->udma_channel_tx);
 
+    p_uart_device->uart_status_tx = UART_STATUS_IN_PROGRESS;
+
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
     UARTIntEnable(p_uart_device->uart_base, UART_INT_DMATX);
@@ -303,6 +307,38 @@ ErrorCode Uart_get_status(uint8_t uart_id_in, Uart_Status p_status_out) {
     }
 }
 
+ErrorCode Uart_step(void) {
+    int i;
+    for (i = 0; i < UART_NUM_UARTS; ++i) {
+        /* Loop through all UART devices whose status is NOT UART_STATUS_NONE
+         * or UART_STATUS_IN_PROGRESS */
+        if (UART_DEVICES[i].uart_status_rx
+        !=
+        UART_STATUS_IN_PROGRESS
+        &&
+        UART_DEVICES[i].uart_status_tx
+        !=
+        UART_STATUS_IN_PROGRESS
+        &&
+        UART_DEVICES[i].uart_status_rx
+        !=
+        UART_STATUS_NONE
+        &&
+        UART_DEVICES[i].uart_status_tx
+        !=
+        UART_STATUS_NONE
+        ) {
+            /* Check to see if the UART device's event is raised. */
+            if (!EventManager_is_event_raised(UART_DEVICES[i].uart_event)) {
+                /* If the UART device's event is not raise, raise it. */
+                EventManager_raise_event(UART_DEVICES[i].uart_event);
+            }
+        }
+    }
+
+    /* If this point has been reached without error, return ERROR NONE. */
+    return ERROR_NONE;
+}
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS BELOW ARE PART OF THE OLD INTERFACE. WILL MOST LIKELY BE DISCARED,

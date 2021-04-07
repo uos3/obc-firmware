@@ -26,6 +26,8 @@
 
 /* Internal */
 #include "drivers/uart/Uart_errors.h"
+#include "drivers/uart/Uart_events.h"
+#include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -74,6 +76,7 @@ typedef struct _Uart_Device {
     uint8_t udma_channel_rx;
     Uart_Status uart_status_tx;
     Uart_Status uart_status_rx;
+    Event uart_event;
     uint32_t udma_mode;
     uint32_t baud_rate;
     bool initialised;

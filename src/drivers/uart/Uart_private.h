@@ -27,6 +27,7 @@
 /* Internal */
 #include "drivers/uart/Uart_public.h"
 #include "drivers/uart/Uart_errors.h"
+#include "drivers/uart/Uart_events.h"
 #include "system/event_manager/EventManager_events.h"
 
 /* -------------------------------------------------------------------------   
@@ -54,8 +55,6 @@ extern Uart_Device UART_DEVICES;
  * threshold would be most suitable. */
 #define UART_TX_FIFO_THRESHOLD (UART_FIFO_TX4_8)
 #define UART_RX_FIFO_THRESHOLD (UART_FIFO_RX4_8)
-
-
 
 Uart_Device UART_DEVICES[UART_NUM_UARTS];
 
@@ -127,6 +126,16 @@ void Uart_test_rx_int_handler(void);
  * 
  */
 void Uart_test_tx_int_handler(void);
+
+ErrorCode Udma_interrupt_handler_rx(
+    Uart_DeviceId uart_id_in,
+    size_t length_in
+);
+
+    ErrorCode Udma_interrupt_handler_rx(
+    Uart_DeviceId uart_id_in,
+    size_t length_in
+);
 
 
 #endif /* H_UART_PRIVATE_H */

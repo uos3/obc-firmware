@@ -51,4 +51,10 @@
  */
 #define UART_ERROR_PUT_CHAR_FAILED ((ErrorCode)MOD_ID_UART | 4)
 
+/**
+ * @brief A function was called with an unexpected UART Device ID
+ * 
+ */
+#define UART_ERROR_UNEXPECTED_DEVICE_ID ((ErrorCode)MOD_ID_UART | 5)
+
 #endif /* H_UART_ERRORS_H */
