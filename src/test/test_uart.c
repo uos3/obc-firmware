@@ -36,6 +36,7 @@ int main(void) {
     size_t data_size = 8;
     uint8_t send_data[data_size];
     uint8_t recv_data[data_size];
+    uint8_t test_step = 0;
 
     /* Initialise the UART devices. */
     if (Uart_init() != ERROR_NONE) {
@@ -51,6 +52,29 @@ int main(void) {
      * dummy data to be sent. */
     for (i = 0; i < data_size; ++i) {
         send_data[i] = i;
+    }
+
+    /* Main Loop */
+    while (true) {
+
+        switch (test_step) {
+            case 0:
+                /* call send_bytes*/
+                test_step++;
+                break;
+            case 1:
+                /* poll for TX_COMPLETE */
+                break;
+                /* Fill with reads */
+            default:
+                /* end of test */
+        }
+
+        if (!Uart_step()) {
+            Debug_exit(1);
+        }
+
+        /* Clean events */
     }
 
     /* Send the data to the UART RX associated with the UART device.

@@ -132,6 +132,12 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
  * ------------------------------------------------------------------------- */
 
 void Uart_gnss_rx_int_handler(void) {
+    
+    /* TODO: then call void Udma_service_irq(
+        Uart_DeviceId uart_id_in,
+        Event complete_event_in
+    ) */
+
     Uart_Status p_status_out = UART_STATUS_NONE;
 
     /* Get the status of the uDMA transfer (error or success) */
@@ -239,14 +245,18 @@ void Uart_test_tx_int_handler(void) {
     /* store event raised flag? */
 }
 
-ErrorCode Udma_interrupt_handler_tx(
+/* service interrupt requuest for interrupt */
+void Udma_service_irq(
     Uart_DeviceId uart_id_in,
-    size_t length_in
+    Event complete_event_in
 ) {
+
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
-    /* Get the interrupt status of the UART */
+    /* Get the interrupt status of the UART
+     * TODO: see if it's a TX or RX interrupt, don't store it in uart_status_tx
+     */
     p_uart_device->uart_status_tx
     =
     UARTIntStatus(
@@ -263,11 +273,14 @@ ErrorCode Udma_interrupt_handler_tx(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT
     );
 
-    /* The transfer is complete if the mode is "STOP" */
+    /* The transfer is complete if the mode is "STOP"
+     * TODO: remove switch, just the argument, do this for one/both tx/rx
+     */
     if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
         switch (uart_id_in) {
             case UART_DEVICE_ID_GNSS:
                 EventManager_raise_event(EVT_UART_GNSS_TX_COMPLETE);
+                /* TODO: remove uart_event from struct */
                 p_uart_device->uart_event = EVT_UART_GNSS_TX_COMPLETE;
                 p_uart_device->uart_status_tx = UART_STATUS_COMPLETE;
             case UART_DEVICE_ID_CAM:

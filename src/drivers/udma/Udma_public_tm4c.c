@@ -75,6 +75,8 @@ ErrorCode Udma_init(void) {
     uDMAEnable();
     uDMAControlBaseSet(UDMA_CONTROL_TABLE);
 
+    /* TODO: Register UDMA error interrupt handler */
+
     return ERROR_NONE;
 }
 

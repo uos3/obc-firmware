@@ -155,6 +155,8 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         UARTEnable(p_uart_device->uart_base);
         UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
 
+        /* TODO: register interrupt handler for this UART */
+
         /* TODO: Set baud rate? (Or check what default value is, or what
          * value is required by UoS3) */
     }
@@ -293,6 +295,7 @@ ErrorCode Uart_get_status(uint8_t uart_id_in, Uart_Status p_status_out) {
         return UART_ERROR_MAX_NUM_UARTS;
     }
 
+    /* TODO: CHANGE THIS TO UART_STATUS_X, use switch over the return of this */
     p_status_out = uDMAErrorStatusGet();
 
     if (p_status_out != 0) {
@@ -338,6 +341,21 @@ ErrorCode Uart_step(void) {
 
     /* If this point has been reached without error, return ERROR NONE. */
     return ERROR_NONE;
+}
+
+bool Uart_get_events_for_device(
+    Uart_DeviceId device_id_in,
+    Event *p_tx_event_out,
+    Event *p_rx_event_out
+) {
+    switch (device_id_in) {
+        case UART_DEVICE_ID_CAM:
+            *p_tx_event_out = EVT_UART_CAM_TX_COMPLETE;
+            *p_rx_event_out = EVT_UART_CAM_RX_COMPLETE;
+        default:
+            /* device ID is wrong, error */
+            break;
+    }
 }
 
 /* -------------------------------------------------------------------------   
