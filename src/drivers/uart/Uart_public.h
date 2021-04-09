@@ -57,6 +57,19 @@ typedef enum _Uart_Status {
     UART_STATUS_UDMA_TRANSFER_ERROR = 3, /* add many error kinds */
 } Uart_Status;
 
+/*
+ * 0. STATUS = NONE
+ *  - USER: Call Uart_send_bytes()
+ * 1. STATUS = IN_PROGRESS (in background via uDMA)
+ *  - interrupt -> set status as either succes/error, try to raise complete
+ *    event 
+ * 2. STATUS = SUCCESS / ERROR
+ *  - step -> if STATUS = success or error, and event not raised, raise event
+ *  - USER: poll_event(COMPLETE)
+ *         - Uart_get_tx_status(DEVICE) -> return success/error
+ *                                      -> reset status NONE
+ */
+
 /* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */
