@@ -156,9 +156,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
 
         /* TODO: register interrupt handler for this UART */
-
-        /* TODO: Set baud rate? (Or check what default value is, or what
-         * value is required by UoS3) */
     }
 
     /* Set the UART state as initialised. */
@@ -193,8 +190,7 @@ ErrorCode Uart_send_bytes(
      * UDMA_ARB_4 refers to the arbitratoin size, which is the number
      * of bytes transferred per trigger. This may not be necessary in AUTO
      * mode, but if we decide to use BASIC mode, this value may be required,
-     * so will be kept in for now.
-     * TODO: tidy up func call, and in rx */
+     * so will be kept in for now. */
     uDMAChannelControlSet(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
         length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4
@@ -220,7 +216,7 @@ ErrorCode Uart_send_bytes(
 
     if (uDMAErrorStatusGet() != 0) {
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
-        return UDMA_ERROR_NONSPECIFIED;
+        return UDMA_ERROR_TRANSFER_FAILED;
     }
 
     return ERROR_NONE;
@@ -265,21 +261,20 @@ ErrorCode Uart_recv_bytes(
     );
 
     /* Enable the channel. Software-initiated transfers require a channel
-     * request to begin the transfer.
-     * TODO: Check this */
+     * request to begin the transfer. */
     uDMAChannelEnable(UDMA_CHANNEL_UART0RX);
 
     UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
 
     if (uDMAErrorStatusGet() != 0) {
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
-        return UDMA_ERROR_NONSPECIFIED;
+        return UDMA_ERROR_TRANSFER_FAILED;
     }
 
     return ERROR_NONE;
 }
 
-ErrorCode Uart_get_status(uint8_t uart_id_in, Uart_Status p_status_out) {
+ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
@@ -301,7 +296,7 @@ ErrorCode Uart_get_status(uint8_t uart_id_in, Uart_Status p_status_out) {
     if (p_status_out != 0) {
         /* Check the uDMA error status, return an error if non-zero */
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
-        return UDMA_ERROR_NONSPECIFIED;
+        return UDMA_ERROR_TRANSFER_FAILED;
     }
     else {
         /* if uDMAErrorStatusGet() returns a 0, no error is pending, so return

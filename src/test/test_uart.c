@@ -54,6 +54,7 @@ int main(void) {
         send_data[i] = i;
     }
 
+    #if 0
     /* Main Loop */
     while (true) {
 
@@ -76,6 +77,7 @@ int main(void) {
 
         /* Clean events */
     }
+    #endif
 
     /* Send the data to the UART RX associated with the UART device.
      * TODO: Change which device for send and receive below. */
