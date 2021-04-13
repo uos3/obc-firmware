@@ -43,7 +43,7 @@ int main(void) {
     Kernel_init_critical_modules();
 
     /* Initialise the LED. */
-    if (Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
+    if (Gpio_init((int *)GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise LED GPIO pin");
         Debug_exit(1);
         return 1;
@@ -66,22 +66,6 @@ int main(void) {
     Udma_init();
 
     Led_set(LED_LAUNCHPAD, true);
-
-    /* Set the rising interrupt to toggle the LED state when an interrupt is
-     * detected. */
-    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle(LED_LAUNCHPAD)) != ERROR_NONE) {
-        DEBUG_ERR("Failed to set rising interrupt on GPIO pin");
-    }
-
-    while (true) {
-        /* Keep looping, so that the switch on the tm4c launchpad can be used
-         * at any time to set the rising interrupt, and the LED should toggle
-         * with each press of the switch. */
-        if (toggle_count > 5) {
-            DEBUG_INF("LED has been toggled %d times, ending test", toggle_count);
-            Debug_exit(1);
-        }
-    }
 
     /* Return 0 if no errors occured up to this point. */
     return 0;
