@@ -85,7 +85,7 @@ typedef enum _Gpio_Mode {
 
     GPIO_MODE_INPUT,
 
-    GPIO_MODE_OUTPUT
+    GPIO_MODE_OUTPUT,
 
 } Gpio_Mode;
 

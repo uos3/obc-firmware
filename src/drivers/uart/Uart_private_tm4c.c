@@ -114,8 +114,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART0_BASE,
         GPIO_PCTL_PB0_U1RX,
         GPIO_PCTL_PB1_U1TX,
-        GPIO_PIN_0, /* use tivaware gpio not driver */
-        GPIO_PIN_1,
+        GPIO_PINB0, /* use tivaware gpio not driver */
+        GPIO_PINB1,
         UDMA_CHANNEL_UART0TX, /* TODO: Check TI channel assignments */
         UDMA_CHANNEL_UART0RX,
         UART_STATUS_NONE,
