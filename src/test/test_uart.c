@@ -37,14 +37,17 @@
 int main(void) {
     int i;
     size_t data_size;
-    uint8_t send_data[data_size];
-    uint8_t recv_data[data_size];
+    uint8_t *send_data;
+    uint8_t *recv_data;
     uint8_t test_step;
     uint8_t num_attempts;
 
     data_size = 8;
     test_step = 0;
     num_attempts = 0;
+
+    send_data = (int *)malloc(data_size * sizeof(int));
+    recv_data = (int *)malloc(data_size * sizeof(int));
 
     Kernel_init_critical_modules();
 
@@ -88,6 +91,8 @@ int main(void) {
                     }
                     else {
                         DEBUG_INF("TX Not complete after max num attempts. Exiting.");
+                        free(send_data);
+                        free(recv_data);
                         Debug_exit(1);
                         break;
                     }
@@ -116,6 +121,8 @@ int main(void) {
                     }
                     else {
                         DEBUG_INF("RX Not complete after max num attempts. Exiting.");
+                        free(send_data);
+                        free(recv_data);
                         Debug_exit(1);
                         break;
                     }
@@ -140,17 +147,23 @@ int main(void) {
                 break;
             default:
                 DEBUG_INF("Test complete");
+                free(send_data);
+                free(recv_data);
                 Debug_exit(1);
                 break;
         }
 
         if (!Uart_step()) {
             DEBUG_INF("Exiting");
+            free(send_data);
+            free(recv_data);
             Debug_exit(1);
         }
     }
 
     EventManager_clear_all_events();
+    free(send_data);
+    free(recv_data);
 
     #if 0
     /* Send the data to the UART RX associated with the UART device.
