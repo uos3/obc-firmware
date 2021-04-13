@@ -35,6 +35,8 @@ add_executable(test_power
 target_link_libraries(test_power
     ${STANDARD_LINK_LIBS}
     Power
+    Rtc
+    Timer
     OpModeManager
 )
 

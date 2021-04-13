@@ -38,7 +38,8 @@ bool OpModeManager_init(void) {
         !DP.MEMSTOREMANAGER.INITIALISED
     ) {
         DEBUG_ERR("Required module not initialised");
-        DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_DEPENDENCY_NOT_INIT;
+        DP.OPMODEMANAGER.ERROR.code = OPMODEMANAGER_ERROR_DEPENDENCY_NOT_INIT;
+        DP.OPMODEMANAGER.ERROR.p_cause = NULL;
         return false;
     }
 
@@ -70,7 +71,8 @@ bool OpModeManager_step(void) {
 
     if (!DP.OPMODEMANAGER.INITIALISED) {
         DEBUG_ERR("OpModeManager not initialised");
-        DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_NOT_INIT;
+        DP.OPMODEMANAGER.ERROR.code = OPMODEMANAGER_ERROR_NOT_INIT;
+        DP.OPMODEMANAGER.ERROR.p_cause = NULL;
         return false;
     }
 
@@ -173,10 +175,11 @@ bool OpModeManager_step(void) {
                     }
                     break;
                 default:
-                    DEBUG_WRN(
+                    /*DEBUG_WRN(
                         "No step function for mode %d", 
                         DP.OPMODEMANAGER.OPMODE
-                    );
+                    );*/
+                    break;
             }
 
             break;
@@ -228,7 +231,9 @@ bool OpModeManager_step(void) {
                 DEBUG_ERR(
                     "EventManager error while raising change complete event"
                 );
-                DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                DP.OPMODEMANAGER.ERROR.code 
+                    = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                DP.OPMODEMANAGER.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
                 /* If the event raising fails we should try to raise the TM
                  * ourselves */
                 /* TODO: raise TM */
@@ -247,7 +252,8 @@ bool OpModeManager_step(void) {
                 "Invalid DP.OPMODEMANAGER.STATE: %d", 
                 DP.OPMODEMANAGER.STATE
             );
-            DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_INVALID_STATE;
+            DP.OPMODEMANAGER.ERROR.code = OPMODEMANAGER_ERROR_INVALID_STATE;
+            DP.OPMODEMANAGER.ERROR.p_cause = NULL;
             return false;
     }
     

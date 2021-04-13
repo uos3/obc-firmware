@@ -105,8 +105,10 @@ static int Power_test_setup(void **state) {
 static int Power_test_teardown(void **state) {
     (void) state;
     
-    if (DP.POWER.ERROR_CODE != ERROR_NONE) {
-        DEBUG_ERR("DP.POWER.ERROR_CODE = %d", DP.POWER.ERROR_CODE);
+    if (DP.POWER.ERROR.code != ERROR_NONE) {
+        char error_chain[64] = {0};
+        Kernel_error_to_string(&DP.POWER.ERROR, &error_chain);
+        DEBUG_ERR("DP.POWER.ERROR chain = %s", error_chain);
     }
 
     EventManager_destroy();

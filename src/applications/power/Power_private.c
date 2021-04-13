@@ -64,3 +64,8 @@ Eps_OcpState Power_get_ocp_state_for_op_mode(
 
     return state;
 }
+
+bool Power_low_power_status_check(void) {
+    /* TODO: check DP.EPS.HK_DATA for the battery voltage and compare it to the
+     * low power voltage threshold */
+}

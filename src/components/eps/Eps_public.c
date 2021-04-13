@@ -96,7 +96,9 @@ bool Eps_step(void) {
                 DEBUG_ERR(
                     "CRC of request frame to be sent is incorrect, dropping"
                 );
-                DP.EPS.ERROR_CODE = EPS_ERROR_INVALID_REQUEST_CRC;
+                DP.EPS.ERROR.code = EPS_ERROR_INVALID_REQUEST_CRC;
+                DP.EPS.ERROR.p_cause = NULL;
+
                 /* Move the state back to IDLE, we are dropping the request
                  * here and the user must try again. Signal this with the
                  * completed event but the failed status. */
@@ -107,7 +109,7 @@ bool Eps_step(void) {
                     /* An error during an error is bad, but we don't want to
                      * hide the fact that the root cause was the invalid CRC,
                      * so allow the path to continue here without changing
-                     * ERROR_CODE and without returning false here */
+                     * ERROR.p_cause and without returning false here */
                 }
                 DP.EPS.COMMAND_STATUS = EPS_COMMAND_FAILURE;
                 DP.EPS.STATE = EPS_STATE_IDLE;
@@ -140,7 +142,8 @@ bool Eps_step(void) {
             /* Raise the completed event */
             if (!EventManager_raise_event(EVT_EPS_COMMAND_COMPLETE)) {
                 DEBUG_ERR("EventManager error while raising command complete event");
-                DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+                DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
+                DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
                 /* TODO: return to IDLE here and set command as failed? */
                 return false;
             }
@@ -160,7 +163,8 @@ bool Eps_step(void) {
             ) {
                 if (!EventManager_raise_event(EVT_EPS_NEW_HK_DATA)) {
                     DEBUG_ERR("EventManager error while raising new HK event");
-                    DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+                    DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
+                    DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
                     /* TODO: return to IDLE here and set command as failed? */
                     return false;
                 }
@@ -173,7 +177,8 @@ bool Eps_step(void) {
             break;
         default:
             DEBUG_ERR("Invalid Eps state %d", DP.EPS.STATE);
-            DP.EPS.ERROR_CODE = EPS_ERROR_INVALID_STATE;
+            DP.EPS.ERROR.code = EPS_ERROR_INVALID_STATE;
+            DP.EPS.ERROR.p_cause = NULL;
             return false;
     }
 
@@ -190,7 +195,8 @@ bool Eps_send_config(void) {
      * call this function before the EPS init sequence is finished. */
     if (!DP.EPS.INITIALISED) {
         DEBUG_ERR("Cannot send new command when Eps is not initialised");
-        DP.EPS.ERROR_CODE = EPS_ERROR_NOT_INITIALISED;
+        DP.EPS.ERROR.code = EPS_ERROR_NOT_INITIALISED;
+        DP.EPS.ERROR.p_cause = NULL;
         return false;
     }
 
@@ -199,7 +205,8 @@ bool Eps_send_config(void) {
         DEBUG_ERR(
             "Cannot issue TC_COLLECT_HK_DATA to EPS as Eps is not in the IDLE state"
         );
-        DP.EPS.ERROR_CODE = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        DP.EPS.ERROR.code = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        DP.EPS.ERROR.p_cause = NULL;
         return false;
     }
 
@@ -233,7 +240,8 @@ bool Eps_send_config(void) {
     /* Raise the new request event */
     if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
         DEBUG_ERR("EventManager error while raising new request event");
-        DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+        DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
+        DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
         return false;
     }
 
@@ -250,7 +258,8 @@ bool Eps_collect_hk_data(void) {
      * call this function before the EPS init sequence is finished. */
     if (!DP.EPS.INITIALISED) {
         DEBUG_ERR("Cannot send new command when Eps is not initialised");
-        DP.EPS.ERROR_CODE = EPS_ERROR_NOT_INITIALISED;
+        DP.EPS.ERROR.code = EPS_ERROR_NOT_INITIALISED;
+        DP.EPS.ERROR.p_cause = NULL;
         return false;
     }
 
@@ -259,7 +268,8 @@ bool Eps_collect_hk_data(void) {
         DEBUG_ERR(
             "Cannot issue TC_COLLECT_HK_DATA to EPS as Eps is not in the IDLE state"
         );
-        DP.EPS.ERROR_CODE = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        DP.EPS.ERROR.code = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        DP.EPS.ERROR.p_cause = NULL;
         return false;
     }
 
@@ -294,7 +304,8 @@ bool Eps_collect_hk_data(void) {
     /* Raise the new request event */
     if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
         DEBUG_ERR("EventManager error while raising new request event");
-        DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+        DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
+        DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
         return false;
     }
 
@@ -312,16 +323,18 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
      * call this function before the EPS init sequence is finished. */
     if (!DP.EPS.INITIALISED) {
         DEBUG_ERR("Cannot send new command when Eps is not initialised");
-        DP.EPS.ERROR_CODE = EPS_ERROR_NOT_INITIALISED;
+        DP.EPS.ERROR.code = EPS_ERROR_NOT_INITIALISED;
+        DP.EPS.ERROR.p_cause = NULL;
         return false;
     }
 
     /* Check we are in idle mode, as can only issue new commands in idle */
     if (DP.EPS.STATE != EPS_STATE_IDLE) {
         DEBUG_ERR(
-            "Cannot issue TC_COLLECT_HK_DATA to EPS as Eps is not in the IDLE state"
+            "Cannot issue TC_SET_OCP_STATE to EPS as Eps is not in the IDLE state"
         );
-        DP.EPS.ERROR_CODE = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        DP.EPS.ERROR.code = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        DP.EPS.ERROR.p_cause = NULL;
         return false;
     }
 
@@ -331,28 +344,8 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
         request_frame
     );
 
-    /* Pack the state down into the single byte. The ordering here is
-     * important, and follows the numerical ordering of the rails, which is
-     * defined by the EPS_OCP_RAIL_x_SHIFT values. */
-    state_byte |= (uint8_t)(
-        (uint8_t)ocp_state_in.radio_tx << EPS_OCP_RAIL_RADIO_TX_SHIFT
-    );
-    state_byte |= (uint8_t)(
-        (uint8_t)ocp_state_in.radio_rx_camera 
-            << EPS_OCP_RAIL_RADIO_RX_CAMERA_SHIFT
-    );
-    state_byte |= (uint8_t)(
-        (uint8_t)ocp_state_in.eps_mcu << EPS_OCP_RAIL_EPS_MCU_SHIFT
-    );
-    state_byte |= (uint8_t)(
-        (uint8_t)ocp_state_in.obc << EPS_OCP_RAIL_OBC_SHIFT
-    );
-    state_byte |= (uint8_t)(
-        (uint8_t)ocp_state_in.gnss_rx << EPS_OCP_RAIL_GNSS_RX_SHIFT
-    );
-    state_byte |= (uint8_t)(
-        (uint8_t)ocp_state_in.gnss_lna << EPS_OCP_RAIL_GNSS_LNA_SHIFT
-    );
+    /* Pack the state down into the single byte. */
+    state_byte = Eps_ocp_state_to_ocp_byte(ocp_state_in);
 
     /* Set the next byte in the frame to the state byte, the payload of this
      * particular command */
@@ -380,7 +373,8 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in) {
     /* Raise the new request event */
     if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
         DEBUG_ERR("EventManager error while raising new request event");
-        DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+        DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
+        DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
         return false;
     }
 
@@ -397,16 +391,18 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
      * call this function before the EPS init sequence is finished. */
     if (!DP.EPS.INITIALISED) {
         DEBUG_ERR("Cannot send new command when Eps is not initialised");
-        DP.EPS.ERROR_CODE = EPS_ERROR_NOT_INITIALISED;
+        DP.EPS.ERROR.code = EPS_ERROR_NOT_INITIALISED;
+        DP.EPS.ERROR.p_cause = NULL;
         return false;
     }
 
     /* Check we are in idle mode, as can only issue new commands in idle */
     if (DP.EPS.STATE != EPS_STATE_IDLE) {
         DEBUG_ERR(
-            "Cannot issue TC_COLLECT_HK_DATA to EPS as Eps is not in the IDLE state"
+            "Cannot issue TC_SEND_BATT_CMD to EPS as Eps is not in the IDLE state"
         );
-        DP.EPS.ERROR_CODE = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        DP.EPS.ERROR.code = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        DP.EPS.ERROR.p_cause = NULL;
         return false;
     }
 
@@ -442,7 +438,77 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
     /* Raise the new request event */
     if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
         DEBUG_ERR("EventManager error while raising new request event");
-        DP.EPS.ERROR_CODE = EPS_ERROR_EVENTMANAGER_ERROR;
+        DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
+        DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
+        return false;
+    }
+
+    return true;
+}
+
+bool Eps_reset_ocp(Eps_OcpState ocp_state_in) {
+    uint8_t request_frame[EPS_MAX_UART_FRAME_LENGTH];
+    uint8_t state_byte = 0;
+    size_t length_without_crc
+        = EPS_UART_HEADER_LENGTH + EPS_UART_TC_RESET_OCP_PL_LENGTH;
+    size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
+
+    /* Check Eps is initialised. Unlike the step function it is an error to
+     * call this function before the EPS init sequence is finished. */
+    if (!DP.EPS.INITIALISED) {
+        DEBUG_ERR("Cannot send new command when Eps is not initialised");
+        DP.EPS.ERROR.code = EPS_ERROR_NOT_INITIALISED;
+        DP.EPS.ERROR.p_cause = NULL;
+        return false;
+    }
+
+    /* Check we are in idle mode, as can only issue new commands in idle */
+    if (DP.EPS.STATE != EPS_STATE_IDLE) {
+        DEBUG_ERR(
+            "Cannot issue TC_RESET_OCP to EPS as Eps is not in the IDLE state"
+        );
+        DP.EPS.ERROR.code = EPS_ERROR_SEND_TC_WHEN_NOT_IDLE;
+        DP.EPS.ERROR.p_cause = NULL;
+        return false;
+    }
+
+    /* Build the header for a new SET_OCP_STATE request */
+    Eps_build_uart_header(
+        EPS_UART_DATA_TYPE_TC_RESET_OCP,
+        request_frame
+    );
+
+    /* Pack the state down into the single byte. */
+    state_byte = Eps_ocp_state_to_ocp_byte(ocp_state_in);
+
+    /* Set the next byte in the frame to the state byte, the payload of this
+     * particular command */
+    request_frame[EPS_UART_HEADER_LENGTH] = state_byte;
+
+    /* Add the CRC to the frame */
+    Eps_append_crc_to_frame(
+        request_frame,
+        length_without_crc
+    );
+
+    /* Set the frame in the datapool */
+    memcpy(
+        (void *)DP.EPS.EPS_REQUEST, 
+        (void *)request_frame, 
+        length_with_crc
+    );
+
+    /* Set the length of the request */
+    DP.EPS.EPS_REQUEST_LENGTH = length_with_crc;
+
+    /* Set that the status is in progress, so new commands can't be raised */
+    DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
+
+    /* Raise the new request event */
+    if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
+        DEBUG_ERR("EventManager error while raising new request event");
+        DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
+        DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
         return false;
     }
 

@@ -32,7 +32,17 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
-#ifdef F_BU_SHORT_DWELL_TIME
+#if defined(F_BU_NO_DWELL_TIME)
+/**
+ * @brief Expected dwell time before begining antenna deploy procedure, in
+ * milliseconds.
+ * 
+ * This is set to 0 to prevent any dwell time checks, greatly speeding up many
+ * tests. To enable this pass the bu_no_dwell_time feature into the build
+ * script. 
+ */
+#define OPMODEMANAGER_BU_DWELL_TIME_MS (0)
+#elif defined(F_BU_SHORT_DWELL_TIME)
 /**
  * @brief Expected dwell time before begining antenna deploy procedure, in
  * milliseconds.
@@ -46,7 +56,11 @@
  * @brief Expected dwell time before begining antenna deploy procedure, in
  * milliseconds.
  * 
- * Nominally this is 45 minutes.
+ * This is set to 45 minutes.
+ * 
+ * NOTE: I can't find a requirement that actually specifies how long this
+ * should be. FDS 2.5.2 specifies "a minimum of 30 minutes". The previous code
+ * used 45 minutes, so I've kept that here.
  */
 #define OPMODEMANAGER_BU_DWELL_TIME_MS (2700000)
 #endif
@@ -63,9 +77,6 @@ void OpModeManager_bu_init(void) {
     Rtc_Timespan dwell_timespan = Rtc_timespan_from_ms(
         OPMODEMANAGER_BU_DWELL_TIME_MS
     );
-
-    /* Get power to collect some HK data so we can check for low battery */
-    Power_request_eps_hk();
 
     /* Check if the RTC value has passed the expected dwell time */
     Rtc_is_timespan_ellapsed(
@@ -129,7 +140,7 @@ void OpModeManager_bu_init(void) {
         DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE = true;
         return;
     }
-    
+
     /* BU init complete */
 }
 
@@ -163,17 +174,21 @@ bool OpModeManager_bu_step(void) {
      * gone into step the other options (AD/SM) haven't happened. We therefore
      * have to check for low battery voltage before we can transition to NF. */
     else {
-        /* Check to see if power has got the new HK data */
-        eps_new_hk = EventManager_is_event_raised(EVT_EPS_NEW_HK_DATA);
-
-        /* If we have new HK check to see if power is requesting LP */
-        if (eps_new_hk && DP.POWER.LOW_POWER_MODE_REQUEST) {
+        /* Check the low power status of POWER. If it's LOW_POWER raise the
+         * FDIR event for LP mode */
+        if (DP.POWER.LOW_POWER_STATUS == POWER_LOW_POWER_STATUS_LOW_POWER) {
             /* In BU FDIR will not raise the LP or SM events when requested by
              * applications, since these modes are special. Therefore we raise
              * the FDIR event here instead */
             /* TODO: raise event */
         }
-        else if (eps_new_hk) {
+        /* If we had a fault instead transition to safe mode, EPS is not
+         * responding */
+        else if (DP.POWER.LOW_POWER_STATUS == POWER_LOW_POWER_STATUS_FAULT) {
+            /* TODO: raise FDIR_REQUEST_SAFE_MODE event */
+        }
+        /* Finally if the check went OK we transition to NF */
+        else if (DP.POWER.LOW_POWER_STATUS == POWER_LOW_POWER_STATUS_OK) {
             DEBUG_INF("LP check passed, transition to NF");
             /* Otherwise if there's some new HK and we aren't supposed to be in
              * LP mode transition to NF */
@@ -181,6 +196,8 @@ bool OpModeManager_bu_step(void) {
                 = OPMODEMANAGER_OPMODE_NOMINAL_FUNCTIONING;
             DP.OPMODEMANAGER.TC_REQUEST_NEW_OPMODE = true;
         }
+        /* Any other value of the LP status indicates that the check is still
+         * ongoing */
     }
 
     /* If the dwell time has ellapsed */

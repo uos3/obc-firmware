@@ -91,7 +91,7 @@ void EventManager_shrink_lists(void) {
                 DEBUG_ERR("Error reallocating memory for EVENTMANAGER");
 
                 /* Set the shrink realloc error and raise the error event */
-                DP.EVENTMANAGER.ERROR_CODE 
+                DP.EVENTMANAGER.ERROR.code
                     = EVENTMANAGER_ERROR_SHRINK_REALLOC_FAILED;
                 
                 /* TODO: inform FDIR of error here */

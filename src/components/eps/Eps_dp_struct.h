@@ -44,7 +44,7 @@ typedef struct _Eps_Dp {
      * 
      * @dp 2
      */
-    ErrorCode ERROR_CODE;
+    Error ERROR;
 
     /**
      * @brief The current state of the Eps module.

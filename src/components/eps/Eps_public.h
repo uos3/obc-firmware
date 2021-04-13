@@ -314,6 +314,11 @@ typedef struct _Eps_HkData {
      */
     Eps_BattStatus batt_status;
 
+    /**
+     * @brief The voltage of the battery, in Volts.
+     */
+    double batt_voltage_volts;
+
 } Eps_HkData;
 
 /* -------------------------------------------------------------------------   
@@ -382,6 +387,14 @@ typedef enum _Eps_UartDataType {
     EPS_UART_DATA_TYPE_TC_SEND_BATT_CMD = 4,
 
     /**
+     * @brief Command instructing the EPS to reset (turn off then on) a
+     * selection of OCP rails.
+     * 
+     * Expected reply is EPS_UART_DATA_TYPE_TM_OCP_STATE
+     */
+    EPS_UART_DATA_TYPE_TC_RESET_OCP = 5,
+
+    /**
      * @brief Reply containing housekeeping data.
      * 
      * Generated with an EPS_UART_DATA_TYPE_TM_HK_DATA request.
@@ -420,7 +433,7 @@ typedef enum _Eps_UartDataType {
      * 
      * Generated as an unsolicited TM packet by the EPS.
      */
-    EPS_UART_DATA_TYPE_TM_OCP_TRIP = 133,
+    EPS_UART_DATA_TYPE_TM_OCP_TRIP = 133
     
 } Eps_UartDataType;
 
@@ -512,5 +525,15 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in);
  * error cause.
  */
 bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in);
+
+/**
+ * @brief Sends a command to the EPS to reset the OCP rails described by the
+ * given OcpState. A reset is defined as turning the rail off then on again.
+ * 
+ * @param ocp_state_in For each rail: true to reset, false to not reset.
+ * @return bool True on success, false on failure. See DP.EPS.ERROR_CODE for
+ * error cause. 
+ */
+bool Eps_reset_ocp(Eps_OcpState ocp_state_in);
 
 #endif /* H_EPS_PUBLIC_H */

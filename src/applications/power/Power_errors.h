@@ -69,9 +69,20 @@
 #define POWER_ERROR_EPS_SET_OCP_STATE_FAILED ((ErrorCode)(MOD_ID_POWER | 7))
 
 /**
+ * @brief A call to Eps_reset_ocp() failed. See DP.EPS.ERROR_CODE for the error
+ * cause.
+ */
+#define POWER_ERROR_EPS_RESET_OCP_FAILED ((ErrorCode)(MOD_ID_POWER | 8))
+
+/**
+ * @brief Couldn't start a new OCP rail reset as one is still in progress.
+ */
+#define POWER_ERROR_EPS_RESET_OCP_IN_PROGRESS ((ErrorCode)(MOD_ID_POWER | 9))
+
+/**
  * @brief The value of DP.POWER.LAST_EPS_COMMAND is unrecognised by the Power
  * app.
  */
-#define POWER_ERROR_UNRECOGNISED_LAST_EPS_COMMAND ((ErrorCode)(MOD_ID_POWER | 9))
+#define POWER_ERROR_UNRECOGNISED_LAST_EPS_COMMAND ((ErrorCode)(MOD_ID_POWER | 10))
 
 #endif /* H_POWER_ERRORS_H */

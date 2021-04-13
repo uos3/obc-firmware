@@ -25,15 +25,6 @@
 #include "components/eps/Eps_public.h"
 
 /* -------------------------------------------------------------------------   
- * DEFINES
- * ------------------------------------------------------------------------- */
-
-/**
- * @brief Maximum number of queued EPS commands.
- */
-#define EPS_MAX_QUEUED_COMMANDS (8)
-
-/* -------------------------------------------------------------------------   
  * TYPES
  * ------------------------------------------------------------------------- */
 
@@ -50,6 +41,21 @@ typedef uint8_t Eps_OcpByte;
 /* -------------------------------------------------------------------------   
  * DEFINES
  * ------------------------------------------------------------------------- */
+
+/**
+ * @brief The resistance of the R1 resistor in the ADC voltage sense circuit.
+ */
+#define EPS_ADC_VOLTAGE_SENSE_R1_OHMS ((double)(309000.0))
+
+/**
+ * @brief The resistance of the R2 resistor in the ADC voltage sense circuit.
+ */
+#define EPS_ADC_VOLTAGE_SENSE_R2_OHMS ((double)(100000.0))
+
+/**
+ * @brief The conversion factor to map ADC vsense scaledints to volts.
+ */
+#define EPS_ADC_VOLTAGE_SENSE_SCALEDINT_TO_VOLTS ((double)(2.5 / 1024.0))
 
 /**
  * @brief Bitshift for the Radio TX rail of an Eps_OcpByte variable.
@@ -158,6 +164,69 @@ typedef uint8_t Eps_OcpByte;
  */
 #define EPS_UART_TC_SET_CONFIG_PL_LENGTH (sizeof(Eps_ConfigData))
 
+/**
+ * @brief Length of the payload for EPS_UART_DATA_TYPE_TC_RESET_OCP.
+ */
+#define EPS_UART_TC_RESET_OCP_PL_LENGTH (1)
+
+/**
+ * @brief Length of the EPS_UART_DATA_TYPE_TM_HK_DATA payload in bytes.
+ * 
+ */
+#define EPS_UART_TM_HK_DATA_PL_LENGTH (0)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on all solar panels.
+ */
+#define EPS_ADC_SHUNT_RESIST_SOLAR_PANELS_OHMS ((double)0.043)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on OPC rail 1.
+ */
+#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_1_OHMS ((double)0.050)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on OPC rail 2.
+ */
+#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_2_OHMS ((double)0.062)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on OPC rail 3.
+ */
+#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_3_OHMS ((double)6.0)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on OPC rail 4.
+ */
+#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_4_OHMS ((double)0.442)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on OPC rail 5.
+ */
+#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_5_OHMS ((double)0.036)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on OPC rail 6.
+ */
+#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_6_OHMS ((double)0.124)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on the 3V3 supply.
+ */
+#define EPS_ADC_SHUNT_RESIST_3V3_SUPPLY_OHMS ((double)0.250)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on the 5V supply.
+ * 
+ */
+#define EPS_ADC_SHUNT_RESIST_5V_SUPPLY_OHMS ((double)0.124)
+
+/**
+ * @brief Shunt resistor value for the ADC current sense on the charge line.
+ * 
+ */
+#define EPS_ADC_SHUNT_RESIST_CHARGE_OHMS ((double)0.250)
+
 /* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */
@@ -203,5 +272,67 @@ bool Eps_check_uart_frame(
     uint8_t *p_frame_in,
     size_t length_in
 );
+
+/**
+ * @brief Parse the provided HK data packet data into an `Eps_HkData` struct.
+ * 
+ * @param p_data_in Raw data to parse. Shall be of length
+ * EPS_UART_TM_HK_DATA_PL_LENGTH. 
+ * @param p_hk_data_out Pointer to the HK data struct to populate
+ * @return bool True if successful, false if failure.
+ */
+bool Eps_parse_hk_data(
+    uint8_t *p_data_in,
+    Eps_HkData *p_hk_data_out
+);
+
+/**
+ * @brief Converts between a 10-bit ADC scaled integer voltage sense value and
+ * the voltage of the sensed line.
+ * 
+ * @param voltage_scaledint_in The ADC scaled int to convert
+ * @return double The calculated voltage in Volts.
+ */
+double Eps_adc_voltage_sense_scaledint_to_volts(
+    uint16_t voltage_scaledint_in
+);
+
+/**
+ * @brief Converts between a 10-bit ADC scaled integer voltage sense value and
+ * the current draw of the sensed line.
+ * 
+ * @param voltage_scaledint_in The ADC scaled int to convert
+ * @param shunt_resistor_ohms_in The resistance of the shunt resistor for this
+ * voltage sense value.
+ * @return double The calculated current in Amperes.
+ */
+double Eps_adc_voltage_sense_scaledint_to_amps(
+    uint16_t voltage_scaledint_in,
+    double shunt_resistor_ohms_in
+);
+
+/**
+ * @brief Convert from an Eps_OcpState struct to an Eps_OcpByte.
+ * 
+ * @param state_in The state to convert
+ * @return Eps_OcpByte The converted byte.
+ */
+Eps_OcpByte Eps_ocp_state_to_ocp_byte(Eps_OcpState state_in);
+
+/**
+ * @brief Convert from an Eps_OcpByte to an Eps_OcpState struct.
+ * 
+ * @param byte_in The byte to convert
+ * @return Eps_OcpState The converted state
+ */
+Eps_OcpState Eps_ocp_byte_to_ocp_state(Eps_OcpByte byte_in);
+
+/**
+ * @brief Parse the given bytes into an Eps_BattStatus struct.
+ * 
+ * @param p_data_in Pointer to the bytes to convert. Shall be 2 bytes long.
+ * @return Eps_BattStatus The convered battery status
+ */
+Eps_BattStatus Eps_parse_batt_status(uint8_t *p_data_in);
 
 #endif /* H_EPS_PRIVATE_H */

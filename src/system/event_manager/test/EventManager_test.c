@@ -187,7 +187,7 @@ static void EventManager_test_errors(void **state) {
     }
     assert_false(EventManager_raise_event(EVENTMANAGER_MAX_LIST_SIZE + 1));
     assert_int_equal(
-        DP.EVENTMANAGER.ERROR_CODE,
+        DP.EVENTMANAGER.ERROR.code,
         EVENTMANAGER_ERROR_MAX_EVENTS_REACHED
     );
 
@@ -221,10 +221,10 @@ static int EventManager_test_setup(void **state) {
 static int EventManager_test_teardown(void **state) {
     (void) state;
     
-    if (DP.EVENTMANAGER.ERROR_CODE != ERROR_NONE) {
+    if (DP.EVENTMANAGER.ERROR.code != ERROR_NONE) {
         DEBUG_ERR(
-            "DP.EVENTMANAGER.ERROR_CODE = %d", 
-            DP.EVENTMANAGER.ERROR_CODE
+            "DP.EVENTMANAGER.ERROR.code = %d", 
+            DP.EVENTMANAGER.ERROR.code
         );
     }
 

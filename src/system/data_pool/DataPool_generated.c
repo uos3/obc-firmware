@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-04-06
+ * @date 2021-04-13
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -72,11 +72,11 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.EVENTMANAGER.ERROR_CODE */
+    /* DP.EVENTMANAGER.ERROR */
     case 0x0c02:
-        *pp_data_out = &DP.EVENTMANAGER.ERROR_CODE;
-        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
-        *p_data_size_out = sizeof(ErrorCode);
+        *pp_data_out = &DP.EVENTMANAGER.ERROR;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERROR;
+        *p_data_size_out = sizeof(Error);
         return true;
 
 
@@ -304,11 +304,11 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.EPS.ERROR_CODE */
+    /* DP.EPS.ERROR */
     case 0x8802:
-        *pp_data_out = &DP.EPS.ERROR_CODE;
-        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
-        *p_data_size_out = sizeof(ErrorCode);
+        *pp_data_out = &DP.EPS.ERROR;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERROR;
+        *p_data_size_out = sizeof(Error);
         return true;
 
 
@@ -400,27 +400,27 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.POWER.ERROR_CODE */
+    /* DP.POWER.ERROR */
     case 0xd402:
-        *pp_data_out = &DP.POWER.ERROR_CODE;
-        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
-        *p_data_size_out = sizeof(ErrorCode);
+        *pp_data_out = &DP.POWER.ERROR;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERROR;
+        *p_data_size_out = sizeof(Error);
         return true;
 
 
-    /* DP.POWER.TIMER_ERROR_CODE */
+    /* DP.POWER.TIMER_ERROR */
     case 0xd403:
-        *pp_data_out = &DP.POWER.TIMER_ERROR_CODE;
-        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
-        *p_data_size_out = sizeof(ErrorCode);
+        *pp_data_out = &DP.POWER.TIMER_ERROR;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERROR;
+        *p_data_size_out = sizeof(Error);
         return true;
 
 
-    /* DP.POWER.LOW_POWER_MODE_REQUEST */
+    /* DP.POWER.LOW_POWER_STATUS */
     case 0xd404:
-        *pp_data_out = &DP.POWER.LOW_POWER_MODE_REQUEST;
-        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
-        *p_data_size_out = sizeof(bool);
+        *pp_data_out = &DP.POWER.LOW_POWER_STATUS;
+        *p_data_type_out = DATAPOOL_DATATYPE_POWER_LOWPOWERSTATUS;
+        *p_data_size_out = sizeof(Power_LowPowerStatus);
         return true;
 
 
@@ -496,6 +496,38 @@ bool DataPool_get(
         return true;
 
 
+    /* DP.POWER.SEND_RESET_OCP_TC */
+    case 0xd40e:
+        *pp_data_out = &DP.POWER.SEND_RESET_OCP_TC;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.POWER.OCP_RAILS_TO_RESET */
+    case 0xd40f:
+        *pp_data_out = &DP.POWER.OCP_RAILS_TO_RESET;
+        *p_data_type_out = DATAPOOL_DATATYPE_EPS_OCPSTATE;
+        *p_data_size_out = sizeof(Eps_OcpState);
+        return true;
+
+
+    /* DP.POWER.SEND_BATT_TC */
+    case 0xd410:
+        *pp_data_out = &DP.POWER.SEND_BATT_TC;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.POWER.BATT_CMD_TO_SEND */
+    case 0xd411:
+        *pp_data_out = &DP.POWER.BATT_CMD_TO_SEND;
+        *p_data_type_out = DATAPOOL_DATATYPE_EPS_BATTCMD;
+        *p_data_size_out = sizeof(Eps_BattCmd);
+        return true;
+
+
     /* DP.OPMODEMANAGER.INITIALISED */
     case 0x2801:
         *pp_data_out = &DP.OPMODEMANAGER.INITIALISED;
@@ -504,11 +536,11 @@ bool DataPool_get(
         return true;
 
 
-    /* DP.OPMODEMANAGER.ERROR_CODE */
+    /* DP.OPMODEMANAGER.ERROR */
     case 0x2802:
-        *pp_data_out = &DP.OPMODEMANAGER.ERROR_CODE;
-        *p_data_type_out = DATAPOOL_DATATYPE_ERRORCODE;
-        *p_data_size_out = sizeof(ErrorCode);
+        *pp_data_out = &DP.OPMODEMANAGER.ERROR;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERROR;
+        *p_data_size_out = sizeof(Error);
         return true;
 
 
@@ -622,9 +654,9 @@ bool DataPool_get_symbol_str(
         return true;
 
 
-    /* DP.EVENTMANAGER.ERROR_CODE */
+    /* DP.EVENTMANAGER.ERROR */
     case 0x0c02:
-        *pp_symbol_str_out = strdup("DP.EVENTMANAGER.ERROR_CODE");
+        *pp_symbol_str_out = strdup("DP.EVENTMANAGER.ERROR");
         return true;
 
 
@@ -796,9 +828,9 @@ bool DataPool_get_symbol_str(
         return true;
 
 
-    /* DP.EPS.ERROR_CODE */
+    /* DP.EPS.ERROR */
     case 0x8802:
-        *pp_symbol_str_out = strdup("DP.EPS.ERROR_CODE");
+        *pp_symbol_str_out = strdup("DP.EPS.ERROR");
         return true;
 
 
@@ -868,21 +900,21 @@ bool DataPool_get_symbol_str(
         return true;
 
 
-    /* DP.POWER.ERROR_CODE */
+    /* DP.POWER.ERROR */
     case 0xd402:
-        *pp_symbol_str_out = strdup("DP.POWER.ERROR_CODE");
+        *pp_symbol_str_out = strdup("DP.POWER.ERROR");
         return true;
 
 
-    /* DP.POWER.TIMER_ERROR_CODE */
+    /* DP.POWER.TIMER_ERROR */
     case 0xd403:
-        *pp_symbol_str_out = strdup("DP.POWER.TIMER_ERROR_CODE");
+        *pp_symbol_str_out = strdup("DP.POWER.TIMER_ERROR");
         return true;
 
 
-    /* DP.POWER.LOW_POWER_MODE_REQUEST */
+    /* DP.POWER.LOW_POWER_STATUS */
     case 0xd404:
-        *pp_symbol_str_out = strdup("DP.POWER.LOW_POWER_MODE_REQUEST");
+        *pp_symbol_str_out = strdup("DP.POWER.LOW_POWER_STATUS");
         return true;
 
 
@@ -940,15 +972,39 @@ bool DataPool_get_symbol_str(
         return true;
 
 
+    /* DP.POWER.SEND_RESET_OCP_TC */
+    case 0xd40e:
+        *pp_symbol_str_out = strdup("DP.POWER.SEND_RESET_OCP_TC");
+        return true;
+
+
+    /* DP.POWER.OCP_RAILS_TO_RESET */
+    case 0xd40f:
+        *pp_symbol_str_out = strdup("DP.POWER.OCP_RAILS_TO_RESET");
+        return true;
+
+
+    /* DP.POWER.SEND_BATT_TC */
+    case 0xd410:
+        *pp_symbol_str_out = strdup("DP.POWER.SEND_BATT_TC");
+        return true;
+
+
+    /* DP.POWER.BATT_CMD_TO_SEND */
+    case 0xd411:
+        *pp_symbol_str_out = strdup("DP.POWER.BATT_CMD_TO_SEND");
+        return true;
+
+
     /* DP.OPMODEMANAGER.INITIALISED */
     case 0x2801:
         *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.INITIALISED");
         return true;
 
 
-    /* DP.OPMODEMANAGER.ERROR_CODE */
+    /* DP.OPMODEMANAGER.ERROR */
     case 0x2802:
-        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.ERROR_CODE");
+        *pp_symbol_str_out = strdup("DP.OPMODEMANAGER.ERROR");
         return true;
 
 

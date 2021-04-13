@@ -73,6 +73,10 @@ FEATURES = {
     'bu_short_dwell_time': {
         'cmake_opt': 'UOS3_BU_SHORT_DWELL_TIME',
         'help': 'Enables short dwell time in BU mode'
+    },
+    'bu_no_dwell_time': {
+        'cmake_opt': 'UOS3_BU_NO_DWELL_TIME',
+        'help': 'Disables dwell time checks in BU mode'
     }
 }
 

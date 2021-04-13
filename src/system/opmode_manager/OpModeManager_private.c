@@ -133,22 +133,22 @@ bool OpModeManager_call_active_app_steps(void) {
 
         switch (app_id) {
             case APP_ID_BEACON:
-                DEBUG_TRC("Stepping Beacon app");
+                // DEBUG_TRC("Stepping Beacon app");
                 /* TODO: call step func when defined */
                 break;
                 
             case APP_ID_DEPLOYMENT:
-                DEBUG_TRC("Stepping Deployment app");
+                // DEBUG_TRC("Stepping Deployment app");
                 /* TODO: call step func when defined */
                 break;
 
             case APP_ID_PAYLOAD:
-                DEBUG_TRC("Stepping Payload app");
+                // DEBUG_TRC("Stepping Payload app");
                 /* TODO: call step func when defined */
                 break;
 
             case APP_ID_PICTURE:
-                DEBUG_TRC("Stepping Picture app");
+                // DEBUG_TRC("Stepping Picture app");
                 /* TODO: call step func when defined */
                 break;
 
@@ -361,7 +361,9 @@ bool OpModeManager_step_graceful_transition(void) {
                 DEBUG_ERR(
                     "EventManager error while raising change complete event"
                 );
-                DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                DP.OPMODEMANAGER.ERROR.code 
+                    = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                DP.OPMODEMANAGER.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
                 /* If the event raising fails we should try to raise the TM
                  * ourselves */
                 /* TODO: raise TM */
@@ -384,8 +386,9 @@ bool OpModeManager_step_graceful_transition(void) {
                 "Invalid DP.OPMODEMANAGER.GRACE_TRANS_STATE: %d", 
                 DP.OPMODEMANAGER.GRACE_TRANS_STATE
             );
-            DP.OPMODEMANAGER.ERROR_CODE 
+            DP.OPMODEMANAGER.ERROR.code
                 = OPMODEMANAGER_ERROR_INVALID_GRACE_TRANS_STATE;
+            DP.OPMODEMANAGER.ERROR.p_cause = NULL;
             return false;
     }
 

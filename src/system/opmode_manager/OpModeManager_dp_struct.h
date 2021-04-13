@@ -45,7 +45,7 @@ typedef struct _OpModeManager_Dp {
      * 
      * @dp 2
      */
-    ErrorCode ERROR_CODE;
+    Error ERROR;
 
     /**
      * @brief The current state of the OpModeManager.

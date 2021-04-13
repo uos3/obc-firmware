@@ -67,7 +67,7 @@ bool EventManager_init(void) {
         /* Since the event manager itself isn't allocated we just set the error
          * code in the data pool and return false, rather than raising the
          * eventmanager error event. */
-        DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_OUT_OF_MEMORY;
+        DP.EVENTMANAGER.ERROR.code = EVENTMANAGER_ERROR_OUT_OF_MEMORY;
         return false;
     }
 
@@ -152,7 +152,7 @@ bool EventManager_raise_event(Event event_in) {
             DEBUG_ERR("Maximum number of events reached");
 
             /* Raise the error code and flag */
-            DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_MAX_EVENTS_REACHED;
+            DP.EVENTMANAGER.ERROR.code = EVENTMANAGER_ERROR_MAX_EVENTS_REACHED;
             DP.EVENTMANAGER.MAX_EVENTS_REACHED = true;
             return false;
         }
@@ -182,7 +182,7 @@ bool EventManager_raise_event(Event event_in) {
             DEBUG_ERR("Error reallocating memory for EVENTMANAGER");
 
             /* Raise error code */
-            DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_OUT_OF_MEMORY;
+            DP.EVENTMANAGER.ERROR.code = EVENTMANAGER_ERROR_OUT_OF_MEMORY;
             return false;
         }
         /* Or if it succeeded, set the new pointers and list size */
@@ -243,7 +243,7 @@ bool EventManager_clear_all_events(void) {
         DEBUG_ERR("Attempted to raise event when EVENTMANAGER not initialised");
         
         /* Raise erorr code, don't raise event as the EM isn't init */
-        DP.EVENTMANAGER.ERROR_CODE = EVENTMANAGER_ERROR_NOT_INITIALISED;
+        DP.EVENTMANAGER.ERROR.code = EVENTMANAGER_ERROR_NOT_INITIALISED;
         return false;
     }
 

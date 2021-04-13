@@ -81,7 +81,7 @@ int main(void) {
     )) {
         Debug_exit(1);
     }
-    DEBUG_INF("em_error_code = %d", DP.EVENTMANAGER.ERROR_CODE);
+    DEBUG_INF("em_error_code = %d", DP.EVENTMANAGER.ERROR.code);
     DEBUG_INF("p_em_error_code = %p", (void *)p_em_error_code);
     DEBUG_INF("*p_em_error_code = %d", *p_em_error_code);
     DEBUG_INF(

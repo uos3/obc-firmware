@@ -40,11 +40,11 @@ typedef struct _EventManager_Dp {
     bool INITIALISED;
 
     /**
-     * @brief Stores an error code coming from the EventManager.
+     * @brief Stores errors that can occur in the EventManager.
      * 
      * @dp 2
      */
-    ErrorCode ERROR_CODE;
+    Error ERROR;
 
     /**
      * @brief Flag which is true if the maximum number of events have been

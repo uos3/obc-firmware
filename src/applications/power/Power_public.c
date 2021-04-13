@@ -35,17 +35,19 @@ bool Power_init(void) {
         !DP.EPS.INITIALISED
     ) {
         DEBUG_ERR("Required module not initialised");
-        DP.POWER.ERROR_CODE = POWER_ERROR_DEPENDENCY_NOT_INIT;
+        DP.POWER.ERROR.code = POWER_ERROR_DEPENDENCY_NOT_INIT;
+        DP.POWER.ERROR.p_cause = NULL;
         return false;
     }
 
     /* Set the flags requesting updates to the config, ocp state, and hk
      * reading, so that they are done as soon as the EPS is initialised. Also
-     * unset the EPS_OCP_STATE_CORRECT flag so that Mission knows it's not safe
-     * to enter a full OPMODE. */
+     * unset the EPS_OCP_STATE_CORRECT flag so that OpModeManager knows it's 
+     * not safe to enter a full OPMODE. */
     DP.POWER.UPDATE_EPS_CFG = true;
     DP.POWER.UPDATE_EPS_OCP_STATE = true;
     DP.POWER.UPDATE_EPS_HK = true;
+    DP.POWER.LOW_POWER_STATUS = POWER_LOW_POWER_STATUS_READ_IN_PROGRESS;
     DP.POWER.EPS_OCP_STATE_CORRECT = false;
 
     return true;
@@ -53,28 +55,6 @@ bool Power_init(void) {
 
 bool Power_step(void) {
     ErrorCode error = ERROR_NONE;
-
-    /* FIXME: Remove dependence on CFU? */
-
-    #if 0
-    /* If there is a mode change underway we raise the update OCP rail flag, so
-     * that this mode change is reflected in the EPS OCP rails. Also unset the
-     * EPS_OCP_STATE_CORRECT flag, as this is used by Mission to check if the
-     * change has been completed. */
-    if (!EventManager_is_event_raised(
-        EVT_MISSION_OPMODE_CHANGE_STARTED,
-        &is_event_raised
-    )) {
-        DEBUG_ERR("EventManager couldn't check for opmode changed event");
-        DP.POWER.ERROR_CODE = POWER_ERROR_EVENTMANAGER_ERROR;
-        return false;
-    }
-    if (is_event_raised) {
-        DP.POWER.OPMODE_CHANGE_IN_PROGRESS = true;
-        DP.POWER.UPDATE_EPS_OCP_STATE = true;
-        DP.POWER.EPS_OCP_STATE_CORRECT = false;
-    }
-    #endif
 
     /* If the configuration has been changed in the previous cycle disable the
      * old task timer and clear the event in the data pool. This is required
@@ -90,8 +70,10 @@ bool Power_step(void) {
             error = Timer_disable(DP.POWER.TASK_TIMER_EVENT);
             if (error != ERROR_NONE) {
                 DEBUG_ERR("Couldn't disable Power task timer");
-                DP.POWER.ERROR_CODE = POWER_ERROR_TASK_TIMER_NOT_DISABLED;
-                DP.POWER.TIMER_ERROR_CODE = error;
+                DP.POWER.ERROR.code = POWER_ERROR_TASK_TIMER_NOT_DISABLED;
+                DP.POWER.ERROR.p_cause = &DP.POWER.TIMER_ERROR;
+                DP.POWER.TIMER_ERROR.code = error;
+                DP.POWER.TIMER_ERROR.p_cause = NULL;
                 return false;
             }
             DP.POWER.TASK_TIMER_EVENT = EVT_NONE;
@@ -116,8 +98,10 @@ bool Power_step(void) {
         );
         if (error != ERROR_NONE) {
             DEBUG_ERR("Couldn't start Power task timer");
-            DP.POWER.ERROR_CODE = POWER_ERROR_TASK_TIMER_NOT_STARTED;
-            DP.POWER.TIMER_ERROR_CODE = error;
+            DP.POWER.ERROR.code = POWER_ERROR_TASK_TIMER_NOT_STARTED;
+            DP.POWER.ERROR.p_cause = &DP.POWER.TIMER_ERROR;
+            DP.POWER.TIMER_ERROR.code = error;
+            DP.POWER.TIMER_ERROR.p_cause = NULL;
             return false;
         }
     }
@@ -146,9 +130,9 @@ bool Power_step(void) {
                 > 
                 CFG.POWER_MAX_NUM_FAILED_EPS_COMMANDS
             ) {
-                /* TODO: What to do here, could reboot the EPS but that would
+                /* FIXME: What to do here, could reboot the EPS but that would
                  * also reboot the OBC (probably)? Remember to update comment
-                 * in config data struct too */
+                 * in config data struct with how this is resolved */
                 DEBUG_ERR("Maximum number of failed EPS commands exceeded");
             }
 
@@ -162,7 +146,7 @@ bool Power_step(void) {
                     DP.POWER.UPDATE_EPS_HK = true;
                     break;
                 case EPS_UART_DATA_TYPE_TC_SEND_BATT_CMD:
-                    /* TODO: how to deal with batt commands? */
+                    DP.POWER.SEND_BATT_TC = true;
                     break;
                 case EPS_UART_DATA_TYPE_TC_SET_CONFIG:
                     DP.POWER.UPDATE_EPS_CFG = true;
@@ -170,13 +154,17 @@ bool Power_step(void) {
                 case EPS_UART_DATA_TYPE_TC_SET_OCP_STATE:
                     DP.POWER.UPDATE_EPS_OCP_STATE = true;
                     break;
+                case EPS_UART_DATA_TYPE_TC_RESET_OCP:
+                    DP.POWER.SEND_RESET_OCP_TC = true;
+                    break;
                 default:
                     DEBUG_ERR(
                         "Unrecognised last EPS command %d",
                         DP.POWER.LAST_EPS_COMMAND
                     );
-                    DP.POWER.ERROR_CODE 
+                    DP.POWER.ERROR.code
                         = POWER_ERROR_UNRECOGNISED_LAST_EPS_COMMAND;
+                    DP.POWER.ERROR.p_cause = NULL;
                     return false;
             }
             #pragma GCC diagnostic pop
@@ -188,28 +176,74 @@ bool Power_step(void) {
         else if (DP.EPS.COMMAND_STATUS == EPS_COMMAND_SUCCESS) {
             DP.POWER.NUM_CONSEC_FAILED_EPS_COMMANDS = 0;
 
-            /* If the last command was an OCP update set the OCP correct flag */
-            if (DP.POWER.LAST_EPS_COMMAND 
-                == EPS_UART_DATA_TYPE_TC_SET_OCP_STATE
-            ) {
-                DP.POWER.EPS_OCP_STATE_CORRECT = true;
-
-                /* If this was part of an opmode change emmit the change
-                 * complete event and reset the change flag */
-                if (DP.POWER.OPMODE_CHANGE_IN_PROGRESS) {
-                    if (!EventManager_raise_event(
-                        EVT_POWER_OPMODE_CHANGE_OCP_STATE_CHANGE_COMPLETE
-                    )) {
-                        DEBUG_ERR(
-                            "Couldn't raise OPMODE change complete event"
-                        );
-                        DP.POWER.ERROR_CODE 
-                            = POWER_ERROR_EPS_SET_OCP_STATE_FAILED;
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Wswitch-enum"
+            switch (DP.POWER.LAST_EPS_COMMAND) {
+                /* Successfully collected new HK data */
+                case EPS_UART_DATA_TYPE_TC_COLLECT_HK_DATA:
+                    /* Do battery voltage check */
+                    if (!Power_low_power_status_check()) {
+                        DEBUG_ERR("Couldn't perform low power check");
                         return false;
                     }
-                    DP.POWER.OPMODE_CHANGE_IN_PROGRESS = false;
-                }
+
+                    /* TODO: store as TM */
+
+                    break;
+
+                /* Successfully set a new OCP state */
+                case EPS_UART_DATA_TYPE_TC_SET_OCP_STATE:
+
+                    DP.POWER.EPS_OCP_STATE_CORRECT = true;
+
+                    /* If this was part of an opmode change emmit the change
+                     * complete event and reset the change flag */
+                    if (DP.POWER.OPMODE_CHANGE_IN_PROGRESS) {
+                        if (!EventManager_raise_event(
+                            EVT_POWER_OPMODE_CHANGE_OCP_STATE_CHANGE_COMPLETE
+                        )) {
+                            DEBUG_ERR(
+                                "Couldn't raise OPMODE change complete event"
+                            );
+                            DP.POWER.ERROR.code 
+                                = POWER_ERROR_EVENTMANAGER_ERROR;
+                            DP.POWER.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
+                            return false;
+                        }
+                        DP.POWER.OPMODE_CHANGE_IN_PROGRESS = false;
+                    }
+
+                    break;
+
+                /* Successfully reset OCP rail(s) */
+                case EPS_UART_DATA_TYPE_TC_RESET_OCP:
+
+                    /* Emmit the event signalling this */
+                    if (!EventManager_raise_event(EVT_POWER_OCP_RESET_SUCCESS)) {
+                        DEBUG_ERR("Couldn't raise OCP reset success event");
+                        DP.POWER.ERROR.code = POWER_ERROR_EVENTMANAGER_ERROR;
+                        DP.POWER.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
+                        return false;
+                    }
+
+                    /* Clear the rails to reset value */
+                    memset(
+                        &DP.POWER.OCP_RAILS_TO_RESET,
+                        0,
+                        sizeof(Eps_OcpState)
+                    );
+                    break;
+
+                default:
+                    /* Not all TCs require action on success, we will just put
+                     * a trace here that we didn't do anything with that TC */
+                    DEBUG_TRC(
+                        "No action on successful EPS TC %d",
+                        DP.POWER.LAST_EPS_COMMAND
+                    );
+                    break;
             }
+            #pragma GCC diagnostic pop
         }
         else {
             /* If it's anything else raise a warning, this indicates something
@@ -233,7 +267,8 @@ bool Power_step(void) {
             /* Send the config to the EPS */
             if (!Eps_send_config()) {
                 DEBUG_ERR("Error sending new EPS configuration");
-                DP.POWER.ERROR_CODE = POWER_ERROR_EPS_SEND_CONFIG_FAILED;
+                DP.POWER.ERROR.code = POWER_ERROR_EPS_SEND_CONFIG_FAILED;
+                DP.POWER.ERROR.p_cause = &DP.EPS.ERROR;
                 return false;
             }
 
@@ -264,7 +299,8 @@ bool Power_step(void) {
             /* Send the new state to the Eps */
             if (!Eps_set_ocp_state(DP.POWER.REQUESTED_OCP_STATE)) {
                 DEBUG_ERR("Error sending updated OCP state to EPS");
-                DP.POWER.ERROR_CODE = POWER_ERROR_EPS_SET_OCP_STATE_FAILED;
+                DP.POWER.ERROR.code = POWER_ERROR_EPS_SET_OCP_STATE_FAILED;
+                DP.POWER.ERROR.p_cause = &DP.EPS.ERROR;
                 return false;
             }
 
@@ -289,6 +325,39 @@ bool Power_step(void) {
         }
     }
 
+    /* If there's a request to reset OCP rail(s) */
+    if (DP.POWER.SEND_RESET_OCP_TC) {
+        /* If the EPS is still working on a command (or we haven't read the
+         * latest command status stop wait for it to be processed) */
+        if (DP.EPS.COMMAND_STATUS == EPS_COMMAND_NONE) {
+            /* Send the reset command to the EPS */
+            if (!Eps_reset_ocp(DP.POWER.OCP_RAILS_TO_RESET)) {
+                DEBUG_ERR("Error sending OCP reset command to EPS");
+                DP.POWER.ERROR.code = POWER_ERROR_EPS_RESET_OCP_FAILED;
+                DP.POWER.ERROR.p_cause = &DP.EPS.ERROR;
+            }
+
+            /* Set the last command to the EPS */
+            DP.POWER.LAST_EPS_COMMAND = EPS_UART_DATA_TYPE_TC_RESET_OCP;
+
+            /* If the request is sent successfully clear the send flag */
+            DP.POWER.SEND_RESET_OCP_TC = false;
+            DEBUG_TRC("Reset EPS OCP sent");
+            DEBUG_DBG(
+                "DP.POWER.OCP_RAILS_TO_RESET: %d%d%d%d%d%d",
+                DP.POWER.OCP_RAILS_TO_RESET.radio_tx,
+                DP.POWER.OCP_RAILS_TO_RESET.radio_rx_camera,
+                DP.POWER.OCP_RAILS_TO_RESET.eps_mcu,
+                DP.POWER.OCP_RAILS_TO_RESET.obc,
+                DP.POWER.OCP_RAILS_TO_RESET.gnss_rx,
+                DP.POWER.OCP_RAILS_TO_RESET.gnss_lna
+            );
+        }
+        else {
+            DEBUG_TRC("EPS OCP reset requested but EPS is executing a command");
+        }
+    }
+
     /* If there's a request to update the EPS HK data process it */
     if (DP.POWER.UPDATE_EPS_HK) {
         /* If the EPS is still working on a command (or we haven't read the
@@ -297,7 +366,8 @@ bool Power_step(void) {
             /* Send the request to the Eps */
             if (!Eps_collect_hk_data()) {
                 DEBUG_ERR("Error requesting new EPS HK packet");
-                DP.POWER.ERROR_CODE = POWER_ERROR_EPS_COLLECT_HK_FAILED;
+                DP.POWER.ERROR.code = POWER_ERROR_EPS_COLLECT_HK_FAILED;
+                DP.POWER.ERROR.p_cause = &DP.EPS.ERROR;
                 return false;
             }
 
@@ -334,7 +404,43 @@ void Power_request_eps_hk(void) {
         DEBUG_WRN("EPS HK request made when a pending request sill exists");
     }
 
+    /* Set the low power status update in progress flag, as we are in the 
+     * middle of getting the updated EPS HK */
+    DP.POWER.LOW_POWER_STATUS = POWER_LOW_POWER_STATUS_READ_IN_PROGRESS;
+
     DP.POWER.UPDATE_EPS_HK = true;
+}
+
+bool Power_reset_ocp(Eps_OcpState rails_to_reset_in) {
+    /* First we need to check if there's already a reset pending. Since
+     * DP.POWER.OCP_RAILS_TO_RESET will be all false when a reset isn't pending
+     * we check for this */
+    if (DP.POWER.OCP_RAILS_TO_RESET.radio_tx
+        ||
+        DP.POWER.OCP_RAILS_TO_RESET.radio_rx_camera
+        ||
+        DP.POWER.OCP_RAILS_TO_RESET.eps_mcu
+        ||
+        DP.POWER.OCP_RAILS_TO_RESET.obc
+        ||
+        DP.POWER.OCP_RAILS_TO_RESET.gnss_rx
+        ||
+        DP.POWER.OCP_RAILS_TO_RESET.gnss_lna
+    ) {
+        DEBUG_ERR(
+            "Can't request rail reset as the last reset operation hasn't finished yet."
+        );
+        DP.POWER.ERROR.code = POWER_ERROR_EPS_RESET_OCP_IN_PROGRESS;
+        DP.POWER.ERROR.p_cause = NULL;
+        return false;
+    }
+
+    /* If there isn't one in progress set the input in the datapool and set the
+     * send flag */
+    DP.POWER.OCP_RAILS_TO_RESET = rails_to_reset_in;
+    DP.POWER.SEND_RESET_OCP_TC = true;
+
+    return true;
 }
 
 void Power_request_ocp_state_for_next_opmode(void) {

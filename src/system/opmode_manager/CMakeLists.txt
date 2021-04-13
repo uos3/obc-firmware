@@ -1,9 +1,13 @@
 # OpModeManager module CMakeLists.txt
 
 option(UOS3_BU_SHORT_DWELL_TIME "Enable short dwell time in BU mode" OFF)
+option(UOS3_BU_NO_DWELL_TIME "Disable dwell time chceks in BU mode" OFF)
 
 if (${UOS3_BU_SHORT_DWELL_TIME})
     add_definitions(-DF_BU_SHORT_DWELL_TIME)
+endif()
+if (${UOS3_BU_NO_DWELL_TIME})
+    add_definitions(-DF_BU_NO_DWELL_TIME)
 endif()
 
 add_library(OpModeManager
