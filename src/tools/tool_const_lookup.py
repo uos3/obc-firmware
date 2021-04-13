@@ -44,6 +44,12 @@ def const_lookup(search, const_type=None):
                 table_matches = db.table(table_name).search(where('module') == module_name)
             if len(table_matches) > 0:
                 matches[table_name].extend(table_matches)
+    else:
+        # Match for constants
+        if value is not None:
+            matches = db.table(const_type).search(where('value') == value)
+        else:
+            matches = db.table(const_type).search(where('module') == module_name)
 
     return matches
 
