@@ -65,6 +65,9 @@ int main(void) {
         DEBUG_DBG("Switch initialised");
     }
 
+    Uart_init_specific(UART_DEVICE_ID_TEST);
+    Udma_init();
+
     Led_set(LED_LAUNCHPAD, true);
 
     /* Set the rising interrupt to toggle the LED state when an interrupt is

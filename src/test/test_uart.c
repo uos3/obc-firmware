@@ -52,7 +52,7 @@ int main(void) {
     Kernel_init_critical_modules();
 
     /* Initialise the UART devices. */
-    if (Uart_init() != ERROR_NONE) {
+    if (Uart_init_specific(UART_DEVICE_ID_TEST) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the UART devices.");
     }
 
