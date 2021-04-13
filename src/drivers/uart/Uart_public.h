@@ -27,6 +27,7 @@
 /* Internal */
 #include "drivers/uart/Uart_errors.h"
 #include "drivers/uart/Uart_events.h"
+#include "drivers/gpio/Gpio_public.h"
 #include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -83,8 +84,8 @@ typedef struct _Uart_Device {
     uint32_t uart_base;
     uint32_t uart_pin_rx_func;
     uint32_t uart_pin_tx_func;
-    uint8_t gpio_pin_rx;
-    uint8_t gpio_pin_tx;
+    GPIO_PIN_INDEX gpio_pin_rx;
+    GPIO_PIN_INDEX gpio_pin_tx;
     uint8_t udma_channel_tx;
     uint8_t udma_channel_rx;
     Uart_Status uart_status_tx;
