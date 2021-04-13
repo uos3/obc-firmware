@@ -36,6 +36,8 @@
 
 int main(void) {
 
+    int toggle_count = 0;
+
     Kernel_init_critical_modules();
 
     /* Initialise the LED. */
@@ -66,6 +68,10 @@ int main(void) {
         /* Keep looping, so that the switch on the tm4c launchpad can be used
          * at any time to set the rising interrupt, and the LED should toggle
          * with each press of the switch. */
+        if (toggle_count > 5) {
+            DEBUG_INF("LED has been toggled %d times, ending test", toggle_count);
+            Debug_exit(1);
+        }
     }
 
     /* Return 0 if no errors occured up to this point. */

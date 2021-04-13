@@ -24,6 +24,8 @@
 #include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_public.h"
 #include "drivers/udma/Udma_public.h"
+#include "components/led/Led_public.h"
+#include "drivers/gpio/Gpio_public.h"
 #include "util/debug/Debug_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "system/kernel/Kernel_public.h"
@@ -89,6 +91,7 @@ int main(void) {
             /* Step 0 is to send the bytes */
             case 0:
                 Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size);
+                DEBUG_INF("Sending bytes");
                 /* Increment the step number and move on to next case */
                 test_step++;
                 break;
