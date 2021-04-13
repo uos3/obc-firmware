@@ -36,11 +36,15 @@
 
 int main(void) {
     int i;
-    size_t data_size = 8;
+    size_t data_size;
     uint8_t send_data[data_size];
     uint8_t recv_data[data_size];
-    uint8_t test_step = 0;
-    uint8_t num_attempts = 0;
+    uint8_t test_step;
+    uint8_t num_attempts;
+
+    data_size = 8;
+    test_step = 0;
+    num_attempts = 0;
 
     Kernel_init_critical_modules();
 
@@ -59,31 +63,6 @@ int main(void) {
     for (i = 0; i < data_size; ++i) {
         send_data[i] = i;
     }
-
-    #if 0
-    /* Main Loop */
-    while (true) {
-
-        switch (test_step) {
-            case 0:
-                /* call send_bytes*/
-                test_step++;
-                break;
-            case 1:
-                /* poll for TX_COMPLETE */
-                break;
-                /* Fill with reads */
-            default:
-                /* end of test */
-        }
-
-        if (!Uart_step()) {
-            Debug_exit(1);
-        }
-
-        /* Clean events */
-    }
-    #endif
 
     /* Main loop */
     while (true) {
@@ -170,6 +149,8 @@ int main(void) {
             Debug_exit(1);
         }
     }
+
+    EventManager_clear_all_events();
 
     #if 0
     /* Send the data to the UART RX associated with the UART device.

@@ -54,8 +54,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART0_BASE,
         GPIO_PA0_U0RX, /* TODO: Getting same error as I2C. Should still work */
         GPIO_PA1_U0TX,
-        GPIO_PIN_0,
-        GPIO_PIN_1,
+        GPIO_PINA0,
+        GPIO_PINA1,
         UDMA_CHANNEL_UART0TX,
         UDMA_CHANNEL_UART0RX,
         UART_STATUS_NONE,
@@ -74,8 +74,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART3_BASE,
         GPIO_PC6_U3RX, /* TODO: Getting same error as I2C. Should still work */
         GPIO_PC7_U3TX,
-        GPIO_PIN_6,
-        GPIO_PIN_7,
+        GPIO_PINC6,
+        GPIO_PINC7,
         UDMA_CHANNEL_UART1TX,
         UDMA_CHANNEL_UART1RX,
         UART_STATUS_NONE,
@@ -94,8 +94,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART7_BASE,
         GPIO_PE0_U7RX, /* TODO: Getting same error as I2C. Should still work */
         GPIO_PE1_U7TX,
-        GPIO_PIN_0,
-        GPIO_PIN_1,
+        GPIO_PINE0,
+        GPIO_PINE1,
         UDMA_CH1_UART2TX, /* TODO: Check TI channel assignments */
         UDMA_CH0_UART2RX,
         UART_STATUS_NONE,
