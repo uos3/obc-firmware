@@ -83,9 +83,9 @@ typedef enum _GPIO_PIN_INDEX {
 
 typedef enum _Gpio_Mode {
 
-    GPIO_MODE_INPUT,
+    GPIO_MODE_INPUT = 0,
 
-    GPIO_MODE_OUTPUT,
+    GPIO_MODE_OUTPUT = 1,
 
 } Gpio_Mode;
 

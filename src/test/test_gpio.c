@@ -22,14 +22,11 @@
 
 /* Internal includes */
 #include "drivers/gpio/Gpio_errors.h"
-#include "drivers/gpio/Gpio_private.h"
 #include "drivers/gpio/Gpio_public.h"
 #include "components/led/Led_errors.h"
-#include "components/led/Led_private.h"
 #include "components/led/Led_public.h"
 #include "util/debug/Debug_public.h"
 #include "system/kernel/Kernel_public.h"
-#include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_public.h"
 #include "drivers/udma/Udma_public.h"
 #include "system/event_manager/EventManager_public.h"
@@ -46,7 +43,7 @@ int main(void) {
     Kernel_init_critical_modules();
 
     /* Initialise the LED. */
-    if (Gpio_init(LED_LEDS[LED_LAUNCHPAD].gpio_pin, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
+    if (Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise LED GPIO pin");
         Debug_exit(1);
         return 1;
@@ -72,7 +69,7 @@ int main(void) {
 
     /* Set the rising interrupt to toggle the LED state when an interrupt is
      * detected. */
-    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle(LED_LEDS[LED_LAUNCHPAD].gpio_pin)) != ERROR_NONE) {
+    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle(LED_LAUNCHPAD)) != ERROR_NONE) {
         DEBUG_ERR("Failed to set rising interrupt on GPIO pin");
     }
 

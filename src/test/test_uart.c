@@ -21,7 +21,6 @@
 #include <stdbool.h>
 
 /* Internal includes */
-#include "drivers/uart/Uart_private.h"
 #include "drivers/uart/Uart_public.h"
 #include "drivers/udma/Udma_public.h"
 #include "components/led/Led_public.h"

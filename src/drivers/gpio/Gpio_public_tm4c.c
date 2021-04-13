@@ -74,8 +74,8 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
                 if (i >= GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS) {
                     /* If the number of attempts has reached the maximum,
                      * raise an error. */
-                    DEBUG_ERR("Failed to enable GPIO peripheral");
-                    return GPIO_ERROR_PERIPHERAL_ENABLE_FAILED;
+                    DEBUG_INF("Failed to enable GPIO peripheral");
+                    /*return GPIO_ERROR_PERIPHERAL_ENABLE_FAILED*/
                 }
             }
         }
