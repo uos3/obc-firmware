@@ -64,7 +64,7 @@ int main(void) {
         DEBUG_ERR("Failed to set rising interrupt on GPIO pin");
     }
 
-    while (1) {
+    while (true) {
         /* Keep looping, so that the switch on the tm4c launchpad can be used
          * at any time to set the rising interrupt, and the LED should toggle
          * with each press of the switch. */
