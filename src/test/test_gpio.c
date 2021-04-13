@@ -39,7 +39,7 @@ int main(void) {
     Kernel_init_critical_modules();
 
     /* Initialise the LED. */
-    if (Gpio_init(LED_LEDS[LED_LAUNCHPAD].gpio_pin, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
+    if (Gpio_init(LED_LAUNCHPAD, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise LED GPIO pin");
     }
     else {
