@@ -45,6 +45,6 @@
  * non-zero error which does not match any other defined error.
  * 
  */
-#define UDMA_ERROR_NONSPECIFIED ((ErrorCode)MOD_ID_UART | 3)
+#define UDMA_ERROR_TRANSFER_FAILED ((ErrorCode)MOD_ID_UART | 3)
 
 #endif /* H_UDMA_ERRORS_H */

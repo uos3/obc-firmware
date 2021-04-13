@@ -37,6 +37,7 @@ int main(void) {
     uint8_t send_data[data_size];
     uint8_t recv_data[data_size];
     uint8_t test_step = 0;
+    uint8_t num_attempts = 0;
 
     /* Initialise the UART devices. */
     if (Uart_init() != ERROR_NONE) {
@@ -54,6 +55,7 @@ int main(void) {
         send_data[i] = i;
     }
 
+    #if 0
     /* Main Loop */
     while (true) {
 
@@ -76,7 +78,94 @@ int main(void) {
 
         /* Clean events */
     }
+    #endif
 
+    /* Main loop */
+    while (true) {
+        switch(test_step) {
+            /* Step 0 is to send the bytes */
+            case 0:
+                Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size);
+                /* Increment the step number and move on to next case */
+                test_step++;
+                break;
+            /* Step 1 is to check if the correct event has been raised (and
+             * automatically clear it with poll_event). Will check 3 times
+             * before failing. */
+            case 1:
+                if (EventManager_poll_event(EVT_UART_TEST_TX_COMPLETE)) {
+                    DEBUG_INF("Bytes have been sent");
+                }
+                else {
+                    if (num_attempts <= 3) {
+                        DEBUG_INF("TX Complete event has NOT been raised. Retrying");
+                        num_attempts++;
+                    }
+                    else {
+                        DEBUG_INF("TX Not complete after max num attempts. Exiting.");
+                        Debug_exit(1);
+                        break;
+                    }
+                }
+                /* Reset the number of attempts for the next step */
+                num_attempts = 0;
+                /* Increment the step number and move on to next case */
+                test_step++;
+                break;
+            /* Step 2 is to receive the bytes */
+            case 2:
+                Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size);
+                /* Increment the step number and move on to next case */
+                test_step++;
+                break;
+            /* Step 3 is to check if the correct event has been raised after
+             * receiving bytes. */
+            case 3:
+                if (EventManager_poll_event(EVT_UART_TEST_RX_COMPLETE)) {
+                    DEBUG_INF("Bytes have been received");
+                }
+                else {
+                    if (num_attempts <= 3) {
+                        DEBUG_INF("RX Complete event has NOT been raised. Retrying");
+                        num_attempts++;
+                    }
+                    else {
+                        DEBUG_INF("RX Not complete after max num attempts. Exiting.");
+                        Debug_exit(1);
+                        break;
+                    }
+                }
+                num_attempts = 0;
+                test_step++;
+            /* Step 4 is to check that the data received is equal to the data
+             * which was sent, as all this test is doing is sending and
+             * receiving the same data. */
+            case 4:
+                for (i = 0; i < data_size; ++i) {
+                    if (recv_data[i] != send_data[i]) {
+                        DEBUG_INF(
+                            "%d from recvd data does not equal expected value of %d",
+                            recv_data[i],
+                            send_data[i]
+                        );
+                    }
+                }
+                /* Increment the step number and move on to next case */
+                test_step++;
+                break;
+            default:
+                DEBUG_INF("Test complete");
+                Debug_exit(1);
+                break;
+        }
+
+        if (!Uart_step()) {
+            DEBUG_INF("Exiting");
+            Debug_exit(1);
+        }
+    }
+
+    #if 0
     /* Send the data to the UART RX associated with the UART device.
      * TODO: Change which device for send and receive below. */
     if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
@@ -110,6 +199,7 @@ int main(void) {
         DEBUG_ERR("EventManager_is_event_raised failed.");
         return 1;
     }
+    #endif
 
     /* Return 0 if no errors occured up to this point. */
     return 0;

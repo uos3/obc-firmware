@@ -132,13 +132,9 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
  * ------------------------------------------------------------------------- */
 
 void Uart_gnss_rx_int_handler(void) {
-    
-    /* TODO: then call void Udma_service_irq(
-        Uart_DeviceId uart_id_in,
-        Event complete_event_in
-    ) */
-
     Uart_Status p_status_out = UART_STATUS_NONE;
+
+    Udma_service_irq(UART_DEVICE_ID_GNSS, EVT_UART_GNSS_RX_COMPLETE);
 
     /* Get the status of the uDMA transfer (error or success) */
     Uart_get_status(UART_DEVICE_ID_GNSS, p_status_out);
@@ -152,6 +148,8 @@ void Uart_gnss_rx_int_handler(void) {
 }
 void Uart_gnss_tx_int_handler(void) {
     Uart_Status p_status_out = UART_STATUS_NONE;
+
+    Udma_service_irq(UART_DEVICE_ID_GNSS, EVT_UART_GNSS_TX_COMPLETE);
 
     /* Get the status of the uDMA transfer (error or success) */
     Uart_get_status(UART_DEVICE_ID_GNSS, p_status_out);
@@ -167,6 +165,8 @@ void Uart_gnss_tx_int_handler(void) {
 void Uart_cam_rx_int_handler(void) {
     Uart_Status p_status_out = UART_STATUS_NONE;
 
+    Udma_service_irq(UART_DEVICE_ID_CAM, EVT_UART_CAM_RX_COMPLETE);
+
     /* Get the status of the uDMA transfer (error or success) */
     Uart_get_status(UART_DEVICE_ID_CAM, p_status_out);
 
@@ -179,6 +179,8 @@ void Uart_cam_rx_int_handler(void) {
 }
 void Uart_cam_tx_int_handler(void) {
     Uart_Status p_status_out = UART_STATUS_NONE;
+
+    Udma_service_irq(UART_DEVICE_ID_CAM, EVT_UART_CAM_TX_COMPLETE);
 
     /* Get the status of the uDMA transfer (error or success) */
     Uart_get_status(UART_DEVICE_ID_CAM, p_status_out);
@@ -194,6 +196,8 @@ void Uart_cam_tx_int_handler(void) {
 void Uart_eps_rx_int_handler(void) {
     Uart_Status p_status_out = UART_STATUS_NONE;
 
+    Udma_service_irq(UART_DEVICE_ID_EPS, EVT_UART_EPS_RX_COMPLETE);
+
     /* Get the status of the uDMA transfer (error or success) */
     Uart_get_status(UART_DEVICE_ID_EPS, p_status_out);
 
@@ -206,6 +210,8 @@ void Uart_eps_rx_int_handler(void) {
 }
 void Uart_eps_tx_int_handler(void) {
     Uart_Status p_status_out = UART_STATUS_NONE;
+
+    Udma_service_irq(UART_DEVICE_ID_EPS, EVT_UART_EPS_TX_COMPLETE);
 
     /* Get the status of the uDMA transfer (error or success) */
     Uart_get_status(UART_DEVICE_ID_EPS, p_status_out);
@@ -221,6 +227,8 @@ void Uart_eps_tx_int_handler(void) {
 void Uart_test_rx_int_handler(void) {
     Uart_Status p_status_out = UART_STATUS_NONE;
 
+    Udma_service_irq(UART_DEVICE_ID_TEST, EVT_UART_TEST_RX_COMPLETE);
+
     /* Get the status of the uDMA transfer (error or success) */
     Uart_get_status(UART_DEVICE_ID_TEST, p_status_out);
 
@@ -233,6 +241,8 @@ void Uart_test_rx_int_handler(void) {
 }
 void Uart_test_tx_int_handler(void) {
     Uart_Status p_status_out = UART_STATUS_NONE;
+
+    Udma_service_irq(UART_DEVICE_ID_TEST, EVT_UART_TEST_TX_COMPLETE);
 
     /* Get the status of the uDMA transfer (error or success) */
     Uart_get_status(UART_DEVICE_ID_TEST, p_status_out);
@@ -251,103 +261,59 @@ void Udma_service_irq(
     Event complete_event_in
 ) {
 
-    /* Pointer to UART device */
-    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+    uint32_t uart_int;
 
-    /* Get the interrupt status of the UART
-     * TODO: see if it's a TX or RX interrupt, don't store it in uart_status_tx
-     */
-    p_uart_device->uart_status_tx
-    =
-    UARTIntStatus(
-        p_uart_device->uart_base, true
-    );
-    /* Clear any pending UART status. No UART interrupts should be enabled, as
-     * both RX and TX are using uDMA. */
-    UARTIntClear(p_uart_device->uart_base, p_uart_device->uart_status_tx);
-
-    /* Check the uDMA control table to check that the transfer is complete */
-    p_uart_device->udma_mode
-    =
-    uDMAChannelModeGet(
-        p_uart_device->udma_channel_tx | UDMA_PRI_SELECT
-    );
-
-    /* The transfer is complete if the mode is "STOP"
-     * TODO: remove switch, just the argument, do this for one/both tx/rx
-     */
-    if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
-        switch (uart_id_in) {
-            case UART_DEVICE_ID_GNSS:
-                EventManager_raise_event(EVT_UART_GNSS_TX_COMPLETE);
-                /* TODO: remove uart_event from struct */
-                p_uart_device->uart_event = EVT_UART_GNSS_TX_COMPLETE;
-                p_uart_device->uart_status_tx = UART_STATUS_COMPLETE;
-            case UART_DEVICE_ID_CAM:
-                EventManager_raise_event(EVT_UART_CAM_TX_COMPLETE);
-                p_uart_device->uart_event = EVT_UART_CAM_TX_COMPLETE;
-                p_uart_device->uart_status_tx = UART_STATUS_COMPLETE;
-            case UART_DEVICE_ID_EPS:
-                EventManager_raise_event(EVT_UART_EPS_TX_COMPLETE);
-                p_uart_device->uart_event = EVT_UART_EPS_TX_COMPLETE;
-                p_uart_device->uart_status_tx = UART_STATUS_COMPLETE;
-            case UART_DEVICE_ID_TEST:
-                EventManager_raise_event(EVT_UART_TEST_TX_COMPLETE);
-                p_uart_device->uart_event = EVT_UART_TEST_TX_COMPLETE;
-                p_uart_device->uart_status_tx = UART_STATUS_COMPLETE;
-            default:
-                return UART_ERROR_UNEXPECTED_DEVICE_ID;
-        }
-    }
-    return ERROR_NONE;
-}
-
-ErrorCode Udma_interrupt_handler_rx(
-    Uart_DeviceId uart_id_in,
-    size_t length_in
-) {
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
     /* Get the interrupt status of the UART */
-    p_uart_device->uart_status_rx
+    uart_int
     =
     UARTIntStatus(
         p_uart_device->uart_base, true
     );
-    /* Clear any pending UART status. No UART interrupts should be enabled, as
-     * both RX and TX are using uDMA. */
-    UARTIntClear(p_uart_device->uart_base, p_uart_device->uart_status_rx);
 
-    /* Check the uDMA control table to check that the transfer is complete */
-    p_uart_device->udma_mode
-    =
-    uDMAChannelModeGet(
-        p_uart_device->udma_channel_rx | UDMA_PRI_SELECT
-    );
+    if (uart_int == UART_INT_TX | UART_INT_DMATX) {
+        /* Clear any pending UART status. No UART interrupts should be enabled,
+         * as both RX and TX are using uDMA. */
+        UARTIntClear(p_uart_device->uart_base, UART_INT_TX);
+        UARTIntClear(p_uart_device->uart_base, UART_INT_DMATX);
 
-    /* The transfer is complete if the mode is "STOP" */
-    if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
-        switch (uart_id_in) {
-            case UART_DEVICE_ID_GNSS:
-                EventManager_raise_event(EVT_UART_GNSS_RX_COMPLETE);
-                p_uart_device->uart_event = EVT_UART_GNSS_RX_COMPLETE;
-                p_uart_device->uart_status_rx = UART_STATUS_COMPLETE;
-            case UART_DEVICE_ID_CAM:
-                EventManager_raise_event(EVT_UART_CAM_RX_COMPLETE);
-                p_uart_device->uart_event = EVT_UART_CAM_RX_COMPLETE;
-                p_uart_device->uart_status_rx = UART_STATUS_COMPLETE;
-            case UART_DEVICE_ID_EPS:
-                EventManager_raise_event(EVT_UART_EPS_RX_COMPLETE);
-                p_uart_device->uart_event = EVT_UART_EPS_RX_COMPLETE;
-                p_uart_device->uart_status_rx = UART_STATUS_COMPLETE;
-            case UART_DEVICE_ID_TEST:
-                EventManager_raise_event(EVT_UART_TEST_RX_COMPLETE);
-                p_uart_device->uart_event = EVT_UART_TEST_RX_COMPLETE;
-                p_uart_device->uart_status_rx = UART_STATUS_COMPLETE;
-            default:
-                return UART_ERROR_UNEXPECTED_DEVICE_ID;
+        /* Check the uDMA control table to check that the transfer is complete */
+        p_uart_device->udma_mode
+        =
+        uDMAChannelModeGet(
+            p_uart_device->udma_channel_tx | UDMA_PRI_SELECT
+        );
+
+        /* The transfer is complete if the TX mode is "UDMA_MODE_STOP", so
+         * raise the event and set the TX status as complete. */
+        if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
+            EventManager_raise_event(complete_event_in);
+            p_uart_device->uart_status_tx = UART_STATUS_COMPLETE;
         }
     }
+
+    if (uart_int == UART_INT_RX | UART_INT_DMARX) {
+        /* Clear any pending UART status. No UART interrupts should be enabled,
+         * as both RX and TX are using uDMA. */
+        UARTIntClear(p_uart_device->uart_base, UART_INT_RX);
+        UARTIntClear(p_uart_device->uart_base, UART_INT_DMARX);
+
+        /* Check the uDMA control table to check that the transfer is complete */
+        p_uart_device->udma_mode
+        =
+        uDMAChannelModeGet(
+            p_uart_device->udma_channel_rx | UDMA_PRI_SELECT
+        );
+
+        /* The transfer is complete if the RX mode is "UDMA_MODE_STOP", so
+         * raise the event and set the RX status as complete. */
+        if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
+            EventManager_raise_event(complete_event_in);
+            p_uart_device->uart_status_rx = UART_STATUS_COMPLETE;
+        }
+    }
+    /* If this point has been reached with no error, return ERROR_NONE. */
     return ERROR_NONE;
 }

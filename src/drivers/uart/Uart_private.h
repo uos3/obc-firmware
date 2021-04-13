@@ -132,9 +132,14 @@ ErrorCode Udma_interrupt_handler_rx(
     size_t length_in
 );
 
-    ErrorCode Udma_interrupt_handler_rx(
+ErrorCode Udma_interrupt_handler_rx(
     Uart_DeviceId uart_id_in,
     size_t length_in
+);
+
+void Udma_service_irq(
+    Uart_DeviceId uart_id_in,
+    Event complete_event_in
 );
 
 
