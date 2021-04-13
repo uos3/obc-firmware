@@ -81,7 +81,7 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
         }
 
         /* Initialise the mode of the GPIO */
-        if (&p_gpio_pin->mode != mode_in) {
+        if (p_gpio_pin->mode != mode_in) {
             /* Set the pin of the module to either input or output */
             switch(mode_in) {
                 
