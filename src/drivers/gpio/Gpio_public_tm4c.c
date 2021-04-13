@@ -55,7 +55,6 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
          * again, and return a warning message (but not an error) */
         if (p_gpio_pin->initialised) {
             DEBUG_WRN("Gpio_init() called on GPIO module when already initialised");
-
             continue;
         }
 
@@ -116,7 +115,7 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
     /* Set the GPIO driver state as initialised */
     /* GPIO.initialised = true; */
     /* If this point has reached without any errors, return ERROR_NONE */
-        return ERROR_NONE;
+    return ERROR_NONE;
 }
 
 ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state_in) {
