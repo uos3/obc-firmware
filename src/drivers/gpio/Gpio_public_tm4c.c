@@ -55,7 +55,6 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
          * again, and return a warning message (but not an error) */
         if (p_gpio_pin->initialised) {
             DEBUG_WRN("Gpio_init() called on GPIO module when already initialised");
-            continue;
         }
 
         /* If the peripheral is not ready, reset and enable it */
