@@ -85,5 +85,35 @@ void Kernel_init_critical_modules(void);
  */
 void Kernel_reboot(void);
 
+/**
+ * @brief Serialises the given error into a series of bytes.
+ * 
+ * This will produce a big endian byte array for transmission as a part of the
+ * telemetry system.
+ * 
+ * @param p_error_in The highest level error in the chain to serialise
+ * @param p_bytes_out Pointer to an array of bytes to store the serialized
+ * data. 
+ * @param p_length_out Pointer to the length of the data filled into 
+ * p_bytes_out.
+ */
+void Kernel_error_to_bytes(
+    Error *p_error_in, 
+    uint8_t *p_bytes_out, 
+    uint8_t *p_length_out
+);
+
+#ifdef DEBUG_MODE
+/**
+ * @brief Writes the error chain to the given character string.
+ * 
+ * The user must allocate adequate (i.e. will be >64 bytes) space for the
+ * string. 
+ * 
+ * @param p_error_in The highest level error in the chain to serialise
+ * @param p_str_out Pointer to an array of characters to write into
+ */
+void Kernel_error_to_string(Error *p_error_in, char *p_str_out);
+#endif
 
 #endif /* H_KERNEL_PUBLIC_H */
