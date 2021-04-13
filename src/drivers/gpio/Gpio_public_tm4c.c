@@ -58,14 +58,14 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
         }
 
         /* If the peripheral is not ready, reset and enable it */
-        if (!SysCtlPeripheralReady(p_gpio_pin->peripheral)) {
-            SysCtlPeripheralReset(p_gpio_pin->peripheral);
-            SysCtlPeripheralEnable(p_gpio_pin->peripheral);
+        if (!SysCtlPeripheralReady(&p_gpio_pin->peripheral)) {
+            SysCtlPeripheralReset(&p_gpio_pin->peripheral);
+            SysCtlPeripheralEnable(&p_gpio_pin->peripheral);
 
             /* Attempt to initialise the GPIO peripheral, looping through
              * number of attempts i. */
             for (int i = 0; i < GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
-                if (SysCtlPeripheralReady(p_gpio_pin->peripheral)) {
+                if (SysCtlPeripheralReady(&p_gpio_pin->peripheral)) {
                     /* If the peripheral is ready, break out of the loop, as
                      * it does not need to attempt again. */
                     break;
