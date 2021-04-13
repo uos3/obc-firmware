@@ -26,6 +26,7 @@
 #include "drivers/udma/Udma_public.h"
 #include "util/debug/Debug_public.h"
 #include "system/event_manager/EventManager_public.h"
+#include "system/kernel/Kernel_public.h"
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -38,6 +39,8 @@ int main(void) {
     uint8_t recv_data[data_size];
     uint8_t test_step = 0;
     uint8_t num_attempts = 0;
+
+    Kernel_init_critical_modules();
 
     /* Initialise the UART devices. */
     if (Uart_init() != ERROR_NONE) {

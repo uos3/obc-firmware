@@ -28,6 +28,7 @@
 #include "components/led/Led_private.h"
 #include "components/led/Led_public.h"
 #include "util/debug/Debug_public.h"
+#include "system/kernel/Kernel_public.h"
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -35,10 +36,7 @@
 
 int main(void) {
 
-    /* Call kernel init critical */
-
-    /* TODO: Unfinished */
-    DEBUG_INF("--- GPIO TEST ---");
+    Kernel_init_critical_modules();
 
     /* Initialise the LED. */
     if (Gpio_init(LED_LEDS[LED_LAUNCHPAD].gpio_pin, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
