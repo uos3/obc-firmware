@@ -91,6 +91,18 @@ static void Kernel_test_error_serialisation(void **state) {
     );
     #endif
 
+    /* Confirm that the clear error function works */
+    Kernel_clear_error_chain(&power_error);
+
+    assert_int_equal(power_error.code, ERROR_NONE);
+    assert_null(power_error.p_cause);
+
+    assert_int_equal(eps_error.code, ERROR_NONE);
+    assert_null(eps_error.p_cause);
+
+    assert_int_equal(uart_error.code, ERROR_NONE);
+    assert_null(uart_error.p_cause);
+    
     return 0;
 }
 

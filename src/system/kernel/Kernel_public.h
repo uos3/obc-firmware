@@ -103,6 +103,18 @@ void Kernel_error_to_bytes(
     uint8_t *p_length_out
 );
 
+/**
+ * @brief Clear the error chain described by the given error.
+ * 
+ * This will reset all errors in the chain to ERROR_NONE and clear their cause
+ * pointers. 
+ * 
+ * @param p_error_in The highest level error in the chain to clear.
+ */
+void Kernel_clear_error_chain(
+    Error *p_error_in
+);
+
 #ifdef DEBUG_MODE
 /**
  * @brief Writes the error chain to the given character string.

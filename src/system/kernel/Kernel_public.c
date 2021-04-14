@@ -133,7 +133,7 @@ void Kernel_error_to_bytes(
         #endif
 
         /* Increment the length by the number of bytes added */
-        *p_length_out += 2;
+        *p_length_out = (uint8_t)(*p_length_out + 2);
 
         /* Advance to next error if it's not the root cause */
         if (p_error->p_cause != NULL) {
@@ -142,6 +142,25 @@ void Kernel_error_to_bytes(
         else {
             break;
         }
+    }
+}
+
+void Kernel_clear_error_chain(
+    Error *p_error_in
+) {
+    Error *p_error = p_error_in;
+    Error *p_next_error = p_error_in->p_cause;
+
+    while (p_error != NULL) {
+        /* Save the next error pointer */
+        p_next_error = p_error->p_cause;
+
+        /* Clear the current error */
+        p_error->code = ERROR_NONE;
+        p_error->p_cause = NULL;
+
+        /* Update error to be the next error */
+        p_error = p_next_error;
     }
 }
 
@@ -158,7 +177,7 @@ void Kernel_error_to_string(Error *p_error_in, char *p_str_out) {
         sprintf(buff, "%04X ", p_error->code);
 
         /* Concat the buffer onto the string */
-        strcat(p_str_out, &buff);
+        strcat(p_str_out, buff);
 
         /* Advance to next error if it's not the root cause */
         if (p_error->p_cause != NULL) {
