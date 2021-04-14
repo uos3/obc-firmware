@@ -42,6 +42,10 @@ int main(void) {
 
     Kernel_init_critical_modules();
 
+    Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT);
+    Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT);
+
+    #if 0
     /* Initialise the LED. */
     if (Gpio_init((int *)GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise LED GPIO pin");
@@ -59,8 +63,9 @@ int main(void) {
         return 1;
     }
     else {
-        DEBUG_DBG("Switch initialised");
+        DEBUG_INF("Switch initialised");
     }
+    #endif
 
     Uart_init_specific(UART_DEVICE_ID_TEST);
     Udma_init();
