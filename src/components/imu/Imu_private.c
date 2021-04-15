@@ -79,28 +79,8 @@ bool Imu_wait_i2c_action_finished(
     *p_success_out = false;
     
     /* Get I2C finished event status */
-    bool is_event_raised = false;
-    if (!EventManager_poll_event(
-        EVT_I2C_ACTION_FINISHED, 
-        &is_event_raised
-    )) {
-        DEBUG_ERR("Error reading EVT_I2C_ACTION_FINISHED event");
-        DP.IMU.ERROR_CODE = IMU_ERROR_EVENTMANAGER_ERROR;
-
-        /* Raise the failed event */
-        if (!EventManager_raise_event(
-            failure_event
-        )) {
-            DEBUG_ERR(
-                "CRITICAL: could not raise IMU failure event"
-            );
-        }
-
-        return false;
-    }
-
-    /* If not raised exit and wait for IO to complete */
-    if (!is_event_raised) {
+    if (!EventManager_poll_event(EVT_I2C_ACTION_FINISHED)) {
+        /* If not raised exit and wait for IO to complete */
         DEBUG_TRC("Waiting for EVT_I2C_ACTION_FINISHED");
         return true;
     }

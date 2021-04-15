@@ -27,6 +27,8 @@
 /* Internal */
 #include "drivers/uart/Uart_public.h"
 #include "drivers/uart/Uart_errors.h"
+#include "drivers/uart/Uart_events.h"
+#include "system/event_manager/EventManager_events.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -41,7 +43,7 @@ extern Uart_Device UART_DEVICES;
  * ------------------------------------------------------------------------- */
 
 /* Number of UART devices. */
-#define UART_NUM_UARTS (3)
+#define UART_NUM_UARTS (4)
 
 /* Maximum number of times the peripheral ready check will occur before raising
  * an error.
@@ -54,6 +56,9 @@ extern Uart_Device UART_DEVICES;
 #define UART_TX_FIFO_THRESHOLD (UART_FIFO_TX4_8)
 #define UART_RX_FIFO_THRESHOLD (UART_FIFO_RX4_8)
 
+Uart_Device UART_DEVICES[UART_NUM_UARTS];
+
+
 /* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */
@@ -61,5 +66,81 @@ extern Uart_Device UART_DEVICES;
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Uart GNSS RX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the GNSS device's RX.
+ * 
+ */
+void Uart_gnss_rx_int_handler(void);
+/**
+ * @brief Uart GNSS TX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the GNSS device's TX.
+ * 
+ */
+void Uart_gnss_tx_int_handler(void);
+
+/**
+ * @brief Uart CAM RX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the CAM device's RX.
+ * 
+ */
+void Uart_cam_rx_int_handler(void);
+/**
+ * @brief Uart CAM TX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the CAM device's TX.
+ * 
+ */
+void Uart_cam_tx_int_handler(void);
+
+/**
+ * @brief Uart EPS RX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the EPS device's RX.
+ * 
+ */
+void Uart_eps_rx_int_handler(void);
+/**
+ * @brief Uart EPS TX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the EPS device's TX.
+ * 
+ */
+void Uart_eps_tx_int_handler(void);
+
+/**
+ * @brief Uart TEST RX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the TEST device's RX.
+ * 
+ */
+void Uart_test_rx_int_handler(void);
+/**
+ * @brief Uart TEST TX interrupt handler
+ * 
+ * Gets the status of the transfer, and sets this onto the TEST device's TX.
+ * 
+ */
+void Uart_test_tx_int_handler(void);
+
+ErrorCode Udma_interrupt_handler_rx(
+    Uart_DeviceId uart_id_in,
+    size_t length_in
+);
+
+ErrorCode Udma_interrupt_handler_rx(
+    Uart_DeviceId uart_id_in,
+    size_t length_in
+);
+
+void Udma_service_irq(
+    Uart_DeviceId uart_id_in,
+    Event complete_event_in
+);
+
 
 #endif /* H_UART_PRIVATE_H */

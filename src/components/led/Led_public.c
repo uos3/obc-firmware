@@ -53,6 +53,8 @@ ErrorCode Led_set(uint8_t led_number_in, bool led_state_in) {
     /* Set the led state to the new state */
     p_led->state = led_state_in;
 
+    DEBUG_DBG("test2: temp");
+
     return ERROR_NONE;
 }
 

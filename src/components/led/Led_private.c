@@ -31,6 +31,7 @@
 #include "components/led/Led_public.h"
 #include "components/led/Led_private.h"
 #include "components/led/Led_errors.h"
+#include "drivers/gpio/Gpio_public.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -39,5 +40,6 @@
 /* LEDs are connected to pins B1 and C2 (see "TOBC Diagram" on sharepoint) */
 Led_Module LED_LEDS[LED_NUMBER_OF_LEDS] = {
     {GPIO_PINB1, false},
-    {GPIO_PINC2, false}
+    {GPIO_PINC2, false},
+    {GPIO_PINF1, false}
 };

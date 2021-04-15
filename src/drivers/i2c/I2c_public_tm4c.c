@@ -185,11 +185,7 @@ ErrorCode I2c_step(void) {
      * is raised at all is that a raised event at the end of the cycle will
      * trigger the next cycle to be run immediately, rather than putting the
      * system to sleep. */
-    bool new_action = false;
-    if (!EventManager_poll_event(EVT_I2C_NEW_ACTION, &new_action)) {
-        DEBUG_ERR("Could not poll for EVT_I2C_NEW_ACTION event");
-        return I2C_ERROR_EVENTMANAGER_ERROR;
-    }
+    EventManager_poll_event(EVT_I2C_NEW_ACTION);
 
     /* Loop through all actions and run the ones that are not NONE */
     for (size_t i = 0; i < I2C_MAX_NUM_ACTIONS; ++i) {

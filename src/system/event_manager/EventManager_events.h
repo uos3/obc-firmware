@@ -5,7 +5,7 @@
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
  * @brief Provides possible events for the EventManager.
  * 
- * @version 1.0
+ * @version 2.0
  * @date 2020-11-02
  * 
  * @copyright Copyright (c) 2020
@@ -43,13 +43,5 @@
  * be raised.
  */
 #define EVT_EVENTMANAGER_ERROR ((Event)(MOD_ID_EVENTMANAGER | 1))
-
-/**
- * @brief Event associated with the uDMA completing a transfer over either
- * UART or SPI.
- * 
- */
-#define EVT_UDMA_TRANSFER_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 2))
-
 
 #endif /* H_EVENTMANAGER_EVENTS_H */

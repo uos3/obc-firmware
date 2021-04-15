@@ -61,6 +61,16 @@ typedef struct _DataPool {
     bool BOARD_INITIALISED;
 
     /**
+     * @brief Flag set if the Rtc driver has been initialised.
+     * 
+     * Note: This is located in the DataPool struct itself because Board is a
+     * small module with only one global flag.
+     * 
+     * @dp 3
+     */
+    bool RTC_INITIALISED;
+
+    /**
      * @brief DataPool parameters for the event manager.
      * 
      * @dp_module EventManager

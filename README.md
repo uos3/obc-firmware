@@ -15,20 +15,22 @@ Developing this repository requires the following software:
 
 - `build-essential` - generic build utilities for GNU.
 - `gcc-arm-none-eabi` - the GCC cross-compiler for ARM targets
+- `arm-none-eabi-gdb` - the ARM target GDB
 - CMake - used as the build system
 - `lm4flash` - used to flash the TM4C launchpad
 - Python 3 - used for build script
 - cmocka - framework used to test the software
 - OpenOCD - debugging host which allows GDB to be used to debug the software
-- TinyDB and rich - python libraries used in the constant databse and lookup
+- TinyDB and rich - python libraries used in the constant database and lookup
   tool
+- pyserial - python module used for serial monitoring/in some tests
 - tomlc99 - TOML parsing library used for configuration management
 
 On ubuntu the following command should install most of these:
 
 ```shell
 sudo apt install build-essential gcc-arm-none-eabi cmake lm4flash openocd
-pip install tinydb rich
+pip install tinydb rich pyserial
 ```
 
 For `python3`, be careful as you probably already have it installed.
@@ -49,6 +51,9 @@ make
 cd ../obc-firmware
 ln -s ../tivaware_tm4c_<VERSION NUMBER> tivaware
 ```
+
+Finally `arm-none-eabi-gdb` must be installed from source from [ARM's
+website](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads).
 
 ### Recommended VSCode extensions
 
@@ -137,9 +142,11 @@ You can also flash immediately after building, for instance:
 
 ## Debugging
 
-OpenOCD and GDB can be used to debug the software. To use these in one terminal
-start OpenOCD (`openocd`) with the launchpad connected over USB to the debug 
-port. Then in another terminal use
+### Launchpad
+
+OpenOCD and GDB can be used to debug the software on the launchpad. To use 
+these in one terminal start OpenOCD (`openocd`) with the launchpad connected 
+over USB to the debug port. Then in another terminal use
 
 ```shell
 arm-none-eabi-gdb -x openocd.gdb <PATH_TO_ELF>.elf
@@ -170,6 +177,47 @@ $1 = {
 ```
 This gives information on the function causing the fault (`return_address` and
 `lr`, and the inputs to those functions `r1-12`.)
+
+### TOBC
+
+When connected via the BlackMagic probe the TOBC can be debugged with
+`arm-none-eabi-gdb` directly. Use
+
+```shell
+arm-none-eabi-gdb -x blackmagic_debug.gdb <PATH_TO_ELF>.elf
+```
+
+to start the GDB session. You can run the software by using the standard GDB
+commands like `run`.
+
+## Monitoring Execution
+
+The firmware uses the `DEBUG_x` statements to print debugging log lines over
+UART to a host computer. This allows the execution of the system to be observed
+by the operator. The UART used varies between the launchpad and TOBC:
+
+- launchpad - UART1, which is on pins PB0 (RX) and PB1 (TX), these are
+  accessible from the launchpad header and can be plugged into the UART pins of
+  a raspberry pi for monitoring.
+- TOBC - UART4, which is on pins PC4 (RX) and PC5 (TX), and are broken out on
+  the PC104 header stack as pins H1P1 and H2P5. These can be connected into the
+  UART lines of the blackmagic probe.
+
+When connected the serial devices can be accessed on a linux machine (including
+a raspberry pi) at any of the `/dev/tty*` devices. Normally if using the
+blackmagic probe this is `/dev/ttyACM1`, and for the launchpad this is
+`/dev/serial0`. The user should be in the `dialout` group to access these, some
+additional setup may be required on the PI to enable the right serial lines.
+
+To view these log lines the `pyserial` module provides an application which
+displays the output:
+
+```shell
+python3 -m serial.tools.miniterm /dev/<SERIAL_DEVICE> 115200 --raw
+```
+
+The baud rate of the debug serial is 115200, the fastest standard baud rate so
+that delays to the execution of the firmware are minimised.
 
 ## Build Features
 

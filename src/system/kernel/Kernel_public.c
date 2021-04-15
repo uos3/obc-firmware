@@ -19,6 +19,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#ifdef DEBUG_MODE
+#include <stdio.h>
+#include <string.h>
+#endif
 
 /* External includes */
 #ifdef TARGET_TM4C
@@ -106,3 +110,85 @@ void Kernel_reboot(void) {
     #endif
 
 }
+
+void Kernel_error_to_bytes(
+    Error *p_error_in, 
+    uint8_t *p_bytes_out, 
+    uint8_t *p_length_out
+) {
+    Error *p_error = p_error_in;
+
+    /* Initialise the length at zero */
+    *p_length_out = 0;
+
+    while (true) {
+        /* Put the bytes for this error code into the array, in big endian
+         * order  */
+        #if __BYTE_ORDER == __LITTLE_ENDIAN
+        p_bytes_out[*p_length_out] = (uint8_t)(p_error->code & 0xFF);
+        p_bytes_out[*p_length_out + 1] = (uint8_t)(p_error->code >> 8);
+        #else
+        p_bytes_out[*p_length_out] = (uint8_t)(p_error->code >> 8);
+        p_bytes_out[*p_length_out + 1] = (uint8_t)(p_error->code & 0xFF);
+        #endif
+
+        /* Increment the length by the number of bytes added */
+        *p_length_out = (uint8_t)(*p_length_out + 2);
+
+        /* Advance to next error if it's not the root cause */
+        if (p_error->p_cause != NULL) {
+            p_error = p_error->p_cause;
+        }
+        else {
+            break;
+        }
+    }
+}
+
+void Kernel_clear_error_chain(
+    Error *p_error_in
+) {
+    Error *p_error = p_error_in;
+    Error *p_next_error = p_error_in->p_cause;
+
+    while (p_error != NULL) {
+        /* Save the next error pointer */
+        p_next_error = p_error->p_cause;
+
+        /* Clear the current error */
+        p_error->code = ERROR_NONE;
+        p_error->p_cause = NULL;
+
+        /* Update error to be the next error */
+        p_error = p_next_error;
+    }
+}
+
+#ifdef DEBUG_MODE
+void Kernel_error_to_string(Error *p_error_in, char *p_str_out) {
+    Error *p_error = p_error_in;
+    char buff[6] = {0};
+
+    /* Put an open bracket into the string */
+    p_str_out[0] = '[';
+
+    while (true) {
+        /* Print the characters for this error into the buffer */
+        sprintf(buff, "%04X ", p_error->code);
+
+        /* Concat the buffer onto the string */
+        strcat(p_str_out, buff);
+
+        /* Advance to next error if it's not the root cause */
+        if (p_error->p_cause != NULL) {
+            p_error = p_error->p_cause;
+        }
+        else {
+            break;
+        }
+    };
+
+    /* Replace the final space with a closing bracket */
+    p_str_out[strlen(p_str_out) - 1] = ']';
+}
+#endif

@@ -25,6 +25,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "system/data_pool/DataPool_public.h"
 #include "drivers/delay/Delay_public.h"
 #include "drivers/rtc/Rtc_public.h"
 #include "drivers/rtc/Rtc_private.h"
@@ -70,6 +71,9 @@ ErrorCode Rtc_init(void) {
 
     /* Set the RTC to 0 seconds */
     HibernateRTCSet(0);
+
+    /* Set the initialised flag */
+    DP.RTC_INITIALISED = true;
 }
 
 Rtc_Timestamp Rtc_get_timestamp(void) {

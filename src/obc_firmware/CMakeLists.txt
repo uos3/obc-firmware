@@ -12,8 +12,9 @@ target_link_libraries(obc_firmware
     # Drivers
     Timer
     Gpio
-    Uart
+    #Uart
     I2c
+    Rtc
 
     # System
     OpModeManager

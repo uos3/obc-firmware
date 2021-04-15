@@ -17,6 +17,7 @@
 
 /* Standard includes */
 #include <stdint.h>
+#include <stdbool.h>
 
 /* External includes */
 #include "driverlib/sysctl.h"

@@ -18,10 +18,13 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
+/* Standard includes */
+#include <stdbool.h>
+
 /* Internal includes */
-#include "applications/power/Power_public.h"
 #include "components/eps/Eps_public.h"
 #include "system/opmode_manager/OpModeManager_public.h"
+#include "applications/power/Power_public.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -72,5 +75,12 @@ Eps_OcpState Power_get_ocp_state_for_op_mode(
     Power_OpModeOcpStateConfig config_in,
     OpModeManager_OpMode op_mode_in
 );
+
+/**
+ * @brief Performs the low power status on the latest EPS telemetry
+ * 
+ * @return bool True on success, false on error.
+ */
+bool Power_low_power_status_check(void);
 
 #endif /* H_POWER_PRIVATE_H */

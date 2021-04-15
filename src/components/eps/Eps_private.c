@@ -91,3 +91,135 @@ bool Eps_check_uart_frame(
         ((new_crc & 0xFF) == p_frame_in[length_in - 1])
     );
 }
+
+bool Eps_parse_hk_data(
+    uint8_t *p_data_in,
+    Eps_HkData *p_hk_data_out
+) {
+    uint8_t byte_idx = 0;
+    /* Strategy: Consume bytes sequentially parsing each group according to the
+     * format specified in [SW_ICD 5.2.4.4]. */
+
+    /* OCP STATE */
+    p_hk_data_out->ocp_state = Eps_ocp_byte_to_ocp_state(p_data_in[byte_idx]);
+    byte_idx += 1;
+
+    /* BATTERY STATUS */
+    p_hk_data_out->batt_status = Eps_parse_batt_status(&p_data_in[byte_idx]);
+    byte_idx += 2;
+
+    /* BATTERY VOLTAGE
+     *
+     * Noting big endian, so first byte is the least significant, second is
+     * most significant.
+     */
+    p_hk_data_out->batt_voltage_volts 
+        = Eps_adc_voltage_sense_scaledint_to_volts(
+            (p_data_in[byte_idx] | (p_data_in[byte_idx + 1] << 8))
+        );
+    byte_idx += 2;
+}
+
+double Eps_adc_voltage_sense_scaledint_to_volts(
+    uint16_t voltage_scaledint_in
+) {
+    /* Conversion equation comes from Register doc
+     * 
+     * TODO: ref ICD */
+    return (
+        (
+            (double)voltage_scaledint_in 
+            * 
+            EPS_ADC_VOLTAGE_SENSE_SCALEDINT_TO_VOLTS
+        )
+        *
+        (
+            (EPS_ADC_VOLTAGE_SENSE_R1_OHMS + EPS_ADC_VOLTAGE_SENSE_R2_OHMS)
+            /
+            EPS_ADC_VOLTAGE_SENSE_R2_OHMS
+        )  
+    );
+}
+
+double Eps_adc_voltage_sense_scaledint_to_amps(
+    uint16_t voltage_scaledint_in,
+    double shunt_resistance_ohms_in
+) {
+    /* Conversion equation comes from Register doc
+     * 
+     * TODO: ref ICD */
+    return (
+        (
+            (double)voltage_scaledint_in 
+            *
+            EPS_ADC_VOLTAGE_SENSE_SCALEDINT_TO_VOLTS
+        )
+        * shunt_resistance_ohms_in 
+        * 100.0
+    );
+}
+
+Eps_OcpState Eps_ocp_byte_to_ocp_state(Eps_OcpByte byte_in) {
+    Eps_OcpState state = {0};
+
+    state.radio_tx = 
+        (byte_in & EPS_OCP_RAIL_RADIO_TX_MASK) 
+        == 
+        EPS_OCP_RAIL_RADIO_TX_MASK;
+    state.radio_rx_camera = 
+        (byte_in & EPS_OCP_RAIL_RADIO_RX_CAMERA_MASK) 
+        == 
+        EPS_OCP_RAIL_RADIO_RX_CAMERA_MASK;
+    state.eps_mcu = 
+        (byte_in & EPS_OCP_RAIL_EPS_MCU_MASK) 
+        == 
+        EPS_OCP_RAIL_EPS_MCU_MASK;
+    state.obc = 
+        (byte_in & EPS_OCP_RAIL_OBC_MASK) 
+        == 
+        EPS_OCP_RAIL_OBC_MASK;
+    state.gnss_rx = 
+        (byte_in & EPS_OCP_RAIL_GNSS_RX_MASK) 
+        == 
+        EPS_OCP_RAIL_OBC_MASK;
+    state.gnss_lna = 
+        (byte_in & EPS_OCP_RAIL_GNSS_LNA_MASK) 
+        == 
+        EPS_OCP_RAIL_GNSS_LNA_MASK;
+
+    return state;
+}
+
+Eps_OcpByte Eps_ocp_state_to_ocp_byte(Eps_OcpState state_in) {
+    Eps_OcpByte byte;
+
+    byte |= (uint8_t)(
+        (uint8_t)state_in.radio_tx << EPS_OCP_RAIL_RADIO_TX_SHIFT
+    );
+    byte |= (uint8_t)(
+        (uint8_t)state_in.radio_rx_camera 
+            << EPS_OCP_RAIL_RADIO_RX_CAMERA_SHIFT
+    );
+    byte |= (uint8_t)(
+        (uint8_t)state_in.eps_mcu << EPS_OCP_RAIL_EPS_MCU_SHIFT
+    );
+    byte |= (uint8_t)(
+        (uint8_t)state_in.obc << EPS_OCP_RAIL_OBC_SHIFT
+    );
+    byte |= (uint8_t)(
+        (uint8_t)state_in.gnss_rx << EPS_OCP_RAIL_GNSS_RX_SHIFT
+    );
+    byte |= (uint8_t)(
+        (uint8_t)state_in.gnss_lna << EPS_OCP_RAIL_GNSS_LNA_SHIFT
+    );
+
+    return byte;
+}
+
+Eps_BattStatus Eps_parse_batt_status(uint8_t *p_data_in) {
+    Eps_BattStatus status = {0};
+
+    /* TODO */
+
+    return status;
+}

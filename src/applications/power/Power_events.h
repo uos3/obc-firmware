@@ -32,4 +32,10 @@
  */
 #define EVT_POWER_OPMODE_CHANGE_OCP_STATE_CHANGE_COMPLETE ((Event)(MOD_ID_POWER | 1))
 
+/**
+ * @brief Event signalling that an OCP reset operation has been successfully
+ * completed. 
+ */
+#define EVT_POWER_OCP_RESET_SUCCESS ((Event)(MOD_ID_POWER | 2))
+
 #endif /* H_POWER_EVENTS_H */

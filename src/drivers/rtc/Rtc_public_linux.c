@@ -23,6 +23,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "system/data_pool/DataPool_public.h"
 #include "drivers/delay/Delay_public.h"
 #include "drivers/rtc/Rtc_public.h"
 #include "drivers/rtc/Rtc_private.h"
@@ -53,6 +54,9 @@ ErrorCode Rtc_init(void) {
      * which has to wait for the oscillator to stabilise */
     Delay_ms(RTC_OSCILLATOR_STABILISE_DELAY_MS);
 
+    /* Set the initialised flag */
+    DP.RTC_INITIALISED = true;
+
     return ERROR_NONE;
 }
 
@@ -76,7 +80,7 @@ Rtc_Timestamp Rtc_get_timestamp(void) {
     nanosecs = (uint64_t)(
         (current.tv_sec - RTC_EPOCH_TIMESPEC.tv_sec)*1000000000
         +
-        (current.tv_nsec - RTC_EPOCH_TIMESPEC.tv_sec)
+        (current.tv_nsec - RTC_EPOCH_TIMESPEC.tv_nsec)
     );
 
     /* Convert the nanoseconds into a number of subseconds */
@@ -84,5 +88,17 @@ Rtc_Timestamp Rtc_get_timestamp(void) {
 }
 
 void Rtc_set_seconds(uint32_t seconds_in) {
-    RTC_EPOCH_TIMESPEC.tv_sec = RTC_EPOCH_TIMESPEC.tv_sec + seconds_in;
+    int res;
+
+    /* All we have to do is get the current time and set it in the epoch. */
+    res = clock_gettime(CLOCK_REALTIME, &RTC_EPOCH_TIMESPEC);
+
+    /* Check for error */
+    if (res < 0) {
+        DEBUG_ERR("Couldn't reset RTC (linux), errno = %d", errno);
+        Debug_exit(1);
+    }
+
+    /* And add the number of seconds requested here */
+    RTC_EPOCH_TIMESPEC.tv_sec += seconds_in;
 }

@@ -13,7 +13,9 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
+#include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
+#include "util/debug/Debug_public.h"
 #include "obc_firmware/obc_firmware.h"
 
 /* -------------------------------------------------------------------------   
@@ -36,6 +38,9 @@ int main(void) {
     /* Do application init */
     obc_firmware_init_applications();
 
+    DEBUG_INF("obc_firmware init complete");
+    DEBUG_INF("---- OBC-FIRMWARE MAIN LOOP ----");
+
     /* ---- MAIN LOOP ---- */
     while (1) {
 
@@ -50,11 +55,16 @@ int main(void) {
         obc_firmware_step_system();
 
         /* Clean up events */
-        if (!EventManager_cleanup_events()) {
-            /* TODO: register error with FDIR */
-        }
+        EventManager_cleanup_events();
 
-        /* TODO: if no events after cleanup request RTC to enter sleep mode */
+        /* If no events after cleanup wait until interrupt occurs (only on
+         * TM4C, don't have propper interrupts on linux */
+        if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0) {
+            #ifdef TARGET_TM4C
+            DEBUG_INF("No events, waiting for interrupt...");
+            __asm("WFI");
+            #endif
+        }
     }
 
     return 0;

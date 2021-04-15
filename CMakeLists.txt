@@ -44,6 +44,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS "1")
 # Set C flags to use all warnings and the GNU-99 standard.
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}\
     -std=gnu99 \
+    -O0 \
     -Wall \
     -Wextra \
     -Wpedantic \

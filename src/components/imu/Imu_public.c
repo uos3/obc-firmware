@@ -69,13 +69,7 @@ bool Imu_step(void) {
 
     /* Poll a possible state change event to avoid leaving it in the events
      * queue up to the cleanup action */
-    bool state_change = false;
-    if (!EventManager_poll_event(
-        EVT_IMU_STATE_CHANGE,
-        &state_change
-    )) {
-        return false;
-    }
+    EventManager_poll_event(EVT_IMU_STATE_CHANGE);
 
     /* Run the main state machine */
     switch (DP.IMU.STATE) {
@@ -113,17 +107,9 @@ bool Imu_step(void) {
              * separate function. There is no transition out of this state
              * except if a valid new command is found. */
 
-            /* Poll for new event */
-            bool new_command = false;
-            if (!EventManager_poll_event(EVT_IMU_NEW_COMMAND, &new_command)) {
-                DEBUG_ERR("EventManager error occured");
-                DP.IMU.ERROR_CODE = IMU_ERROR_EVENTMANAGER_ERROR;
-                return false;
-            }
-
             /* If we got a new command switch into that command's corresponding
              * state. */
-            if (new_command) {
+            if (EventManager_poll_event(EVT_IMU_NEW_COMMAND)) {
                 switch (DP.IMU.COMMAND) {
                     case IMU_CMD_NONE:
                         DEBUG_ERR(

@@ -26,6 +26,9 @@
 
 /* Internal */
 #include "drivers/uart/Uart_errors.h"
+#include "drivers/uart/Uart_events.h"
+#include "drivers/gpio/Gpio_public.h"
+#include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -35,28 +38,44 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
-typedef uint8_t Uart_DeviceId;
-
-#define UART_DEVICE_ID_GNSS (0)
-#define UART_DEVICE_ID_CAM (1)
-#define UART_DEVICE_ID_PWR (2)
-
 /* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */
 
-typedef enum _UART_DEVICE_INDEX {
-    UART_DEVICE_GNSS = 0,
-    UART_DEVICE_CAM,
-    UART_DEVICE_PWR,
-};
+/* Add indexes */
+typedef enum _Uart_DeviceId {
+    UART_DEVICE_ID_GNSS = 0,
+    UART_DEVICE_ID_CAM = 1,
+    UART_DEVICE_ID_EPS = 2,
+    UART_DEVICE_ID_TEST = 3,
+} Uart_DeviceId;
+
+/* Add status enum */
+typedef enum _Uart_Status {
+    UART_STATUS_NONE = 0,
+    UART_STATUS_COMPLETE = 1,
+    UART_STATUS_IN_PROGRESS = 2,
+    UART_STATUS_UDMA_TRANSFER_ERROR = 3, /* add many error kinds */
+} Uart_Status;
+
+/*
+ * 0. STATUS = NONE
+ *  - USER: Call Uart_send_bytes()
+ * 1. STATUS = IN_PROGRESS (in background via uDMA)
+ *  - interrupt -> set status as either succes/error, try to raise complete
+ *    event 
+ * 2. STATUS = SUCCESS / ERROR
+ *  - step -> if STATUS = success or error, and event not raised, raise event
+ *  - USER: poll_event(COMPLETE)
+ *         - Uart_get_tx_status(DEVICE) -> return success/error
+ *                                      -> reset status NONE
+ */
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */
 /**
  * @brief Defines a UART.
- * 
  */
 typedef struct _Uart_Device {
     uint32_t gpio_peripheral;
@@ -65,12 +84,15 @@ typedef struct _Uart_Device {
     uint32_t uart_base;
     uint32_t uart_pin_rx_func;
     uint32_t uart_pin_tx_func;
-    uint8_t gpio_pin_rx;
-    uint8_t gpio_pin_tx;
+    uint32_t gpio_pin_rx;
+    uint32_t gpio_pin_tx;
     uint8_t udma_channel_tx;
     uint8_t udma_channel_rx;
-    uint32_t uart_status;
+    Uart_Status uart_status_tx;
+    Uart_Status uart_status_rx;
+    Event uart_event;
     uint32_t udma_mode;
+    uint32_t baud_rate;
     bool initialised;
 } Uart_Device;
 
@@ -79,7 +101,7 @@ typedef struct _Uart_Device {
  * ------------------------------------------------------------------------- */
 
 /**
- * @brief Initialises the all used UART peripherals.
+ * @brief Calls Uart_init_specific for all UART devices.
  * 
  * If not all UARTs are initialised correctly an error is returned for
  * monitoring purposes only. If all UARTs fail to initialise an error is also
@@ -88,6 +110,14 @@ typedef struct _Uart_Device {
  * @return ErrorCode If no error, ERROR_NONE, otherwise UART_ERROR_x.
  */
 ErrorCode Uart_init(void);
+
+ErrorCode Uart_step(void);
+    /* In Uart_step():
+     * 
+     * - Check all devices with a status that isn't UART_STATUS_IN_PROGRESS or
+     *   UART_STATUS_NONE 
+     * - if that device's event hasn't been raised, raise it again
+     */
 
 /**
  * @brief Initialise (or re-init) a specific UART device.
@@ -104,6 +134,8 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in);
  * device. This could either be successful or it could fail, so use
  * Uart_get_status() for the device to check.
  * 
+ * TODO: Change this comment to be about the EVT_UART_device_TX_COMPLETE
+ * 
  * @param uart_id_in 
  * @param p_data_in 
  * @param length_in 
@@ -117,6 +149,9 @@ ErrorCode Uart_send_bytes(
 
 /**
  * @brief Receive bytes from a UART device
+ * 
+ * TODO: Add note on specific event
+ * TODO: Add note on how p_data_out __MUST__ exist statically
  * 
  * @param uart_id_in 
  * @param p_data_out 
@@ -139,7 +174,7 @@ ErrorCode Uart_recv_bytes(
  */
 ErrorCode Uart_get_status(
     Uart_DeviceId uart_id_in,
-    uint8_t *p_status_out
+    Uart_Status p_status_out
 );
 
 

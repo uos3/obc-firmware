@@ -22,36 +22,55 @@
 
 /* Internal includes */
 #include "drivers/gpio/Gpio_errors.h"
-#include "drivers/gpio/Gpio_private.h"
 #include "drivers/gpio/Gpio_public.h"
 #include "components/led/Led_errors.h"
-#include "components/led/Led_private.h"
 #include "components/led/Led_public.h"
 #include "util/debug/Debug_public.h"
+#include "system/kernel/Kernel_public.h"
+#include "drivers/uart/Uart_public.h"
+#include "drivers/udma/Udma_public.h"
+#include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
  * MAIN
  * ------------------------------------------------------------------------- */
 
 int main(void) {
-    /* TODO: Unfinished */
+    int toggle_count;
 
+    toggle_count = 0;
+
+    Kernel_init_critical_modules();
+
+    Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT);
+    Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT);
+
+    #if 0
     /* Initialise the LED. */
-    if (Gpio_init(LED_LEDS[LED_TEMP_1].gpio_pin, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
-        DEBUG_ERR("Failed to initialise GPIO pin");
+    if (Gpio_init((int *)GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
+        DEBUG_ERR("Failed to initialise LED GPIO pin");
+        Debug_exit(1);
+        return 1;
+    }
+    else {
+        DEBUG_INF("LED initialised");
     }
 
-    /* Set the rising interrupt to toggle the LED state when an interrupt is
-     * detected. */
-    if (Gpio_set_rising_interrupt(LED_LEDS[LED_TEMP_1].gpio_pin, Led_toggle(LED_LEDS[LED_TEMP_1].gpio_pin)) != ERROR_NONE) {
-        DEBUG_ERR("Failed to set rising interrupt on GPIO pin");
+    /* Initialise the switch input GPIO pin. */
+    if (Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
+        DEBUG_ERR("Failed to initialise switch GPIO pin");
+        Debug_exit(1);
+        return 1;
     }
+    else {
+        DEBUG_INF("Switch initialised");
+    }
+    #endif
 
-    while (1) {
-        /* Keep looping, so that the switch on the tm4c launchpad can be used
-         * at any time to set the rising interrupt, and the LED should toggle
-         * with each press of the switch. */
-    }
+    Uart_init_specific(UART_DEVICE_ID_TEST);
+    Udma_init();
+
+    Led_set(LED_LAUNCHPAD, true);
 
     /* Return 0 if no errors occured up to this point. */
     return 0;

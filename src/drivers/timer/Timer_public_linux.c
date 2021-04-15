@@ -80,7 +80,7 @@ static volatile sig_atomic_t TIMER_LINUX_STATE[TIMER_NUM_TIMERS] = { 0 };
  */
 static struct itimerspec TIMER_TIME[TIMER_NUM_TIMERS];
 
-bool TIMER_MODULE_DISABLED = false;
+bool TIMER_MODULE_DISABLED = true;
 
 /* -------------------------------------------------------------------------   
  * FUNCTION PROTOTYPES

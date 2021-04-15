@@ -20,8 +20,12 @@
  * INCLUDES
  * ------------------------------------------------------------------------- */
 
+/* Standard includes */
+#include <stdint.h>
+#include <stdbool.h>
+
 /* Internal includes */
-#include "applications/power/Power_dp_struct.h"
+#include "components/eps/Eps_public.h"
 #include "applications/power/Power_errors.h"
 #include "applications/power/Power_events.h"
 
@@ -38,6 +42,46 @@
  * and Eps_OcpState values.
  */
 typedef uint32_t Power_OpModeOcpStateConfig;
+
+/* -------------------------------------------------------------------------   
+ * ENUMS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Indicates the status of the low power check on the battery voltage.
+ */
+typedef enum _Power_LowPowerStatus {
+
+    /**
+     * @brief No low power status available, as battery voltage read hasn't
+     * started yet.
+     */
+    POWER_LOW_POWER_STATUS_NONE = 0,
+
+    /**
+     * @brief The battery voltage is currently being read.
+     */
+    POWER_LOW_POWER_STATUS_READ_IN_PROGRESS,
+
+    /**
+     * @brief The battery voltage has been read and is currently above the low
+     * power threshold.
+     */
+    POWER_LOW_POWER_STATUS_OK,
+
+    /**
+     * @brief The battery voltage status has been read and is currently below
+     * the low power threshold.
+     */
+    POWER_LOW_POWER_STATUS_LOW_POWER,
+
+    /**
+     * @brief The battery voltage couldn't be read and the low power status is
+     * unknown. 
+     */
+    POWER_LOW_POWER_STATUS_FAULT
+
+} Power_LowPowerStatus;
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
@@ -69,6 +113,16 @@ bool Power_step(void);
  * it is used by the Power app too.
  */
 void Power_request_eps_hk(void);
+
+/**
+ * @brief Requests a reset of the raised OCP rails.
+ * 
+ * @param rails_to_reset_in For each rail: true to reset, false to not reset.
+ * @return bool Returns false if the request couldn't be sent as there's
+ * already a reset in progress. You can keep retrying this each cycle util this
+ * function returns true.
+ */
+bool Power_reset_ocp(Eps_OcpState rails_to_reset_in);
 
 /**
  * @brief Sends a request to the EPS to change the OCP state to be ready for

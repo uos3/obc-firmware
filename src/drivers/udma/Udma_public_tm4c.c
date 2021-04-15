@@ -30,14 +30,16 @@
 #include "drivers/udma/Udma_errors.h"
 #include "drivers/udma/Udma_public.h"
 #include "system/event_manager/EventManager_public.h"
-
-#include "drivers/uart/Uart_private_tm4c.c"
+#include "util/debug/Debug_public.h"
 
 /* External */
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
 #include "driverlib/udma.h"
+#include "driverlib/uart.h"
+#include "driverlib/pin_map.h"
+#include "inc/tm4c123gh6pm.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -73,11 +75,12 @@ ErrorCode Udma_init(void) {
     uDMAEnable();
     uDMAControlBaseSet(UDMA_CONTROL_TABLE);
 
-    UDMA_INITIALISED = true;
+    /* TODO: Register UDMA error interrupt handler */
 
     return ERROR_NONE;
 }
 
+#if 0
 ErrorCode Udma_interrupt_handler(
     Uart_DeviceId uart_id_in,
     size_t length_in
@@ -104,3 +107,4 @@ ErrorCode Udma_interrupt_handler(
         return 0;
     }
 }
+#endif

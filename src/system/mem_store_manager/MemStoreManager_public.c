@@ -207,7 +207,7 @@ void MemStoreManager_debug_print_cfg(void) {
     DEBUG_INF("Loaded Configuration File:");
     DEBUG_INF("    VERSION: %d", CFG.VERSION);
     DEBUG_INF("    POWER_TASK_TIMER_DURATION_S: %u", CFG.POWER_TASK_TIMER_DURATION_S);
-    DEBUG_INF("    POWER_OP_MODE_OCP_STATE_CONFIG: %u", (uint32_t)CFG.POWER_OP_MODE_OCP_STATE_CONFIG);
+    DEBUG_INF("    POWER_OPMODE_OCP_STATE_CONFIG: %u", (uint32_t)CFG.POWER_OPMODE_OCP_STATE_CONFIG);
     DEBUG_INF("    OPMODE_APPID_TABLE: [");
     for (int mode = 0; mode < OPMODEMANAGER_NUM_OPMODES; mode++) {
         mode_app_list[0] = '\0';

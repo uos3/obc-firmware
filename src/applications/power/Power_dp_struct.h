@@ -24,8 +24,8 @@
 /* Internal includes */
 #include "system/kernel/Kernel_errors.h"
 #include "system/event_manager/EventManager_public.h"
-#include "applications/power/Power_public.h"
 #include "components/eps/Eps_public.h"
+#include "applications/power/Power_public.h"
 
 /* -------------------------------------------------------------------------   
  * STRUCTS
@@ -44,33 +44,37 @@ typedef struct _Power_Dp {
     bool INITIALISED;
 
     /**
-     * @brief Stores error codes that occur during operation.
+     * @brief Stores errors that occur during operation.
      * 
      * @dp 2
      */
-    ErrorCode ERROR_CODE;
+    Error ERROR;
 
     /**
-     * @brief Stores error codes returned by the Timer driver.
+     * @brief Stores errors returned by the Timer driver.
      * 
      * @dp 3
      */
-    ErrorCode TIMER_ERROR_CODE;
+    Error TIMER_ERROR;
 
     /**
-     * @brief Flag indicating whether or not Mission is requested to transition
-     * into Low Power (LP) OpMode. 
+     * @brief Status value of the low power check.
      * 
-     * This flag will be set if the Power app detects an unsuitably low battery
-     * voltage, which means that the Mission app must transition to LP mode.
+     * If this value is either POWER_LOW_POWER_STATUS_LOW_POWER the battery
+     * voltage is below the threshold to transition into low power. This shall
+     * be detected by the FDIR module and an EVT_FDIR_LOW_POWER_REQUEST event
+     * will be emmitted, which will trigger OpModeManager to begin an emergency
+     * transition to low power mode.
      * 
-     * The priority of this transition is less than that of Safe mode, meaning
-     * that if a safe mode transition should occur at the same time an LP
-     * transition should happen, the Mission app should transition to Safe.
+     * If the value is POWER_LOW_POWER_STATUS_FAULT the voltage of the battery
+     * cannot be determined and FDIR shall trigger a low power mode transition
+     * as well.
+     * 
+     * All other values indicate nominal functioning of the system.
      * 
      * @dp 4
      */
-    bool LOW_POWER_MODE_REQUEST;
+    Power_LowPowerStatus LOW_POWER_STATUS;
 
     /**
      * @brief The event associated with the app's primary task timer.
@@ -103,7 +107,7 @@ typedef struct _Power_Dp {
      * @brief Flag which when true will cause the Power app to send an updated
      * configuration file to the EPS.
      *
-     * @dp 8 
+     * @dp 8
      */
     bool UPDATE_EPS_CFG;
 
@@ -148,6 +152,37 @@ typedef struct _Power_Dp {
      * @dp 13
      */
     bool OPMODE_CHANGE_IN_PROGRESS;
+
+    /**
+     * @brief Flag which will trigger the EPS to reset the rails which are true
+     * in OCP_RAILS_TO_RESET:
+     * 
+     * @dp 14
+     */
+    bool SEND_RESET_OCP_TC;
+
+    /**
+     * @brief The OCP rails that the EPS should reset. Will only be sent if
+     * SEND_RESET_OCP_TC is true. 
+     * 
+     * @dp 15
+     */
+    Eps_OcpState OCP_RAILS_TO_RESET;
+
+    /**
+     * @brief Flag which will trigger the sending of the battery command stored
+     * in BATT_CMD_TO_SEND to the EPS. 
+     * 
+     * @dp 16
+     */
+    bool SEND_BATT_TC;
+
+    /**
+     * @brief Battery command to send when SEND_BATT_TC is true.
+     * 
+     * @dp 17
+     */
+    Eps_BattCmd BATT_CMD_TO_SEND;
 
 } Power_Dp;
 

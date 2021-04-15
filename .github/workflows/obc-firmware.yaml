@@ -33,7 +33,7 @@ jobs:
         run: |
           cd obc-firmware
           chmod +x ./build
-          ./build -c -t linux --test
+          ./build -c -t linux --test test_all_modules
 
       # Run all modules test
       - name: Run all modules test

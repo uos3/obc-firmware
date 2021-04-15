@@ -80,10 +80,14 @@ void obc_firmware_step_components(void) {
 
     /* TODO: step GNSS */
     
-    /* Step IMU */
+    /* Step IMU
+     * Note: IMU stepping currently disabled as the component isn't finished
+     */
+    #if 0
     if (!Imu_step()) {
         /* TODO: Raise error tm */
     }
+    #endif
 
     /* TODO: step temp */
 

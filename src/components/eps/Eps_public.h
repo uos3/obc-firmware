@@ -45,10 +45,8 @@
  *  - `EPS_STATE_WAIT_REPLY` - State in which the Eps will wait for the reply
  *    to the most recent request.
  * 
- * The Eps maintains a queue of commands to be sent to the EPS. The operation
- * of this queue is synchronous FIFO, meaning that commands will be sent in the
- * order they are queued up, but a command reply must be recieved before the
- * next command can be sent.
+ * The Eps can only handle one command at a time, so the user must wait until
+ * the currently executing command is completed before sending the next one.
  * 
  * A user can send commands to the EPS by using one of the public functions
  * provided by this module. Data can be retrieved by accessing the appropriate
@@ -117,7 +115,7 @@
 #define EPS_UART_HEADER_DATA_TYPE_POS (1)
 
 /**
- * @brief The length of the CRC used in the UART frame.
+ * @brief The length (in bytes) of the CRC used in the UART frame.
  */
 #define EPS_UART_CRC_LENGTH (sizeof(Crypto_Crc16))
 
@@ -316,6 +314,11 @@ typedef struct _Eps_HkData {
      */
     Eps_BattStatus batt_status;
 
+    /**
+     * @brief The voltage of the battery, in Volts.
+     */
+    double batt_voltage_volts;
+
 } Eps_HkData;
 
 /* -------------------------------------------------------------------------   
@@ -384,6 +387,14 @@ typedef enum _Eps_UartDataType {
     EPS_UART_DATA_TYPE_TC_SEND_BATT_CMD = 4,
 
     /**
+     * @brief Command instructing the EPS to reset (turn off then on) a
+     * selection of OCP rails.
+     * 
+     * Expected reply is EPS_UART_DATA_TYPE_TM_OCP_STATE
+     */
+    EPS_UART_DATA_TYPE_TC_RESET_OCP = 5,
+
+    /**
      * @brief Reply containing housekeeping data.
      * 
      * Generated with an EPS_UART_DATA_TYPE_TM_HK_DATA request.
@@ -414,7 +425,15 @@ typedef enum _Eps_UartDataType {
      * 
      * Generated with an EPS_UART_DATA_TYPE_TC_SEND_BATT_CMD request.
      */
-    EPS_UART_DATA_TYPE_TM_BATT_REPLY = 132
+    EPS_UART_DATA_TYPE_TM_BATT_REPLY = 132,
+
+    /**
+     * @brief Reply indicating that the OCP rail associated with the
+     * Eps_OcpByte has been tripped.
+     * 
+     * Generated as an unsolicited TM packet by the EPS.
+     */
+    EPS_UART_DATA_TYPE_TM_OCP_TRIP = 133
     
 } Eps_UartDataType;
 
@@ -506,5 +525,15 @@ bool Eps_set_ocp_state(Eps_OcpState ocp_state_in);
  * error cause.
  */
 bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in);
+
+/**
+ * @brief Sends a command to the EPS to reset the OCP rails described by the
+ * given OcpState. A reset is defined as turning the rail off then on again.
+ * 
+ * @param ocp_state_in For each rail: true to reset, false to not reset.
+ * @return bool True on success, false on failure. See DP.EPS.ERROR_CODE for
+ * error cause. 
+ */
+bool Eps_reset_ocp(Eps_OcpState ocp_state_in);
 
 #endif /* H_EPS_PUBLIC_H */

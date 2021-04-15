@@ -133,22 +133,22 @@ bool OpModeManager_call_active_app_steps(void) {
 
         switch (app_id) {
             case APP_ID_BEACON:
-                DEBUG_TRC("Stepping Beacon app");
+                // DEBUG_TRC("Stepping Beacon app");
                 /* TODO: call step func when defined */
                 break;
                 
             case APP_ID_DEPLOYMENT:
-                DEBUG_TRC("Stepping Deployment app");
+                // DEBUG_TRC("Stepping Deployment app");
                 /* TODO: call step func when defined */
                 break;
 
             case APP_ID_PAYLOAD:
-                DEBUG_TRC("Stepping Payload app");
+                // DEBUG_TRC("Stepping Payload app");
                 /* TODO: call step func when defined */
                 break;
 
             case APP_ID_PICTURE:
-                DEBUG_TRC("Stepping Picture app");
+                // DEBUG_TRC("Stepping Picture app");
                 /* TODO: call step func when defined */
                 break;
 
@@ -205,7 +205,7 @@ bool OpModeManager_step_graceful_transition(void) {
                 app_id = CFG.OPMODE_APPID_TABLE[DP.OPMODEMANAGER.OPMODE][i];
 
                 /* If the app id is 0 skip to the next one */
-                if (app_id = 0) {
+                if (app_id == 0) {
                     continue;
                 }
                 else {
@@ -235,21 +235,9 @@ bool OpModeManager_step_graceful_transition(void) {
             /* Check for timeout, either using the timer event or if that is
              * None use the RTC time */
             if (DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT != EVT_NONE) {
-                if (!EventManager_poll_event(
-                    DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT,
-                    &wait_off_timeout_fired
-                )) {
-                    DEBUG_ERR(
-                        "EventManager error while polling for graceful transition event timeout"
-                    );
-                    DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
-                    /* We want to try and guarentee that this will continue, so
-                     * we will ignore the error and *assume* that the timeout 
-                     * has fired. While this may result in error loss it is
-                     * more important to make sure the transition actually
-                     * completes. */
-                    wait_off_timeout_fired = true;
-                }
+                wait_off_timeout_fired = EventManager_poll_event(
+                    DP.OPMODEMANAGER.GRACE_TRANS_TIMEOUT_EVENT
+                );                
             }
             else {
                 /* TODO: Check RTC */
@@ -266,7 +254,7 @@ bool OpModeManager_step_graceful_transition(void) {
                     app_id = CFG.OPMODE_APPID_TABLE[DP.OPMODEMANAGER.OPMODE][i];
 
                     /* If the app id is 0 skip to the next one */
-                    if (app_id = 0) {
+                    if (app_id == 0) {
                         continue;
                     }
                     else {
@@ -342,28 +330,26 @@ bool OpModeManager_step_graceful_transition(void) {
 
             /* Wait for the Power app to signal OCP change success */
             if (!EventManager_poll_event(
-                EVT_POWER_OPMODE_CHANGE_OCP_STATE_CHANGE_COMPLETE,
-                &is_ocp_change_complete
+                EVT_POWER_OPMODE_CHANGE_OCP_STATE_CHANGE_COMPLETE
             )) {
-                DEBUG_ERR(
-                    "EventManager error while polling for OCP state change"
-                );
-                DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
-                /* If an error occured while checking for this event we should
-                 * try and wait until we can actually do this check
-                 * successfully, as it isn't safe to enter the next mode until
-                 * the power rails are correct. */
-                return false;
-            }
-
-            /* If the change is not complete */
-            if (!is_ocp_change_complete) {
                 return true;
             }
 
             /* If it is complete set the new mode and activate all the new
              * apps */
             DP.OPMODEMANAGER.OPMODE = DP.OPMODEMANAGER.NEXT_OPMODE;
+
+            /* Call the init function of the current mode */
+            switch (DP.OPMODEMANAGER.OPMODE) {
+                case OPMODEMANAGER_OPMODE_BOOT_UP:
+                    OpModeManager_bu_init();
+                    break;
+                default:
+                    DEBUG_WRN(
+                        "No init function found for mode %d",
+                        DP.OPMODEMANAGER.OPMODE
+                    );
+            }
             
             OpModeManager_activate_apps();
 
@@ -375,7 +361,9 @@ bool OpModeManager_step_graceful_transition(void) {
                 DEBUG_ERR(
                     "EventManager error while raising change complete event"
                 );
-                DP.OPMODEMANAGER.ERROR_CODE = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                DP.OPMODEMANAGER.ERROR.code 
+                    = OPMODEMANAGER_ERROR_EVENTMANAGER_ERROR;
+                DP.OPMODEMANAGER.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
                 /* If the event raising fails we should try to raise the TM
                  * ourselves */
                 /* TODO: raise TM */
@@ -398,8 +386,9 @@ bool OpModeManager_step_graceful_transition(void) {
                 "Invalid DP.OPMODEMANAGER.GRACE_TRANS_STATE: %d", 
                 DP.OPMODEMANAGER.GRACE_TRANS_STATE
             );
-            DP.OPMODEMANAGER.ERROR_CODE 
+            DP.OPMODEMANAGER.ERROR.code
                 = OPMODEMANAGER_ERROR_INVALID_GRACE_TRANS_STATE;
+            DP.OPMODEMANAGER.ERROR.p_cause = NULL;
             return false;
     }
 

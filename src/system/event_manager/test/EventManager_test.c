@@ -95,14 +95,11 @@ static void EventManager_test_is_event_raised(void **state) {
     (void) state;
 
     /* Check that no event is raised at the start */
-    bool is_raised = true;
-    assert_true(EventManager_is_event_raised((Event)1, &is_raised));
-    assert_false(is_raised);
+    assert_false(EventManager_is_event_raised((Event)1));
 
     /* Raise an event and check it is raised */
     assert_true(EventManager_raise_event((Event)1));
-    assert_true(EventManager_is_event_raised((Event)1, &is_raised));
-    assert_true(is_raised);
+    assert_true(EventManager_is_event_raised((Event)1));
 }
 
 /**
@@ -117,16 +114,13 @@ static void EventManager_test_poll_event(void **state) {
     assert_true(EventManager_raise_event((Event)2));
 
     /* Poll that event and check that the raised flag is true */
-    bool is_raised = false;
-    assert_true(EventManager_poll_event((Event)2, &is_raised));
-    assert_true(is_raised);
+    assert_true(EventManager_poll_event((Event)2));
 
     /* Check that the event has been removed */
     assert_int_equal(DP.EVENTMANAGER.NUM_RAISED_EVENTS, 0);
 
     /* Poll an event that isn't raised and check the raised flag is false. */
-    assert_true(EventManager_poll_event((Event)1, &is_raised));
-    assert_false(is_raised);
+    assert_false(EventManager_poll_event((Event)1));
 
     /* Check that there are no events */
     assert_int_equal(DP.EVENTMANAGER.NUM_RAISED_EVENTS, 0);
@@ -154,7 +148,7 @@ static void EventManager_test_cleanup_events(void **state) {
     }
 
     /* Call cleanup */
-    assert_true(EventManager_cleanup_events());
+    EventManager_cleanup_events();
 
     /* Check there are still 64 events */
     assert_int_equal(DP.EVENTMANAGER.NUM_RAISED_EVENTS, 64);
@@ -165,7 +159,7 @@ static void EventManager_test_cleanup_events(void **state) {
     }
 
     /* Call cleanup */
-    assert_true(EventManager_cleanup_events());
+    EventManager_cleanup_events();
 
     /* Check there are no events */
     assert_int_equal(DP.EVENTMANAGER.NUM_RAISED_EVENTS, 0);
@@ -184,13 +178,6 @@ static void EventManager_test_errors(void **state) {
 
     DEBUG_INF("Testing EventManager error codes");
 
-    /* Call a random function which should fail because the EM isn't init */
-    assert_false(EventManager_shrink_lists());
-    assert_int_equal(
-        DP.EVENTMANAGER.ERROR_CODE, 
-        EVENTMANAGER_ERROR_NOT_INITIALISED
-    );
-
     /* Now init the EM and test for other errors */
     assert_true(EventManager_init());
 
@@ -200,7 +187,7 @@ static void EventManager_test_errors(void **state) {
     }
     assert_false(EventManager_raise_event(EVENTMANAGER_MAX_LIST_SIZE + 1));
     assert_int_equal(
-        DP.EVENTMANAGER.ERROR_CODE,
+        DP.EVENTMANAGER.ERROR.code,
         EVENTMANAGER_ERROR_MAX_EVENTS_REACHED
     );
 
@@ -234,10 +221,10 @@ static int EventManager_test_setup(void **state) {
 static int EventManager_test_teardown(void **state) {
     (void) state;
     
-    if (DP.EVENTMANAGER.ERROR_CODE != ERROR_NONE) {
+    if (DP.EVENTMANAGER.ERROR.code != ERROR_NONE) {
         DEBUG_ERR(
-            "DP.EVENTMANAGER.ERROR_CODE = %d", 
-            DP.EVENTMANAGER.ERROR_CODE
+            "DP.EVENTMANAGER.ERROR.code = %d", 
+            DP.EVENTMANAGER.ERROR.code
         );
     }
 
