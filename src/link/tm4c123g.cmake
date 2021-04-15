@@ -65,5 +65,5 @@ set(CMAKE_EXE_LINKER_FLAGS "\
 # Processor specific definitions
 # TODO: Check revision version is correct
 add_definitions(-DPART_TM4C123GH6PM)
-add_definitions(-DTARGET_IS_TM4C123_RB1)
+add_definitions(-DTARGET_IS_TM4C123_RA0)
 add_definitions(-Dgcc)
