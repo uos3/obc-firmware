@@ -42,7 +42,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode mode_in) {
+ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode mode_in) {
     /* Initialises the GPIO */
 
     /* Loop through modules being initialised */
@@ -53,8 +53,9 @@ ErrorCode Gpio_init(uint32_t *p_gpio_pins_in, size_t num_gpio_pins_in, Gpio_Mode
 
         /* If the GPIO has already been initialised, do not initialise it
          * again, and return a warning message (but not an error) */
-        if (p_gpio_pin->initialised) {
+        if (p_gpio_pin->initialised == true) {
             DEBUG_INF("Gpio_init() called on GPIO module when already initialised");
+            ++i;
         }
 
         /* If the peripheral is not ready, reset and enable it */

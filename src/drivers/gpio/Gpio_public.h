@@ -136,7 +136,7 @@ typedef struct _Gpio {
  * @param mode Mode of the GPIO (input or output)
  * @return ErrorCode 
  */
-ErrorCode Gpio_init(uint32_t *p_gpio_modules_in, size_t num_gpio_modules_in, Gpio_Mode mode);
+ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_modules_in, size_t num_gpio_modules_in, Gpio_Mode mode);
 
 /**
  * @brief Writes the state of a specified GPIO pin to HIGH or LOW.
