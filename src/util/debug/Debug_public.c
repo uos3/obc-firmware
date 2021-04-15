@@ -117,14 +117,14 @@ bool Debug_init(void) {
     GPIOPinConfigure(GPIO_PB1_U1TX);
     GPIOPinTypeUART(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
     #elif TARGET_TM4C_TOBC
-    /* Enable the GPIO peripheral for UART1 and UART1 itself */
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART4);
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+    /* Enable the GPIO peripheral for UART6 and UART6 itself */
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART6);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
 
     /* Configure the GPIO for UART output */
-    GPIOPinConfigure(GPIO_PC4_U4RX);
-    GPIOPinConfigure(GPIO_PC5_U4TX);
-    GPIOPinTypeUART(GPIO_PORTC_BASE, GPIO_PIN_4 | GPIO_PIN_5);
+    GPIOPinConfigure(GPIO_PD4_U6RX);
+    GPIOPinConfigure(GPIO_PD5_U6TX);
+    GPIOPinTypeUART(GPIO_PORTD_BASE, GPIO_PIN_4 | GPIO_PIN_5);
     #endif
 
     /* Configure the UART for 115,200, 8-N-1 operation. */
@@ -132,7 +132,7 @@ bool Debug_init(void) {
         #ifdef TARGET_TM4C_LAUNCHPAD
         UART1_BASE, 
         #elif TARGET_TM4C_TOBC
-        UART4_BASE,
+        UART6_BASE,
         #endif
         SysCtlClockGet(), 
         115200,
@@ -248,7 +248,7 @@ void Debug_log_tm4c(
             #ifdef TARGET_TM4C_LAUNCHPAD
             UART1_BASE, 
             #elif TARGET_TM4C_TOBC
-            UART4_BASE,
+            UART6_BASE,
             #endif
             str[i]
         );
