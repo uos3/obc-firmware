@@ -21,14 +21,12 @@
 #include <stdbool.h>
 
 /* Internal includes */
-#include "drivers/gpio/Gpio_errors.h"
 #include "drivers/gpio/Gpio_public.h"
-#include "components/led/Led_errors.h"
+#include "drivers/uart/Uart_public.h"
+#include "drivers/udma/Udma_public.h"
 #include "components/led/Led_public.h"
 #include "util/debug/Debug_public.h"
 #include "system/kernel/Kernel_public.h"
-#include "drivers/uart/Uart_public.h"
-#include "drivers/udma/Udma_public.h"
 #include "system/event_manager/EventManager_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -42,8 +40,12 @@ int main(void) {
 
     Kernel_init_critical_modules();
 
+    Uart_init_specific(UART_DEVICE_ID_TEST);
+
     Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT);
     Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT);
+
+    Led_set(LED_LAUNCHPAD, true);
 
     #if 0
     /* Initialise the LED. */
@@ -66,11 +68,6 @@ int main(void) {
         DEBUG_INF("Switch initialised");
     }
     #endif
-
-    Uart_init_specific(UART_DEVICE_ID_TEST);
-    Udma_init();
-
-    Led_set(LED_LAUNCHPAD, true);
 
     /* Return 0 if no errors occured up to this point. */
     return 0;

@@ -64,6 +64,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART_STATUS_NONE,
         EVT_UART_NONE,
         UDMA_MODE_STOP,
+        INT_UART0,
         9600,
         false
     },
@@ -84,6 +85,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART_STATUS_NONE,
         EVT_UART_NONE,
         UDMA_MODE_STOP,
+        INT_UART3,
         9600,
         false
     },
@@ -104,6 +106,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART_STATUS_NONE,
         EVT_UART_NONE,
         UDMA_MODE_STOP,
+        INT_UART7,
         9600,
         false
     },
@@ -124,6 +127,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         UART_STATUS_NONE,
         EVT_UART_NONE,
         UDMA_MODE_STOP,
+        INT_UART1,
         9600,
         false
     },

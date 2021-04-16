@@ -42,6 +42,7 @@
 #include "driverlib/uart.h"
 #include "driverlib/pin_map.h"
 #include "inc/tm4c123gh6pm.h"
+#include "driverlib/interrupt.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -212,7 +213,8 @@ ErrorCode Uart_send_bytes(
 
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMATX);
+    IntEnable(p_uart_device->uart_base_int);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_TX);
 
     if (uDMAErrorStatusGet() != 0) {
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
@@ -264,7 +266,8 @@ ErrorCode Uart_recv_bytes(
      * request to begin the transfer. */
     uDMAChannelEnable(UDMA_CHANNEL_UART0RX);
 
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
+    IntEnable(p_uart_device->uart_base_int);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_RX);
 
     if (uDMAErrorStatusGet() != 0) {
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
