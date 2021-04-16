@@ -33,6 +33,9 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
+#include "driverlib/interrupt.h"
+#include "inc/hw_types.h"
+#include "inc/tm4c123gh6pm.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -89,11 +92,15 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
                 case GPIO_MODE_INPUT:
                     /* Configure the pin for use as GPIO input */
                     GPIOPinTypeGPIOInput(p_gpio_pin->port, p_gpio_pin->pin);
+                    GPIOPadConfigSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
                     break;
                 
                 case GPIO_MODE_OUTPUT:
                     /* Configure the pin for use as GPIO output */
                     GPIOPinTypeGPIOOutput(p_gpio_pin->port, p_gpio_pin->pin);
+                    break;
+                case GPIO_MODE_UART:
+                    GPIOPinTypeUART(p_gpio_pin->port, p_gpio_pin->pin);
                     break;
                 
                 default:
@@ -271,8 +278,10 @@ ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_call
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
+    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->pin);
+
     /* Set the interrupt type to rising edge interrupt */
-    GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
+    GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_HIGH_LEVEL);
 
     /* Set the interrupt function of the GPIO */
     p_gpio_pin->int_function = interrupt_callback;
@@ -302,7 +311,7 @@ ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_call
             return GPIO_ERROR_UNEXPECTED_PORT;
     }
 
-    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->pin);
+    IntEnable(p_gpio_pin->interrupt_pin);
 
     return ERROR_NONE;
 }

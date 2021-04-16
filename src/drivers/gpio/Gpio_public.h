@@ -87,6 +87,8 @@ typedef enum _Gpio_Mode {
 
     GPIO_MODE_OUTPUT = 1,
 
+    GPIO_MODE_UART = 2,
+
 } Gpio_Mode;
 
 /* -------------------------------------------------------------------------   

@@ -40,6 +40,8 @@
 #include "inc/tm4c123gh6pm.h"
 #include "inc/hw_memmap.h"
 #include "driverlib/udma.h"
+#include "inc/hw_types.h"
+#include "driverlib/interrupt.h"
 
 /* -------------------------------------------------------------------------   
  * GLOBALS
@@ -52,8 +54,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         SYSCTL_PERIPH_UART0,
         GPIO_PORTA_BASE,
         UART0_BASE,
-        GPIO_PCTL_PA0_U0RX, /* WAS GPIO_PA0_U0RX - RAISED AN ERROR */
-        GPIO_PCTL_PA1_U0TX, /* WAS GPIO_PA1_U0TX - RAISED AN ERROR */
+        GPIO_PA0_U0RX, /* WAS GPIO_PA0_U0RX - RAISED AN ERROR */
+        GPIO_PA1_U0TX, /* WAS GPIO_PA1_U0TX - RAISED AN ERROR */
         GPIO_PINA0,
         GPIO_PINA1,
         UDMA_CHANNEL_UART0TX,
@@ -72,8 +74,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         SYSCTL_PERIPH_UART3,
         GPIO_PORTC_BASE,
         UART3_BASE,
-        GPIO_PCTL_PC6_U3RX, /* GPIO_PC6_U3RX */
-        GPIO_PCTL_PC7_U3TX, /* GPIO_PC7_U3TX */
+        GPIO_PC6_U3RX, /* GPIO_PC6_U3RX */
+        GPIO_PC7_U3TX, /* GPIO_PC7_U3TX */
         GPIO_PINC6,
         GPIO_PINC7,
         UDMA_CHANNEL_UART1TX,
@@ -92,8 +94,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         SYSCTL_PERIPH_UART7,
         GPIO_PORTE_BASE,
         UART7_BASE,
-        GPIO_PCTL_PE0_U7RX, /* GPIO_PE0_U7RX */
-        GPIO_PCTL_PE1_U7TX, /* GPIO_PE1_U7TX */
+        GPIO_PE0_U7RX, /* GPIO_PE0_U7RX */
+        GPIO_PE1_U7TX, /* GPIO_PE1_U7TX */
         GPIO_PINE0,
         GPIO_PINE1,
         UDMA_CH1_UART2TX, /* TODO: Check TI channel assignments */
@@ -112,8 +114,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         SYSCTL_PERIPH_UART0,
         GPIO_PORTB_BASE,
         UART0_BASE,
-        GPIO_PCTL_PB0_U1RX,
-        GPIO_PCTL_PB1_U1TX,
+        GPIO_PB0_U1RX,
+        GPIO_PB1_U1TX,
         GPIO_PINB0, /* use tivaware gpio not driver */
         GPIO_PINB1,
         UDMA_CHANNEL_UART0TX, /* TODO: Check TI channel assignments */
