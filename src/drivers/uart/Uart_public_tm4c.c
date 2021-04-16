@@ -216,7 +216,8 @@ ErrorCode Uart_send_bytes(
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
     IntEnable(p_uart_device->uart_base_int);
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_TX);
+    UARTIntClear(p_uart_device->gpio_base, UART_INT_DMATX);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMATX);
     Debug_exit(1);
 
     if (uDMAErrorStatusGet() != 0) {
