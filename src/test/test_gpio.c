@@ -40,6 +40,8 @@ int main(void) {
 
     Kernel_init_critical_modules();
 
+    DEBUG_INF("GPIO Test");
+
     Uart_init_specific(UART_DEVICE_ID_TEST);
 
     Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT);

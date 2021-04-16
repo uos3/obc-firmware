@@ -61,6 +61,8 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
             ++i;
         }
 
+        SysCtlClockSet(SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ | SYSCTL_USE_PLL | SYSCTL_SYSDIV_5);
+
         /* If the peripheral is not ready, reset and enable it */
         if (!SysCtlPeripheralReady(p_gpio_pin->peripheral)) {
             SysCtlPeripheralReset(p_gpio_pin->peripheral);
