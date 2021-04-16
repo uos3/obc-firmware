@@ -131,7 +131,7 @@ ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state_in) {
     Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
 
     /* Check the GPIO has been initialised */
-    if (!GPIO.initialised) {
+    if (!p_gpio_pin->initialised) {
         DEBUG_ERR("Attempted to write GPIO pin when the GPIO has not been initalised");
         return GPIO_ERROR_NOT_INITIALISED;
     }
@@ -151,7 +151,7 @@ ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out) {
     Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
 
     /* Check the GPIO has been initialised */
-    if (!GPIO.initialised) {
+    if (!p_gpio_pin->initialised) {
         DEBUG_ERR("Attempted to write GPIO pin when the GPIO has not been initalised");
         return GPIO_ERROR_NOT_INITIALISED;
     }
@@ -269,7 +269,7 @@ ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, uint8_t gpio_pin_lo
 ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_callback(void)) {
     Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
 
-    if (!GPIO.initialised) {
+    if (!p_gpio_pin->initialised) {
         DEBUG_ERR("Attempted to set rising edge interrupt on GPIO pin when\
         the GPIO has not been initialised");
         return GPIO_ERROR_NOT_INITIALISED;
@@ -323,7 +323,7 @@ ErrorCode Gpio_reset_interrupt(uint8_t gpio_id_numer) {
 
     /* Check for valid gpio id number and initialisation before attempting
      * interrupt reset */
-    if (!GPIO.initialised) {
+    if (!p_gpio_pin->initialised) {
         DEBUG_ERR("Attempted to set rising edge interrupt on GPIO pin when\
         the GPIO has not been initialised");
         return GPIO_ERROR_NOT_INITIALISED;

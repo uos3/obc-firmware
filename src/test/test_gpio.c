@@ -51,8 +51,6 @@ int main(void) {
     Led_set(GPIO_PINF1, true);
 
     Debug_exit(1);
-
-    Debug_exit(1);
     /* Return 0 if no errors occured up to this point. */
     return 0;
 }

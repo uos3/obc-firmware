@@ -218,7 +218,6 @@ ErrorCode Uart_send_bytes(
     UARTIntClear(&p_uart_device->gpio_base, UART_INT_DMATX);
     UARTIntEnable(&p_uart_device->uart_base, UART_INT_DMATX);
     IntEnable(p_uart_device->uart_base_int);
-    Debug_exit(1);
 
     if (uDMAErrorStatusGet() != 0) {
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
