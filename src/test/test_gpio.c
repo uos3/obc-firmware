@@ -38,6 +38,8 @@ int main(void) {
 
     toggle_count = 0;
 
+    Debug_exit(1);
+
     Kernel_init_critical_modules();
 
     DEBUG_INF("GPIO Test");
