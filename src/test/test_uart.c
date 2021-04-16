@@ -64,8 +64,6 @@ int main(void) {
         Debug_exit(1);
     }
 
-    Debug_exit(1);
-
     /* Loop through the size of the data to send, and create an array of
      * dummy data to be sent. */
     for (i = 0; i < data_size; ++i) {

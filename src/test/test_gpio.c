@@ -34,7 +34,6 @@
  * ------------------------------------------------------------------------- */
 
 int main(void) {
-    Debug_exit(1);
 
     Kernel_init_critical_modules();
 
@@ -44,14 +43,17 @@ int main(void) {
         Debug_exit(1);
     }
 
+    Debug_exit(1);
+    
     if (Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         Debug_exit(1);
     }
     if (Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
         Debug_exit(1);
     }
-
+    #if 0
     Led_set(LED_LAUNCHPAD, true);
+    #endif
 
     Debug_exit(1);
     /* Return 0 if no errors occured up to this point. */
