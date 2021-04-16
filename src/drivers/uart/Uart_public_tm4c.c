@@ -216,8 +216,8 @@ ErrorCode Uart_send_bytes(
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
     IntEnable(p_uart_device->uart_base_int);
-    Debug_exit(1);
     UARTIntEnable(p_uart_device->uart_base, UART_INT_TX);
+    Debug_exit(1);
 
     if (uDMAErrorStatusGet() != 0) {
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");

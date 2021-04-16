@@ -41,15 +41,15 @@ target_link_libraries(test_power
 )
 
 add_executable(test_gpio
-    ${STARTUP_SOUCRE}
+    ${STARTUP_SOURCE}
     test_gpio.c
 )
 target_link_libraries(test_gpio
     ${STANDARD_LINK_LIBS}
-    Gpio
-    Led
     Uart
     Udma
+    Gpio
+    Led
     EventManager
 )
 

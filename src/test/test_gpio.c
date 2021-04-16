@@ -1,12 +1,12 @@
 /**
- * @file test_uart.c
+ * @file test_gpio.c
  * @author Leon Galanakis (leongalanakis@gmail.com)
- * @brief uDMA UART test
+ * @brief GPIO test
  * 
  * 
  * 
  * @version 0.1
- * @date 2021-03-16
+ * @date 2021-04-16
  * 
  * @copyright Copyright (c) 2021
  */
@@ -44,7 +44,7 @@ int main(void) {
     }
 
     Debug_exit(1);
-    
+
     if (Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         Debug_exit(1);
     }
