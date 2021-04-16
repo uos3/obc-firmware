@@ -42,10 +42,16 @@ int main(void) {
 
     DEBUG_INF("GPIO Test");
 
-    Uart_init_specific(UART_DEVICE_ID_TEST);
+    if (Uart_init_specific(UART_DEVICE_ID_TEST) != ERROR_NONE) {
+        Debug_exit(1);
+    }
 
-    Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT);
-    Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT);
+    if (Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
+        Debug_exit(1);
+    }
+    if (Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
+        Debug_exit(1);
+    }
 
     Led_set(LED_LAUNCHPAD, true);
 

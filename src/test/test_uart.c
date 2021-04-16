@@ -45,8 +45,6 @@ int main(void) {
     test_step = 0;
     num_attempts = 0;
 
-    Debug_exit(1);
-
     send_data = (int *)malloc(data_size * sizeof(int));
     recv_data = (int *)malloc(data_size * sizeof(int));
 
@@ -57,11 +55,13 @@ int main(void) {
     /* Initialise the UART devices. */
     if (Uart_init_specific(UART_DEVICE_ID_TEST) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the UART devices.");
+        Debug_exit(1);
     }
 
     /* Initialise the uDMA */
     if (Udma_init() != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the uDMA.");
+        Debug_exit(1);
     }
 
     /* Loop through the size of the data to send, and create an array of
@@ -75,7 +75,9 @@ int main(void) {
         switch(test_step) {
             /* Step 0 is to send the bytes */
             case 0:
-                Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size);
+                if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
+                    Debug_exit(1);
+                }
                 DEBUG_INF("Sending bytes");
                 /* Increment the step number and move on to next case */
                 test_step++;
@@ -107,7 +109,9 @@ int main(void) {
                 break;
             /* Step 2 is to receive the bytes */
             case 2:
-                Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size);
+                if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
+                    Debug_exit(1);
+                }
                 /* Increment the step number and move on to next case */
                 test_step++;
                 break;
@@ -153,7 +157,6 @@ int main(void) {
                 free(send_data);
                 free(recv_data);
                 Debug_exit(1);
-                break;
         }
 
         if (!Uart_step()) {
