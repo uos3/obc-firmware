@@ -93,8 +93,8 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
                 
                 case GPIO_MODE_INPUT:
                     /* Configure the pin for use as GPIO input */
-                    GPIOPadConfigSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
                     GPIOPinTypeGPIOInput(p_gpio_pin->port, p_gpio_pin->pin);
+                    GPIOPadConfigSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
                     break;
                 
                 case GPIO_MODE_OUTPUT:

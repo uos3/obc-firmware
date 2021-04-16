@@ -142,6 +142,12 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
             return UART_ERROR_PERIPHERAL_READY_FAILED;
         }
 
+        /* Enable the UART and uDMA interface for TX and RX */
+        UARTEnable(p_uart_device->uart_base);
+        UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
+
+        IntMasterEnable();
+
         /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
          * controller when more data should be transferred. These are defined
          * in Uart_private.h and are currently arbitrary
@@ -154,9 +160,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
 
         UARTClockSourceSet(p_uart_device->uart_base, UART_CLOCK_PIOSC);
 
-        /* Enable the UART and uDMA interface for TX and RX */
-        UARTEnable(p_uart_device->uart_base);
-        UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
 
         /* TODO: register interrupt handler for this UART */
     }
