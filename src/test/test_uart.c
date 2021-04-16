@@ -45,6 +45,8 @@ int main(void) {
     test_step = 0;
     num_attempts = 0;
 
+    Debug_exit(1);
+
     send_data = (int *)malloc(data_size * sizeof(int));
     recv_data = (int *)malloc(data_size * sizeof(int));
 

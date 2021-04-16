@@ -49,6 +49,8 @@ int main(void) {
 
     Led_set(LED_LAUNCHPAD, true);
 
+    Debug_exit(1);
+
     #if 0
     /* Initialise the LED. */
     if (Gpio_init((int *)GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
