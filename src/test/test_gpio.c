@@ -47,12 +47,10 @@ int main(void) {
     if (Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
         Debug_exit(1);
     }
-    
-    Debug_exit(1);
-    
-    #if 0
+
     Led_set(LED_LAUNCHPAD, true);
-    #endif
+
+    Debug_exit(1);
 
     Debug_exit(1);
     /* Return 0 if no errors occured up to this point. */
