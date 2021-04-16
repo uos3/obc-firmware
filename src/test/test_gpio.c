@@ -48,7 +48,7 @@ int main(void) {
         Debug_exit(1);
     }
 
-    Led_set(LED_LAUNCHPAD, true);
+    Led_set(GPIO_PINF1, true);
 
     Debug_exit(1);
 
