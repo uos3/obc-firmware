@@ -44,12 +44,14 @@ ErrorCode Led_set(uint8_t led_number_in, bool led_state_in) {
     /* Raise an error if the maximum number of LEDs is exceeded */
     if (led_number_in >= LED_NUMBER_OF_LEDS) {
         DEBUG_ERR("LED input ID number greater than the number of LEDs");
+        Debug_exit(1);
         return LED_ERROR_INVALID_LED_ID;
     }
 
     /* Write the desired state onto the specified led pin */
     if (Gpio_write(p_led->gpio_pin, led_state_in) != ERROR_NONE) {
         DEBUG_ERR("Failed to write to gpio pin");
+        Debug_exit(1);
         return LED_ERROR_WRITE_FAILED;
     }
 
