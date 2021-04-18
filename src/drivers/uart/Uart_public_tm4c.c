@@ -269,8 +269,13 @@ ErrorCode Uart_recv_bytes(
      * request to begin the transfer. */
     uDMAChannelEnable(UDMA_CHANNEL_UART0RX);
 
+    p_uart_device->uart_status_rx = UART_STATUS_IN_PROGRESS;
+
+    /* Enable the UART interrupt.
+     * TODO: Check this, and in rx */
+    UARTIntClear(&p_uart_device->gpio_base, UART_INT_DMARX);
+    UARTIntEnable(&p_uart_device->uart_base, UART_INT_DMARX);
     IntEnable(p_uart_device->uart_base_int);
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_RX);
 
     if (uDMAErrorStatusGet() != 0) {
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
