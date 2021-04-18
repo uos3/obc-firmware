@@ -68,6 +68,7 @@ int main(void) {
      * dummy data to be sent. */
     for (i = 0; i < data_size; ++i) {
         send_data[i] = i;
+        recv_data[i] = i*10;
     }
 
     /* Main loop */
@@ -157,9 +158,6 @@ int main(void) {
                 break;
             default:
                 DEBUG_INF("Test complete");
-                free(send_data);
-                free(recv_data);
-                Debug_exit(1);
         }
     }
 
