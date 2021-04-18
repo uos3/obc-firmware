@@ -116,6 +116,9 @@ int main(void) {
                 if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
+                if (Uart_step() != ERROR_NONE) {
+                    Debug_exit(1);
+                }
                 /* Increment the step number and move on to next case */
                 test_step++;
                 break;
