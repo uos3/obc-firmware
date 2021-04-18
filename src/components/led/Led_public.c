@@ -48,12 +48,13 @@ ErrorCode Led_set(uint8_t led_number_in, bool led_state_in) {
     }
 
     /* Write the desired state onto the specified led pin */
-    Gpio_write(p_led->gpio_pin, led_state_in);
+    if (Gpio_write(p_led->gpio_pin, led_state_in) != ERROR_NONE) {
+        DEBUG_ERR("Failed to write to gpio pin");
+        return LED_ERROR_WRITE_FAILED;
+    }
 
     /* Set the led state to the new state */
     p_led->state = led_state_in;
-
-    DEBUG_DBG("test2: temp");
 
     return ERROR_NONE;
 }

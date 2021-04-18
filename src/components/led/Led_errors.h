@@ -29,4 +29,10 @@
  */
 #define LED_ERROR_INVALID_LED_ID ((ErrorCode)(MOD_ID_LED | 1))
 
+/**
+ * @brief An error occured when writing a value to a GPIO input pin
+ * 
+ */
+#define LED_ERROR_WRITE_FAILED ((ErrorCode)MOD_ID_GPIO | 2)
+
 #endif /* H_LED_ERRORS_H */

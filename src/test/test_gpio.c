@@ -35,6 +35,10 @@
 
 int main(void) {
 
+    int num_toggles;
+
+    num_toggles = 0;
+
     Kernel_init_critical_modules();
 
     DEBUG_INF("GPIO Test");
@@ -48,9 +52,17 @@ int main(void) {
         Debug_exit(1);
     }
 
-    Led_set(GPIO_PINF1, true);
+    if (Led_set(GPIO_PINF1, true) != ERROR_NONE) {
+        Debug_exit(1);
+    }
 
-    Debug_exit(1);
+    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle(GPIO_PINF1)) != ERROR_NONE) {
+        Debug_exit(1);
+    }
+
+    while (num_toggles < 5);
+
+    DEBUG_DBG("Test complete");
     /* Return 0 if no errors occured up to this point. */
     return 0;
 }

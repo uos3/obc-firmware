@@ -78,6 +78,9 @@ int main(void) {
                 if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
+                if (Uart_step() != ERROR_NONE) {
+                    Debug_exit(1);
+                }
                 DEBUG_INF("Sending bytes");
                 /* Increment the step number and move on to next case */
                 test_step++;
