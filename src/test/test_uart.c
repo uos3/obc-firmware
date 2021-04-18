@@ -153,8 +153,8 @@ int main(void) {
                             "%d from recvd data does not equal expected value of %d",
                             recv_data[i],
                             send_data[i]
-                            Debug_exit(1);
                         );
+                        Debug_exit(1);
                     }
                 }
                 /* Increment the step number and move on to next case */

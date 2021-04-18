@@ -52,7 +52,7 @@ int main(void) {
         Debug_exit(1);
     }
 
-    if (Led_set(LED_LAUNCHPAD, true) != ERROR_NONE) {
+    if (Led_set((uint8_t)LED_LAUNCHPAD, true) != ERROR_NONE) {
         Debug_exit(1);
     }
 
