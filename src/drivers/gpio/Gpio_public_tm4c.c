@@ -259,7 +259,7 @@ static void Gpio_port_f_int_handler(void) {
     }
 }
 
-ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, uint8_t gpio_pin_lower_in, uint8_t gpio_pin_upper_in) {
+ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, GPIO_PIN_INDEX gpio_pin_lower_in, GPIO_PIN_INDEX gpio_pin_upper_in) {
     for (int i = gpio_pin_lower_in; i < gpio_pin_upper_in; ++i) {
             if (gpio_int_status_in & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
                 /* Call the interrupt function pointer */

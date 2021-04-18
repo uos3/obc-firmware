@@ -147,7 +147,7 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_modules_in, size_t num_gpio_modules_i
  * @param gpio_state State to write the pin to (true = HIGH, false = LOW)
  * @return ErrorCode Return code.
  */
-ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state);
+ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, bool gpio_state);
 
 /**
  * @brief Reads the input value of a specified GPIO pin.
@@ -156,7 +156,7 @@ ErrorCode Gpio_write(uint8_t gpio_id_number, bool gpio_state);
  * @param p_gpio_value_out Input value of GPIO pin (true = HIGH, false = LOW).
  * @return ErrorCode Return code.
  */
-ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out);
+ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, bool *p_gpio_value_out);
 
 /**
  * @brief Sets up a rising edge interrupt on a specified GPIO pin.
@@ -165,7 +165,7 @@ ErrorCode Gpio_read(uint8_t gpio_id_number, bool *p_gpio_value_out);
  * @param interrupt_callback Pointer to the function which is called in the interrupt.
  * @return ErrorCode Return code.
  */
-ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_callback(void));
+ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interrupt_callback(void));
 
 /**
  * @brief Removes the interrupt from a specified GPIO pin.
@@ -173,7 +173,7 @@ ErrorCode Gpio_set_rising_interrupt(uint8_t gpio_id_number, void *interrupt_call
  * @param gpio_id_number GPIO pin ID number.
  * @return ErrorCode Return code.
  */
-ErrorCode Gpio_reset_interrupt(uint8_t gpio_id_number);
+ErrorCode Gpio_reset_interrupt(GPIO_PIN_INDEX gpio_id_number);
 
 /**
  * @brief Handles the interrupt, looping through all pins between the lower
@@ -184,6 +184,6 @@ ErrorCode Gpio_reset_interrupt(uint8_t gpio_id_number);
  * @param gpio_pin_upper_in 
  * @return ErrorCode Return code.
  */
-ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, uint8_t gpio_pin_lower_in, uint8_t gpio_pin_upper_in);
+ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, GPIO_PIN_INDEX gpio_pin_lower_in, GPIO_PIN_INDEX gpio_pin_upper_in);
 
 #endif /* H_GPIO_PUBLIC_H */
