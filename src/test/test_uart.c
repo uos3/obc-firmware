@@ -132,6 +132,7 @@ int main(void) {
                     if (num_attempts <= 3) {
                         DEBUG_INF("RX Complete event has NOT been raised. Retrying");
                         num_attempts++;
+                        break;
                     }
                     else {
                         DEBUG_INF("RX Not complete after max num attempts. Exiting.");
