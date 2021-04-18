@@ -52,7 +52,7 @@ int main(void) {
         Debug_exit(1);
     }
 
-    if (Led_set(GPIO_PINF1, true) != ERROR_NONE) {
+    if (Led_set(LED_LAUNCHPAD, true) != ERROR_NONE) {
         Debug_exit(1);
     }
 

@@ -161,13 +161,6 @@ int main(void) {
                 free(recv_data);
                 Debug_exit(1);
         }
-
-        if (!Uart_step()) {
-            DEBUG_INF("Exiting");
-            free(send_data);
-            free(recv_data);
-            Debug_exit(1);
-        }
     }
 
     EventManager_clear_all_events();
