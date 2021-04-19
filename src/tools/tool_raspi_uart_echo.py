@@ -6,8 +6,6 @@ Raspberry Pi UART communication tool for UART uDMA functional test.
 @author: Leo Galanakis (lg5g16@soton.ac.uk)
 """
 
-#This code uses UART to loop back information sent to the pi by the MSP430 whilst also printing it
-#used to test functionality of Uart driver
 import serial
 from time import sleep
 
@@ -18,5 +16,5 @@ while True:
   data_left = ser.inWaiting() #check for remaining bytes
   received_data += ser.read(data_left)
   print(received_data) #print received data 
-  ser.write(received_data) #transmit data back 
-© 2021 GitHub, Inc.
+  ser.write(received_data) #transmit data back
+  
