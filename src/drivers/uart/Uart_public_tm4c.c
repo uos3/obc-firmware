@@ -310,17 +310,19 @@ ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
         return UART_ERROR_MAX_NUM_UARTS;
     }
 
-    /* TODO: CHANGE THIS TO UART_STATUS_X, use switch over the return of this */
-    p_status_out = uDMAErrorStatusGet();
+    switch(uDMAErrorStatusGet()) {
+        case 0:
+            p_status_out = UART_STATUS_COMPLETE;
+        default:
+            p_status_out = UART_STATUS_UDMA_TRANSFER_ERROR;
+    }
 
-    if (p_status_out != 0) {
+    if (p_status_out == UART_STATUS_UDMA_TRANSFER_ERROR) {
         /* Check the uDMA error status, return an error if non-zero */
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
         return UDMA_ERROR_TRANSFER_FAILED;
     }
     else {
-        /* if uDMAErrorStatusGet() returns a 0, no error is pending, so return
-         * ERROR_NONE. */
         return ERROR_NONE;
     }
 }
