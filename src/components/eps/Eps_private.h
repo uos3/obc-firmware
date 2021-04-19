@@ -176,6 +176,26 @@ typedef uint8_t Eps_OcpByte;
 #define EPS_UART_TM_HK_DATA_PL_LENGTH (0)
 
 /**
+ * @brief Length of the EPS_UART_DATA_TYPE_TM_BATT_REPLY payload in bytes.
+ */
+#define EPS_UART_TM_BATT_REPLY_PL_LENGTH (0)
+
+/**
+ * @brief Length of the EPS_UART_DATA_TYPE_TM_LOADED_CONFIG payload in bytes.
+ */
+#define EPS_UART_TM_LOADED_CONFIG_PL_LENGTH (0)
+
+/**
+ * @brief Length of the EPS_UART_DATA_TYPE_TM_OCP_STATE payload in bytes.
+ */
+#define EPS_UART_TM_OCP_STATE_PL_LENGTH (1)
+
+/**
+ * @brief Length of the EPS_UART_DATA_TYPE_TM_OCP_TRIPPED payload in bytes.
+ */
+#define EPS_UART_TM_OCP_TRIPPED_PL_LENGTH (1)
+
+/**
  * @brief Shunt resistor value for the ADC current sense on all solar panels.
  */
 #define EPS_ADC_SHUNT_RESIST_SOLAR_PANELS_OHMS ((double)0.043)
@@ -334,5 +354,46 @@ Eps_OcpState Eps_ocp_byte_to_ocp_state(Eps_OcpByte byte_in);
  * @return Eps_BattStatus The convered battery status
  */
 Eps_BattStatus Eps_parse_batt_status(uint8_t *p_data_in);
+
+/**
+ * @brief Process a recieved header from the EPS
+ * 
+ * @return bool True on success, false on failure. DP.EPS.ERROR is set
+ * appropriately. 
+ */
+bool Eps_process_uart_header(void);
+
+/**
+ * @brief Process a recieved payload (and CRC) from the EPS
+ * 
+ * @return bool True on success, false on failure. DP.EPS.ERROR is set
+ * appropriately. 
+ */
+bool Eps_process_uart_payload(void);
+
+/**
+ * @brief Setup the UART driver to receive the bytes for the given payload
+ * type. 
+ * 
+ * This function expects that the header for the payload is already present in
+ * DP.EPS.EPS_REPLY, and will use this to recieve the correct number of bytes.
+ * 
+ * @return bool True on success, false on failure. DP.EPS.ERROR is set
+ * appropriately. 
+ */
+bool Eps_start_uart_receive_payload(void);
+
+/**
+ * @brief Process the reply to the last sent EPS command.
+ * 
+ * @return bool True on success, false on failure. DP.EPS.ERROR is set
+ * appropriately. 
+ */
+bool Eps_process_reply(void);
+
+/**
+ * @brief Simple helper function to tidy up if a reply has the wrong data type.
+ */
+void Eps_handle_incorrect_reply_data_type(void);
 
 #endif /* H_EPS_PRIVATE_H */

@@ -63,5 +63,58 @@
  */
 #define EPS_ERROR_INVALID_REPLY_CRC ((ErrorCode)(MOD_ID_EPS | 6))
 
+/**
+ * @brief Indicates that an error occured while calling Uart_recv_bytes.
+ */
+#define EPS_ERROR_UART_START_RECV_FAILED ((ErrorCode)(MOD_ID_EPS | 7))
+
+/**
+ * @brief Indicates that an error occured while calling Uart_send_bytes.
+ */
+#define EPS_ERROR_UART_START_SEND_FAILED ((ErrorCode)(MOD_ID_EPS | 8))
+
+/**
+ * @brief Indicates that an unexpected frame number was recieved while waiting
+ * for a reply from the EPS.
+ */
+#define EPS_ERROR_UNEXPECTED_UART_FRAME_NUMBER ((ErrorCode)(MOD_ID_EPS | 9))
+
+/**
+ * @brief Indicates that the data type of the recieved frame was unexpected.
+ */
+#define EPS_ERROR_UNEXPECTED_UART_DATA_TYPE ((ErrorCode)(MOD_ID_EPS | 10))
+
+/**
+ * @brief Indicates that an unexpected frame was recieved.
+ */
+#define EPS_ERROR_RECV_UNEXPECTED_REPLY ((ErrorCode)(MOD_ID_EPS | 11))
+
+/**
+ * @brief Got the incorrect reply data type for the last request. 
+ */
+#define EPS_ERROR_INCORRECT_REPLY_DATA_TYPE ((ErrorCode)(MOD_ID_EPS | 12))
+
+/**
+ * @brief Indicates that the recieved HK data frame couldn't be parsed.
+ */
+#define EPS_ERROR_INVALID_HK_DATA ((ErrorCode)(MOD_ID_EPS | 13))
+
+/**
+ * @brief Indicates that the received loaded config doesn't match the config
+ * which was sent to the EPS.
+ */
+#define EPS_ERROR_INCORRECT_LOADED_CONFIG ((ErrorCode)(MOD_ID_EPS | 14))
+
+/**
+ * @brief Indicates that the received OCP state doesn't match the one that was
+ * requested.
+ */
+#define EPS_ERROR_INCORRECT_OCP_STATE ((ErrorCode)(MOD_ID_EPS | 15))
+
+/**
+ * @brief Indicates that when attempting to compare the request and reply data
+ * types the request data type was invalid.
+ */
+#define EPS_ERROR_INVALID_REQUEST_DATA_TYPE ((ErrorCode)(MOD_ID_EPS | 16))
 
 #endif /* H_EPS_ERRORS_H */

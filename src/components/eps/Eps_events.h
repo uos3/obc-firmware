@@ -50,4 +50,16 @@
  */
 #define EVT_EPS_NEW_REQUEST ((Event)(MOD_ID_EPS | 3))
 
+/**
+ * @brief Monitoring event indicating that an unexpected frame number was
+ * received from the EPS.
+ */
+#define EVT_EPS_RECEIVED_UNEXPECTED_UART_FRAME ((Event)(MOD_ID_EPS | 4))
+
+/**
+ * @brief Event fired when an OCP rail trips. Check DP.EPS.TRIPPED_OCP_RAILS to
+ * find which rail tripped.
+ */
+#define EVT_EPS_OCP_RAIL_TRIPPED ((Event)(MOD_ID_EPS | 5))
+
 #endif /* H_EPS_EVENTS_H */

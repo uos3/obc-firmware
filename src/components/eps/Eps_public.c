@@ -24,8 +24,8 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
-/*#include "drivers/uart/Uart_public.h"
-#include "drivers/udma/Udma_public.h"*/
+#include "drivers/uart/Uart_public.h"
+#include "drivers/udma/Udma_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "components/eps/Eps_public.h"
@@ -49,29 +49,58 @@ bool Eps_init(void) {
     /* Set the EPS as initialised */
     DP.EPS.INITIALISED = true;
 
+    /* Prepare to recieve any potential unsolicited header bytes from the 
+     * UART */
+    DP.EPS.UART_ERROR.code = Uart_recv_bytes(
+        UART_DEVICE_ID_EPS, 
+        (uint8_t *)DP.EPS.EPS_REPLY, 
+        EPS_UART_HEADER_LENGTH
+    );
+    if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
+        DEBUG_ERR("Unable to start Uart_recv_bytes for EPS");
+        DP.EPS.UART_ERROR.p_cause = NULL;
+        DP.EPS.ERROR.code = EPS_ERROR_UART_START_RECV_FAILED;
+        DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
+        return false;
+    }
+    DP.EPS.EXPECT_HEADER = true;
+
     return true;
 }
 
 bool Eps_step(void) {
-    bool is_event_raised = false;
     #ifdef DEBUG_MODE
     char p_hex_str[512] = "";
     #endif
 
-    /* If we're not initialised warn the user.
-     * Technically not an error because the step functions should be callable 
-     * when not iniailised, but this should be visible during testing.
-     * TODO: is this true? */
+    /* If we're not initialised warn the user */
     if (!DP.EPS.INITIALISED) {
-        DEBUG_WRN("Eps is not initialised or in one of the initialisation states.");
+        DEBUG_WRN("Eps is not initialised");
         return true;
+    }
+
+    /* Check UART any TM */
+    if (EventManager_poll_event(EVT_UART_EPS_RX_COMPLETE)) {
+        /* If we expected a header for this recieve process it, this will start
+         * the recieve for the payload and CRC as well */
+        if (DP.EPS.EXPECT_HEADER) {
+            if (!Eps_process_uart_header()) {
+                DEBUG_ERR("Couldn't process header from EPS");
+                return false;
+            }
+        }
+        /* Otherwise we expected a payload, so we process that instead */
+        else {
+            if (!Eps_process_uart_payload()) {
+                DEBUG_ERR("Couldn't process payload from EPS");
+                return false;
+            }
+        }
     }
 
     /* Main state machine */
     switch (DP.EPS.STATE) {
         case EPS_STATE_IDLE:
-
-            /* Check UART for unsolicited TM */
 
             /* Check for new request to send */
             if (EventManager_poll_event(EVT_EPS_NEW_REQUEST)) {
@@ -116,7 +145,18 @@ bool Eps_step(void) {
                 return false;
             }
 
-            /* TODO: Send the EPS request over the UART */
+            /* Send the EPS request over the UART */
+            DP.EPS.UART_ERROR.code = Uart_send_bytes(
+                UART_DEVICE_ID_EPS,
+                (uint8_t *)DP.EPS.EPS_REQUEST,
+                DP.EPS.EPS_REQUEST_LENGTH
+            );
+            if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
+                DEBUG_ERR("Error calling Uart_send_bytes for EPS");
+                DP.EPS.UART_ERROR.p_cause = NULL;
+                DP.EPS.ERROR.code = EPS_ERROR_UART_START_SEND_FAILED;
+                DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
+            }
 
             /* Print the message */
             #ifdef DEBUG_MODE
@@ -137,43 +177,19 @@ bool Eps_step(void) {
             __attribute__ ((fallthrough));
         case EPS_STATE_WAIT_REPLY:
 
-            /* TODO: Wait for reply from EPS over UART */
-
-            /* Raise the completed event */
-            if (!EventManager_raise_event(EVT_EPS_COMMAND_COMPLETE)) {
-                DEBUG_ERR("EventManager error while raising command complete event");
-                DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
-                DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
-                /* TODO: return to IDLE here and set command as failed? */
-                return false;
+            /* In this state we are waiting for a reply we just sent, however
+             * don't actually do any processing of it here. Instead it's
+             * handled above with the poll for EVT_UART_EPS_RX_COMPLETE. This
+             * is because we also need to handle possible unsolicited TM, and
+             * it is better to handle all recieves in one place. The
+             * Eps_process_uart_x() functions set COMMAND_STATUS to either
+             * success or failure when we're ready to move out of this state.
+             */
+            
+            if (DP.EPS.COMMAND_STATUS != EPS_COMMAND_IN_PROGRESS) {
+                DP.EPS.STATE = EPS_STATE_IDLE;
             }
 
-            /* TODO: If the reply is as expected set the status to OK, if not 
-             * set the status to failure. */
-            DP.EPS.COMMAND_STATUS = EPS_COMMAND_SUCCESS;
-
-            /* TODO: Set the replied data in the DP */
-
-            /* TODO: If the request was HK raise the new HK event
-             * FIXME: This is a debugging hack to send the event if the request
-             * was for HK, this shouldn't be done for real. */
-            if (DP.EPS.EPS_REQUEST[EPS_UART_HEADER_DATA_TYPE_POS] 
-                == 
-                EPS_UART_DATA_TYPE_TC_COLLECT_HK_DATA
-            ) {
-                if (!EventManager_raise_event(EVT_EPS_NEW_HK_DATA)) {
-                    DEBUG_ERR("EventManager error while raising new HK event");
-                    DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
-                    DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
-                    /* TODO: return to IDLE here and set command as failed? */
-                    return false;
-                }
-            }
-
-            /* Return to idle. */
-            DP.EPS.STATE = EPS_STATE_IDLE;
-
-            /* No more progress to make this step, so break out */
             break;
         default:
             DEBUG_ERR("Invalid Eps state %d", DP.EPS.STATE);
@@ -236,6 +252,7 @@ bool Eps_send_config(void) {
     
     /* Set that the status is in progress, so new commands can't be raised */
     DP.EPS.COMMAND_STATUS = EPS_COMMAND_IN_PROGRESS;
+    DP.EPS.CONFIG_SYNCED = false;
 
     /* Raise the new request event */
     if (!EventManager_raise_event(EVT_EPS_NEW_REQUEST)) {
@@ -513,4 +530,23 @@ bool Eps_reset_ocp(Eps_OcpState ocp_state_in) {
     }
 
     return true;
+}
+
+bool Eps_do_ocp_states_match(
+    Eps_OcpState *p_a_in,
+    Eps_OcpState *p_b_in
+) {
+    return (
+        (p_a_in->radio_tx == p_b_in->radio_tx)
+        &&
+        (p_a_in->radio_rx_camera == p_b_in->radio_rx_camera)
+        &&
+        (p_a_in->eps_mcu == p_b_in->eps_mcu)
+        &&
+        (p_a_in->obc == p_b_in->obc)
+        &&
+        (p_a_in->gnss_rx == p_b_in->gnss_rx)
+        &&
+        (p_a_in->gnss_lna == p_b_in->gnss_lna)
+    );
 }

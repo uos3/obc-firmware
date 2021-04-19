@@ -307,6 +307,34 @@
         "data_type": "Eps_HkData",
         "brief": "Most up-to-date housekeeping data returned by the EPS."
     },
+    "DP.EPS.UART_ERROR": {
+        "block_id": 34,
+        "block_index": 13,
+        "dp_id": 34829,
+        "data_type": "Error",
+        "brief": "Stores errors coming from the UART driver."
+    },
+    "DP.EPS.EXPECT_HEADER": {
+        "block_id": 34,
+        "block_index": 14,
+        "dp_id": 34830,
+        "data_type": "bool",
+        "brief": "Flag which is true if the Eps expects the next recieved bytes on the UART to be a frame header. If false the next bytes should be data associated with the recieved header."
+    },
+    "DP.EPS.TRIPPED_OCP_RAILS": {
+        "block_id": 34,
+        "block_index": 15,
+        "dp_id": 34831,
+        "data_type": "Eps_OcpState",
+        "brief": "Indicates which OCP rails have been tripped, associated with the EVT_EPS_OCP_RAIL_TRIPPED event, and the EPS_UART_DATA_TYPE_TM_OCP_TRIPPED telemetry packet from the EPS."
+    },
+    "DP.EPS.REPORTED_OCP_STATE": {
+        "block_id": 34,
+        "block_index": 16,
+        "dp_id": 34832,
+        "data_type": "Eps_OcpState",
+        "brief": "Contains the reported OCP state of the EPS."
+    },
     "DP.POWER.INITIALISED": {
         "block_id": 53,
         "block_index": 1,

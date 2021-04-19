@@ -127,6 +127,37 @@ typedef struct _Eps_Dp {
      */
     Eps_HkData HK_DATA;
 
+    /**
+     * @brief Stores errors coming from the UART driver.
+     * 
+     * @dp 13
+     */
+    Error UART_ERROR;
+
+    /**
+     * @brief Flag which is true if the Eps expects the next recieved bytes on
+     * the UART to be a frame header. If false the next bytes should be data
+     * associated with the recieved header.
+     * 
+     * @dp 14
+     */
+    bool EXPECT_HEADER;
+
+    /**
+     * @brief Indicates which OCP rails have been tripped, associated with the
+     * EVT_EPS_OCP_RAIL_TRIPPED event, and the
+     * EPS_UART_DATA_TYPE_TM_OCP_TRIPPED telemetry packet from the EPS.
+     * 
+     * @dp 15
+     */
+    Eps_OcpState TRIPPED_OCP_RAILS;
+
+    /**
+     * @brief Contains the reported OCP state of the EPS.
+     * 
+     * @dp 16
+     */
+    Eps_OcpState REPORTED_OCP_STATE;
 
 } Eps_Dp;
 

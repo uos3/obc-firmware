@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-04-13
+ * @date 2021-04-19
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -389,6 +389,38 @@ bool DataPool_get(
         *pp_data_out = &DP.EPS.HK_DATA;
         *p_data_type_out = DATAPOOL_DATATYPE_EPS_HKDATA;
         *p_data_size_out = sizeof(Eps_HkData);
+        return true;
+
+
+    /* DP.EPS.UART_ERROR */
+    case 0x880d:
+        *pp_data_out = &DP.EPS.UART_ERROR;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERROR;
+        *p_data_size_out = sizeof(Error);
+        return true;
+
+
+    /* DP.EPS.EXPECT_HEADER */
+    case 0x880e:
+        *pp_data_out = &DP.EPS.EXPECT_HEADER;
+        *p_data_type_out = DATAPOOL_DATATYPE_BOOL;
+        *p_data_size_out = sizeof(bool);
+        return true;
+
+
+    /* DP.EPS.TRIPPED_OCP_RAILS */
+    case 0x880f:
+        *pp_data_out = &DP.EPS.TRIPPED_OCP_RAILS;
+        *p_data_type_out = DATAPOOL_DATATYPE_EPS_OCPSTATE;
+        *p_data_size_out = sizeof(Eps_OcpState);
+        return true;
+
+
+    /* DP.EPS.REPORTED_OCP_STATE */
+    case 0x8810:
+        *pp_data_out = &DP.EPS.REPORTED_OCP_STATE;
+        *p_data_type_out = DATAPOOL_DATATYPE_EPS_OCPSTATE;
+        *p_data_size_out = sizeof(Eps_OcpState);
         return true;
 
 
@@ -891,6 +923,30 @@ bool DataPool_get_symbol_str(
     /* DP.EPS.HK_DATA */
     case 0x880c:
         *pp_symbol_str_out = strdup("DP.EPS.HK_DATA");
+        return true;
+
+
+    /* DP.EPS.UART_ERROR */
+    case 0x880d:
+        *pp_symbol_str_out = strdup("DP.EPS.UART_ERROR");
+        return true;
+
+
+    /* DP.EPS.EXPECT_HEADER */
+    case 0x880e:
+        *pp_symbol_str_out = strdup("DP.EPS.EXPECT_HEADER");
+        return true;
+
+
+    /* DP.EPS.TRIPPED_OCP_RAILS */
+    case 0x880f:
+        *pp_symbol_str_out = strdup("DP.EPS.TRIPPED_OCP_RAILS");
+        return true;
+
+
+    /* DP.EPS.REPORTED_OCP_STATE */
+    case 0x8810:
+        *pp_symbol_str_out = strdup("DP.EPS.REPORTED_OCP_STATE");
         return true;
 
 

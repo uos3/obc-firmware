@@ -433,7 +433,7 @@ typedef enum _Eps_UartDataType {
      * 
      * Generated as an unsolicited TM packet by the EPS.
      */
-    EPS_UART_DATA_TYPE_TM_OCP_TRIP = 133
+    EPS_UART_DATA_TYPE_TM_OCP_TRIPPED = 133
     
 } Eps_UartDataType;
 
@@ -535,5 +535,17 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in);
  * error cause. 
  */
 bool Eps_reset_ocp(Eps_OcpState ocp_state_in);
+
+/**
+ * @brief Determines if the two EPS OCP states match.
+ * 
+ * @param p_a_in Pointer to the first state.
+ * @param p_b_in Pointer to the second state.
+ * @return bool True if they match, false if they don't
+ */
+bool Eps_do_ocp_states_match(
+    Eps_OcpState *p_a_in,
+    Eps_OcpState *p_b_in
+);
 
 #endif /* H_EPS_PUBLIC_H */
