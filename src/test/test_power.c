@@ -229,6 +229,11 @@ int main(void) {
                     DEBUG_INF("New HK data collected");
                     check_wfi = false;
                     test_step++;
+
+                    if (Timer_disable(timeout_event) != ERROR_NONE) {
+                        DEBUG_ERR("Couldn't disable timeout timer");
+                        Debug_exit(1);
+                    }
                 }
                 break;
             case 4:
