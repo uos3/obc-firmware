@@ -86,10 +86,19 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
 
     /* Pointer to the UART */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+
+    GPIO_PIN_INDEX *uart_pins_in[2];
+
+    uart_pins_in[0] = p_uart_device->gpio_pin_tx;
+    uart_pins_in[1] = p_uart_device->gpio_pin_rx;
     
     /* Initialise the GPIO pins as their respective mode */
+    Gpio_init(uart_pins_in, 2, GPIO_MODE_UART);
+
+    #if 0
     Gpio_init(p_uart_device->gpio_pin_tx, 1, GPIO_MODE_UART);
     Gpio_init(p_uart_device->gpio_pin_rx, 1, GPIO_MODE_UART);
+    #endif
 
     /* Configure the GPIO pins */
     GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
