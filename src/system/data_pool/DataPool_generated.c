@@ -424,6 +424,22 @@ bool DataPool_get(
         return true;
 
 
+    /* DP.EPS.TIMEOUT_EVENT */
+    case 0x8811:
+        *pp_data_out = &DP.EPS.TIMEOUT_EVENT;
+        *p_data_type_out = DATAPOOL_DATATYPE_EVENT;
+        *p_data_size_out = sizeof(Event);
+        return true;
+
+
+    /* DP.EPS.TIMER_ERROR */
+    case 0x8812:
+        *pp_data_out = &DP.EPS.TIMER_ERROR;
+        *p_data_type_out = DATAPOOL_DATATYPE_ERROR;
+        *p_data_size_out = sizeof(Error);
+        return true;
+
+
     /* DP.POWER.INITIALISED */
     case 0xd401:
         *pp_data_out = &DP.POWER.INITIALISED;
@@ -947,6 +963,18 @@ bool DataPool_get_symbol_str(
     /* DP.EPS.REPORTED_OCP_STATE */
     case 0x8810:
         *pp_symbol_str_out = strdup("DP.EPS.REPORTED_OCP_STATE");
+        return true;
+
+
+    /* DP.EPS.TIMEOUT_EVENT */
+    case 0x8811:
+        *pp_symbol_str_out = strdup("DP.EPS.TIMEOUT_EVENT");
+        return true;
+
+
+    /* DP.EPS.TIMER_ERROR */
+    case 0x8812:
+        *pp_symbol_str_out = strdup("DP.EPS.TIMER_ERROR");
         return true;
 
 

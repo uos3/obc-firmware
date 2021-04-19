@@ -247,6 +247,11 @@ typedef uint8_t Eps_OcpByte;
  */
 #define EPS_ADC_SHUNT_RESIST_CHARGE_OHMS ((double)0.250)
 
+/**
+ * @brief EPS command timeout duration in seconds.
+ */
+#define EPS_COMMAND_TIMEOUT_S ((double)(4.0))
+
 /* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */

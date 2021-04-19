@@ -102,19 +102,27 @@ int main(void) {
         
         if (!Eps_step()) {
             char error_chain[64] = {0};
-            Kernel_error_to_string(&DP.EPS.ERROR, &error_chain);
+            Kernel_error_to_string(&DP.EPS.ERROR, error_chain);
             DEBUG_ERR(
-                "Eps_step() failed! Error chain = 0x%04X", 
+                "Eps_step() failed! Error chain = %s", 
                 error_chain
             );
-            Debug_exit(1);
+
+            /* If the root cause is a timeout we will actually not exit here,
+             * since Power is supposed to handle these */
+            if (DP.EPS.ERROR.code != EPS_ERROR_COMMAND_TIMEOUT) {
+                Debug_exit(1);
+            }
+            else {
+                DEBUG_INF("Continuing to allow Power to handle timeout");
+            }
         }
 
         /* ---- APPLICATIONS ---- */
 
         if (!OpModeManager_step()) {
             char error_chain[64] = {0};
-            Kernel_error_to_string(&DP.OPMODEMANAGER.ERROR, &error_chain);
+            Kernel_error_to_string(&DP.OPMODEMANAGER.ERROR, error_chain);
             DEBUG_ERR(
                 "OpModeManager_step() failed! Error chain = %s",
                 error_chain
@@ -124,7 +132,7 @@ int main(void) {
 
         if (!Power_step()) {
             char error_chain[64] = {0};
-            Kernel_error_to_string(&DP.POWER.ERROR, &error_chain);
+            Kernel_error_to_string(&DP.POWER.ERROR, error_chain);
             DEBUG_ERR(
                 "Power_step() failed! Error chain = %s",
                 error_chain

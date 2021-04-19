@@ -6,7 +6,7 @@ POWER_TASK_TIMER_DURATION_S = 300
 
 # As defined in OpModePowerTable_Working.
 # TODO: Issue this reference.
-POWER_OP_MODE_OCP_STATE_CONFIG = 4039954176
+POWER_OPMODE_OCP_STATE_CONFIG = 4039954176
 
 # Configuration of which Apps will run in each OpMode
 #

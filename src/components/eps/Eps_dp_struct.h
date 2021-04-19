@@ -159,6 +159,20 @@ typedef struct _Eps_Dp {
      */
     Eps_OcpState REPORTED_OCP_STATE;
 
+    /**
+     * @brief Event fired when a command timesout.
+     * 
+     * @dp 17
+     */
+    Event TIMEOUT_EVENT;
+
+    /**
+     * @brief Holds errors originating from the Timer driver.
+     * 
+     * @dp 18
+     */
+    Error TIMER_ERROR;
+
 } Eps_Dp;
 
 #endif /* H_EPS_DP_STRUCT_H */

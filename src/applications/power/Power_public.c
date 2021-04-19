@@ -102,8 +102,8 @@ bool Power_step(void) {
         if (eps_command_status == EPS_COMMAND_FAILURE) {
             /* Check if the number of failed commands is above the limit */
             if (DP.POWER.NUM_CONSEC_FAILED_EPS_COMMANDS 
-                > 
-                CFG.POWER_MAX_NUM_FAILED_EPS_COMMANDS
+                >= 
+                POWER_MAX_NUM_FAILED_EPS_COMMANDS
             ) {
                 /* FIXME: What to do here, could reboot the EPS but that would
                  * also reboot the OBC (probably)? Remember to update comment
@@ -112,6 +112,9 @@ bool Power_step(void) {
                  * mode, because we have vastly degratded capability if the EPS
                  * isn't responding. */
                 DEBUG_ERR("Maximum number of failed EPS commands exceeded");
+                DP.POWER.ERROR.code = POWER_MAX_NUM_EPS_FAILED_CMDS_EXCEEDED;
+                DP.POWER.ERROR.p_cause = &DP.EPS.ERROR;
+                return false;
             }
 
             /* Decide which command to retry.
@@ -305,7 +308,7 @@ bool Power_step(void) {
             DEBUG_TRC("Updated EPS config sent");
         }
         else {
-            DEBUG_TRC("EPS CFG update requested but EPS is executing a command");
+            /*DEBUG_TRC("EPS CFG update requested but EPS is executing a command");*/
         }
     }
 
@@ -346,7 +349,7 @@ bool Power_step(void) {
             );
         }
         else {
-            DEBUG_TRC("EPS OCP update requested but EPS is executing a command");
+            /*DEBUG_TRC("EPS OCP update requested but EPS is executing a command");*/
         }
     }
 
@@ -379,7 +382,7 @@ bool Power_step(void) {
             );
         }
         else {
-            DEBUG_TRC("EPS OCP reset requested but EPS is executing a command");
+            /*DEBUG_TRC("EPS OCP reset requested but EPS is executing a command");*/
         }
     }
 
@@ -404,7 +407,7 @@ bool Power_step(void) {
             DEBUG_TRC("Update EPS HK request sent");
         }
         else {
-            DEBUG_TRC("EPS HK update requested but EPS is executing a command");
+            /*DEBUG_TRC("EPS HK update requested but EPS is executing a command");*/
         }
     }
 

@@ -335,6 +335,20 @@
         "data_type": "Eps_OcpState",
         "brief": "Contains the reported OCP state of the EPS."
     },
+    "DP.EPS.TIMEOUT_EVENT": {
+        "block_id": 34,
+        "block_index": 17,
+        "dp_id": 34833,
+        "data_type": "Event",
+        "brief": "Event fired when a command timesout."
+    },
+    "DP.EPS.TIMER_ERROR": {
+        "block_id": 34,
+        "block_index": 18,
+        "dp_id": 34834,
+        "data_type": "Error",
+        "brief": "Holds errors originating from the Timer driver."
+    },
     "DP.POWER.INITIALISED": {
         "block_id": 53,
         "block_index": 1,

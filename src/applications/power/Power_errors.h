@@ -85,4 +85,9 @@
  */
 #define POWER_ERROR_UNRECOGNISED_LAST_EPS_COMMAND ((ErrorCode)(MOD_ID_POWER | 10))
 
+/**
+ * @brief Maximum number of failed EPS commands has been exceeded.
+ */
+#define POWER_MAX_NUM_EPS_FAILED_CMDS_EXCEEDED ((ErrorCode)(MOD_ID_POWER | 11))
+
 #endif /* H_POWER_ERRORS_H */

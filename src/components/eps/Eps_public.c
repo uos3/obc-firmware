@@ -25,7 +25,7 @@
 /* Internal includes */
 #include "util/debug/Debug_public.h"
 #include "drivers/uart/Uart_public.h"
-#include "drivers/udma/Udma_public.h"
+#include "drivers/timer/Timer_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "components/eps/Eps_public.h"
@@ -156,6 +156,24 @@ bool Eps_step(void) {
                 DP.EPS.UART_ERROR.p_cause = NULL;
                 DP.EPS.ERROR.code = EPS_ERROR_UART_START_SEND_FAILED;
                 DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
+                DP.EPS.COMMAND_STATUS = EPS_COMMAND_FAILURE;
+                DP.EPS.STATE = EPS_STATE_IDLE;
+                return false;
+            }
+
+            /* Start the timeout timer */
+            DP.EPS.TIMER_ERROR.code = Timer_start_one_shot(
+                EPS_COMMAND_TIMEOUT_S,
+                &DP.EPS.TIMEOUT_EVENT
+            );
+            if (DP.EPS.TIMER_ERROR.code != ERROR_NONE) {
+                DEBUG_ERR("Failed to start timeout timer");
+                DP.EPS.TIMER_ERROR.p_cause = NULL;
+                DP.EPS.ERROR.code = EPS_ERROR_TIMER_ERROR;
+                DP.EPS.ERROR.p_cause = &DP.EPS.TIMER_ERROR;
+                DP.EPS.COMMAND_STATUS = EPS_COMMAND_FAILURE;
+                DP.EPS.STATE = EPS_STATE_IDLE;
+                return false;
             }
 
             /* Print the message */
@@ -184,10 +202,44 @@ bool Eps_step(void) {
              * it is better to handle all recieves in one place. The
              * Eps_process_uart_x() functions set COMMAND_STATUS to either
              * success or failure when we're ready to move out of this state.
-             */
+             * 
+             * In addition we check the timeout event here, that way if we
+             * timeout we can handle it at this level */
             
+            if (EventManager_poll_event(
+                DP.EPS.TIMEOUT_EVENT
+            )) {
+                DEBUG_ERR("EPS command timed out");
+                DP.EPS.COMMAND_STATUS = EPS_COMMAND_FAILURE;
+                DP.EPS.ERROR.code = EPS_ERROR_COMMAND_TIMEOUT;
+                DP.EPS.ERROR.p_cause = NULL;
+                DP.EPS.STATE = EPS_STATE_IDLE;
+
+                /* Raise command complete event */
+                if (!EventManager_raise_event(EVT_EPS_COMMAND_COMPLETE)) {
+                    DEBUG_ERR("Couldn't raise EPS command complete event");
+                    DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
+                }
+
+                return false;
+            }
+
             if (DP.EPS.COMMAND_STATUS != EPS_COMMAND_IN_PROGRESS) {
                 DP.EPS.STATE = EPS_STATE_IDLE;
+                /* Stop the timer */
+                DP.EPS.TIMER_ERROR.code = Timer_disable(
+                    DP.EPS.TIMEOUT_EVENT
+                );
+                if (DP.EPS.TIMER_ERROR.code != ERROR_NONE) {
+                    DEBUG_ERR("Couldn't disable timeout timer");
+                    /* This isn't technically a command failure, so we don't
+                     * set that */
+                    DP.EPS.TIMER_ERROR.p_cause = NULL;
+                    DP.EPS.ERROR.code = EPS_ERROR_TIMER_ERROR;
+                    DP.EPS.ERROR.p_cause = &DP.EPS.TIMER_ERROR;
+                    DP.EPS.STATE = EPS_STATE_IDLE;
+                    return false;
+                }
             }
 
             break;
@@ -202,7 +254,7 @@ bool Eps_step(void) {
 }
 
 bool Eps_send_config(void) {
-    uint8_t request_frame[EPS_MAX_UART_FRAME_LENGTH];
+    uint8_t request_frame[EPS_MAX_UART_FRAME_LENGTH] = {0};
     size_t length_without_crc 
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_SET_CONFIG_PL_LENGTH;
     size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;

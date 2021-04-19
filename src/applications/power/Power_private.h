@@ -60,6 +60,12 @@
  */
 #define POWER_OPMODE_OCP_CONFIG_GNSS_LNA_RAIL (3)
 
+/**
+ * @brief Maximum number of failed EPS commands before the EPS will be
+ * determined unresponsive.
+ */
+#define POWER_MAX_NUM_FAILED_EPS_COMMANDS (3)
+
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */

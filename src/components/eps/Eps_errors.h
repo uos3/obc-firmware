@@ -117,4 +117,15 @@
  */
 #define EPS_ERROR_INVALID_REQUEST_DATA_TYPE ((ErrorCode)(MOD_ID_EPS | 16))
 
+/**
+ * @brief Indicates an error occured while using the timer driver.
+ */
+#define EPS_ERROR_TIMER_ERROR ((ErrorCode)(MOD_ID_EPS | 17))
+
+/**
+ * @brief Indicates that the EPS failed to respond to the command within the
+ * required timeout.
+ */
+#define EPS_ERROR_COMMAND_TIMEOUT ((ErrorCode)(MOD_ID_EPS | 18))
+
 #endif /* H_EPS_ERRORS_H */

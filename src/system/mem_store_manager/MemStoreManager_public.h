@@ -80,13 +80,6 @@ typedef struct _MemStoreManager_ConfigData {
     uint16_t POWER_TASK_TIMER_DURATION_S;
 
     /**
-     * @brief Maximum number of failed EPS commands the power app will allow
-     * before ...
-     * TODO: What to do
-     */
-    uint8_t POWER_MAX_NUM_FAILED_EPS_COMMANDS;
-
-    /**
      * @brief The bit vector which defines which OCP rails shall be enabled
      * during which OpModes (except the OBC and EPS rail, which are always on).
      */
