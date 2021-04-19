@@ -44,9 +44,10 @@ int main(void) {
     ErrorCode error = ERROR_NONE;
     bool run_loop = true;
     uint8_t test_step = 0;
-    Rtc_Timestamp timeout_start;
-    Rtc_Timespan timeout_timespan;
+    Event timeout_event;
+    double timeout_duration_s = CFG.POWER_TASK_TIMER_DURATION_S * 1.5;
     bool timeout_passed;
+    bool check_wfi = true;
 
     /* Init system critical modules */
     Kernel_init_critical_modules();
@@ -64,11 +65,6 @@ int main(void) {
         DEBUG_ERR("Timer init error 0x%04X", error);
         Debug_exit(1);
     }
-
-    /* Set the timespan for the HK data collection timeout */
-    timeout_timespan = Rtc_timespan_from_ms(
-        CFG.POWER_TASK_TIMER_DURATION_S * 1000
-    );
 
     DEBUG_INF("---- Power Test ----");
     DEBUG_INF("Basic initialisation complete");
@@ -184,6 +180,9 @@ int main(void) {
                     }
                     else {
                         DEBUG_INF("Final OPMODE reached, moving to next step");
+                        /* Disable the wfi check until we get back to nominal
+                         * operation */
+                        check_wfi = false;
                         test_step++;
                     }
                 }
@@ -204,24 +203,23 @@ int main(void) {
                     test_step++;
                     DEBUG_INF("---- TEST 2: HK DATA COLLECTION ----");
                     DEBUG_INF("Waiting for POWER to collect EPS HK data");
+                    check_wfi = true;
                     
                     /* Record the current time so we have a timeout on the data
                      * collection */
-                    timeout_start = Rtc_get_timestamp();
+                    if (Timer_start_one_shot(
+                        timeout_duration_s,
+                        &timeout_event
+                    ) != ERROR_NONE) {
+                        DEBUG_ERR("Couldn't start timeout timer");
+                        Debug_exit(1);
+                    }
                 }
                 break;
             /* Wait for EPS HK data */
             case 3:
                 /* Check timeout of collection */
-                if (Rtc_is_timespan_ellapsed(
-                    &timeout_start,
-                    &timeout_timespan,
-                    &timeout_passed
-                ) != ERROR_NONE) {
-                    DEBUG_ERR("Couldn't get RTC timeout passed");
-                    Debug_exit(1);
-                }
-                if (timeout_passed) {
+                if (EventManager_poll_event(timeout_event)) {
                     DEBUG_ERR("HK collection timeout passed");
                     Debug_exit(1);
                 }
@@ -229,6 +227,7 @@ int main(void) {
                 /* Check for collection starting */
                 if (EventManager_is_event_raised(EVT_EPS_NEW_HK_DATA)) {
                     DEBUG_INF("New HK data collected");
+                    check_wfi = false;
                     test_step++;
                 }
                 break;
@@ -239,7 +238,7 @@ int main(void) {
                 run_loop = false;
         }
 
-        if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0) {
+        if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0 && !check_wfi) {
             /* Wait for interrupts if no events raised on the TM4C */
             #ifdef TARGET_TM4C
             DEBUG_INF("No events, waiting for interrupt...");
