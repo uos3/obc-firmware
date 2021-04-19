@@ -29,7 +29,7 @@ target_link_libraries(test_mem_store_mgr_config
 )
 
 add_executable(test_power
-    ${STARTUP_SOUCRE}
+    ${STARTUP_SOURCE}
     test_power.c
 )
 target_link_libraries(test_power
