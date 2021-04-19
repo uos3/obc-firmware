@@ -238,6 +238,14 @@ int main(void) {
                 DEBUG_INF("---- ALL TESTS PASSED ----");
                 run_loop = false;
         }
+
+        if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0) {
+            /* Wait for interrupts if no events raised on the TM4C */
+            #ifdef TARGET_TM4C
+            DEBUG_INF("No events, waiting for interrupt...");
+            __asm("WFI");
+            #endif
+        }
     }
 
     /* Cleanup */
