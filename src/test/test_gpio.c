@@ -68,6 +68,7 @@ int main(void) {
 
     while (num_toggles < 5);
 
+    Debug_exit(1);
     DEBUG_DBG("Test complete");
     /* Return 0 if no errors occured up to this point. */
     return 0;
