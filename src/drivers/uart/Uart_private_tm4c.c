@@ -123,8 +123,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         SYSCTL_PERIPH_UART4,
         GPIO_PORTC_BASE,
         UART4_BASE,
-        GPIO_PC4_U6RX,
-        GPIO_PC5_U6TX,
+        GPIO_PC4_U4RX,
+        GPIO_PC5_U4TX,
         GPIO_PINC4, /* use tivaware gpio not driver */
         GPIO_PINC5,
         GPIO_PIN_4,
