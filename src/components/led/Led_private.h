@@ -33,7 +33,7 @@
 /* Internal includes */
 #include "drivers/gpio/Gpio_public.h"
 #include "drivers/board/Board_public.h"
-#include "components/led/Led_public.h"
+#include "components/led/Led_private.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
