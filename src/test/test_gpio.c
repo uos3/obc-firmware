@@ -39,16 +39,19 @@ int main(void) {
 
     num_toggles = 0;
 
+    GPIO_PIN_INDEX *input_pins_in[1] = GPIO_PINF1;
+    GPIO_PIN_INDEX *output_pins_in[1] = GPIO_PINF0;
+
     Kernel_init_critical_modules();
 
     DEBUG_INF("GPIO Test");
 
 
-    if (Gpio_init(GPIO_PINF1, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
+    if (Gpio_init(output_pins_in, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         Debug_exit(1);
     }
     
-    if (Gpio_init(GPIO_PINF0, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
+    if (Gpio_init(input_pins_in, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
         Debug_exit(1);
     }
 
