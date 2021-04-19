@@ -145,7 +145,7 @@ ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, bool gpio_state_in) {
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOPinWrite(p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
+    GPIOPinWrite(&p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
 
     return ERROR_NONE;
 }
