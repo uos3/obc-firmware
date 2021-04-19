@@ -33,24 +33,6 @@
 /* Internal includes */
 #include "drivers/gpio/Gpio_public.h"
 #include "drivers/board/Board_public.h"
-#include "components/led/Led_private.h"
-
-/* -------------------------------------------------------------------------   
- * DEFINES
- * ------------------------------------------------------------------------- */
-
-/* Define the constant number of LEDs occupying pins (currently 2 from TOBC
- * diagram, see sharepoint) */
-#define LED_NUMBER_OF_LEDS (3)
-
-/* -------------------------------------------------------------------------   
- * GLOBALS
- * ------------------------------------------------------------------------- */
-
-/**
- * @brief Global instance of the LED component state.
- * 
- */
-Led_Module LED_LEDS[LED_NUMBER_OF_LEDS];
+#include "components/led/Led_public.h"
 
 #endif /* H_LED_PRIVATE_H */
