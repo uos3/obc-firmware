@@ -53,7 +53,7 @@ int main(void) {
     DEBUG_INF("Uart test");
 
     /* Initialise the UART devices. */
-    if (Uart_init_specific(UART_DEVICE_ID_GNSS) != ERROR_NONE) {
+    if (Uart_init_specific(UART_DEVICE_ID_CAM) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the UART devices.");
         Debug_exit(1);
     }
@@ -76,7 +76,7 @@ int main(void) {
         switch(test_step) {
             /* Step 0 is to send the bytes */
             case 0:
-                if (Uart_send_bytes(UART_DEVICE_ID_GNSS, send_data, data_size) != ERROR_NONE) {
+                if (Uart_send_bytes(UART_DEVICE_ID_CAM, send_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
@@ -113,7 +113,7 @@ int main(void) {
                 break;
             /* Step 2 is to receive the bytes */
             case 2:
-                if (Uart_recv_bytes(UART_DEVICE_ID_GNSS, recv_data, data_size) != ERROR_NONE) {
+                if (Uart_recv_bytes(UART_DEVICE_ID_CAM, recv_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
