@@ -26,6 +26,8 @@
 #include "drivers/board/Board_public.h"
 #include "drivers/eeprom/Eeprom_public.h"
 #include "drivers/timer/Timer_public.h"
+#include "drivers/udma/Udma_public.h"
+#include "drivers/uart/Uart_public.h"
 #include "system/kernel/Kernel_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
@@ -71,6 +73,16 @@ int main(void) {
     DEBUG_INF("---- Power Test ----");
     DEBUG_INF("Basic initialisation complete");
 
+    /* Init UDMA and UART */
+    if (Udma_init() != ERROR_NONE) {
+        DEBUG_ERR("Couldn't init uDMA");
+        Debug_exit(1);
+    }
+    if (Uart_init() != ERROR_NONE) {
+        DEBUG_ERR("Couldn't init Uart");
+        Debug_exit(1);
+    }
+
     /* Init the EPS */
     if (!Eps_init()) {
         Debug_exit(1);
@@ -96,7 +108,9 @@ int main(void) {
 
         /* ---- DRIVERS ---- */
         
-        /* TODO: uart */
+        if (!Uart_step()) {
+
+        }
 
         /* ---- COMPONENTS ---- */
         
