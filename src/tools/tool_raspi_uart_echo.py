@@ -9,7 +9,7 @@ Raspberry Pi UART communication tool for UART uDMA functional test.
 import serial
 from time import sleep
 
-ser = serial.Serial("dev/ttyAMA0", 56000) #open port and set baud rate
+ser = serial.Serial("dev/ttyS0", 56000) #open port and set baud rate
 while True:
   received_data = ser.read() #read serial port
   sleep(0.03)
