@@ -43,16 +43,6 @@
 #define LED_NUMBER_OF_LEDS (3)
 
 /* -------------------------------------------------------------------------   
- * STRUCTS
- * ------------------------------------------------------------------------- */
-
-/* Struct defining an LED, with the pin and state */
-typedef struct _Led_Module {
-    GPIO_PIN_INDEX gpio_pin;
-    bool state; /* Current state of the LED (true = on, false = off) */
-} Led_Module;
-
-/* -------------------------------------------------------------------------   
  * GLOBALS
  * ------------------------------------------------------------------------- */
 
@@ -60,6 +50,6 @@ typedef struct _Led_Module {
  * @brief Global instance of the LED component state.
  * 
  */
-extern Led_Module LED_LEDS[LED_NUMBER_OF_LEDS];
+Led_Module LED_LEDS[LED_NUMBER_OF_LEDS];
 
 #endif /* H_LED_PRIVATE_H */

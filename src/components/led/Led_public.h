@@ -56,6 +56,16 @@
 #define LED_LAUNCHPAD (2)
 
 /* -------------------------------------------------------------------------   
+ * STRUCTS
+ * ------------------------------------------------------------------------- */
+
+/* Struct defining an LED, with the pin and state */
+typedef struct _Led_Module {
+    GPIO_PIN_INDEX gpio_pin;
+    bool state; /* Current state of the LED (true = on, false = off) */
+} Led_Module;
+
+/* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
