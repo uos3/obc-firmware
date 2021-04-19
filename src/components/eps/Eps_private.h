@@ -254,7 +254,7 @@ typedef uint8_t Eps_OcpByte;
 /**
  * @brief Build a new UART header from the given data type.
  * 
- * The frame number and data length are determined automatically.
+ * The frame number is determined automatically, and incremented.
  * 
  * @param data_type_in The data type of the frame to construct.
  * @param p_header_out Pointer to the location to store the header.

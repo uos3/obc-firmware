@@ -1,7 +1,7 @@
 /**
  * @file Power_test.c
  * @author Duncan Hamill (dh2g16@soton.ac.uk/duncanrhamill@googlemail.com)
- * @brief Test limited functionality of the EventManager module.
+ * @brief Test limited functionality of the Power module.
  * @version 0.1
  * @date 2021-02-24
  * 

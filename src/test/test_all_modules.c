@@ -27,6 +27,7 @@
 #include "util/crypto/test/Crypto_test.c"
 #include "applications/power/test/Power_test.c"
 #include "drivers/rtc/test/Rtc_test.c"
+#include "components/eps/test/Eps_test.c"
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -75,6 +76,13 @@ int main(void) {
     ret |= cmocka_run_group_tests_name(
         "Kernel",
         kernel_tests,
+        NULL, NULL
+    );
+
+    /* Eps tests */
+    ret |= cmocka_run_group_tests_name(
+        "Eps",
+        eps_tests,
         NULL, NULL
     );
     
