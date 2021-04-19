@@ -103,7 +103,7 @@ typedef struct _Gpio_Module {
     uint32_t peripheral;
     uint32_t port;
     uint8_t pin;
-    uint8_t interrupt_pin;
+    uint32_t interrupt_pin;
     Gpio_Mode mode;
     bool initialised;
     void (*int_function)(void); /* Interrupt function */

@@ -283,13 +283,15 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->pin);
-
+    GPIOIntEnable(&p_gpio_pin->port, p_gpio_pin->interrupt_pin);
+    IntMasterEnable();
     /* Set the interrupt type to rising edge interrupt */
-    GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_HIGH_LEVEL);
+    GPIOIntTypeSet(&p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
 
     /* Set the interrupt function of the GPIO */
     p_gpio_pin->int_function = interrupt_callback;
+
+    Debug_exit(1);
 
     /* Check the port and call the appropriate function */
     switch (p_gpio_pin->port) {
