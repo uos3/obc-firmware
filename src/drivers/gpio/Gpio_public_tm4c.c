@@ -28,6 +28,7 @@
 #include "drivers/gpio/Gpio_private.h"
 #include "drivers/gpio/Gpio_errors.h"
 #include "util/debug/Debug_public.h"
+#include "components/led/Led_public.h"
 
 /* External */
 #include "driverlib/gpio.h"
