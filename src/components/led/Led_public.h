@@ -33,6 +33,7 @@
 /* Internal includes */
 #include "drivers/gpio/Gpio_public.h"
 #include "drivers/board/Board_public.h"
+#include "components/led/Led_private.h"
 
 /* -------------------------------------------------------------------------   
  * DEFINES
@@ -55,6 +56,12 @@
  */
 #define LED_LAUNCHPAD (2)
 
+
+/* Define the constant number of LEDs occupying pins (currently 2 from TOBC
+ * diagram, see sharepoint) */
+#define LED_NUMBER_OF_LEDS (3)
+
+
 /* -------------------------------------------------------------------------   
  * STRUCTS
  * ------------------------------------------------------------------------- */
@@ -64,6 +71,16 @@ typedef struct _Led_Module {
     GPIO_PIN_INDEX gpio_pin;
     bool state; /* Current state of the LED (true = on, false = off) */
 } Led_Module;
+
+/* -------------------------------------------------------------------------   
+ * GLOBALS
+ * ------------------------------------------------------------------------- */
+
+/**
+ * @brief Global instance of the LED component state.
+ * 
+ */
+Led_Module LED_LEDS[LED_NUMBER_OF_LEDS];
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS

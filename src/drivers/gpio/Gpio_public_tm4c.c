@@ -28,6 +28,7 @@
 #include "drivers/gpio/Gpio_private.h"
 #include "drivers/gpio/Gpio_errors.h"
 #include "util/debug/Debug_public.h"
+#include "components/led/Led_public.h"
 
 /* External */
 #include "driverlib/gpio.h"
@@ -144,7 +145,7 @@ ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, bool gpio_state_in) {
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOPinWrite(p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
+    GPIOPinWrite(&p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
 
     return ERROR_NONE;
 }
@@ -282,10 +283,10 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->pin);
-
+    GPIOIntEnable(&p_gpio_pin->port, p_gpio_pin->interrupt_pin);
+    IntMasterEnable();
     /* Set the interrupt type to rising edge interrupt */
-    GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_HIGH_LEVEL);
+    GPIOIntTypeSet(&p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
 
     /* Set the interrupt function of the GPIO */
     p_gpio_pin->int_function = interrupt_callback;
@@ -293,22 +294,22 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
     /* Check the port and call the appropriate function */
     switch (p_gpio_pin->port) {
         case GPIO_PORTA_BASE:
-            GPIOIntRegister(p_gpio_pin->port, Gpio_port_a_int_handler);
+            GPIOIntRegister(&p_gpio_pin->port, Gpio_port_a_int_handler);
             break;
         case GPIO_PORTB_BASE:
-            GPIOIntRegister(p_gpio_pin->port, Gpio_port_b_int_handler);
+            GPIOIntRegister(&p_gpio_pin->port, Gpio_port_b_int_handler);
             break;
         case GPIO_PORTC_BASE:
-            GPIOIntRegister(p_gpio_pin->port, Gpio_port_c_int_handler);
+            GPIOIntRegister(&p_gpio_pin->port, Gpio_port_c_int_handler);
             break;
         case GPIO_PORTD_BASE:
-            GPIOIntRegister(p_gpio_pin->port, Gpio_port_d_int_handler);
+            GPIOIntRegister(&p_gpio_pin->port, Gpio_port_d_int_handler);
             break;
         case GPIO_PORTE_BASE:
-            GPIOIntRegister(p_gpio_pin->port, Gpio_port_e_int_handler);
+            GPIOIntRegister(&p_gpio_pin->port, Gpio_port_e_int_handler);
             break;
         case GPIO_PORTF_BASE:
-            GPIOIntRegister(p_gpio_pin->port, Gpio_port_f_int_handler);
+            GPIOIntRegister(&p_gpio_pin->port, Gpio_port_f_int_handler);
             break;
         default:
             DEBUG_ERR("Unexpected GPIO port");
