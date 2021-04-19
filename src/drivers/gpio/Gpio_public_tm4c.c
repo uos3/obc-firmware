@@ -316,9 +316,9 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
             return GPIO_ERROR_UNEXPECTED_PORT;
     }
 
-    Debug_exit(1);
-
     IntEnable(p_gpio_pin->interrupt_pin);
+    
+    Debug_exit(1);
 
     return ERROR_NONE;
 }

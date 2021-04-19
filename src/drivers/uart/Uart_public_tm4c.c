@@ -89,8 +89,8 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
 
     GPIO_PIN_INDEX *uart_pins_in[2];
 
-    uart_pins_in[0] = p_uart_device->gpio_pin_tx;
-    uart_pins_in[1] = p_uart_device->gpio_pin_rx;
+    uart_pins_in[0] = p_uart_device->gpio_pin_id_tx;
+    uart_pins_in[1] = p_uart_device->gpio_pin_id_rx;
     
     /* Initialise the GPIO pins as their respective mode */
     Gpio_init(uart_pins_in, 2, GPIO_MODE_UART);

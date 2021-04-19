@@ -100,9 +100,9 @@ int main(void) {
                     }
                     else {
                         DEBUG_INF("TX Not complete after max num attempts. Exiting.");
+                        Debug_exit(1);
                         free(send_data);
                         free(recv_data);
-                        Debug_exit(1);
                         break;
                     }
                 }
