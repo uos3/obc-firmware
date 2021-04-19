@@ -39,8 +39,11 @@ int main(void) {
 
     num_toggles = 0;
 
-    GPIO_PIN_INDEX *input_pins_in[1] = GPIO_PINF1;
-    GPIO_PIN_INDEX *output_pins_in[1] = GPIO_PINF0;
+    GPIO_PIN_INDEX *input_pins_in[1];
+    GPIO_PIN_INDEX *output_pins_in[1];
+
+    input_pins_in[0] = GPIO_PINF0;
+    output_pins_in[0] = GPIO_PINF1;
 
     Kernel_init_critical_modules();
 

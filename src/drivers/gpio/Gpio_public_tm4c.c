@@ -122,8 +122,6 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
 
     }
 
-    Debug_exit(1);
-
     /* Set the GPIO driver state as initialised */
     /* GPIO.initialised = true; */
     /* If this point has reached without any errors, return ERROR_NONE */
