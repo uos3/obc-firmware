@@ -72,8 +72,6 @@ int main(void) {
         recv_data[i] = i*10;
     }
 
-    Debug_exit(1);
-
     /* Main loop */
     while (true) {
         switch(test_step) {

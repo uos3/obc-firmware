@@ -153,8 +153,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         UARTEnable(p_uart_device->uart_base);
         UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
 
-        IntMasterEnable();
-
         /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
          * controller when more data should be transferred. These are defined
          * in Uart_private.h and are currently arbitrary
@@ -164,6 +162,8 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
             UART_TX_FIFO_THRESHOLD, 
             UART_RX_FIFO_THRESHOLD
         );
+
+        IntEnable(p_uart_device->uart_base_int);
     }
 
     /* Set the UART state as initialised. */
@@ -207,7 +207,7 @@ ErrorCode Uart_send_bytes(
      * so will be kept in for now. */
     uDMAChannelControlSet(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
-        length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4
+        UDMA_SIZE_8 | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4
     );
     
     /* Set the transfer addresses, size, and mode for TX */
