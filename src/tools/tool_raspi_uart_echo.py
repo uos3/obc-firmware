@@ -23,6 +23,11 @@ while True:
   print("\nDATA RECEIVED:\n")
   print(received_data) #print received data 
   print("\nConverted to string:\n")
-  print(str(received_data))
+  bytes_obj = bytes.fromhex(received_data)
+  ascii_str = bytes_obj.decode("ASCII")
+  print(ascii_str)
+  print("\nAttempt 2 at converting to string:\n")
+  ascii_str2 = received_data.decode("ASCII")
+  print(ascii_str2)
   ser.write(received_data) #transmit data back
   count += 1
