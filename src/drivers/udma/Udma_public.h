@@ -38,7 +38,7 @@
  * ------------------------------------------------------------------------- */
 
 extern bool UDMA_INITIALISED;
-unsigned char UDMA_CONTROL_TABLE[1024];
+unsigned char UDMA_CONTROL_TABLE[512]; __attribute__ ((aligned(512)));
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
