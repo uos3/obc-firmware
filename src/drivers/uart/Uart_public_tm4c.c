@@ -166,9 +166,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
             UART_TX_FIFO_THRESHOLD, 
             UART_RX_FIFO_THRESHOLD
         );
-
-        UARTClockSourceSet(p_uart_device->uart_base, UART_CLOCK_PIOSC);
-        UARTConfigSetExpClk(p_uart_device->uart_base, SysCtlClockGet(), p_uart_device->baud_rate, UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
     }
 
     /* Set the UART state as initialised. */
