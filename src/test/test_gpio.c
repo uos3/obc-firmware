@@ -55,7 +55,7 @@ int main(void) {
     Kernel_init_critical_modules();
 
     input_pins_in[0] = GPIO_PINF0;
-    output_pins_in[0] = GPIO_PINF1;
+    output_pins_in[0] = GPIO_PINF4;
     pf0_value_out = 1;
 
     DEBUG_INF("GPIO Test");
