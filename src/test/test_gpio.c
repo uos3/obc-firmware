@@ -81,6 +81,7 @@ int main(void) {
             Debug_exit(1);
         }
         else {
+            DEBUG_INF("Value = %d", pf0_value_out);
             if (pf0_value_out == 0) {
                 Led_toggle_red();
             }
