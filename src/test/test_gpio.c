@@ -59,11 +59,11 @@ int main(void) {
 
     DEBUG_INF("GPIO Test");
 
-    if (Gpio_init(*output_pins_in, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
+    if (Gpio_init(output_pins_in, 1, GPIO_MODE_OUTPUT) != ERROR_NONE) {
         Debug_exit(1);
     }
     
-    if (Gpio_init(*input_pins_in, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
+    if (Gpio_init(input_pins_in, 1, GPIO_MODE_INPUT) != ERROR_NONE) {
         Debug_exit(1);
     }
 
