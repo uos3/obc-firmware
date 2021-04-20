@@ -176,8 +176,9 @@ ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out) {
     return ERROR_NONE;
 }
 
-static void Gpio_port_a_int_handler(void) {
+void Gpio_port_a_int_handler(void) {
     uint32_t status;
+    DEBUG_INF("Running int handler for port A");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTA_BASE, true);
@@ -191,8 +192,9 @@ static void Gpio_port_a_int_handler(void) {
     }
 }
 
-static void Gpio_port_b_int_handler(void) {
+void Gpio_port_b_int_handler(void) {
     uint32_t status;
+    DEBUG_INF("Running int handler for port B");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTB_BASE, true);
@@ -206,8 +208,9 @@ static void Gpio_port_b_int_handler(void) {
     }
 }
 
-static void Gpio_port_c_int_handler(void) {
+void Gpio_port_c_int_handler(void) {
     uint32_t status;
+    DEBUG_INF("Running int handler for port C");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTC_BASE, true);
@@ -221,8 +224,9 @@ static void Gpio_port_c_int_handler(void) {
     }
 }
 
-static void Gpio_port_d_int_handler(void) {
+void Gpio_port_d_int_handler(void) {
     uint32_t status;
+    DEBUG_INF("Running int handler for port D");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTD_BASE, true);
@@ -236,8 +240,9 @@ static void Gpio_port_d_int_handler(void) {
     }
 }
 
-static void Gpio_port_e_int_handler(void) {
+void Gpio_port_e_int_handler(void) {
     uint32_t status;
+    DEBUG_INF("Running int handler for port E");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTE_BASE, true);
@@ -251,9 +256,9 @@ static void Gpio_port_e_int_handler(void) {
     }
 }
 
-static void Gpio_port_f_int_handler(void) {
+void Gpio_port_f_int_handler(void) {
     uint32_t status;
-
+    DEBUG_INF("Running int handler for port F");
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTF_BASE, true);
 
@@ -274,10 +279,6 @@ ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, GPIO_PIN_INDEX gpio
             DEBUG_INF("Calling interrupt function:");
             (*GPIO_PINS[i].int_function)();
         }
-        else {
-            DEBUG_ERR("GPIO Interrupt handler error");
-            return GPIO_ERROR_INTERRUPT_HANDLER;
-        }
     }
 
     return ERROR_NONE;
@@ -297,12 +298,11 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void (*interr
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOIntClear(p_gpio_pin->port, p_gpio_pin->pin);
     GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
     /* Set the interrupt type to rising edge interrupt */
 
     /* Set the interrupt function of the GPIO */
-    p_gpio_pin->int_function = *interrupt_callback;
+    p_gpio_pin->int_function = interrupt_callback;
 
 
     /* Check the port and call the appropriate function */
