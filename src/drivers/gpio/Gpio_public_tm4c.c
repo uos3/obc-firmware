@@ -79,8 +79,8 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
                 if (i >= GPIO_MAX_NUM_PERIPHERAL_READY_CHECKS) {
                     /* If the number of attempts has reached the maximum,
                      * raise an error. */
-                    DEBUG_INF("Failed to enable GPIO peripheral");
-                    /*return GPIO_ERROR_PERIPHERAL_ENABLE_FAILED*/
+                    DEBUG_ERR("Failed to enable GPIO peripheral");
+                    return GPIO_ERROR_PERIPHERAL_ENABLE_FAILED;
                 }
             }
         }
@@ -143,10 +143,10 @@ ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, uint8_t gpio_state_in) {
 
     switch (gpio_state_in) {
         case 1:
-            GPIOPinWrite(&p_gpio_pin->port, p_gpio_pin->pin, p_gpio_pin->pin);
+            GPIOPinWrite(p_gpio_pin->port, p_gpio_pin->pin, p_gpio_pin->pin);
             break;
         case 0:
-            GPIOPinWrite(&p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
+            GPIOPinWrite(p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
             break;
     }
     
@@ -287,10 +287,9 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOIntEnable(&p_gpio_pin->port, p_gpio_pin->interrupt_pin);
-    IntMasterEnable();
+    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->interrupt_pin);
     /* Set the interrupt type to rising edge interrupt */
-    GPIOIntTypeSet(&p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
+    GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
 
     /* Set the interrupt function of the GPIO */
     p_gpio_pin->int_function = interrupt_callback;
@@ -319,8 +318,6 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
             DEBUG_ERR("Unexpected GPIO port");
             return GPIO_ERROR_UNEXPECTED_PORT;
     }
-
-    IntEnable(p_gpio_pin->interrupt_pin);
 
     return ERROR_NONE;
 }
