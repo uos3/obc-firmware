@@ -384,6 +384,15 @@ bool Uart_get_events_for_device(
         case UART_DEVICE_ID_CAM:
             *p_tx_event_out = EVT_UART_CAM_TX_COMPLETE;
             *p_rx_event_out = EVT_UART_CAM_RX_COMPLETE;
+        case UART_DEVICE_ID_GNSS:
+            *p_tx_event_out = EVT_UART_GNSS_TX_COMPLETE;
+            *p_rx_event_out = EVT_UART_GNSS_RX_COMPLETE;
+        case UART_DEVICE_ID_EPS:
+            *p_tx_event_out = EVT_UART_EPS_TX_COMPLETE;
+            *p_rx_event_out = EVT_UART_EPS_RX_COMPLETE;
+        case UART_DEVICE_ID_TEST:
+            *p_tx_event_out = EVT_UART_TEST_TX_COMPLETE;
+            *p_rx_event_out = EVT_UART_TEST_RX_COMPLETE;
         default:
             /* device ID is wrong, error */
             break;
@@ -471,7 +480,6 @@ ErrorCode Uart_put_char(uint8_t uart_id_number_in, char byte_out) {
 }
 
 ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, char *buffer_out) {
-    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
 
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
@@ -479,6 +487,10 @@ ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, ch
         DEBUG_ERR("The UART ID number was greater than the number of UARTs");
         return UART_ERROR_MAX_NUM_UARTS;
     }
+    
+    Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
+
+    p_uart_device->uart_status_tx = UART_STATUS_IN_PROGRESS;
 
     /* Check that the UART has been initialised before continuing, return an
      * error if not. */
@@ -513,5 +525,6 @@ ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, ch
     }
 
     /* Return error none if this point has been reached without any errors. */
+    p_uart_device->uart_status_tx = UART_STATUS_COMPLETE;
     return ERROR_NONE;
 }

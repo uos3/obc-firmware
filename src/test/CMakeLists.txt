@@ -67,6 +67,19 @@ target_link_libraries(test_uart
     EventManager
 )
 
+add_executable(test_uart_old_interface
+    ${STARTUP_SOURCE}
+    test_uart_old_interface.c
+)
+target_link_libraries(test_uart_old_interface
+    ${STANDARD_LINK_LIBS}
+    Uart
+    Udma
+    Gpio
+    Led
+    EventManager
+)
+
 if(${UOS3_TARGET_LAUNCHPAD} OR ${UOS3_TARGET_TOBC})
     add_executable(test_boot_reg
         ${STARTUP_SOURCE}
