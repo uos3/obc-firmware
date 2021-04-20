@@ -87,7 +87,7 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     /* Pointer to the UART */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
-    GPIO_PIN_INDEX uart_pins_in[2];
+    GPIO_PIN_INDEX *uart_pins_in[2];
 
     uart_pins_in[0] = p_uart_device->gpio_pin_id_tx;
     uart_pins_in[1] = p_uart_device->gpio_pin_id_rx;

@@ -267,9 +267,11 @@ static void Gpio_port_f_int_handler(void) {
 }
 
 ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, GPIO_PIN_INDEX gpio_pin_lower_in, GPIO_PIN_INDEX gpio_pin_upper_in) {
+    DEBUG_INF("Looping through pins to find a pin with interrupt");
     for (int i = gpio_pin_lower_in; i < gpio_pin_upper_in; ++i) {
         if (gpio_int_status_in & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
             /* Call the interrupt function pointer */
+            DEBUG_INF("Calling interrupt function:");
             (*GPIO_PINS[i].int_function)();
         }
     }
@@ -291,12 +293,14 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void (*interr
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->interrupt_pin);
-    /* Set the interrupt type to rising edge interrupt */
+    GPIOIntClear(p_gpio_pin->port, p_gpio_pin->pin);
     GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
+    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->pin);
+    /* Set the interrupt type to rising edge interrupt */
 
     /* Set the interrupt function of the GPIO */
     p_gpio_pin->int_function = *interrupt_callback;
+
 
     /* Check the port and call the appropriate function */
     switch (p_gpio_pin->port) {
@@ -323,6 +327,7 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void (*interr
             return GPIO_ERROR_UNEXPECTED_PORT;
     }
 
+    DEBUG_INF("GPIO rising interrupt has been set");
     return ERROR_NONE;
 }
 
