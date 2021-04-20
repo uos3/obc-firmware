@@ -63,7 +63,7 @@ int main(void) {
         Debug_exit(1);
     }
 
-    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle(GPIO_PINF1)) != ERROR_NONE) {
+    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle(LED_LAUNCHPAD)) != ERROR_NONE) {
         Debug_exit(1);
     }
 
