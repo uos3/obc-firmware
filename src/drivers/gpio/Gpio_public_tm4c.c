@@ -181,7 +181,6 @@ ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out) {
 
 void Gpio_port_a_int_handler(void) {
     uint32_t status;
-    DEBUG_INF("Running int handler for port A");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTA_BASE, true);
@@ -197,7 +196,6 @@ void Gpio_port_a_int_handler(void) {
 
 void Gpio_port_b_int_handler(void) {
     uint32_t status;
-    DEBUG_INF("Running int handler for port B");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTB_BASE, true);
@@ -213,7 +211,6 @@ void Gpio_port_b_int_handler(void) {
 
 void Gpio_port_c_int_handler(void) {
     uint32_t status;
-    DEBUG_INF("Running int handler for port C");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTC_BASE, true);
@@ -229,7 +226,6 @@ void Gpio_port_c_int_handler(void) {
 
 void Gpio_port_d_int_handler(void) {
     uint32_t status;
-    DEBUG_INF("Running int handler for port D");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTD_BASE, true);
@@ -245,7 +241,6 @@ void Gpio_port_d_int_handler(void) {
 
 void Gpio_port_e_int_handler(void) {
     uint32_t status;
-    DEBUG_INF("Running int handler for port E");
 
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTE_BASE, true);
@@ -261,7 +256,6 @@ void Gpio_port_e_int_handler(void) {
 
 void Gpio_port_f_int_handler(void) {
     uint32_t status;
-    DEBUG_INF("Running int handler for port F");
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTF_BASE, true);
 
@@ -275,11 +269,10 @@ void Gpio_port_f_int_handler(void) {
 }
 
 ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, GPIO_PIN_INDEX gpio_pin_lower_in, GPIO_PIN_INDEX gpio_pin_upper_in) {
-    DEBUG_INF("Looping through pins to find a pin with interrupt");
     for (int i = gpio_pin_lower_in; i < gpio_pin_upper_in; ++i) {
         if (gpio_int_status_in & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
             /* Call the interrupt function pointer */
-            DEBUG_INF("Calling interrupt function:");
+            DEBUG_DBG("Calling interrupt function");
             (*GPIO_PINS[i].int_function)();
         }
     }

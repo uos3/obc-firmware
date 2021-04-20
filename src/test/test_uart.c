@@ -34,8 +34,8 @@
  * ------------------------------------------------------------------------- */
 
 int main(void) {
-    int i;
-    size_t data_size;
+    uint8_t i;
+    uint8_t data_size;
     uint8_t *send_data;
     uint8_t *recv_data;
     uint8_t test_step;
@@ -45,12 +45,12 @@ int main(void) {
     test_step = 0;
     num_attempts = 0;
 
-    send_data = (int *)malloc(data_size * sizeof(int));
-    recv_data = (int *)malloc(data_size * sizeof(int));
+    send_data = (int *)malloc(data_size * sizeof(uint8_t));
+    recv_data = (int *)malloc(data_size * sizeof(uint8_t));
 
     Kernel_init_critical_modules();
 
-    DEBUG_INF("Uart test");
+    DEBUG_INF(" ===== Uart test =====");
 
     /* Initialise the UART devices. */
     if (Uart_init_specific(UART_DEVICE_ID_TEST) != ERROR_NONE) {
@@ -66,6 +66,7 @@ int main(void) {
 
     /* Loop through the size of the data to send, and create an array of
      * dummy data to be sent. */
+    DEBUG_INF("Initialising the data array");
     for (i = 0; i < data_size; ++i) {
         send_data[i] = i;
         recv_data[i] = i*10;
@@ -76,7 +77,7 @@ int main(void) {
         switch(test_step) {
             /* Step 0 is to send the bytes */
             case 0:
-                if (Uart_send_bytes(UART_DEVICE_ID_TEST, *send_data, data_size) != ERROR_NONE) {
+                if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
@@ -113,7 +114,7 @@ int main(void) {
                 break;
             /* Step 2 is to receive the bytes */
             case 2:
-                if (Uart_recv_bytes(UART_DEVICE_ID_TEST, *recv_data, data_size) != ERROR_NONE) {
+                if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {

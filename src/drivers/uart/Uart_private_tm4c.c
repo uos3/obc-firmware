@@ -17,6 +17,9 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
+/* TODO: The values below, when not defined here, raise an error despite being
+ * defined in driverlib/pin_map.h */
+#if 0
 #define GPIO_PA0_U0RX (0x00000001)
 #define GPIO_PA1_U0TX (0x00000401)
 #define GPIO_PC6_U3RX (0x00021801)
@@ -25,6 +28,7 @@
 #define GPIO_PE1_U7TX (0x00040401)
 #define GPIO_PC4_U4RX (0x00021001)
 #define GPIO_PC5_U4TX (0x00021401)
+#endif
 
 /* -------------------------------------------------------------------------   
  * INCLUDES

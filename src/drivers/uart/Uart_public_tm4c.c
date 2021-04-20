@@ -99,9 +99,11 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     /* Configure the GPIO pins */
     GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
     GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
+    #if 0
     GPIOPinTypeUART(p_uart_device->gpio_base,
         p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
     );
+    #endif
 
 
     /* Check if the UART has already been initialised, give a warning if it has
@@ -176,6 +178,9 @@ ErrorCode Uart_send_bytes(
     uint8_t *p_data_in, 
     size_t length_in
 ) {
+    void *src_address;
+    void *dst_address;
+
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
     if (uart_id_in >= UART_NUM_UARTS) {
@@ -185,6 +190,9 @@ ErrorCode Uart_send_bytes(
 
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+
+    src_address = &p_data_in;
+    dst_address = &p_uart_device->gpio_pin_tx;
 
     if (!p_uart_device->initialised) {
         DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
@@ -206,8 +214,8 @@ ErrorCode Uart_send_bytes(
     uDMAChannelTransferSet(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
-        &p_data_in,
-        p_uart_device->gpio_pin_tx, /* TODO: Check this, and in rx */
+        src_address,
+        dst_address, /* TODO: Check this, and in rx */
         length_in
     );
 
@@ -235,6 +243,9 @@ ErrorCode Uart_recv_bytes(
     uint8_t *p_data_out,
     size_t length_in
 ) {
+    void *src_address;
+    void *dst_address;
+
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
     if (uart_id_in >= UART_NUM_UARTS) {
@@ -244,6 +255,9 @@ ErrorCode Uart_recv_bytes(
 
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+
+    src_address = &p_uart_device->gpio_pin_rx;
+    dst_address = &p_data_out;
 
     if (!p_uart_device->initialised) {
         DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
@@ -263,8 +277,8 @@ ErrorCode Uart_recv_bytes(
     uDMAChannelTransferSet(
         UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
-        p_uart_device->gpio_pin_rx,
-        &p_data_out,
+        src_address,
+        dst_address,
         length_in
     );
 
@@ -307,6 +321,7 @@ ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
     switch(uDMAErrorStatusGet()) {
         case 0:
             p_status_out = UART_STATUS_COMPLETE;
+            break;
         default:
             p_status_out = UART_STATUS_UDMA_TRANSFER_ERROR;
     }
