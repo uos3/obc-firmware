@@ -94,14 +94,17 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
                     /* Configure the pin for use as GPIO input */
                     GPIOPinTypeGPIOInput(p_gpio_pin->port, p_gpio_pin->pin);
                     GPIOPadConfigSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+                    DEBUG_INF("GPIO Input pin initialised");
                     break;
                 
                 case GPIO_MODE_OUTPUT:
                     /* Configure the pin for use as GPIO output */
                     GPIOPinTypeGPIOOutput(p_gpio_pin->port, p_gpio_pin->pin);
+                    DEBUG_INF("GPIO Output pin initialised");
                     break;
                 case GPIO_MODE_UART:
                     GPIOPinTypeUART(p_gpio_pin->port, p_gpio_pin->pin);
+                    DEBUG_INF("GPIO UART pin initialised");
                     break;
                 
                 default:
