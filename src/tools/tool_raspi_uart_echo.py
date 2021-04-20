@@ -14,8 +14,7 @@ ser = serial.Serial("/dev/ttyS0", 56000) #open port and set baud rate
 count = 0
 
 while True:
-  if count % 100 == 0:
-    print("Waiting for bytes to receive\n")
+  print("Waiting for bytes to receive\n")
   received_data = ser.read() #read serial port
   sleep(0.03)
   data_left = ser.inWaiting() #check for remaining bytes
@@ -23,7 +22,7 @@ while True:
   print("\nDATA RECEIVED:\n")
   print(received_data) #print received data 
   print("\nConverted to string:\n")
-  ascii_str = received_data.decode("ASCII")
-  print(ascii_str)
+  decoded = bytes.fromhex(received_data).decode('utf-8')
+  print(decoded)
   ser.write(received_data) #transmit data back
   count += 1
