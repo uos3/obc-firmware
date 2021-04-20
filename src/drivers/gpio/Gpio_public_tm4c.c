@@ -312,6 +312,7 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
             GPIOIntRegister(&p_gpio_pin->port, Gpio_port_f_int_handler);
             break;
         default:
+            Debug_exit(1);
             DEBUG_ERR("Unexpected GPIO port");
             return GPIO_ERROR_UNEXPECTED_PORT;
     }
