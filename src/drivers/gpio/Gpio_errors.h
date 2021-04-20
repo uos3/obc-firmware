@@ -56,4 +56,10 @@
  */
 #define GPIO_ERROR_INCORRECT_STATE_IN ((ErrorCode)MOD_ID_GPIO | 6)
 
+/**
+ * @brief An unexpected GPIO state was input that does not exist.
+ * 
+ */
+#define GPIO_ERROR_INTERRUPT_HANDLER ((ErrorCode)MOD_ID_GPIO | 7)
+
 #endif /* H_GPIO_ERRORS_H */
