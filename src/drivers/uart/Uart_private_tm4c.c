@@ -58,6 +58,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PA1_U0TX, /* WAS GPIO_PA1_U0TX - RAISED AN ERROR */
         GPIO_PINA0,
         GPIO_PINA1,
+        GPIO_PIN_0,
+        GPIO_PIN_1,
         UDMA_CHANNEL_UART0TX,
         UDMA_CHANNEL_UART0RX,
         UART_STATUS_NONE,
@@ -79,6 +81,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PC7_U3TX, /* GPIO_PC7_U3TX */
         GPIO_PINC6,
         GPIO_PINC7,
+        GPIO_PIN_6,
+        GPIO_PIN_7,
         UDMA_CHANNEL_UART1TX,
         UDMA_CHANNEL_UART1RX,
         UART_STATUS_NONE,
@@ -100,6 +104,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PE1_U7TX, /* GPIO_PE1_U7TX */
         GPIO_PINE0,
         GPIO_PINE1,
+        GPIO_PIN_0,
+        GPIO_PIN_1,
         UDMA_CH1_UART2TX, /* TODO: Check TI channel assignments */
         UDMA_CH0_UART2RX,
         UART_STATUS_NONE,
@@ -113,21 +119,23 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
 
     {
         /* UART ID 3 (TEST) */
-        SYSCTL_PERIPH_GPIOB,
-        SYSCTL_PERIPH_UART0,
-        GPIO_PORTB_BASE,
-        UART0_BASE,
-        GPIO_PB0_U1RX,
-        GPIO_PB1_U1TX,
-        GPIO_PINB0, /* use tivaware gpio not driver */
-        GPIO_PINB1,
+        SYSCTL_PERIPH_GPIOC,
+        SYSCTL_PERIPH_UART4,
+        GPIO_PORTC_BASE,
+        UART4_BASE,
+        GPIO_PC4_U4RX,
+        GPIO_PC5_U4TX,
+        GPIO_PINC4, /* use tivaware gpio not driver */
+        GPIO_PINC5,
+        GPIO_PIN_4,
+        GPIO_PIN_5,
         UDMA_CHANNEL_UART0TX, /* TODO: Check TI channel assignments */
         UDMA_CHANNEL_UART0RX,
         UART_STATUS_NONE,
         UART_STATUS_NONE,
         EVT_UART_NONE,
         UDMA_MODE_STOP,
-        INT_UART1,
+        INT_UART4,
         9600,
         false
     },

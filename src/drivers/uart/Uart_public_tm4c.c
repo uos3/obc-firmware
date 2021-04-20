@@ -87,10 +87,10 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     /* Pointer to the UART */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
-    GPIO_PIN_INDEX *uart_pins_in[2];
+    GPIO_PIN_INDEX uart_pins_in[2];
 
-    uart_pins_in[0] = p_uart_device->gpio_pin_tx;
-    uart_pins_in[1] = p_uart_device->gpio_pin_rx;
+    uart_pins_in[0] = p_uart_device->gpio_pin_id_tx;
+    uart_pins_in[1] = p_uart_device->gpio_pin_id_rx;
     
     /* Initialise the GPIO pins as their respective mode */
     Gpio_init(uart_pins_in, 2, GPIO_MODE_UART);
@@ -310,17 +310,19 @@ ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
         return UART_ERROR_MAX_NUM_UARTS;
     }
 
-    /* TODO: CHANGE THIS TO UART_STATUS_X, use switch over the return of this */
-    p_status_out = uDMAErrorStatusGet();
+    switch(uDMAErrorStatusGet()) {
+        case 0:
+            p_status_out = UART_STATUS_COMPLETE;
+        default:
+            p_status_out = UART_STATUS_UDMA_TRANSFER_ERROR;
+    }
 
-    if (p_status_out != 0) {
+    if (p_status_out == UART_STATUS_UDMA_TRANSFER_ERROR) {
         /* Check the uDMA error status, return an error if non-zero */
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
         return UDMA_ERROR_TRANSFER_FAILED;
     }
     else {
-        /* if uDMAErrorStatusGet() returns a 0, no error is pending, so return
-         * ERROR_NONE. */
         return ERROR_NONE;
     }
 }

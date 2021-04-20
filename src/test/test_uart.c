@@ -76,7 +76,7 @@ int main(void) {
         switch(test_step) {
             /* Step 0 is to send the bytes */
             case 0:
-                if (Uart_send_bytes(UART_DEVICE_ID_CAM, send_data, data_size) != ERROR_NONE) {
+                if (Uart_send_bytes(UART_DEVICE_ID_CAM, *send_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
@@ -100,9 +100,9 @@ int main(void) {
                     }
                     else {
                         DEBUG_INF("TX Not complete after max num attempts. Exiting.");
+                        Debug_exit(1);
                         free(send_data);
                         free(recv_data);
-                        Debug_exit(1);
                         break;
                     }
                 }
@@ -113,7 +113,7 @@ int main(void) {
                 break;
             /* Step 2 is to receive the bytes */
             case 2:
-                if (Uart_recv_bytes(UART_DEVICE_ID_CAM, recv_data, data_size) != ERROR_NONE) {
+                if (Uart_recv_bytes(UART_DEVICE_ID_CAM, *recv_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
