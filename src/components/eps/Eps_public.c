@@ -483,7 +483,8 @@ bool Eps_send_battery_command(Eps_BattCmd batt_cmd_in) {
 
     /* Set the next two bytes from the type and value of the batt cmd */
     request_frame[EPS_UART_HEADER_LENGTH] = batt_cmd_in.type;
-    request_frame[EPS_UART_HEADER_LENGTH + 1] = batt_cmd_in.value;
+    request_frame[EPS_UART_HEADER_LENGTH + 1] = batt_cmd_in.value_a;
+    request_frame[EPS_UART_HEADER_LENGTH + 2] = batt_cmd_in.value_b;
 
     /* Add the CRC to the frame */
     Eps_append_crc_to_frame(

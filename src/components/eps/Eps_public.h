@@ -156,9 +156,14 @@ typedef struct _Eps_BattCmd {
     uint8_t type;
 
     /**
-     * @brief Second byte, the value associated with the command.
+     * @brief Second byte, the first value associated with the command.
      */
-    uint8_t value;
+    uint8_t value_a;
+
+    /**
+     * @brief Third byte, the second value associated with the command.
+     */
+    uint8_t value_b;
 
 } Eps_BattCmd;
 
