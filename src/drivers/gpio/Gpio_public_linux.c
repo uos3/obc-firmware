@@ -42,12 +42,12 @@ ErrorCode Gpio_init(
     return ERROR_NONE;
 }
 
-ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, bool gpio_state_in) {
+ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, uint8_t gpio_state_in) {
     DEBUG_DBG("GPIO write attempted when running on linux, ignoring.");
     return ERROR_NONE;
 }
 
-ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, bool *p_gpio_value_out) {
+ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out) {
     DEBUG_DBG("GPIO read attempted when running on linux, ignoring.");
     return ERROR_NONE;
 }

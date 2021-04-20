@@ -134,14 +134,12 @@ ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, uint8_t gpio_state_in) {
     /* Check the GPIO has been initialised */
     if (!p_gpio_pin->initialised) {
         DEBUG_ERR("Attempted to write GPIO pin when the GPIO has not been initalised");
-        Debug_exit(1);
         return GPIO_ERROR_NOT_INITIALISED;
     }
 
     /* Check the GPIO to be read is not exceeding the number of GPIOs */
     if (gpio_id_number >= GPIO_NUM_GPIOS) {
         DEBUG_ERR("Gpio ID number has exceeded total number of GPIOs");
-        Debug_exit(1);
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
