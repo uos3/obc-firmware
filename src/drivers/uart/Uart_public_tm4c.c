@@ -283,8 +283,8 @@ ErrorCode Uart_recv_bytes(
 
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
-    UARTIntClear(p_uart_device->gpio_base, UART_INT_DMARX);
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
+    UARTIntClear(p_uart_device->uart_base, UART_INT_RX);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_RX);
     IntEnable(p_uart_device->uart_base_int);
 
     if (uDMAErrorStatusGet() != 0) {
