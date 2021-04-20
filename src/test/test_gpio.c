@@ -48,7 +48,7 @@ void Led_toggle_red(void) {
 int main(void) {
 
     num_toggles = 0;
-
+    uint8_t *pf0_value_out;
     GPIO_PIN_INDEX *input_pins_in[1];
     GPIO_PIN_INDEX *output_pins_in[1];
 
@@ -75,7 +75,16 @@ int main(void) {
         Debug_exit(1);
     }
 
-    while (num_toggles < 5);
+    while (num_toggles < 5) {
+        if (Gpio_read(GPIO_PINF0, pf0_value_out) != ERROR_NONE) {
+            Debug_exit(1);
+        }
+        else {
+            if (pf0_value_out == 0) {
+                Led_toggle_red();
+            }
+        }
+    }
 
     DEBUG_DBG("Test complete");
     /* Return 0 if no errors occured up to this point. */
