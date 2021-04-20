@@ -22,7 +22,7 @@ while True:
   print("\nDATA RECEIVED:\n")
   print(received_data) #print received data 
   print("\nConverted to string:\n")
-  decoded = bytes.fromhex(received_data).decode('utf-8')
+  decoded = bytes.fromhex(str(received_data)).decode('utf-8')
   print(decoded)
   ser.write(received_data) #transmit data back
   count += 1
