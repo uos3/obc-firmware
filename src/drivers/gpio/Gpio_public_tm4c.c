@@ -308,21 +308,27 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void (*interr
     /* Check the port and call the appropriate function */
     switch (p_gpio_pin->port) {
         case GPIO_PORTA_BASE:
+            DEBUG_INF("Registering interrupt for port A");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_a_int_handler);
             break;
         case GPIO_PORTB_BASE:
+            DEBUG_INF("Registering interrupt for port B");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_b_int_handler);
             break;
         case GPIO_PORTC_BASE:
+            DEBUG_INF("Registering interrupt for port C");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_c_int_handler);
             break;
         case GPIO_PORTD_BASE:
+            DEBUG_INF("Registering interrupt for port D");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_d_int_handler);
             break;
         case GPIO_PORTE_BASE:
+            DEBUG_INF("Registering interrupt for port E");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_e_int_handler);
             break;
         case GPIO_PORTF_BASE:
+            DEBUG_INF("Registering interrupt for port F");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_f_int_handler);
             break;
         default:
