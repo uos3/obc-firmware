@@ -50,7 +50,7 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
     /* Initialises the GPIO */
 
     /* Loop through modules being initialised */
-    for (int i = 0; i < (int)num_gpio_pins_in; ++i) {
+    for (int i = 0; i < num_gpio_pins_in; ++i) {
         
         /* Get a reference to the GPIO */
         Gpio_Module *p_gpio_pin = &GPIO_PINS[p_gpio_pins_in[i]];
@@ -152,7 +152,6 @@ ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, uint8_t gpio_state_in) {
             DEBUG_ERR("Incorrect gpio_state_in");
             return GPIO_ERROR_INCORRECT_STATE_IN;
     }
-    
 
     return ERROR_NONE;
 }

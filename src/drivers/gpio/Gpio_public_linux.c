@@ -54,7 +54,7 @@ ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out) {
 
 ErrorCode Gpio_set_rising_interrupt(
     GPIO_PIN_INDEX gpio_id_number,
-    void *interrupt_callback(void)
+    void (*interrupt_callback)(void)
 ) {
         
     DEBUG_DBG("GPIO set rising interrupt attempted when running on linux,\
