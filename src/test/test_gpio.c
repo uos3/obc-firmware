@@ -72,8 +72,6 @@ int main(void) {
         Debug_exit(1);
     }
 
-    Debug_exit(1);
-
     while (num_toggles < 5);
 
     DEBUG_DBG("Test complete");
