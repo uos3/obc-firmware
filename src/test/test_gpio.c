@@ -77,6 +77,7 @@ int main(void) {
     }
 
     while (num_toggles < 5) {
+        #if 0
         if (Gpio_read(GPIO_PINF4, pf0_value_out) != ERROR_NONE) {
             Debug_exit(1);
         }
@@ -86,6 +87,7 @@ int main(void) {
                 Led_toggle_red();
             }
         }
+        #endif
         SysCtlDelay(7000000);
     }
 
