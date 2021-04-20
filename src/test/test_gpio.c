@@ -33,9 +33,16 @@
  * MAIN
  * ------------------------------------------------------------------------- */
 
-int main(void) {
+int num_toggles;
 
-    int num_toggles;
+void Led_toggle_red(void) {
+    if (Led_toggle(LED_LAUNCHPAD) != ERROR_NONE) {
+        Debug_exit(1);
+    }
+    num_toggles++;
+}
+
+int main(void) {
 
     num_toggles = 0;
 
@@ -72,8 +79,4 @@ int main(void) {
     DEBUG_DBG("Test complete");
     /* Return 0 if no errors occured up to this point. */
     return 0;
-}
-
-void Led_toggle_red(void) {
-    Led_toggle(LED_LAUNCHPAD);
 }
