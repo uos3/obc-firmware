@@ -35,13 +35,13 @@
 
 int main(void) {
     uint8_t i;
-    uint8_t data_size;
+    uint32_t data_size;
     uint8_t send_data[8];
     uint8_t recv_data[8];
     uint8_t test_step;
     uint8_t num_attempts;
 
-    data_size = 8;
+    data_size = 64;
     test_step = 0;
     num_attempts = 0;
 
@@ -78,14 +78,6 @@ int main(void) {
     if (Udma_init() != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the uDMA.");
         Debug_exit(1);
-    }
-
-    /* Loop through the size of the data to send, and create an array of
-     * dummy data to be sent. */
-    DEBUG_INF("Initialising the data array");
-    for (i = 0; i < data_size; ++i) {
-        send_data[i] = i;
-        recv_data[i] = i*10;
     }
 
     /* Main loop */
