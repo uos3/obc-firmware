@@ -226,8 +226,11 @@ ErrorCode Uart_send_bytes(
 
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
-    UARTIntClear(p_uart_device->uart_base, UART_INT_TX);
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_TX);
+    #if 0
+    UARTIntDisable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
+    UARTIntClear(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
+    #endif
     IntEnable(p_uart_device->uart_base_int);
 
     if (uDMAErrorStatusGet() != 0) {
@@ -284,14 +287,17 @@ ErrorCode Uart_recv_bytes(
 
     /* Enable the channel. Software-initiated transfers require a channel
      * request to begin the transfer. */
-    uDMAChannelEnable(UDMA_CHANNEL_UART0RX);
+    uDMAChannelEnable(p_uart_device->udma_channel_rx);
 
     p_uart_device->uart_status_rx = UART_STATUS_IN_PROGRESS;
 
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
-    UARTIntClear(p_uart_device->uart_base, UART_INT_RX);
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_RX);
+    #if 0
+    UARTIntDisable(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
+    UARTIntClear(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
+    #endif
     IntEnable(p_uart_device->uart_base_int);
 
     if (uDMAErrorStatusGet() != 0) {
