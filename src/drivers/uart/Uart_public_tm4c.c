@@ -207,7 +207,7 @@ ErrorCode Uart_send_bytes(
      * so will be kept in for now. */
     uDMAChannelControlSet(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
-        UDMA_SIZE_8 | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4
+        UDMA_SIZE_8 | UDMA_SRC_INC_NONE | UDMA_DST_INC_8 | UDMA_ARB_4
     );
     
     /* Set the transfer addresses, size, and mode for TX */
@@ -273,7 +273,7 @@ ErrorCode Uart_recv_bytes(
      * TODO: make this the device specific rx channel */
     uDMAChannelControlSet(
         UDMA_CHANNEL_UART1RX | UDMA_PRI_SELECT,
-        length_in | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4
+        UDMA_SIZE_8 | UDMA_SRC_INC_8 | UDMA_DST_INC_NONE | UDMA_ARB_4
     );
     
     /* Set the transfer addresses, size, and mode for RX */
