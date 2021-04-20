@@ -15,11 +15,14 @@ count = 0
 
 while True:
   if count % 100 == 0:
-    print("Waiting for bytes to receive")
+    print("Waiting for bytes to receive\n")
   received_data = ser.read() #read serial port
   sleep(0.03)
   data_left = ser.inWaiting() #check for remaining bytes
   received_data += ser.read(data_left)
+  print("\nDATA RECEIVED:\n")
   print(received_data) #print received data 
+  print("\nConverted to string:\n")
+  print(str(received_data))
   ser.write(received_data) #transmit data back
   count += 1

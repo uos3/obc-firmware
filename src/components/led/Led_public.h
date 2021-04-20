@@ -69,7 +69,7 @@
 /* Struct defining an LED, with the pin and state */
 typedef struct _Led_Module {
     GPIO_PIN_INDEX gpio_pin;
-    bool state; /* Current state of the LED (true = on, false = off) */
+    uint8_t state; /* Current state of the LED (1 = on, 0 = off) */
 } Led_Module;
 
 /* -------------------------------------------------------------------------   
@@ -93,7 +93,7 @@ Led_Module LED_LEDS[LED_NUMBER_OF_LEDS];
  * @param led_state_in The state of which the LED is to be set to
  * @return Returns a bool of the state of the LED after setting
  */
-ErrorCode Led_set(uint8_t led_number_in, bool led_state_in);
+ErrorCode Led_set(uint8_t led_number_in, uint8_t led_state_in);
 
 /**
  * @brief Toggles the state of the LED peripheral

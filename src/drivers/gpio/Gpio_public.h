@@ -147,7 +147,7 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_modules_in, size_t num_gpio_modules_i
  * @param gpio_state State to write the pin to (true = HIGH, false = LOW)
  * @return ErrorCode Return code.
  */
-ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, bool gpio_state);
+ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, uint8_t gpio_state);
 
 /**
  * @brief Reads the input value of a specified GPIO pin.
@@ -156,7 +156,7 @@ ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, bool gpio_state);
  * @param p_gpio_value_out Input value of GPIO pin (true = HIGH, false = LOW).
  * @return ErrorCode Return code.
  */
-ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, bool *p_gpio_value_out);
+ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out);
 
 /**
  * @brief Sets up a rising edge interrupt on a specified GPIO pin.

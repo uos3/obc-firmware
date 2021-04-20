@@ -128,7 +128,7 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
     return ERROR_NONE;
 }
 
-ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, bool gpio_state_in) {
+ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, uint8_t gpio_state_in) {
     Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
 
     /* Check the GPIO has been initialised */
@@ -145,12 +145,20 @@ ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, bool gpio_state_in) {
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOPinWrite(&p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
+    switch (gpio_state_in) {
+        case 1:
+            GPIOPinWrite(&p_gpio_pin->port, p_gpio_pin->pin, p_gpio_pin->pin);
+            break;
+        case 0:
+            GPIOPinWrite(&p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
+            break;
+    }
+    
 
     return ERROR_NONE;
 }
 
-ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, bool *p_gpio_value_out) {
+ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out) {
     Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
 
     /* Check the GPIO has been initialised */
@@ -318,8 +326,6 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
     }
 
     IntEnable(p_gpio_pin->interrupt_pin);
-    
-    Debug_exit(1);
 
     return ERROR_NONE;
 }

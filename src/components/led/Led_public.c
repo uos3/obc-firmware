@@ -38,7 +38,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode Led_set(uint8_t led_number_in, bool led_state_in) {
+ErrorCode Led_set(uint8_t led_number_in, uint8_t led_state_in) {
     /* Reference to the LED */
     Led_Module *p_led = &LED_LEDS[led_number_in];
 
