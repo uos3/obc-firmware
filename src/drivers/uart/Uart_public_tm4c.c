@@ -404,6 +404,18 @@ bool Uart_get_events_for_device(
  * BUT KEPT FOR NOW AS A REFERENCE/JUST IN CASE UDMA IS NOT A VIABLE OPTION.
  * ------------------------------------------------------------------------- */
 
+void Uart_int_handler_old(void) {
+    uint32_t status;
+
+    status = UARTIntStatus(UART1_BASE, true);
+
+    UARTIntClear(UART1_BASE, status);
+
+    while (UARTCharsAvail(UART1_BASE)) {
+        UARTCharPutNonBlocking(UART1_BASE, UARTCharGetNonBlocking(UART1_BASE));
+    }
+}
+
 ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out) {
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
@@ -444,6 +456,9 @@ ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out) {
 
 ErrorCode Uart_put_char(uint8_t uart_id_number_in, char byte_out) {
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_number_in];
+
+    IntEnable(INT_UART1);
+    UARTIntEnable(UART1_BASE, UART_INT_RX | UART_INT_TX);
 
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
