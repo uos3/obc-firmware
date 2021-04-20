@@ -40,6 +40,7 @@ void Led_toggle_red(void) {
         Debug_exit(1);
     }
     num_toggles++;
+    DEBUG_DBG("SW2 Pressed");
 }
 
 int main(void) {
