@@ -510,8 +510,8 @@ ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, ch
      * if (UartCharsAvail) {
      * do the rest
      * } */
-    for (int i = 0; i < buffer_length_in; ++i) {
-        if (UARTCharPutNonBlocking(p_uart_device->uart_base, buffer_out[i])) {
+    while (buffer_length_in--) {
+        if (UARTCharPutNonBlocking(p_uart_device->uart_base, *buffer_out++)) {
             /* This function returns true if the character was placed in the TX
              * FIFO, so if this point has been reached, return no error. */
         }
@@ -520,6 +520,7 @@ ErrorCode Uart_put_buffer(uint8_t uart_id_number_in, size_t buffer_length_in, ch
              * TX FIFO, so raise an error. */
             DEBUG_ERR("No space available in specified UART port, failed to\
             send byte.");
+            Debug_exit(1);
             return UART_ERROR_PUT_CHAR_FAILED;
         }
     }
