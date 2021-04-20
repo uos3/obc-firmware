@@ -26,6 +26,8 @@
 #include "drivers/eeprom/Eeprom_public.h"
 #include "drivers/rtc/Rtc_public.h"
 #include "drivers/timer/Timer_public.h"
+#include "drivers/udma/Udma_public.h"
+#include "drivers/uart/Uart_public.h"
 #include "applications/power/Power_public.h"
 
 /* -------------------------------------------------------------------------   
@@ -87,6 +89,16 @@ int main(void) {
 
     DEBUG_INF("Init MemStoreManager...");
     if (!MemStoreManager_init()) {
+        Debug_exit(1);
+    }
+
+    DEBUG_INF("Init Udma...");
+    if (!Udma_init()) {
+        Debug_exit(1);
+    }
+
+    DEBUG_INF("Init Uart...");
+    if (!Uart_init()) {
         Debug_exit(1);
     }
 
