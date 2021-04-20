@@ -188,4 +188,15 @@ ErrorCode Gpio_reset_interrupt(GPIO_PIN_INDEX gpio_id_number);
  */
 ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, GPIO_PIN_INDEX gpio_pin_lower_in, GPIO_PIN_INDEX gpio_pin_upper_in);
 
+/**
+ * @brief Interrupt handlers for the GPIO
+ * 
+ */
+void Gpio_port_a_int_handler(void);
+void Gpio_port_b_int_handler(void);
+void Gpio_port_c_int_handler(void);
+void Gpio_port_d_int_handler(void);
+void Gpio_port_e_int_handler(void);
+void Gpio_port_f_int_handler(void);
+
 #endif /* H_GPIO_PUBLIC_H */
