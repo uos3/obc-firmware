@@ -85,6 +85,7 @@ int main(void) {
                 Led_toggle_red();
             }
         }
+        SysCtlDelay(7000000);
     }
 
     DEBUG_DBG("Test complete");
