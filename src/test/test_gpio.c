@@ -41,13 +41,11 @@ int main(void) {
 
     GPIO_PIN_INDEX *input_pins_in[1];
     GPIO_PIN_INDEX *output_pins_in[1];
-    void *interrupt_function;
 
     Kernel_init_critical_modules();
 
     input_pins_in[0] = GPIO_PINF0;
     output_pins_in[0] = GPIO_PINF1;
-    interrupt_function = Led_toggle(GPIO_PINF1);
 
     DEBUG_INF("GPIO Test");
 
@@ -63,7 +61,7 @@ int main(void) {
         Debug_exit(1);
     }
 
-    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle(LED_LAUNCHPAD)) != ERROR_NONE) {
+    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle_red) != ERROR_NONE) {
         Debug_exit(1);
     }
 
@@ -74,4 +72,8 @@ int main(void) {
     DEBUG_DBG("Test complete");
     /* Return 0 if no errors occured up to this point. */
     return 0;
+}
+
+void Led_toggle_red(void) {
+    Led_toggle(LED_LAUNCHPAD);
 }
