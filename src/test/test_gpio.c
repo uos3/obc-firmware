@@ -72,12 +72,12 @@ int main(void) {
         Debug_exit(1);
     }
 
-    if (Gpio_set_rising_interrupt(GPIO_PINF0, Led_toggle_red) != ERROR_NONE) {
+    if (Gpio_set_rising_interrupt(GPIO_PINF4, Led_toggle_red) != ERROR_NONE) {
         Debug_exit(1);
     }
 
     while (num_toggles < 5) {
-        if (Gpio_read(GPIO_PINF0, pf0_value_out) != ERROR_NONE) {
+        if (Gpio_read(GPIO_PINF4, pf0_value_out) != ERROR_NONE) {
             Debug_exit(1);
         }
         else {
