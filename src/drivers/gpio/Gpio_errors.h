@@ -50,4 +50,10 @@
  */
 #define GPIO_ERROR_UNEXPECTED_PORT ((ErrorCode)MOD_ID_GPIO | 5)
 
+/**
+ * @brief An unexpected GPIO state was input that does not exist.
+ * 
+ */
+#define GPIO_ERROR_INCORRECT_STATE_IN ((ErrorCode)MOD_ID_GPIO | 6)
+
 #endif /* H_GPIO_ERRORS_H */

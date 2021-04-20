@@ -50,7 +50,7 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
     /* Initialises the GPIO */
 
     /* Loop through modules being initialised */
-    for (int i = 0; i < num_gpio_pins_in; ++i) {
+    for (int i = 0; i < (int)num_gpio_pins_in; ++i) {
         
         /* Get a reference to the GPIO */
         Gpio_Module *p_gpio_pin = &GPIO_PINS[p_gpio_pins_in[i]];
@@ -148,6 +148,9 @@ ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, uint8_t gpio_state_in) {
         case 0:
             GPIOPinWrite(p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
             break;
+        default:
+            DEBUG_ERR("Incorrect gpio_state_in");
+            return GPIO_ERROR_INCORRECT_STATE_IN;
     }
     
 
@@ -169,7 +172,7 @@ ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out) {
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    p_gpio_value_out = GPIOPinRead(p_gpio_pin->port, p_gpio_pin->pin);
+    *p_gpio_value_out = (uint8_t)GPIOPinRead(p_gpio_pin->port, p_gpio_pin->pin);
 
     return ERROR_NONE;
 }
@@ -266,14 +269,16 @@ static void Gpio_port_f_int_handler(void) {
 
 ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, GPIO_PIN_INDEX gpio_pin_lower_in, GPIO_PIN_INDEX gpio_pin_upper_in) {
     for (int i = gpio_pin_lower_in; i < gpio_pin_upper_in; ++i) {
-            if (gpio_int_status_in & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
-                /* Call the interrupt function pointer */
-                (*GPIO_PINS[i].int_function)();
-            }
+        if (gpio_int_status_in & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
+            /* Call the interrupt function pointer */
+            (*GPIO_PINS[i].int_function)();
+        }
     }
+
+    return ERROR_NONE;
 }
 
-ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interrupt_callback(void)) {
+ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void (*interrupt_callback)(void)) {
     Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
 
     if (!p_gpio_pin->initialised) {
@@ -292,7 +297,7 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
     GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
 
     /* Set the interrupt function of the GPIO */
-    p_gpio_pin->int_function = interrupt_callback;
+    p_gpio_pin->int_function = *interrupt_callback;
 
     /* Check the port and call the appropriate function */
     switch (p_gpio_pin->port) {

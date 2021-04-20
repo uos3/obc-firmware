@@ -165,7 +165,7 @@ ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out);
  * @param interrupt_callback Pointer to the function which is called in the interrupt.
  * @return ErrorCode Return code.
  */
-ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interrupt_callback(void));
+ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void (*interrupt_callback)(void));
 
 /**
  * @brief Removes the interrupt from a specified GPIO pin.
