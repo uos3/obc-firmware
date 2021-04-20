@@ -93,12 +93,12 @@ int main(void) {
     }
 
     DEBUG_INF("Init Udma...");
-    if (!Udma_init() != ERROR_NONE) {
+    if (Udma_init() != ERROR_NONE) {
         Debug_exit(1);
     }
 
     DEBUG_INF("Init Uart...");
-    if (!Uart_init() != ERROR_NONE) {
+    if (Uart_init() != ERROR_NONE) {
         Debug_exit(1);
     }
 
