@@ -174,7 +174,6 @@ ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out) {
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    DEBUG_INF("Reading GPIO pin");
     *p_gpio_value_out = (uint8_t)GPIOPinRead(p_gpio_pin->port, p_gpio_pin->pin);
 
     return ERROR_NONE;
