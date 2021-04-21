@@ -90,6 +90,8 @@ int main(void) {
                 if (num_attempts <= 3) {
                     if (EventManager_poll_event(EVT_UART_TEST_TX_COMPLETE)) {
                         DEBUG_INF("Bytes have been sent");
+                        test_step++;
+                        break;
                     }
                     else {
                         num_attempts++;
@@ -122,6 +124,8 @@ int main(void) {
                 if (num_attempts <= 3) {
                     if (EventManager_poll_event(EVT_UART_TEST_RX_COMPLETE)) {
                         DEBUG_INF("Bytes have been received");
+                        test_step++;
+                        break;
                     }
                     else {
                         num_attempts++;
