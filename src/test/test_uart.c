@@ -68,6 +68,9 @@ int main(void) {
         Debug_exit(1);
     }
 
+    DEBUG_DBG("Element 0 of recv_data is %d", recv_data[0]);
+    DEBUG_DBG("Element 0 of sent data was %d", send_data[0]);
+
     /* Main loop */
     while (test_complete == false) {
         switch(test_step) {
@@ -75,9 +78,13 @@ int main(void) {
             case 0:
                 if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
+                    DEBUG_ERR("Failed to send bytes");
+                    return 1;
                 }
                 if (Uart_step() != ERROR_NONE) {
                     Debug_exit(1);
+                    DEBUG_ERR("Step function failed");
+                    return 1;
                 }
                 DEBUG_INF("Sending bytes");
                 /* Increment the step number and move on to next case */
