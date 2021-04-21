@@ -155,8 +155,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         UART_RX_FIFO_THRESHOLD
     );
 
-    IntEnable(p_uart_device->uart_base_int);
-
     /* Set the UART state as initialised. */
     p_uart_device->initialised = true;
         /* Return error none if this point has been reached without any errors
@@ -187,25 +185,20 @@ ErrorCode Uart_send_bytes(
 
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
-    IntEnable(p_uart_device->uart_base_int);
     UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
 
     switch(uart_id_in) {
         case UART_DEVICE_ID_CAM:
             UARTIntRegister(p_uart_device->uart_base, Uart_cam_tx_int_handler);
-            IntRegister(p_uart_device->uart_base_int, Uart_cam_rx_int_handler);
             break;
         case UART_DEVICE_ID_GNSS:
             UARTIntRegister(p_uart_device->uart_base, Uart_gnss_tx_int_handler);
-            IntRegister(p_uart_device->uart_base_int, Uart_gnss_tx_int_handler);
             break;
         case UART_DEVICE_ID_EPS:
             UARTIntRegister(p_uart_device->uart_base, Uart_eps_tx_int_handler);
-            IntRegister(p_uart_device->uart_base_int, Uart_eps_tx_int_handler);
             break;
         case UART_DEVICE_ID_TEST:
             UARTIntRegister(p_uart_device->uart_base, Uart_test_tx_int_handler);
-            IntRegister(p_uart_device->uart_base_int, Uart_test_tx_int_handler);
             break;
     }
 
@@ -272,25 +265,20 @@ ErrorCode Uart_recv_bytes(
         return UDMA_ERROR_NOT_INITIALISED;
     }
 
-    IntEnable(p_uart_device->uart_base_int);
     UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
 
     switch(uart_id_in) {
         case UART_DEVICE_ID_CAM:
             UARTIntRegister(p_uart_device->uart_base, Uart_cam_rx_int_handler);
-            IntRegister(p_uart_device->uart_base_int, Uart_cam_rx_int_handler);
             break;
         case UART_DEVICE_ID_GNSS:
             UARTIntRegister(p_uart_device->uart_base, Uart_gnss_rx_int_handler);
-            IntRegister(p_uart_device->uart_base_int, Uart_gnss_rx_int_handler);
             break;
         case UART_DEVICE_ID_EPS:
             UARTIntRegister(p_uart_device->uart_base, Uart_eps_rx_int_handler);
-            IntRegister(p_uart_device->uart_base_int, Uart_eps_rx_int_handler);
             break;
         case UART_DEVICE_ID_TEST:
             UARTIntRegister(p_uart_device->uart_base, Uart_test_rx_int_handler);
-            IntRegister(p_uart_device->uart_base_int, Uart_test_rx_int_handler);
             break;
     }
 
