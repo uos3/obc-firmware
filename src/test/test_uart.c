@@ -132,20 +132,18 @@ int main(void) {
             /* Step 3 is to check if the correct event has been raised after
              * receiving bytes. */
             case 3:
-                if (EventManager_poll_event(EVT_UART_TEST_RX_COMPLETE)) {
-                    DEBUG_INF("Bytes have been received");
-                }
-                else {
-                    if (num_attempts <= 3) {
-                        DEBUG_INF("RX Complete event has NOT been raised. Retrying");
-                        num_attempts++;
-                        break;
+                if (num_attempts <= 3) {
+                    if (EventManager_poll_event(EVT_UART_TEST_RX_COMPLETE)) {
+                        DEBUG_INF("Bytes have been received");
                     }
                     else {
-                        DEBUG_INF("RX Not complete after max num attempts. Exiting.");
-                        Debug_exit(1);
-                        break;
+                        num_attempts++;
                     }
+                }
+                else {
+                    DEBUG_INF("RX Not complete after max num attempts. Exiting.");
+                    Debug_exit(1);
+                    break;
                 }
                 num_attempts = 0;
                 test_step++;

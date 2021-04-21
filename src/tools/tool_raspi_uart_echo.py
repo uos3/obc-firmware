@@ -22,5 +22,4 @@ while True:
   print("\nDATA RECEIVED:\n")
   print(received_data) #print received data 
   ser.write(received_data) #transmit data back
-  print(decoded)
   count += 1
