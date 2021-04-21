@@ -189,8 +189,6 @@ int main(void) {
     }
     #endif
 
-    Debug_exit(1);
-
     /* Return 0 if no errors occured up to this point. */
     return 0;
 }
