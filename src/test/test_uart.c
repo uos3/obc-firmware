@@ -42,14 +42,17 @@ int main(void) {
     uint8_t num_attempts;
     bool test_complete;
 
+
     test_complete = false;
     data_size = 1;
     test_step = 0;
     num_attempts = 0;
 
-    send_data = 14;
+    send_data = (uint8_t*) malloc(data_size * sizeof(uint8_t));
+    recv_data = (uint8_t*) malloc(data_size * sizeof(uint8_t));
 
-    recv_data = 10;
+    send_data[0] = 14;
+    recv_data[0] = 10;
 
 
     Kernel_init_critical_modules();
@@ -60,12 +63,18 @@ int main(void) {
     if (Uart_init_specific(UART_DEVICE_ID_TEST) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the UART devices.");
         Debug_exit(1);
+        free(send_data);
+        free(recv_data);
+        return 1;
     }
 
     /* Initialise the uDMA */
     if (Udma_init() != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the uDMA.");
         Debug_exit(1);
+        free(send_data);
+        free(recv_data);
+        return 1;
     }
 
     DEBUG_DBG("Element 0 of recv_data is %d", recv_data[0]);
@@ -79,11 +88,15 @@ int main(void) {
                 if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                     DEBUG_ERR("Failed to send bytes");
+                    free(send_data);
+                    free(recv_data);
                     return 1;
                 }
                 if (Uart_step() != ERROR_NONE) {
                     Debug_exit(1);
                     DEBUG_ERR("Step function failed");
+                    free(send_data);
+                    free(recv_data);
                     return 1;
                 }
                 DEBUG_INF("Sending bytes");
@@ -107,6 +120,8 @@ int main(void) {
                 else {
                     DEBUG_INF("TX Not complete after max num attempts. Exiting.");
                     Debug_exit(1);
+                    free(send_data);
+                    free(recv_data);
                     return 1;
                 }
                 /* Reset the number of attempts for the next step */
@@ -141,6 +156,8 @@ int main(void) {
                 else {
                     DEBUG_INF("RX Not complete after max num attempts. Exiting.");
                     Debug_exit(1);
+                    free(send_data);
+                    free(recv_data);
                     return 1;
                 }
                 num_attempts = 0;
@@ -170,6 +187,8 @@ int main(void) {
     }
     else {
         DEBUG_ERR("Error when clearing events");
+        free(send_data);
+        free(recv_data);
         return 1;
     }
 
@@ -208,6 +227,8 @@ int main(void) {
         return 1;
     }
     #endif
+    free(send_data);
+    free(recv_data);
 
     /* Return 0 if no errors occured up to this point. */
     return 0;
