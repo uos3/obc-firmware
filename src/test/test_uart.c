@@ -40,9 +40,9 @@ int main(void) {
     uint8_t *recv_data;
     uint8_t test_step;
     uint8_t num_attempts;
-    bool test_in_progress;
+    bool test_complete;
 
-    test_in_progress = true;
+    test_complete = false;
     data_size = 1;
     test_step = 0;
     num_attempts = 0;
@@ -69,7 +69,7 @@ int main(void) {
     }
 
     /* Main loop */
-    while (true) {
+    while (test_complete == false) {
         switch(test_step) {
             /* Step 0 is to send the bytes */
             case 0:
@@ -150,8 +150,8 @@ int main(void) {
                 test_step++;
                 break;
             default:
-                DEBUG_INF("Test complete");
-                test_in_progress = false;
+                DEBUG_INF("Test complete at step %d", test_step);
+                test_complete = true;
         }
     }
 
