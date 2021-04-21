@@ -135,7 +135,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PIN_4,
         GPIO_PIN_5,
         UDMA_CH19_UART4TX, /* TODO: Check TI channel assignments */
-        UDMA_CH19_UART4RX,
+        UDMA_CH18_UART4RX,
         UART_STATUS_NONE,
         UART_STATUS_NONE,
         EVT_UART_NONE,
