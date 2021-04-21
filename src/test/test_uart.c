@@ -41,7 +41,7 @@ int main(void) {
     uint8_t test_step;
     uint8_t num_attempts;
 
-    data_size = 8;
+    data_size = 1;
     test_step = 0;
     num_attempts = 0;
 
