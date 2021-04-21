@@ -101,6 +101,21 @@ static int Eps_test_ocp_state_conv(void **state) {
     return 0;
 }
 
+/**
+ * @brief Test the conversion between EPS HK data frame and the Eps_HkData
+ * struct. 
+ * 
+ * @param state Cmocka state
+ * @return int Return code, 0 for success
+ */
+static int Eps_test_parse_hk_data(void **state) {
+    (void)state;
+
+    
+
+    return 0;
+}
+
 /* -------------------------------------------------------------------------   
  * TEST GROUP
  * ------------------------------------------------------------------------- */

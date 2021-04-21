@@ -5,3 +5,6 @@ add_subdirectory(debug)
 
 # Crypto module
 add_subdirectory(crypto)
+
+# Packing module
+add_subdirectory(packing)

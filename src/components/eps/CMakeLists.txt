@@ -7,4 +7,5 @@ target_link_libraries(Eps
     ${STANDARD_LINK_LIBS}
     Uart
     Timer
+    Packing
 )

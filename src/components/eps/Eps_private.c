@@ -24,6 +24,7 @@
 
 /* Internal includes */
 #include "util/debug/Debug_public.h"
+#include "util/packing/Packing_public.h"
 #include "drivers/uart/Uart_public.h"
 #include "system/data_pool/DataPool_public.h"
 #include "system/event_manager/EventManager_public.h"
@@ -99,26 +100,269 @@ bool Eps_parse_hk_data(
 ) {
     uint8_t byte_idx = 0;
     /* Strategy: Consume bytes sequentially parsing each group according to the
-     * format specified in [SW_ICD 5.2.4.4]. */
+     * format specified in [SW_ICD 5.2.8]. */
 
-    /* OCP STATE */
-    p_hk_data_out->ocp_state = Eps_ocp_byte_to_ocp_state(p_data_in[byte_idx]);
-    byte_idx += 1;
+    p_hk_data_out->batt_status = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
 
-    /* BATTERY STATUS */
-    p_hk_data_out->batt_status = Eps_parse_batt_status(&p_data_in[byte_idx]);
-    byte_idx += 2;
+    p_hk_data_out->batt_output_voltage_scaledint = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
 
-    /* BATTERY VOLTAGE
-     *
-     * Noting big endian, so first byte is the least significant, second is
-     * most significant.
-     */
-    p_hk_data_out->batt_voltage_volts 
-        = Eps_adc_voltage_sense_scaledint_to_volts(
-            (p_data_in[byte_idx] | (p_data_in[byte_idx + 1] << 8))
-        );
-    byte_idx += 2;
+    p_hk_data_out->batt_current_magnitude_scaledint = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->batt_current_direction = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+    
+    p_hk_data_out->batt_motherboard_temp_scaledint = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->batt_5v_current_scaledint = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->batt_5v_voltage_scaledint = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->batt_3v3_current_scaledint = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->batt_3v3_voltage_scaledint = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->batt_daughterboard_temp_scaledint = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->batt_daughterboard_heater_status = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->eps_temp_scaledint = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_top1_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_top2_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp5_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp6_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp6_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp4_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp4_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp5_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp3_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp3_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->sys_5v_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->sys_3v3_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp2_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp2_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp1_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_north2_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_north1_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->charge_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_west1_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->mppt_bus_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->mppt2_lower_pv_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->mppt2_mid_pv_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_west2_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_south2_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_south2_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->uvp_5v_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->uvp_3v3_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->vbatt_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->ocp1_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_east2_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->pv_east1_csense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->mppt1_lower_pv_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->mppt3_lower_pv_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->mppt1_mid_pv_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->mppt3_mid_pv_vsense = Packing_u16_from_be(
+        p_data_in
+    );
+    p_data_in += 2;
+
+    p_hk_data_out->log_ocp1_trip_count = *p_data_in;
+    p_data_in++;
+
+    p_hk_data_out->log_ocp2_trip_count = *p_data_in;
+    p_data_in++;
+
+    p_hk_data_out->log_ocp3_trip_count = *p_data_in;
+    p_data_in++;
+
+    p_hk_data_out->log_ocp4_trip_count = *p_data_in;
+    p_data_in++;
+
+    p_hk_data_out->log_ocp5_trip_count = *p_data_in;
+    p_data_in++;
+
+    p_hk_data_out->log_ocp6_trip_count = *p_data_in;
+    p_data_in++;
+
+    p_hk_data_out->log_reboot_count = *p_data_in;
+    p_data_in++;
+
+    p_hk_data_out->log_tobc_time_count = *p_data_in;
+    p_data_in++;
+
+    p_hk_data_out->ocp_rail_state = *p_data_in;
+    p_data_in++;
 
     return true;
 }

@@ -310,19 +310,234 @@ typedef struct _Eps_BattStatus {
 typedef struct _Eps_HkData {
 
     /**
-     * @brief State of the OCP rails
+     * @brief Status of the battery.
      */
-    Eps_OcpState ocp_state;
+    uint16_t batt_status;
 
     /**
-     * @brief Status of the battery
+     * @brief Scaledint representing the battery's voltage in raw ADC values.
      */
-    Eps_BattStatus batt_status;
+    uint16_t batt_output_voltage_scaledint;
 
     /**
-     * @brief The voltage of the battery, in Volts.
+     * @brief Scaledint representing the magnitude of the battery's output 
+     * current in rawn ADC values.
      */
-    double batt_voltage_volts;
+    uint16_t batt_current_magnitude_scaledint;
+
+    /**
+     * @brief An integer representing the direction of the battery's current.
+     */
+    uint16_t batt_current_direction;
+
+    /**
+     * @brief A scaled integer representing the battery's motherboard
+     * temperature in raw ADC values.
+     */
+    uint16_t batt_motherboard_temp_scaledint;
+
+    /**
+     * @brief Scaled integer representing the output current of the battery's
+     * 5V bus in raw ADC values.
+     */
+    uint16_t batt_5v_current_scaledint;
+
+    /**
+     * @brief Scaled integer representing the voltage of the battery's 5V bus
+     * in raw ADC values.
+     */
+    uint16_t batt_5v_voltage_scaledint;
+
+    /**
+     * @brief Scaled integer representing the output current of the battery's
+     * 3V3 bus in raw ADC values.
+     */
+    uint16_t batt_3v3_current_scaledint;
+
+    /**
+     * @brief Scaled integer representing the voltage of the battery's 3.3V bus
+     * in raw ADC values.
+     */
+    uint16_t batt_3v3_voltage_scaledint;
+
+    /**
+     * @brief A scaled integer representing the temperature of the battery's
+     * daughterboard in raw ADC values.
+     */
+    uint16_t batt_daughterboard_temp_scaledint;
+
+    /**
+     * @brief An integer representing the state of the heater on the battery's
+     * daughterboard. 
+     */
+    uint16_t batt_daughterboard_heater_status;
+
+    /**
+     * @brief A scaled integer representing the temperature of the EPS MCU in
+     * raw ADC values.
+     */
+    uint16_t eps_temp_scaledint;
+
+    /* Note the ordering here is based on that of the MUXes, which explains why
+     * things aren't logically grouped */
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_top1_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_top2_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp5_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp6_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp6_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp4_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp4_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp5_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp3_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp3_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t sys_5v_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t sys_3v3_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp2_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp2_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp1_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_north2_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_north1_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t charge_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_west1_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t mppt_bus_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t mppt2_lower_pv_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t mppt2_mid_pv_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_west2_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_south2_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_south1_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t uvp_5v_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t uvp_3v3_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t vbatt_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t ocp1_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_east2_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t pv_east1_csense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t mppt1_lower_pv_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t mppt3_lower_pv_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t mppt1_mid_pv_vsense;
+
+    /* TODO: doc comment when ICD updated */
+    uint16_t mppt3_mid_pv_vsense;
+
+    /**
+     * @brief Number of times OCP1 has tripped since the last housekeeping 
+     * request.
+     */
+    uint8_t log_ocp1_trip_count;
+
+    /**
+     * @brief Number of times OCP2 has tripped since the last housekeeping 
+     * request.
+     */
+    uint8_t log_ocp2_trip_count;
+
+    /**
+     * @brief Number of times OCP3 has tripped since the last housekeeping 
+     * request.
+     */
+    uint8_t log_ocp3_trip_count;
+
+    /**
+     * @brief Number of times OCP4 has tripped since the last housekeeping 
+     * request.
+     */
+    uint8_t log_ocp4_trip_count;
+
+    /**
+     * @brief Number of times OCP5 has tripped since the last housekeeping 
+     * request.
+     */
+    uint8_t log_ocp5_trip_count;
+
+    /**
+     * @brief Number of times OCP6 has tripped since the last housekeeping 
+     * request.
+     */
+    uint8_t log_ocp6_trip_count;
+
+    /**
+     * @brief Number of times the EPS MCU has restarted since the last 
+     * housekeeping request.
+     */
+    uint8_t log_reboot_count;
+
+    /**
+     * @brief Number of times the TOBC watchdog timer has elapsed since the 
+     * last housekeeping request.
+     */
+    uint8_t log_tobc_time_count;
+
+    /**
+     * @brief The state of the OCP rails.
+     */
+    uint8_t ocp_rail_state;
 
 } Eps_HkData;
 
