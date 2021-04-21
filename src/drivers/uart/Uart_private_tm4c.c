@@ -88,8 +88,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PINC7,
         GPIO_PIN_6,
         GPIO_PIN_7,
-        UDMA_CHANNEL_UART1TX,
-        UDMA_CHANNEL_UART1RX,
+        UDMA_CH17_UART3TX,
+        UDMA_CH16_UART3RX,
         UART_STATUS_NONE,
         UART_STATUS_NONE,
         EVT_UART_NONE,
@@ -111,8 +111,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PINE1,
         GPIO_PIN_0,
         GPIO_PIN_1,
-        UDMA_CH1_UART2TX, /* TODO: Check TI channel assignments */
-        UDMA_CH0_UART2RX,
+        UDMA_CH21_UART7TX, /* TODO: Check TI channel assignments */
+        UDMA_CH20_UART7RX,
         UART_STATUS_NONE,
         UART_STATUS_NONE,
         EVT_UART_NONE,
@@ -134,8 +134,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PINC5,
         GPIO_PIN_4,
         GPIO_PIN_5,
-        UDMA_CHANNEL_UART0TX, /* TODO: Check TI channel assignments */
-        UDMA_CHANNEL_UART0RX,
+        UDMA_CH19_UART4TX, /* TODO: Check TI channel assignments */
+        UDMA_CH19_UART4RX,
         UART_STATUS_NONE,
         UART_STATUS_NONE,
         EVT_UART_NONE,
