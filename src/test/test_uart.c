@@ -87,19 +87,18 @@ int main(void) {
              * automatically clear it with poll_event). Will check 3 times
              * before failing. */
             case 1:
-                if (EventManager_poll_event(EVT_UART_TEST_TX_COMPLETE)) {
-                    DEBUG_INF("Bytes have been sent");
-                }
-                else {
-                    if (num_attempts <= 3) {
-                        DEBUG_INF("TX Complete event has NOT been raised. Retrying");
-                        num_attempts++;
+                if (num_attempts <= 3) {
+                    if (EventManager_poll_event(EVT_UART_TEST_TX_COMPLETE)) {
+                        DEBUG_INF("Bytes have been sent");
                     }
                     else {
-                        DEBUG_INF("TX Not complete after max num attempts. Exiting.");
-                        Debug_exit(1);
-                        break;
+                        num_attempts++;
                     }
+                }
+                else {
+                    DEBUG_INF("TX Not complete after max num attempts. Exiting.");
+                    Debug_exit(1);
+                    return 1;
                 }
                 /* Reset the number of attempts for the next step */
                 num_attempts = 0;
@@ -131,7 +130,7 @@ int main(void) {
                 else {
                     DEBUG_INF("RX Not complete after max num attempts. Exiting.");
                     Debug_exit(1);
-                    break;
+                    return 1;
                 }
                 num_attempts = 0;
                 test_step++;
