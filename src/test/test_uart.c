@@ -36,7 +36,7 @@
 int main(void) {
     uint8_t i;
     uint32_t data_size = 10;
-    uint8_t send_data[10] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
+    uint8_t send_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     uint8_t recv_data[10] = {0};
     uint8_t test_step;
     uint8_t num_attempts;
