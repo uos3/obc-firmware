@@ -144,7 +144,7 @@ int main(void) {
                         DEBUG_INF("Send and recv data not equal");
                     }
                     DEBUG_DBG("Element %d of recv_data is %d", i, recv_data[i]);
-                    DEBUG_DBG("Element %d of sent data was %d", i, s_data[i]);
+                    DEBUG_DBG("Element %d of sent data was %d", i, send_data[i]);
                 }
                 /* Increment the step number and move on to next case */
                 test_step++;
