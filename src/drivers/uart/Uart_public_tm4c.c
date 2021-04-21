@@ -325,12 +325,9 @@ ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
 
     if (p_status_out == UART_STATUS_UDMA_TRANSFER_ERROR) {
         /* Check the uDMA error status, return an error if non-zero */
-        DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
-        return UDMA_ERROR_TRANSFER_FAILED;
+        DEBUG_WRN("uDMAErrorStatusGet returned a nonspecified non-zero error");
     }
-    else {
-        return ERROR_NONE;
-    }
+    return ERROR_NONE;
 }
 
 ErrorCode Uart_step(void) {
