@@ -180,6 +180,12 @@ ErrorCode Uart_get_status(
     Uart_Status p_status_out
 );
 
+bool Uart_get_events_for_device(
+    Uart_DeviceId device_id_in,
+    Event *p_tx_event_out,
+    Event *p_rx_event_out
+);
+
 
 /* -------------------------------------------------------------------------   
  * TODO: FUNCTIONS BELOW ARE TEMPORARY - WILL BE REPLACED BY NEW INTERFACE

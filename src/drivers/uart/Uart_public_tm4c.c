@@ -238,6 +238,13 @@ ErrorCode Uart_send_bytes(
         return UDMA_ERROR_TRANSFER_FAILED;
     }
 
+    Event *p_uart_event_tx;
+    Event *p_uart_event_rx;
+    if (!Uart_get_events_for_device(uart_id_in, p_uart_event_tx, p_uart_event_rx)) {
+        return UART_ERROR_EVENTS_FAILED;
+    }
+    p_uart_device->uart_event = p_uart_event_tx;
+
     return ERROR_NONE;
 }
 
@@ -304,6 +311,13 @@ ErrorCode Uart_recv_bytes(
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
         return UDMA_ERROR_TRANSFER_FAILED;
     }
+
+    Event *p_uart_event_tx;
+    Event *p_uart_event_rx;
+    if (!Uart_get_events_for_device(uart_id_in, p_uart_event_tx, p_uart_event_rx)) {
+        return UART_ERROR_EVENTS_FAILED;
+    }
+    p_uart_device->uart_event = p_uart_event_rx;
 
     return ERROR_NONE;
 }
@@ -397,6 +411,8 @@ bool Uart_get_events_for_device(
             /* device ID is wrong, error */
             break;
     }
+
+    return true;
 }
 
 /* -------------------------------------------------------------------------   

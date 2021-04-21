@@ -57,4 +57,10 @@
  */
 #define UART_ERROR_UNEXPECTED_DEVICE_ID ((ErrorCode)MOD_ID_UART | 5)
 
+/**
+ * @brief Unable to get the events for uart device
+ * 
+ */
+#define UART_ERROR_EVENTS_FAILED ((ErrorCode)MOD_ID_UART | 6)
+
 #endif /* H_UART_ERRORS_H */
