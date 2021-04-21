@@ -80,7 +80,7 @@ typedef struct _Led_Module {
  * @brief Global instance of the LED component state.
  * 
  */
-Led_Module LED_LEDS[LED_NUMBER_OF_LEDS];
+extern Led_Module LED_LEDS[LED_NUMBER_OF_LEDS];
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS

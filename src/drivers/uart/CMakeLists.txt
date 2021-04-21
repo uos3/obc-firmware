@@ -16,5 +16,4 @@ target_link_libraries(Uart
     ${STANDARD_LINK_LIBS}
     Gpio
     Udma
-    EventManager
 )

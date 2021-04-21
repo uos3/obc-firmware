@@ -47,11 +47,8 @@ add_executable(test_gpio
 )
 target_link_libraries(test_gpio
     ${STANDARD_LINK_LIBS}
-    Uart
-    Udma
     Gpio
     Led
-    EventManager
 )
 
 add_executable(test_uart
