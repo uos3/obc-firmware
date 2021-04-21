@@ -93,17 +93,24 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     tx_pins_in[0] = p_uart_device->gpio_pin_id_rx;
     
     /* Initialise the GPIO pins as their respective mode */
-    Gpio_init(rx_pins_in, 1, GPIO_MODE_UART);
-    Gpio_init(tx_pins_in, 1, GPIO_MODE_UART);
+    if (!SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
+        SysCtlPeripheralReset(p_uart_device->gpio_peripheral);
+        SysCtlPeripheralEnable(p_uart_device->gpio_peripheral);
+
+        for (int i = 0; i <= UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
+            if (!SysCtlPeripheralReady(p_uart_device->gpio_peripheral) && i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+                DEBUG_ERR("Failed to enable GPIO peripheral");
+                return UART_ERROR_PERIPHERAL_READY_FAILED;
+            }
+        }
+    }
 
     /* Configure the GPIO pins */
     GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
     GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
-    #if 0
     GPIOPinTypeUART(p_uart_device->gpio_base,
         p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
     );
-    #endif
 
 
     /* Check if the UART has already been initialised, give a warning if it has
@@ -118,53 +125,28 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         SysCtlPeripheralReady(p_uart_device->uart_peripheral);
     }
 
-    for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
-        if (SysCtlPeripheralReady(p_uart_device->uart_peripheral)) {
-            /* If the peripheral is ready, break out of the loop */
-            break;
-        }
-        if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
-            /* If the maximium number of peripheral ready checks has been
-                * reached, raise an error. */
-            DEBUG_ERR("Failed to enable UART peripheral");
+    for (int i = 0; i <= UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
+        if (!SysCtlPeripheralReady(p_uart_device->uart_peripheral) && i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
+            DEBUG_ERR("Failed to enable GPIO peripheral");
             return UART_ERROR_PERIPHERAL_READY_FAILED;
         }
     }
 
-    /* Initialise the GPIO peripheral if not already */
-    if (!SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
-        SysCtlPeripheralReset(p_uart_device->gpio_peripheral);
-        SysCtlPeripheralReady(p_uart_device->gpio_peripheral);
-    }
+    /* Enable the UART and uDMA interface for TX and RX */
+    UARTEnable(p_uart_device->uart_base);
+    UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
 
-    for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
-        if (SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
-            /* If the peripheral is ready, break out of the loop */
-            break;
-        }
-        if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
-            /* If the maximium number of peripheral ready checks has been
-                * reached, raise an error. */
-            DEBUG_ERR("Failed to enable UART peripheral");
-            return UART_ERROR_PERIPHERAL_READY_FAILED;
-        }
+    /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
+        * controller when more data should be transferred. These are defined
+        * in Uart_private.h and are currently arbitrary
+        * (see TODO in Uart_private.h for more info). */
+    UARTFIFOLevelSet(
+        p_uart_device->uart_base, 
+        UART_TX_FIFO_THRESHOLD, 
+        UART_RX_FIFO_THRESHOLD
+    );
 
-        /* Enable the UART and uDMA interface for TX and RX */
-        UARTEnable(p_uart_device->uart_base);
-        UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
-
-        /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
-         * controller when more data should be transferred. These are defined
-         * in Uart_private.h and are currently arbitrary
-         * (see TODO in Uart_private.h for more info). */
-        UARTFIFOLevelSet(
-            p_uart_device->uart_base, 
-            UART_TX_FIFO_THRESHOLD, 
-            UART_RX_FIFO_THRESHOLD
-        );
-
-        IntEnable(p_uart_device->uart_base_int);
-    }
+    IntEnable(p_uart_device->uart_base_int);
 
     /* Set the UART state as initialised. */
     p_uart_device->initialised = true;
