@@ -85,6 +85,7 @@ int main(void) {
         switch(test_step) {
             /* Step 0 is to send the bytes */
             case 0:
+                DEBUG_INF("----- STEP 0 -----");
                 if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                     DEBUG_ERR("Failed to send bytes");
@@ -107,6 +108,7 @@ int main(void) {
              * automatically clear it with poll_event). Will check 3 times
              * before failing. */
             case 1:
+                DEBUG_INF("----- STEP 1 -----");
                 if (num_attempts <= 3) {
                     if (EventManager_poll_event(EVT_UART_TEST_TX_COMPLETE)) {
                         DEBUG_INF("Bytes have been sent");
@@ -131,6 +133,7 @@ int main(void) {
                 break;
             /* Step 2 is to receive the bytes */
             case 2:
+                DEBUG_INF("----- STEP 2 -----");
                 if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
@@ -143,6 +146,7 @@ int main(void) {
             /* Step 3 is to check if the correct event has been raised after
              * receiving bytes. */
             case 3:
+                DEBUG_INF("----- STEP 3 -----");
                 if (num_attempts <= 3) {
                     if (EventManager_poll_event(EVT_UART_TEST_RX_COMPLETE)) {
                         DEBUG_INF("Bytes have been received");
@@ -166,6 +170,7 @@ int main(void) {
              * which was sent, as all this test is doing is sending and
              * receiving the same data. */
             case 4:
+                DEBUG_INF("----- STEP 4 -----");
                 for (i = 0; i < data_size; ++i) {
                     if (recv_data[i] != send_data[i]) {
                         DEBUG_INF("Send and recv data not equal");
@@ -177,7 +182,7 @@ int main(void) {
                 test_step++;
                 break;
             default:
-                DEBUG_INF("Test complete at step %d", test_step);
+                DEBUG_INF(" ----- TEST COMPLETE AT STEP %d -----", test_step);
                 test_complete = true;
         }
     }
