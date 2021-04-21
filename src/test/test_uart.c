@@ -45,7 +45,7 @@ int main(void) {
     test_step = 0;
     num_attempts = 0;
 
-    send_data = 0;
+    send_data = 14;
 
     recv_data = 10;
 
@@ -139,11 +139,7 @@ int main(void) {
             case 4:
                 for (i = 0; i < data_size; ++i) {
                     if (recv_data[i] != send_data[i]) {
-                        DEBUG_INF(
-                            "%d from recvd data does not equal expected value of %d",
-                            recv_data[i],
-                            send_data[i]
-                        );
+                        DEBUG_INF("Send and recv data not equal");
                         Debug_exit(1);
                     }
                 }
