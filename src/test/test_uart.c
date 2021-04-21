@@ -40,6 +40,7 @@ int main(void) {
     uint8_t *recv_data;
     uint8_t test_step;
     uint8_t num_attempts;
+    uint8_t max_num_attemps;
     bool test_complete;
 
 
@@ -47,6 +48,7 @@ int main(void) {
     data_size = 1;
     test_step = 0;
     num_attempts = 0;
+    max_num_attemps = 10;
 
     send_data = (uint8_t*) malloc(data_size * sizeof(uint8_t));
     recv_data = (uint8_t*) malloc(data_size * sizeof(uint8_t));
@@ -109,7 +111,7 @@ int main(void) {
              * before failing. */
             case 1:
                 DEBUG_INF("----- STEP 1 -----");
-                if (num_attempts < 3) {
+                if (num_attempts < max_num_attemps) {
                     if (EventManager_poll_event(EVT_UART_TEST_TX_COMPLETE)) {
                         DEBUG_INF("Bytes have been sent");
                         test_step++;
@@ -148,7 +150,7 @@ int main(void) {
              * receiving bytes. */
             case 3:
                 DEBUG_INF("----- STEP 3 -----");
-                if (num_attempts < 3) {
+                if (num_attempts < max_num_attemps) {
                     if (EventManager_poll_event(EVT_UART_TEST_RX_COMPLETE)) {
                         DEBUG_INF("Bytes have been received");
                         test_step++;

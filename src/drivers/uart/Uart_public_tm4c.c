@@ -379,18 +379,22 @@ bool Uart_get_events_for_device(
         case UART_DEVICE_ID_CAM:
             *p_tx_event_out = EVT_UART_CAM_TX_COMPLETE;
             *p_rx_event_out = EVT_UART_CAM_RX_COMPLETE;
+            break;
         case UART_DEVICE_ID_GNSS:
             *p_tx_event_out = EVT_UART_GNSS_TX_COMPLETE;
             *p_rx_event_out = EVT_UART_GNSS_RX_COMPLETE;
+            break;
         case UART_DEVICE_ID_EPS:
             *p_tx_event_out = EVT_UART_EPS_TX_COMPLETE;
             *p_rx_event_out = EVT_UART_EPS_RX_COMPLETE;
+            break;
         case UART_DEVICE_ID_TEST:
             *p_tx_event_out = EVT_UART_TEST_TX_COMPLETE;
             *p_rx_event_out = EVT_UART_TEST_RX_COMPLETE;
-        default:
-            /* device ID is wrong, error */
             break;
+        default:
+            DEBUG_ERR("Unexpected device ID");
+            return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
 
     return true;
