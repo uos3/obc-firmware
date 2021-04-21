@@ -117,6 +117,7 @@ int main(void) {
                     }
                     else {
                         num_attempts++;
+                        break;
                     }
                 }
                 else {
@@ -155,6 +156,7 @@ int main(void) {
                     }
                     else {
                         num_attempts++;
+                        break;
                     }
                 }
                 else {
