@@ -216,8 +216,6 @@ int main(void) {
         return 1;
     }
     #endif
-    free(send_data);
-    free(recv_data);
 
     /* Return 0 if no errors occured up to this point. */
     return 0;

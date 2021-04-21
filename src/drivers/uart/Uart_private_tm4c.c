@@ -125,22 +125,22 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
     {
         /* UART ID 3 (TEST) */
         SYSCTL_PERIPH_GPIOC,
-        SYSCTL_PERIPH_UART4,
+        SYSCTL_PERIPH_UART1,
         GPIO_PORTC_BASE,
-        UART4_BASE,
-        GPIO_PC4_U4RX,
-        GPIO_PC5_U4TX,
+        UART1_BASE,
+        GPIO_PC4_U1RX,
+        GPIO_PC5_U1TX,
         GPIO_PINC4, /* use tivaware gpio not driver */
         GPIO_PINC5,
         GPIO_PIN_4,
         GPIO_PIN_5,
-        UDMA_CH19_UART4TX, /* TODO: Check TI channel assignments */
-        UDMA_CH18_UART4RX,
+        UDMA_CHANNEL_UART1TX, /* TODO: Check TI channel assignments */
+        UDMA_CHANNEL_UART1RX,
         UART_STATUS_NONE,
         UART_STATUS_NONE,
         EVT_UART_NONE,
         UDMA_MODE_STOP,
-        INT_UART4,
+        INT_UART1,
         9600,
         false
     },
