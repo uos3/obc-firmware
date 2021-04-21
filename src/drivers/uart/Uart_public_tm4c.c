@@ -178,8 +178,6 @@ ErrorCode Uart_send_bytes(
     uint8_t *p_data_in, 
     uint32_t length_in
 ) {
-    void *src_address;
-    void *dst_address;
 
     /* Check that the ID number of the UART is acceptable, return an error
      * if not. */
@@ -190,9 +188,6 @@ ErrorCode Uart_send_bytes(
 
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
-
-    src_address = &p_data_in;
-    dst_address = &p_uart_device->gpio_pin_tx;
 
     if (!p_uart_device->initialised) {
         DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
@@ -214,8 +209,8 @@ ErrorCode Uart_send_bytes(
     uDMAChannelTransferSet(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
-        src_address,
-        dst_address, /* TODO: Check this, and in rx */
+        (void *)p_data_in,
+        (void *)p_uart_device->gpio_pin_tx, /* TODO: Check this, and in rx */
         length_in
     );
 
@@ -226,24 +221,19 @@ ErrorCode Uart_send_bytes(
 
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
-    #if 0
-    UARTIntDisable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
-    UARTIntClear(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
     UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
-    #endif
-    IntEnable(p_uart_device->uart_base_int);
 
     if (uDMAErrorStatusGet() != 0) {
         DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
         return UDMA_ERROR_TRANSFER_FAILED;
     }
 
-    Event *p_uart_event_tx;
-    Event *p_uart_event_rx;
-    if (!Uart_get_events_for_device(uart_id_in, p_uart_event_tx, p_uart_event_rx)) {
+    Event uart_event_tx;
+    Event uart_event_rx;
+    if (!Uart_get_events_for_device(uart_id_in, &uart_event_tx, &uart_event_rx)) {
         return UART_ERROR_EVENTS_FAILED;
     }
-    p_uart_device->uart_event = p_uart_event_tx;
+    p_uart_device->uart_event = uart_event_tx;
 
     return ERROR_NONE;
 }

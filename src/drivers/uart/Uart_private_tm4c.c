@@ -58,6 +58,7 @@
 #include "inc/hw_memmap.h"
 #include "driverlib/udma.h"
 #include "inc/hw_types.h"
+#include "inc/hw_uart.h"
 #include "driverlib/interrupt.h"
 
 /* -------------------------------------------------------------------------   
@@ -75,8 +76,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PA1_U0TX, /* WAS GPIO_PA1_U0TX - RAISED AN ERROR */
         GPIO_PINA0,
         GPIO_PINA1,
-        GPIO_PIN_0,
-        GPIO_PIN_1,
+        (UART0_BASE + UART_O_DR),
+        (UART0_BASE + UART_O_DR),
         UDMA_CHANNEL_UART0TX,
         UDMA_CHANNEL_UART0RX,
         UART_STATUS_NONE,
@@ -98,8 +99,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PC7_U3TX, /* GPIO_PC7_U3TX */
         GPIO_PINC6,
         GPIO_PINC7,
-        GPIO_PIN_6,
-        GPIO_PIN_7,
+        (UART3_BASE + UART_O_DR),
+        (UART3_BASE + UART_O_DR),
         UDMA_CHANNEL_UART1TX,
         UDMA_CHANNEL_UART1RX,
         UART_STATUS_NONE,
@@ -121,8 +122,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PE1_U7TX, /* GPIO_PE1_U7TX */
         GPIO_PINE0,
         GPIO_PINE1,
-        GPIO_PIN_0,
-        GPIO_PIN_1,
+        (UART7_BASE + UART_O_DR),
+        (UART7_BASE + UART_O_DR),
         UDMA_CH1_UART2TX, /* TODO: Check TI channel assignments */
         UDMA_CH0_UART2RX,
         UART_STATUS_NONE,
@@ -144,8 +145,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PC5_U1TX,
         GPIO_PINC4, /* use tivaware gpio not driver */
         GPIO_PINC5,
-        GPIO_PIN_4,
-        GPIO_PIN_5,
+        (UART1_BASE + UART_O_DR),
+        (UART1_BASE + UART_O_DR),
         UDMA_CHANNEL_UART1TX, /* TODO: Check TI channel assignments */
         UDMA_CHANNEL_UART1RX,
         UART_STATUS_NONE,
