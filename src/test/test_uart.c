@@ -55,7 +55,7 @@ int main(void) {
     DEBUG_INF(" ===== Uart test =====");
 
     /* Initialise the UART devices. */
-    if (Uart_init_specific(UART_DEVICE_ID_GNSS) != ERROR_NONE) {
+    if (Uart_init_specific(UART_DEVICE_ID_TEST) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the UART devices.");
         Debug_exit(1);
         return 1;
@@ -77,7 +77,7 @@ int main(void) {
             /* Step 0 is to send the bytes */
             case 0:
                 DEBUG_INF("----- STEP 0 -----");
-                if (Uart_send_bytes(UART_DEVICE_ID_GNSS, send_data, data_size) != ERROR_NONE) {
+                if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
                     DEBUG_ERR("Failed to send bytes");
                     Debug_exit(1);
                     return 1;
@@ -97,7 +97,7 @@ int main(void) {
             case 1:
                 DEBUG_INF("----- STEP 1 -----");
                 if (num_attempts < max_num_attemps) {
-                    if (EventManager_poll_event(EVT_UART_GNSS_TX_COMPLETE)) {
+                    if (EventManager_poll_event(EVT_UART_TEST_TX_COMPLETE)) {
                         DEBUG_INF("Bytes have been sent");
                         test_step++;
                         break;
@@ -120,7 +120,7 @@ int main(void) {
             /* Step 2 is to receive the bytes */
             case 2:
                 DEBUG_INF("----- STEP 2 -----");
-                if (Uart_recv_bytes(UART_DEVICE_ID_GNSS, recv_data, data_size) != ERROR_NONE) {
+                if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
@@ -134,7 +134,7 @@ int main(void) {
             case 3:
                 DEBUG_INF("----- STEP 3 -----");
                 if (num_attempts < max_num_attemps) {
-                    if (EventManager_poll_event(EVT_UART_GNSS_RX_COMPLETE)) {
+                    if (EventManager_poll_event(EVT_UART_TEST_RX_COMPLETE)) {
                         DEBUG_INF("Bytes have been received");
                         test_step++;
                         break;
