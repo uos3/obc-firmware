@@ -305,11 +305,10 @@ void Udma_service_irq(
         p_uart_device->uart_base, true
     );
 
-    if (uart_int == UART_INT_TX | UART_INT_DMATX) {
+    if (uart_int == UART_INT_TX | UART_INT_DMATX | UART_INT_RX | UART_INT_DMARX) {
         /* Clear any pending UART status. No UART interrupts should be enabled,
          * as both RX and TX are using uDMA. */
-        UARTIntClear(p_uart_device->uart_base, UART_INT_TX);
-        UARTIntClear(p_uart_device->uart_base, UART_INT_DMATX);
+        UARTIntClear(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX | UART_INT_RX | UART_INT_DMARX);
 
         /* Check the uDMA control table to check that the transfer is complete */
         p_uart_device->udma_mode
@@ -326,26 +325,6 @@ void Udma_service_irq(
         }
     }
 
-    if (uart_int == UART_INT_RX | UART_INT_DMARX) {
-        /* Clear any pending UART status. No UART interrupts should be enabled,
-         * as both RX and TX are using uDMA. */
-        UARTIntClear(p_uart_device->uart_base, UART_INT_RX);
-        UARTIntClear(p_uart_device->uart_base, UART_INT_DMARX);
-
-        /* Check the uDMA control table to check that the transfer is complete */
-        p_uart_device->udma_mode
-        =
-        uDMAChannelModeGet(
-            p_uart_device->udma_channel_rx | UDMA_PRI_SELECT
-        );
-
-        /* The transfer is complete if the RX mode is "UDMA_MODE_STOP", so
-         * raise the event and set the RX status as complete. */
-        if (p_uart_device->udma_mode == UDMA_MODE_STOP) {
-            EventManager_raise_event(complete_event_in);
-            p_uart_device->uart_status_rx = UART_STATUS_COMPLETE;
-        }
-    }
     /* If this point has been reached with no error, return ERROR_NONE. */
     return ERROR_NONE;
 }

@@ -224,7 +224,7 @@ ErrorCode Uart_send_bytes(
     uDMAChannelTransferSet(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
-        (void *)p_data_in,
+        &p_data_in,
         (void *)p_uart_device->gpio_pin_tx, /* TODO: Check this, and in rx */
         length_in
     );
@@ -264,9 +264,6 @@ ErrorCode Uart_recv_bytes(
 
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
-
-    src_address = &p_uart_device->gpio_pin_rx;
-    dst_address = &p_data_out;
 
     if (!p_uart_device->initialised) {
         DEBUG_ERR("Attempted to send bytes while uDMA not initialised.");
@@ -309,8 +306,8 @@ ErrorCode Uart_recv_bytes(
     uDMAChannelTransferSet(
         UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
-        src_address,
-        dst_address,
+        (void *)p_uart_device->gpio_pin_rx,
+        &p_data_out,
         length_in
     );
 
