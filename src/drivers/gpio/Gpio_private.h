@@ -56,7 +56,7 @@ extern Gpio GPIO;
 
 
 
-Gpio_Module GPIO_PINS[GPIO_MAX_NUM_GPIOS];
+extern Gpio_Module GPIO_PINS[GPIO_MAX_NUM_GPIOS];
 
 
 
