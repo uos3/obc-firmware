@@ -17,19 +17,6 @@
  * DEFINES
  * ------------------------------------------------------------------------- */
 
-/* TODO: The values below, when not defined here, raise an error despite being
- * defined in driverlib/pin_map.h */
-#if 0
-#define GPIO_PA0_U0RX (0x00000001)
-#define GPIO_PA1_U0TX (0x00000401)
-#define GPIO_PC6_U3RX (0x00021801)
-#define GPIO_PC7_U3TX (0x00021C01)
-#define GPIO_PE0_U7RX (0x00040001)
-#define GPIO_PE1_U7TX (0x00040401)
-#define GPIO_PC4_U4RX (0x00021001)
-#define GPIO_PC5_U4TX (0x00021401)
-#endif
-
 /* -------------------------------------------------------------------------   
  * INCLUDES
  * ------------------------------------------------------------------------- */
@@ -138,22 +125,22 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
     {
         /* UART ID 3 (TEST) */
         SYSCTL_PERIPH_GPIOC,
-        SYSCTL_PERIPH_UART1,
+        SYSCTL_PERIPH_UART4,
         GPIO_PORTC_BASE,
-        UART1_BASE,
-        GPIO_PC4_U1RX,
-        GPIO_PC5_U1TX,
+        UART4_BASE,
+        GPIO_PC4_U4RX,
+        GPIO_PC5_U4TX,
         GPIO_PINC4, /* use tivaware gpio not driver */
         GPIO_PINC5,
         GPIO_PIN_4,
         GPIO_PIN_5,
-        UDMA_CHANNEL_UART1TX, /* TODO: Check TI channel assignments */
-        UDMA_CHANNEL_UART1RX,
+        UDMA_CH19_UART4TX, /* TODO: Check TI channel assignments */
+        UDMA_CH18_UART4RX,
         UART_STATUS_NONE,
         UART_STATUS_NONE,
         EVT_UART_NONE,
         UDMA_MODE_STOP,
-        INT_UART1,
+        INT_UART4,
         9600,
         false
     },
