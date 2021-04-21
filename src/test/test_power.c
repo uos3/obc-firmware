@@ -45,7 +45,7 @@ int main(void) {
     bool run_loop = true;
     uint8_t test_step = 0;
     Event timeout_event;
-    double timeout_duration_s = CFG.POWER_TASK_TIMER_DURATION_S * 1.5;
+    double timeout_duration_s = CFG.POWER_TASK_TIMER_DURATION_S * 1.1;
     bool timeout_passed;
     bool check_wfi = true;
 
@@ -104,8 +104,10 @@ int main(void) {
 
         /* ---- DRIVERS ---- */
         
-        if (!Uart_step()) {
-
+        error = Uart_step();
+        if (error != ERROR_NONE) {
+            DEBUG_ERR("Uart_step() failed! Error = 0x%04X", error);
+            Debug_exit(1);
         }
 
         /* ---- COMPONENTS ---- */
@@ -130,21 +132,21 @@ int main(void) {
 
         /* ---- APPLICATIONS ---- */
 
-        if (!OpModeManager_step()) {
-            char error_chain[64] = {0};
-            Kernel_error_to_string(&DP.OPMODEMANAGER.ERROR, error_chain);
-            DEBUG_ERR(
-                "OpModeManager_step() failed! Error chain = %s",
-                error_chain
-            );
-            Debug_exit(1);
-        }
-
         if (!Power_step()) {
             char error_chain[64] = {0};
             Kernel_error_to_string(&DP.POWER.ERROR, error_chain);
             DEBUG_ERR(
                 "Power_step() failed! Error chain = %s",
+                error_chain
+            );
+            Debug_exit(1);
+        }
+
+        if (!OpModeManager_step()) {
+            char error_chain[64] = {0};
+            Kernel_error_to_string(&DP.OPMODEMANAGER.ERROR, error_chain);
+            DEBUG_ERR(
+                "OpModeManager_step() failed! Error chain = %s",
                 error_chain
             );
             Debug_exit(1);
