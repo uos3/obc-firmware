@@ -36,32 +36,18 @@
 int main(void) {
     uint8_t i;
     uint32_t data_size;
-    uint8_t send_data[8];
-    uint8_t recv_data[8];
+    uint8_t *send_data;
+    uint8_t *recv_data;
     uint8_t test_step;
     uint8_t num_attempts;
 
-    data_size = 64;
+    data_size = 8;
     test_step = 0;
     num_attempts = 0;
 
-    send_data[0] = 0;
-    send_data[1] = 1;
-    send_data[2] = 2;
-    send_data[3] = 3;
-    send_data[4] = 4;
-    send_data[5] = 5;
-    send_data[6] = 6;
-    send_data[7] = 7;
+    send_data = 0;
 
-    recv_data[0] = 10;
-    recv_data[1] = 11;
-    recv_data[2] = 12;
-    recv_data[3] = 13;
-    recv_data[4] = 14;
-    recv_data[5] = 15;
-    recv_data[6] = 16;
-    recv_data[7] = 17;
+    recv_data = 10;
 
 
     Kernel_init_critical_modules();
