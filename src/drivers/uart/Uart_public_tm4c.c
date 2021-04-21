@@ -224,7 +224,7 @@ ErrorCode Uart_send_bytes(
     uDMAChannelTransferSet(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
-        &p_data_in,
+        (void *)p_data_in,
         (void *)p_uart_device->gpio_pin_tx, /* TODO: Check this, and in rx */
         length_in
     );
@@ -307,7 +307,7 @@ ErrorCode Uart_recv_bytes(
         UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
         (void *)p_uart_device->gpio_pin_rx,
-        &p_data_out,
+        (void *)p_data_out,
         length_in
     );
 
