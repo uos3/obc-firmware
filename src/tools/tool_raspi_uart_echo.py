@@ -9,17 +9,17 @@ Raspberry Pi UART communication tool for UART uDMA functional test.
 import serial
 from time import sleep
 
-ser = serial.Serial("/dev/ttyS0", 56000) #open port and set baud rate
+ser = serial.Serial("/dev/ttyUSB0", 9600) #open port and set baud rate
 
 count = 0
 
 while True:
-  print("Waiting for bytes to receive\n")
-  received_data = ser.read() #read serial port
-  sleep(0.03)
-  data_left = ser.inWaiting() #check for remaining bytes
-  received_data += ser.read(data_left)
-  print("\nDATA RECEIVED:\n")
-  print(received_data) #print received data 
-  ser.write(received_data) #transmit data back
-  count += 1
+    print("Waiting for bytes to receive\n")
+    received_data = ser.read() #read serial port
+    sleep(0.03)
+    data_left = ser.inWaiting() #check for remaining bytes
+    received_data += ser.read(data_left)
+    print("\nDATA RECEIVED:\n")
+    print(received_data) #print received data 
+    ser.write(received_data) #transmit data back
+    count += 1

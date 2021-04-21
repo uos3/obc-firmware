@@ -36,12 +36,14 @@
 
 /* External */
 #include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "inc/hw_memmap.h"
-#include "driverlib/udma.h"
 #include "driverlib/uart.h"
+#include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 #include "inc/tm4c123gh6pm.h"
+#include "inc/hw_memmap.h"
+#include "driverlib/udma.h"
+#include "inc/hw_types.h"
+#include "inc/hw_uart.h"
 #include "driverlib/interrupt.h"
 
 /* -------------------------------------------------------------------------   
@@ -217,7 +219,7 @@ ErrorCode Uart_send_bytes(
      * so will be kept in for now. */
     uDMAChannelControlSet(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
-        UDMA_SIZE_8 | UDMA_SRC_INC_NONE | UDMA_DST_INC_8 | UDMA_ARB_4
+        UDMA_SIZE_8 | UDMA_SRC_INC_8 | UDMA_DST_INC_NONE | UDMA_ARB_4
     );
     
     /* Set the transfer addresses, size, and mode for TX */
@@ -225,7 +227,7 @@ ErrorCode Uart_send_bytes(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
         (void *)p_data_in,
-        (void *)p_uart_device->gpio_pin_tx, /* TODO: Check this, and in rx */
+        (void *)(p_uart_device->uart_base + UART_O_DR), /* TODO: Check this, and in rx */
         length_in
     );
 
@@ -271,7 +273,7 @@ ErrorCode Uart_recv_bytes(
     }
 
     IntEnable(p_uart_device->uart_base_int);
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
 
     switch(uart_id_in) {
         case UART_DEVICE_ID_CAM:
@@ -292,21 +294,21 @@ ErrorCode Uart_recv_bytes(
             break;
     }
 
-    uDMAIntRegister(p_uart_device->udma_channel_tx, uDMAErrorHandler);
+    uDMAIntRegister(p_uart_device->udma_channel_rx, uDMAErrorHandler);
 
     /* Configure the control parameters for the UART RX channel.
      * UDMA_ARB_4 to match the FIFO trigger threshold. 
      * TODO: make this the device specific rx channel */
     uDMAChannelControlSet(
-        UDMA_CHANNEL_UART1RX | UDMA_PRI_SELECT,
-        UDMA_SIZE_8 | UDMA_SRC_INC_8 | UDMA_DST_INC_NONE | UDMA_ARB_4
+        p_uart_device->udma_channel_rx | UDMA_PRI_SELECT,
+        UDMA_SIZE_8 | UDMA_SRC_INC_NONE | UDMA_DST_INC_8 | UDMA_ARB_4
     );
     
     /* Set the transfer addresses, size, and mode for RX */
     uDMAChannelTransferSet(
-        UDMA_CHANNEL_UART0TX | UDMA_PRI_SELECT,
+        p_uart_device->udma_channel_rx | UDMA_PRI_SELECT,
         UDMA_MODE_AUTO,
-        (void *)p_uart_device->gpio_pin_rx,
+        (void *)(p_uart_device->uart_base + UART_O_DR),
         (void *)p_data_out,
         length_in
     );

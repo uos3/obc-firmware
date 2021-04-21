@@ -76,8 +76,8 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PA1_U0TX, /* WAS GPIO_PA1_U0TX - RAISED AN ERROR */
         GPIO_PINA0,
         GPIO_PINA1,
-        (UART0_BASE + UART_O_DR),
-        (UART0_BASE + UART_O_DR),
+        GPIO_PIN_0,
+        GPIO_PIN_1,
         UDMA_CHANNEL_UART0TX,
         UDMA_CHANNEL_UART0RX,
         UART_STATUS_NONE,

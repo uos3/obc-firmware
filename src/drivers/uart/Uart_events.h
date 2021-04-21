@@ -32,62 +32,62 @@
  * UART or SPI.
  * 
  */
-#define EVT_UART_NONE ((Event)(MOD_ID_EVENTMANAGER | 0))
+#define EVT_UART_NONE ((Event)(MOD_ID_UART | 0))
 
 /**
  * @brief Event associated with the uDMA completing a transfer over either
  * UART or SPI.
  * 
  */
-#define EVT_UART_GNSS_RX_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 1))
+#define EVT_UART_GNSS_RX_COMPLETE ((Event)(MOD_ID_UART | 1))
 
 /**
  * @brief Event associated with the uDMA completing a transfer over either
  * UART or SPI.
  * 
  */
-#define EVT_UART_GNSS_TX_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 2))
+#define EVT_UART_GNSS_TX_COMPLETE ((Event)(MOD_ID_UART | 2))
 
 /**
  * @brief Event associated with the uDMA completing a transfer over either
  * UART or SPI.
  * 
  */
-#define EVT_UART_CAM_RX_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 3))
+#define EVT_UART_CAM_RX_COMPLETE ((Event)(MOD_ID_UART | 3))
 
 /**
  * @brief Event associated with the uDMA completing a transfer over either
  * UART or SPI.
  * 
  */
-#define EVT_UART_CAM_TX_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 4))
+#define EVT_UART_CAM_TX_COMPLETE ((Event)(MOD_ID_UART | 4))
 
 /**
  * @brief Event associated with the uDMA completing a transfer over either
  * UART or SPI.
  * 
  */
-#define EVT_UART_EPS_RX_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 5))
+#define EVT_UART_EPS_RX_COMPLETE ((Event)(MOD_ID_UART | 5))
 
 /**
  * @brief Event associated with the uDMA completing a transfer over either
  * UART or SPI.
  * 
  */
-#define EVT_UART_EPS_TX_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 6))
+#define EVT_UART_EPS_TX_COMPLETE ((Event)(MOD_ID_UART | 6))
 
 /**
  * @brief Event associated with the uDMA completing a transfer over either
  * UART or SPI.
  * 
  */
-#define EVT_UART_TEST_RX_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 7))
+#define EVT_UART_TEST_RX_COMPLETE ((Event)(MOD_ID_UART | 7))
 
 /**
  * @brief Event associated with the uDMA completing a transfer over either
  * UART or SPI.
  * 
  */
-#define EVT_UART_TEST_TX_COMPLETE ((Event)(MOD_ID_EVENTMANAGER | 8))
+#define EVT_UART_TEST_TX_COMPLETE ((Event)(MOD_ID_UART | 8))
 
 #endif /* H_UART_EVENTS_H */

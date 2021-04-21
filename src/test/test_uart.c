@@ -35,9 +35,9 @@
 
 int main(void) {
     uint8_t i;
-    uint32_t data_size;
-    uint8_t send_data[1];
-    uint8_t recv_data[1];
+    uint32_t data_size = 10;
+    uint8_t send_data[10] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
+    uint8_t recv_data[10] = {0};
     uint8_t test_step;
     uint8_t num_attempts;
     uint8_t max_num_attemps;
@@ -45,13 +45,9 @@ int main(void) {
 
 
     test_complete = false;
-    data_size = 1;
     test_step = 0;
     num_attempts = 0;
     max_num_attemps = 10;
-
-    send_data[0] = 14;
-    recv_data[0] = 10;
 
 
     Kernel_init_critical_modules();
@@ -162,7 +158,8 @@ int main(void) {
                 DEBUG_INF("----- STEP 4 -----");
                 for (i = 0; i < data_size; ++i) {
                     if (recv_data[i] != send_data[i]) {
-                        DEBUG_INF("Send and recv data not equal");
+                        DEBUG_ERR("Send and recv data not equal, test failed");
+                        Debug_exit(1);
                     }
                     DEBUG_DBG("Element %d of recv_data is %d", i, recv_data[i]);
                     DEBUG_DBG("Element %d of sent data was %d", i, send_data[i]);
