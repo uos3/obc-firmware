@@ -279,10 +279,7 @@ ErrorCode Uart_recv_bytes(
     #endif
     IntEnable(p_uart_device->uart_base_int);
 
-    if (uDMAErrorStatusGet() != 0) {
-        DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
-        return UDMA_ERROR_TRANSFER_FAILED;
-    }
+    /* FIXME: Check uDMAErrorStatusGet */
 
     Event *p_uart_event_tx;
     Event *p_uart_event_rx;
@@ -292,6 +289,17 @@ ErrorCode Uart_recv_bytes(
     p_uart_device->uart_event = p_uart_event_rx;
 
     return ERROR_NONE;
+}
+
+void uDMAErrorHandler(void) {
+    uint32_t status;
+
+    status = uDMAErrorStatusGet();
+
+    if (status) {
+        uDMAErrorStatusClear();
+        DEBUG_WRN("uDMA Error Received. Clearing");
+    }
 }
 
 ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {

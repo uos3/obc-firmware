@@ -186,6 +186,8 @@ bool Uart_get_events_for_device(
     Event *p_rx_event_out
 );
 
+extern void uDMAErrorHandler(void);
+
 
 /* -------------------------------------------------------------------------   
  * TODO: FUNCTIONS BELOW ARE TEMPORARY - WILL BE REPLACED BY NEW INTERFACE
