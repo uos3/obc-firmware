@@ -86,7 +86,7 @@ int main(void) {
             /* Step 0 is to send the bytes */
             case 0:
                 DEBUG_INF("----- STEP 0 -----");
-                if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
+                if (Uart_send_bytes(UART_DEVICE_ID_TEST, *send_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                     DEBUG_ERR("Failed to send bytes");
                     free(send_data);
@@ -135,7 +135,7 @@ int main(void) {
             /* Step 2 is to receive the bytes */
             case 2:
                 DEBUG_INF("----- STEP 2 -----");
-                if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
+                if (Uart_recv_bytes(UART_DEVICE_ID_TEST, *recv_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
