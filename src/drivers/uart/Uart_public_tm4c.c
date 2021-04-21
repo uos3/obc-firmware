@@ -205,10 +205,7 @@ ErrorCode Uart_send_bytes(
      * TODO: Check this, and in rx */
     UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
 
-    if (uDMAErrorStatusGet() != 0) {
-        DEBUG_ERR("uDMAErrorStatusGet returned a nonspecified non-zero error");
-        return UDMA_ERROR_TRANSFER_FAILED;
-    }
+    /* FIXME: uDMAErrorStatusGet */
 
     Event uart_event_tx;
     Event uart_event_rx;
