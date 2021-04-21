@@ -122,7 +122,7 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     /* Initialise the UART peripheral */
     if (!SysCtlPeripheralReady(p_uart_device->uart_peripheral)) {
         SysCtlPeripheralReset(p_uart_device->uart_peripheral);
-        SysCtlPeripheralReady(p_uart_device->uart_peripheral);
+        SysCtlPeripheralEnable(p_uart_device->uart_peripheral);
     }
 
     for (int i = 0; i <= UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {

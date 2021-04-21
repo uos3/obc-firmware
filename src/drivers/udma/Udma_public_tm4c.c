@@ -61,14 +61,8 @@ ErrorCode Udma_init(void) {
         SysCtlPeripheralEnable(SYSCTL_PERIPH_UDMA);
     }
 
-    for (int i = 0; i < UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
-            if (SysCtlPeripheralReady(SYSCTL_PERIPH_UDMA)) {
-                /* If the peripheral is ready, break out of the loop */
-                break;
-            }
-            if (i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
-                /* If the maximium number of peripheral ready checks has been
-                 * reached, raise an error. */
+    for (int i = 0; i <= UART_MAX_NUM_PERIPHERAL_READY_CHECKS; ++i) {
+            if (!SysCtlPeripheralReady(SYSCTL_PERIPH_UDMA) && i >= UART_MAX_NUM_PERIPHERAL_READY_CHECKS) {
                 DEBUG_ERR("Failed to enable uDMA peripheral");
                 return UDMA_ERROR_PERIPHERAL_NOT_READY;
             }
