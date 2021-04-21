@@ -210,7 +210,23 @@ ErrorCode Uart_send_bytes(
 
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
+    IntEnable(p_uart_device->uart_base_int);
     UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
+
+    switch(uart_id_in) {
+        case UART_DEVICE_ID_CAM:
+            UARTIntRegister(p_uart_device->uart_base, Uart_cam_tx_int_handler);
+            break;
+        case UART_DEVICE_ID_GNSS:
+            UARTIntRegister(p_uart_device->uart_base, Uart_gnss_tx_int_handler);
+            break;
+        case UART_DEVICE_ID_EPS:
+            UARTIntRegister(p_uart_device->uart_base, Uart_eps_tx_int_handler);
+            break;
+        case UART_DEVICE_ID_TEST:
+            UARTIntRegister(p_uart_device->uart_base, Uart_test_tx_int_handler);
+            break;
+    }
 
     /* FIXME: uDMAErrorStatusGet */
 
@@ -281,7 +297,24 @@ ErrorCode Uart_recv_bytes(
     UARTIntClear(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
     UARTIntEnable(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
     #endif
+    
     IntEnable(p_uart_device->uart_base_int);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
+
+    switch(uart_id_in) {
+        case UART_DEVICE_ID_CAM:
+            UARTIntRegister(p_uart_device->uart_base, Uart_cam_rx_int_handler);
+            break;
+        case UART_DEVICE_ID_GNSS:
+            UARTIntRegister(p_uart_device->uart_base, Uart_gnss_rx_int_handler);
+            break;
+        case UART_DEVICE_ID_EPS:
+            UARTIntRegister(p_uart_device->uart_base, Uart_eps_rx_int_handler);
+            break;
+        case UART_DEVICE_ID_TEST:
+            UARTIntRegister(p_uart_device->uart_base, Uart_test_rx_int_handler);
+            break;
+    }
 
     /* FIXME: Check uDMAErrorStatusGet */
 
