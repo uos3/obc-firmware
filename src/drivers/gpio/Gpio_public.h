@@ -89,6 +89,8 @@ typedef enum _Gpio_Mode {
 
     GPIO_MODE_UART = 2,
 
+    GPIO_MODE_NONE = 3,
+
 } Gpio_Mode;
 
 /* -------------------------------------------------------------------------   
@@ -165,7 +167,7 @@ ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out);
  * @param interrupt_callback Pointer to the function which is called in the interrupt.
  * @return ErrorCode Return code.
  */
-ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interrupt_callback(void));
+ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void (*interrupt_callback)(void));
 
 /**
  * @brief Removes the interrupt from a specified GPIO pin.
@@ -185,5 +187,16 @@ ErrorCode Gpio_reset_interrupt(GPIO_PIN_INDEX gpio_id_number);
  * @return ErrorCode Return code.
  */
 ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, GPIO_PIN_INDEX gpio_pin_lower_in, GPIO_PIN_INDEX gpio_pin_upper_in);
+
+/**
+ * @brief Interrupt handlers for the GPIO
+ * 
+ */
+void Gpio_port_a_int_handler(void);
+void Gpio_port_b_int_handler(void);
+void Gpio_port_c_int_handler(void);
+void Gpio_port_d_int_handler(void);
+void Gpio_port_e_int_handler(void);
+void Gpio_port_f_int_handler(void);
 
 #endif /* H_GPIO_PUBLIC_H */

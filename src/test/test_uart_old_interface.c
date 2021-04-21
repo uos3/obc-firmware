@@ -1,12 +1,12 @@
 /**
- * @file test_uart.c
+ * @file test_uart_old_interface.c
  * @author Leon Galanakis (leongalanakis@gmail.com)
- * @brief uDMA UART test
+ * @brief UART test with old interface (no uDMA)
  * 
  * 
  * 
  * @version 0.1
- * @date 2021-03-16
+ * @date 2021-04-21
  * 
  * @copyright Copyright (c) 2021
  */
@@ -36,18 +36,32 @@
 int main(void) {
     uint8_t i;
     uint32_t data_size;
-    uint8_t *send_data;
-    uint8_t *recv_data;
+    uint8_t send_data[8];
+    uint8_t recv_data[8];
     uint8_t test_step;
     uint8_t num_attempts;
 
-    data_size = 1;
+    data_size = 64;
     test_step = 0;
     num_attempts = 0;
 
-    send_data = 14;
+    send_data[0] = 0;
+    send_data[1] = 1;
+    send_data[2] = 2;
+    send_data[3] = 3;
+    send_data[4] = 4;
+    send_data[5] = 5;
+    send_data[6] = 6;
+    send_data[7] = 7;
 
-    recv_data = 10;
+    recv_data[0] = 10;
+    recv_data[1] = 11;
+    recv_data[2] = 12;
+    recv_data[3] = 13;
+    recv_data[4] = 14;
+    recv_data[5] = 15;
+    recv_data[6] = 16;
+    recv_data[7] = 17;
 
 
     Kernel_init_critical_modules();
@@ -60,18 +74,12 @@ int main(void) {
         Debug_exit(1);
     }
 
-    /* Initialise the uDMA */
-    if (Udma_init() != ERROR_NONE) {
-        DEBUG_ERR("Failed to initialise the uDMA.");
-        Debug_exit(1);
-    }
-
     /* Main loop */
     while (true) {
         switch(test_step) {
             /* Step 0 is to send the bytes */
             case 0:
-                if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
+                if (Uart_put_buffer(UART_DEVICE_ID_TEST, 8, send_data) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
@@ -118,18 +126,20 @@ int main(void) {
             /* Step 3 is to check if the correct event has been raised after
              * receiving bytes. */
             case 3:
-                if (num_attempts <= 3) {
-                    if (EventManager_poll_event(EVT_UART_TEST_RX_COMPLETE)) {
-                        DEBUG_INF("Bytes have been received");
-                    }
-                    else {
-                        num_attempts++;
-                    }
+                if (EventManager_poll_event(EVT_UART_TEST_RX_COMPLETE)) {
+                    DEBUG_INF("Bytes have been received");
                 }
                 else {
-                    DEBUG_INF("RX Not complete after max num attempts. Exiting.");
-                    Debug_exit(1);
-                    break;
+                    if (num_attempts <= 3) {
+                        DEBUG_INF("RX Complete event has NOT been raised. Retrying");
+                        num_attempts++;
+                        break;
+                    }
+                    else {
+                        DEBUG_INF("RX Not complete after max num attempts. Exiting.");
+                        Debug_exit(1);
+                        break;
+                    }
                 }
                 num_attempts = 0;
                 test_step++;
@@ -139,7 +149,11 @@ int main(void) {
             case 4:
                 for (i = 0; i < data_size; ++i) {
                     if (recv_data[i] != send_data[i]) {
-                        DEBUG_INF("Send and recv data not equal");
+                        DEBUG_INF(
+                            "%d from recvd data does not equal expected value of %d",
+                            recv_data[i],
+                            send_data[i]
+                        );
                         Debug_exit(1);
                     }
                 }
@@ -188,8 +202,6 @@ int main(void) {
         return 1;
     }
     #endif
-
-    Debug_exit(1);
 
     /* Return 0 if no errors occured up to this point. */
     return 0;

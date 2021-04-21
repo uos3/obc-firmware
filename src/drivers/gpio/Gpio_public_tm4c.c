@@ -94,14 +94,17 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
                     /* Configure the pin for use as GPIO input */
                     GPIOPinTypeGPIOInput(p_gpio_pin->port, p_gpio_pin->pin);
                     GPIOPadConfigSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+                    DEBUG_INF("GPIO Input pin initialised");
                     break;
                 
                 case GPIO_MODE_OUTPUT:
                     /* Configure the pin for use as GPIO output */
                     GPIOPinTypeGPIOOutput(p_gpio_pin->port, p_gpio_pin->pin);
+                    DEBUG_INF("GPIO Output pin initialised");
                     break;
                 case GPIO_MODE_UART:
                     GPIOPinTypeUART(p_gpio_pin->port, p_gpio_pin->pin);
+                    DEBUG_INF("GPIO UART pin initialised");
                     break;
                 
                 default:
@@ -148,8 +151,10 @@ ErrorCode Gpio_write(GPIO_PIN_INDEX gpio_id_number, uint8_t gpio_state_in) {
         case 0:
             GPIOPinWrite(p_gpio_pin->port, p_gpio_pin->pin, gpio_state_in);
             break;
+        default:
+            DEBUG_ERR("Incorrect gpio_state_in");
+            return GPIO_ERROR_INCORRECT_STATE_IN;
     }
-    
 
     return ERROR_NONE;
 }
@@ -169,12 +174,12 @@ ErrorCode Gpio_read(GPIO_PIN_INDEX gpio_id_number, uint8_t *p_gpio_value_out) {
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    p_gpio_value_out = GPIOPinRead(p_gpio_pin->port, p_gpio_pin->pin);
+    *p_gpio_value_out = (uint8_t)GPIOPinRead(p_gpio_pin->port, p_gpio_pin->pin);
 
     return ERROR_NONE;
 }
 
-static void Gpio_port_a_int_handler(void) {
+void Gpio_port_a_int_handler(void) {
     uint32_t status;
 
     /* Get the interrupt status of the GPIO */
@@ -189,7 +194,7 @@ static void Gpio_port_a_int_handler(void) {
     }
 }
 
-static void Gpio_port_b_int_handler(void) {
+void Gpio_port_b_int_handler(void) {
     uint32_t status;
 
     /* Get the interrupt status of the GPIO */
@@ -204,7 +209,7 @@ static void Gpio_port_b_int_handler(void) {
     }
 }
 
-static void Gpio_port_c_int_handler(void) {
+void Gpio_port_c_int_handler(void) {
     uint32_t status;
 
     /* Get the interrupt status of the GPIO */
@@ -219,7 +224,7 @@ static void Gpio_port_c_int_handler(void) {
     }
 }
 
-static void Gpio_port_d_int_handler(void) {
+void Gpio_port_d_int_handler(void) {
     uint32_t status;
 
     /* Get the interrupt status of the GPIO */
@@ -234,7 +239,7 @@ static void Gpio_port_d_int_handler(void) {
     }
 }
 
-static void Gpio_port_e_int_handler(void) {
+void Gpio_port_e_int_handler(void) {
     uint32_t status;
 
     /* Get the interrupt status of the GPIO */
@@ -249,9 +254,8 @@ static void Gpio_port_e_int_handler(void) {
     }
 }
 
-static void Gpio_port_f_int_handler(void) {
+void Gpio_port_f_int_handler(void) {
     uint32_t status;
-
     /* Get the interrupt status of the GPIO */
     status = GPIOIntStatus(GPIO_PORTF_BASE, true);
 
@@ -266,14 +270,17 @@ static void Gpio_port_f_int_handler(void) {
 
 ErrorCode Gpio_handle_interrupt(uint32_t gpio_int_status_in, GPIO_PIN_INDEX gpio_pin_lower_in, GPIO_PIN_INDEX gpio_pin_upper_in) {
     for (int i = gpio_pin_lower_in; i < gpio_pin_upper_in; ++i) {
-            if (gpio_int_status_in & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
-                /* Call the interrupt function pointer */
-                (*GPIO_PINS[i].int_function)();
-            }
+        if (gpio_int_status_in & GPIO_PINS[i].interrupt_pin && GPIO_PINS[i].int_function != NULL) {
+            /* Call the interrupt function pointer */
+            DEBUG_DBG("Calling interrupt function");
+            (*GPIO_PINS[i].int_function)();
+        }
     }
+
+    return ERROR_NONE;
 }
 
-ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interrupt_callback(void)) {
+ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void (*interrupt_callback)(void)) {
     Gpio_Module *p_gpio_pin = &GPIO_PINS[gpio_id_number];
 
     if (!p_gpio_pin->initialised) {
@@ -287,31 +294,37 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
         return GPIO_ERROR_EXCEEDED_NUM_GPIOS;
     }
 
-    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->interrupt_pin);
-    /* Set the interrupt type to rising edge interrupt */
     GPIOIntTypeSet(p_gpio_pin->port, p_gpio_pin->pin, GPIO_RISING_EDGE);
+    /* Set the interrupt type to rising edge interrupt */
 
     /* Set the interrupt function of the GPIO */
     p_gpio_pin->int_function = interrupt_callback;
 
+
     /* Check the port and call the appropriate function */
     switch (p_gpio_pin->port) {
         case GPIO_PORTA_BASE:
+            DEBUG_INF("Registering interrupt for port A");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_a_int_handler);
             break;
         case GPIO_PORTB_BASE:
+            DEBUG_INF("Registering interrupt for port B");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_b_int_handler);
             break;
         case GPIO_PORTC_BASE:
+            DEBUG_INF("Registering interrupt for port C");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_c_int_handler);
             break;
         case GPIO_PORTD_BASE:
+            DEBUG_INF("Registering interrupt for port D");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_d_int_handler);
             break;
         case GPIO_PORTE_BASE:
+            DEBUG_INF("Registering interrupt for port E");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_e_int_handler);
             break;
         case GPIO_PORTF_BASE:
+            DEBUG_INF("Registering interrupt for port F");
             GPIOIntRegister(p_gpio_pin->port, Gpio_port_f_int_handler);
             break;
         default:
@@ -319,6 +332,8 @@ ErrorCode Gpio_set_rising_interrupt(GPIO_PIN_INDEX gpio_id_number, void *interru
             return GPIO_ERROR_UNEXPECTED_PORT;
     }
 
+    GPIOIntEnable(p_gpio_pin->port, p_gpio_pin->interrupt_pin);
+    DEBUG_INF("GPIO rising interrupt has been set");
     return ERROR_NONE;
 }
 

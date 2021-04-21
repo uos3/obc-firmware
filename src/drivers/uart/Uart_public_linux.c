@@ -47,7 +47,7 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
 ErrorCode Uart_send_bytes(
     Uart_DeviceId uart_id_in,
     uint8_t *p_data_in, 
-    size_t length_in
+    uint32_t length_in
 ) {
     DEBUG_DBG("UART send bytes attempted when running on linux, ignoring.");
     return ERROR_NONE;
@@ -56,7 +56,7 @@ ErrorCode Uart_send_bytes(
 ErrorCode Uart_recv_bytes(
     Uart_DeviceId uart_id_in,
     uint8_t *p_data_out,
-    size_t length_in
+    uint32_t length_in
 ) {
     DEBUG_DBG("UART recv bytes attempted when running on linux, ignoring.");
     return ERROR_NONE;
