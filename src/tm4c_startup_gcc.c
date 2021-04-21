@@ -390,10 +390,10 @@ void debug_fault_handler(Debug_ContextStateFrame *p_frame) {
 static void
 IntDefaultHandler(void)
 {
-    //
-    // Go into an infinite loop.
-    //
-    while(1)
-    {
-    }
+    // Use a breakpoint so we can see this in debugging
+    #ifdef DEBUG_MODE 
+    __asm("BKPT");
+    #else
+    // Otherwise do nothing, don't want us to be broken here in flight
+    #endif
 }
