@@ -40,7 +40,9 @@ int main(void) {
     uint8_t *recv_data;
     uint8_t test_step;
     uint8_t num_attempts;
+    bool test_in_progress;
 
+    test_in_progress = true;
     data_size = 1;
     test_step = 0;
     num_attempts = 0;
@@ -140,14 +142,16 @@ int main(void) {
                 for (i = 0; i < data_size; ++i) {
                     if (recv_data[i] != send_data[i]) {
                         DEBUG_INF("Send and recv data not equal");
-                        Debug_exit(1);
                     }
+                    DEBUG_DBG("Element %d of recv_data is %d", i, recv_data[i]);
+                    DEBUG_DBG("Element %d of sent data was %d", i, s_data[i]);
                 }
                 /* Increment the step number and move on to next case */
                 test_step++;
                 break;
             default:
                 DEBUG_INF("Test complete");
+                test_in_progress = false;
         }
     }
 
