@@ -154,7 +154,13 @@ int main(void) {
         }
     }
 
-    EventManager_clear_all_events();
+    if (EventManager_clear_all_events()) {
+        DEBUG_INF("Events have been cleared");
+    }
+    else {
+        DEBUG_ERR("Error when clearing events");
+        return 1;
+    }
 
     #if 0
     /* Send the data to the UART RX associated with the UART device.
