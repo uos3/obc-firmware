@@ -154,7 +154,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         EVT_UART_NONE,
         UDMA_MODE_STOP,
         INT_UART1,
-        115200,
+        9600,
         false
     },
 };
