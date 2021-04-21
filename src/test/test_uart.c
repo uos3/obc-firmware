@@ -36,8 +36,8 @@
 int main(void) {
     uint8_t i;
     uint32_t data_size;
-    uint8_t *send_data;
-    uint8_t *recv_data;
+    uint8_t send_data[1];
+    uint8_t recv_data[1];
     uint8_t test_step;
     uint8_t num_attempts;
     uint8_t max_num_attemps;
@@ -49,9 +49,6 @@ int main(void) {
     test_step = 0;
     num_attempts = 0;
     max_num_attemps = 10;
-
-    send_data = (uint8_t*) malloc(data_size * sizeof(uint8_t));
-    recv_data = (uint8_t*) malloc(data_size * sizeof(uint8_t));
 
     send_data[0] = 14;
     recv_data[0] = 10;
@@ -65,8 +62,6 @@ int main(void) {
     if (Uart_init_specific(UART_DEVICE_ID_TEST) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the UART devices.");
         Debug_exit(1);
-        free(send_data);
-        free(recv_data);
         return 1;
     }
 
@@ -74,8 +69,6 @@ int main(void) {
     if (Udma_init() != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the uDMA.");
         Debug_exit(1);
-        free(send_data);
-        free(recv_data);
         return 1;
     }
 
@@ -88,18 +81,14 @@ int main(void) {
             /* Step 0 is to send the bytes */
             case 0:
                 DEBUG_INF("----- STEP 0 -----");
-                if (Uart_send_bytes(UART_DEVICE_ID_TEST, *send_data, data_size) != ERROR_NONE) {
-                    Debug_exit(1);
+                if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
                     DEBUG_ERR("Failed to send bytes");
-                    free(send_data);
-                    free(recv_data);
+                    Debug_exit(1);
                     return 1;
                 }
                 if (Uart_step() != ERROR_NONE) {
-                    Debug_exit(1);
                     DEBUG_ERR("Step function failed");
-                    free(send_data);
-                    free(recv_data);
+                    Debug_exit(1);
                     return 1;
                 }
                 DEBUG_INF("Sending bytes");
@@ -125,8 +114,6 @@ int main(void) {
                 else {
                     DEBUG_INF("TX Not complete after max num attempts. Exiting.");
                     Debug_exit(1);
-                    free(send_data);
-                    free(recv_data);
                     return 1;
                 }
                 /* Reset the number of attempts for the next step */
@@ -137,7 +124,7 @@ int main(void) {
             /* Step 2 is to receive the bytes */
             case 2:
                 DEBUG_INF("----- STEP 2 -----");
-                if (Uart_recv_bytes(UART_DEVICE_ID_TEST, *recv_data, data_size) != ERROR_NONE) {
+                if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
@@ -164,8 +151,6 @@ int main(void) {
                 else {
                     DEBUG_INF("RX Not complete after max num attempts. Exiting.");
                     Debug_exit(1);
-                    free(send_data);
-                    free(recv_data);
                     return 1;
                 }
                 num_attempts = 0;
@@ -196,8 +181,6 @@ int main(void) {
     }
     else {
         DEBUG_ERR("Error when clearing events");
-        free(send_data);
-        free(recv_data);
         return 1;
     }
 
