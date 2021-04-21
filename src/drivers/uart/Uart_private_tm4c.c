@@ -122,7 +122,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         GPIO_PE1_U7TX, /* GPIO_PE1_U7TX */
         GPIO_PINE0,
         GPIO_PINE1,
-        GPIO_PIN_0.
+        GPIO_PIN_0,
         GPIO_PIN_1,
         UDMA_CH1_UART2TX, /* TODO: Check TI channel assignments */
         UDMA_CH0_UART2RX,
