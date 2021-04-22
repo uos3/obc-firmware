@@ -44,6 +44,8 @@ extern uint8_t UDMA_CONTROL_TABLE[1024]; __attribute__ ((aligned(1024)));
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
+extern void uDMA_error_handler(void);
+
 /**
  * @brief Initialise the uDMA for UART transfer. This initialisation contains
  * TI functions which are only used once or infrequently to set up the uDMA

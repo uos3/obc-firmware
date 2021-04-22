@@ -88,11 +88,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
 
     /* Pointer to the UART */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
-
-    GPIO_PIN_INDEX rx_pins_in[1];
-    GPIO_PIN_INDEX tx_pins_in[1];
-    rx_pins_in[0] = p_uart_device->gpio_pin_id_tx;
-    tx_pins_in[0] = p_uart_device->gpio_pin_id_rx;
     
     /* Initialise the GPIO pins as their respective mode */
     if (!SysCtlPeripheralReady(p_uart_device->gpio_peripheral)) {
@@ -206,9 +201,10 @@ ErrorCode Uart_send_bytes(
             UARTIntRegister(p_uart_device->uart_base, Uart_test_tx_int_handler);
             // IntRegister(p_uart_device->uart_base_int, Uart_test_tx_int_handler);
             break;
+        default:
+            DEBUG_ERR("Unexpected UART ID");
+            return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
-
-    uDMAIntRegister(p_uart_device->udma_channel_tx, uDMAErrorHandler);
     
     /* Configure the control parameters for the UART TX channel.
      * UDMA_ARB_4 to match the FIFO trigger threshold.
@@ -289,9 +285,10 @@ ErrorCode Uart_recv_bytes(
             UARTIntRegister(p_uart_device->uart_base, Uart_test_rx_int_handler);
             // IntRegister(p_uart_device->uart_base_int, Uart_test_rx_int_handler);
             break;
+        default:
+            DEBUG_ERR("Unexpected UART device ID");
+            return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
-
-    uDMAIntRegister(p_uart_device->udma_channel_rx, uDMAErrorHandler);
 
     /* Configure the control parameters for the UART RX channel.
      * UDMA_ARB_4 to match the FIFO trigger threshold. 
@@ -335,18 +332,6 @@ ErrorCode Uart_recv_bytes(
     p_uart_device->uart_event = uart_event_rx;
 
     return ERROR_NONE;
-}
-
-/* TODO: Move to Udma driver and rename */
-void uDMAErrorHandler(void) {
-    uint32_t status;
-
-    status = uDMAErrorStatusGet();
-
-    if (status) {
-        uDMAErrorStatusClear();
-        DEBUG_WRN("uDMA Error Received. Clearing");
-    }
 }
 
 ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
@@ -447,18 +432,6 @@ bool Uart_get_events_for_device(
  * FUNCTIONS BELOW ARE PART OF THE OLD INTERFACE. WILL MOST LIKELY BE DISCARED,
  * BUT KEPT FOR NOW AS A REFERENCE/JUST IN CASE UDMA IS NOT A VIABLE OPTION.
  * ------------------------------------------------------------------------- */
-
-void Uart_int_handler_old(void) {
-    uint32_t status;
-
-    status = UARTIntStatus(UART1_BASE, true);
-
-    UARTIntClear(UART1_BASE, status);
-
-    while (UARTCharsAvail(UART1_BASE)) {
-        UARTCharPutNonBlocking(UART1_BASE, UARTCharGetNonBlocking(UART1_BASE));
-    }
-}
 
 ErrorCode Uart_get_char(uint8_t uart_id_number_in, char *recvd_byte_out) {
     /* Pointer to UART device */

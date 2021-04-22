@@ -53,6 +53,18 @@ uint8_t UDMA_CONTROL_TABLE[1024]; __attribute__ ((aligned(1024)));
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
+/* TODO: Move to Udma driver and rename */
+void uDMA_error_handler(void) {
+    uint32_t status;
+
+    status = uDMAErrorStatusGet();
+
+    if (status) {
+        uDMAErrorStatusClear();
+        DEBUG_WRN("uDMA Error Received. Clearing");
+    }
+}
+
 ErrorCode Udma_init(void) {
     
     /* Check that the uDMA peripheral is ready, if not, then enable the
@@ -69,7 +81,7 @@ ErrorCode Udma_init(void) {
             }
         }
     
-    IntEnable(INT_UDMAERR);
+    uDMAIntRegister(INT_UDMAERR, uDMA_error_handler);
 
     /* Enable the uDMA channels */
     uDMAEnable();

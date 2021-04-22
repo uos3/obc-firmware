@@ -32,19 +32,19 @@
  * @brief TODO: Attempted to initialise the uDMA before the peripheral is
  * ready.
  */
-#define UDMA_ERROR_PERIPHERAL_NOT_READY ((ErrorCode)MOD_ID_UART | 1)
+#define UDMA_ERROR_PERIPHERAL_NOT_READY ((ErrorCode)MOD_ID_UDMA | 1)
 
 /**
  * @brief TODO: Attempted to send or receive bytes while the uDMA has not yet
  * been initialised.
  */
-#define UDMA_ERROR_NOT_INITIALISED ((ErrorCode)MOD_ID_UART | 2)
+#define UDMA_ERROR_NOT_INITIALISED ((ErrorCode)MOD_ID_UDMA | 2)
 
 /**
  * @brief This ErrorCode is reserved for when uDMAErrorStatusGet returns a
  * non-zero error which does not match any other defined error.
  * 
  */
-#define UDMA_ERROR_TRANSFER_FAILED ((ErrorCode)MOD_ID_UART | 3)
+#define UDMA_ERROR_TRANSFER_FAILED ((ErrorCode)MOD_ID_UDMA | 3)
 
 #endif /* H_UDMA_ERRORS_H */

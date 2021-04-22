@@ -106,6 +106,10 @@ ErrorCode Gpio_init(GPIO_PIN_INDEX *p_gpio_pins_in, size_t num_gpio_pins_in, Gpi
                     GPIOPinTypeUART(p_gpio_pin->port, p_gpio_pin->pin);
                     DEBUG_INF("GPIO UART pin initialised");
                     break;
+                case GPIO_MODE_NONE:
+                    DEBUG_INF("Attempted to initialise a GPIO pin with mode\
+                        GPIO_PIN_NONE");
+                    return GPIO_ERROR_NOT_INITIALISED;
                 
                 default:
                     /* If the mode is neither GPIO_MODE_INPUT or
