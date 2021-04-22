@@ -290,7 +290,7 @@ ErrorCode Uart_recv_bytes(
             return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
 
-    uDMAChannelAssign(p_uart_device->udma_channel_tx);
+    uDMAChannelAssign(p_uart_device->udma_channel_rx);
 
     /* Configure the control parameters for the UART RX channel.
      * UDMA_ARB_4 to match the FIFO trigger threshold. 
