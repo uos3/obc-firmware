@@ -38,3 +38,23 @@ uint16_t Packing_u16_from_le(uint8_t *p_data_in) {
     return (uint16_t)((uint16_t)(p_data_in[0] << 8) | p_data_in[1]);
     #endif
 }
+
+void Packing_u16_to_be(uint16_t data_in, uint8_t *p_data_out) {
+    #if __BYTE_ORDER == __LITTLE_ENDIAN
+    p_data_out[0] = (uint8_t)(data_in);
+    p_data_out[1] = (uint8_t)(data_in >> 8);
+    #else
+    p_data_out[0] = (uint8_t)(data_in >> 8);
+    p_data_out[1] = (uint8_t)(data_in);
+    #endif
+}
+
+void Packing_u16_to_le(uint16_t data_in, uint8_t *p_data_out) {
+    #if __BYTE_ORDER == __LITTLE_ENDIAN
+    p_data_out[0] = (uint8_t)(data_in >> 8);
+    p_data_out[1] = (uint8_t)(data_in);
+    #else
+    p_data_out[0] = (uint8_t)(data_in);
+    p_data_out[1] = (uint8_t)(data_in >> 8);
+    #endif
+}

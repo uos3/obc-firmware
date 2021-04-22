@@ -123,6 +123,32 @@ int main(int argc, char **pp_argv) {
             = (uint32_t)power_op_mode_ocp_rail_config.u.i;
     }
 
+    toml_datum_t eps_reset_rail_after_ocp = toml_int_in(
+        p_config, 
+        "EPS_RESET_RAIL_AFTER_OCP"
+    );
+    if (!eps_reset_rail_after_ocp.ok) {
+        DEBUG_ERR("Missing TOML parameter: EPS_RESET_RAIL_AFTER_OCP");
+        cfg_ok = false;
+    }
+    else {
+        cfg_data.EPS_RESET_RAIL_AFTER_OCP 
+            = (uint8_t)eps_reset_rail_after_ocp.u.i;
+    }
+
+    toml_datum_t eps_tobc_timer_length = toml_int_in(
+        p_config, 
+        "EPS_TOBC_TIMER_LENGTH"
+    );
+    if (!eps_tobc_timer_length.ok) {
+        DEBUG_ERR("Missing TOML parameter: EPS_TOBC_TIMER_LENGTH");
+        cfg_ok = false;
+    }
+    else {
+        cfg_data.EPS_TOBC_TIMER_LENGTH 
+            = (uint16_t)eps_tobc_timer_length.u.i;
+    }
+
     toml_array_t *p_opmode_appid_table = toml_array_in(
         p_config,
         "OPMODE_APPID_TABLE"

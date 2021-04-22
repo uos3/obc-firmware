@@ -43,4 +43,22 @@ uint16_t Packing_u16_from_be(uint8_t *p_data_in);
  */
 uint16_t Packing_u16_from_le(uint8_t *p_data_in);
 
+/**
+ * @brief Pack a machine-specific uint16_t into a big endian byte array.
+ * 
+ * @param data_in The uint16_t value to pack.
+ * @param p_data_out Pointer to the bytes to populate. Shall be at least 2
+ * bytes in length.
+ */
+void Packing_u16_to_be(uint16_t data_in, uint8_t *p_data_out);
+
+/**
+ * @brief Pack a machine-specific uint16_t into a little endian byte array.
+ * 
+ * @param data_in The uint16_t value to pack.
+ * @param p_data_out Pointer to the bytes to populate. Shall be at least 2
+ * bytes in length.
+ */
+void Packing_u16_to_le(uint16_t data_in, uint8_t *p_data_out);
+
 #endif /* H_PACKING_PUBLIC_H */

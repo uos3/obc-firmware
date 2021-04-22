@@ -162,7 +162,7 @@ typedef uint8_t Eps_OcpByte;
 /**
  * @brief Length of the payload for EPS_UART_DATA_TYPE_TC_SET_CONFIG.
  */
-#define EPS_UART_TC_SET_CONFIG_PL_LENGTH (sizeof(Eps_ConfigData))
+#define EPS_UART_TC_SET_CONFIG_PL_LENGTH (3)
 
 /**
  * @brief Length of the payload for EPS_UART_DATA_TYPE_TC_RESET_OCP.
@@ -184,7 +184,7 @@ typedef uint8_t Eps_OcpByte;
 /**
  * @brief Length of the EPS_UART_DATA_TYPE_TM_LOADED_CONFIG payload in bytes.
  */
-#define EPS_UART_TM_LOADED_CONFIG_PL_LENGTH (0)
+#define EPS_UART_TM_LOADED_CONFIG_PL_LENGTH EPS_UART_TC_SET_CONFIG_PL_LENGTH
 
 /**
  * @brief Length of the EPS_UART_DATA_TYPE_TM_OCP_STATE payload in bytes.
@@ -195,58 +195,6 @@ typedef uint8_t Eps_OcpByte;
  * @brief Length of the EPS_UART_DATA_TYPE_TM_OCP_TRIPPED payload in bytes.
  */
 #define EPS_UART_TM_OCP_TRIPPED_PL_LENGTH (1)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on all solar panels.
- */
-#define EPS_ADC_SHUNT_RESIST_SOLAR_PANELS_OHMS ((double)0.043)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on OPC rail 1.
- */
-#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_1_OHMS ((double)0.050)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on OPC rail 2.
- */
-#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_2_OHMS ((double)0.062)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on OPC rail 3.
- */
-#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_3_OHMS ((double)6.0)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on OPC rail 4.
- */
-#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_4_OHMS ((double)0.442)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on OPC rail 5.
- */
-#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_5_OHMS ((double)0.036)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on OPC rail 6.
- */
-#define EPS_ADC_SHUNT_RESIST_OCP_RAIL_6_OHMS ((double)0.124)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on the 3V3 supply.
- */
-#define EPS_ADC_SHUNT_RESIST_3V3_SUPPLY_OHMS ((double)0.250)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on the 5V supply.
- * 
- */
-#define EPS_ADC_SHUNT_RESIST_5V_SUPPLY_OHMS ((double)0.124)
-
-/**
- * @brief Shunt resistor value for the ADC current sense on the charge line.
- * 
- */
-#define EPS_ADC_SHUNT_RESIST_CHARGE_OHMS ((double)0.250)
 
 /**
  * @brief EPS command timeout duration in seconds.
@@ -305,36 +253,10 @@ bool Eps_check_uart_frame(
  * @param p_data_in Raw data to parse. Shall be of length
  * EPS_UART_TM_HK_DATA_PL_LENGTH. 
  * @param p_hk_data_out Pointer to the HK data struct to populate
- * @return bool True if successful, false if failure.
  */
-bool Eps_parse_hk_data(
+void Eps_parse_hk_data(
     uint8_t *p_data_in,
     Eps_HkData *p_hk_data_out
-);
-
-/**
- * @brief Converts between a 10-bit ADC scaled integer voltage sense value and
- * the voltage of the sensed line.
- * 
- * @param voltage_scaledint_in The ADC scaled int to convert
- * @return double The calculated voltage in Volts.
- */
-double Eps_adc_voltage_sense_scaledint_to_volts(
-    uint16_t voltage_scaledint_in
-);
-
-/**
- * @brief Converts between a 10-bit ADC scaled integer voltage sense value and
- * the current draw of the sensed line.
- * 
- * @param voltage_scaledint_in The ADC scaled int to convert
- * @param shunt_resistor_ohms_in The resistance of the shunt resistor for this
- * voltage sense value.
- * @return double The calculated current in Amperes.
- */
-double Eps_adc_voltage_sense_scaledint_to_amps(
-    uint16_t voltage_scaledint_in,
-    double shunt_resistor_ohms_in
 );
 
 /**
@@ -360,6 +282,30 @@ Eps_OcpState Eps_ocp_byte_to_ocp_state(Eps_OcpByte byte_in);
  * @return Eps_BattStatus The convered battery status
  */
 Eps_BattStatus Eps_parse_batt_status(uint8_t *p_data_in);
+
+/**
+ * @brief Parse the given bytes into an Eps_ConfigData struct.
+ * 
+ * @param p_data_in Pointer to the bytes containing the serialised config data.
+ * Shall be at least EPS_UART_TC_SET_CONFIG_PL_LENGTH bytes long.
+ * @param p_config_out Pointer to the parsed Eps_ConfigData struct.
+ */
+void Eps_parse_config_data(
+    uint8_t *p_data_in,
+    Eps_ConfigData *p_config_out
+);
+
+/**
+ * @brief Serialise an Eps_ConfigData struct into a byte stream.
+ * 
+ * @param p_config_in The config data to serialise
+ * @param p_data_out The byte stream to serialise into, shall be at least
+ * EPS_UART_TC_SET_CONFIG_PL_LENGTH bytes long.
+ */
+void Eps_serialise_config_data(
+    Eps_ConfigData *p_config_in, 
+    uint8_t *p_data_out
+);
 
 /**
  * @brief Process a recieved header from the EPS

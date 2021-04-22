@@ -139,8 +139,18 @@
  * be sent to the EPS during the initialisation process.
  */
 typedef struct _Eps_ConfigData {
-    /* FIXME: Remove */
-    uint8_t _dummy;
+    /**
+     * @brief an Eps_OcpByte that shows whether or not a rail will be reset 
+     * after an OCP event.
+     */
+    uint8_t reset_rail_after_ocp;
+
+    /**
+     * @brief Length of the TOBC watchdog timer in EPS MCU Clock Cycles.
+     * 
+     * Divide by 4096 for a value in seconds.
+     */
+    uint16_t tobc_timer_length;
 } Eps_ConfigData;
 
 /**

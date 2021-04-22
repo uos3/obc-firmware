@@ -8,6 +8,12 @@ POWER_TASK_TIMER_DURATION_S = 300
 # TODO: Issue this reference.
 POWER_OPMODE_OCP_STATE_CONFIG = 4039954176
 
+# All rails will reset after an OCP event (all lower 6 bits set to 1)
+EPS_RESET_RAIL_AFTER_OCP = 63
+
+# TODO: Demo value of 1 s
+EPS_TOBC_TIMER_LENGTH = 4096
+
 # Configuration of which Apps will run in each OpMode
 #
 # NOTE: See MemStoreManager_public.h for an explanation of the efficiency of

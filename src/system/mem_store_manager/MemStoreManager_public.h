@@ -86,6 +86,20 @@ typedef struct _MemStoreManager_ConfigData {
     Power_OpModeOcpStateConfig POWER_OPMODE_OCP_STATE_CONFIG;
 
     /**
+     * @brief An Eps_OcpByte which determines whether or not the EPS will reset
+     * an OCP rail after its OCP has been tripped.
+     */
+    uint8_t EPS_RESET_RAIL_AFTER_OCP;
+
+    /**
+     * @brief The length of the EPS's watchdog timer for the TOBC, in EPS MCU
+     * clock cycles.
+     * 
+     * To get a value in seconds divide by 4096.
+     */
+    uint16_t EPS_TOBC_TIMER_LENGTH;
+
+    /**
      * @brief Table defining which app is active in which OpMode.
      * 
      * Note on efficiency:

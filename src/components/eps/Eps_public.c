@@ -258,6 +258,7 @@ bool Eps_send_config(void) {
     size_t length_without_crc 
         = EPS_UART_HEADER_LENGTH + EPS_UART_TC_SET_CONFIG_PL_LENGTH;
     size_t length_with_crc = length_without_crc + EPS_UART_CRC_LENGTH;
+    Eps_ConfigData config;
 
     /* Check Eps is initialised. Unlike the step function it is an error to
      * call this function before the EPS init sequence is finished. */
@@ -284,7 +285,9 @@ bool Eps_send_config(void) {
         request_frame
     );
 
-    /* TODO: build the config struct and add it to the frame */
+    /* build the config struct and add it to the frame */
+    config.reset_rail_after_ocp = CFG.EPS_RESET_RAIL_AFTER_OCP;
+    config.tobc_timer_length = CFG.EPS_TOBC_TIMER_LENGTH;
 
     /* Add the CRC to the frame */
     Eps_append_crc_to_frame(

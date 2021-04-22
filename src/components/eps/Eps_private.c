@@ -94,11 +94,10 @@ bool Eps_check_uart_frame(
     );
 }
 
-bool Eps_parse_hk_data(
+void Eps_parse_hk_data(
     uint8_t *p_data_in,
     Eps_HkData *p_hk_data_out
 ) {
-    uint8_t byte_idx = 0;
     /* Strategy: Consume bytes sequentially parsing each group according to the
      * format specified in [SW_ICD 5.2.8]. */
 
@@ -363,47 +362,29 @@ bool Eps_parse_hk_data(
 
     p_hk_data_out->ocp_rail_state = *p_data_in;
     p_data_in++;
-
-    return true;
 }
 
-double Eps_adc_voltage_sense_scaledint_to_volts(
-    uint16_t voltage_scaledint_in
+void Eps_parse_config_data(
+    uint8_t *p_data_in,
+    Eps_ConfigData *p_config_out
 ) {
-    /* Conversion equation comes from Register doc
-     * 
-     * TODO: ref ICD */
-    return (
-        (
-            (double)voltage_scaledint_in 
-            * 
-            EPS_ADC_VOLTAGE_SENSE_SCALEDINT_TO_VOLTS
-        )
-        *
-        (
-            (EPS_ADC_VOLTAGE_SENSE_R1_OHMS + EPS_ADC_VOLTAGE_SENSE_R2_OHMS)
-            /
-            EPS_ADC_VOLTAGE_SENSE_R2_OHMS
-        )  
-    );
+    /* Strategy: consume bytes and pack them into the struct as done with the
+     * hk data */
+    p_config_out->reset_rail_after_ocp = *p_data_in;
+    p_data_in++;
+
+    p_config_out->tobc_timer_length = Packing_u16_from_be(p_data_in);
+    p_data_in += 2;
 }
 
-double Eps_adc_voltage_sense_scaledint_to_amps(
-    uint16_t voltage_scaledint_in,
-    double shunt_resistance_ohms_in
+void Eps_serialise_config_data(
+    Eps_ConfigData *p_config_in, 
+    uint8_t *p_data_out
 ) {
-    /* Conversion equation comes from Register doc
-     * 
-     * TODO: ref ICD */
-    return (
-        (
-            (double)voltage_scaledint_in 
-            *
-            EPS_ADC_VOLTAGE_SENSE_SCALEDINT_TO_VOLTS
-        )
-        * shunt_resistance_ohms_in 
-        * 100.0
-    );
+    *p_data_out = p_config_in->reset_rail_after_ocp;
+    p_data_out++;
+
+    Packing_u16_to_be(p_config_in->tobc_timer_length, p_data_out);
 }
 
 Eps_OcpState Eps_ocp_byte_to_ocp_state(Eps_OcpByte byte_in) {
@@ -815,28 +796,21 @@ bool Eps_process_reply(void) {
                 /* Got an HK reply to an HK request, parse the HK and
                  * update it in the data pool. Use a temp variable so we
                  * don't overwrite the datapool if it fails to parse */
-                if (!Eps_parse_hk_data(
+                Eps_parse_hk_data(
                     &DP.EPS.EPS_REPLY[EPS_UART_HEADER_LENGTH],
                     &hk_data
-                )) {
-                    DEBUG_ERR("Couldn't parse recieved EPS HK data");
-                    DP.EPS.ERROR.code = EPS_ERROR_INVALID_HK_DATA;
-                    DP.EPS.ERROR.p_cause = NULL;
-                    DP.EPS.COMMAND_STATUS = EPS_COMMAND_FAILURE;
-                    return true;
-                }
-                else {
-                    /* Set the data pool data and command status, and emmit
-                     * the event signalling new HK data */
-                    DP.EPS.HK_DATA = hk_data;
-                    DP.EPS.COMMAND_STATUS = EPS_COMMAND_SUCCESS;
+                );
 
-                    if (!EventManager_raise_event(EVT_EPS_NEW_HK_DATA)) {
-                        DEBUG_ERR("Couldn't raise EVT_EPS_NEW_HK_DATA");
-                        DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
-                        DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
-                        return false;
-                    }
+                /* Set the data pool data and command status, and emmit
+                    * the event signalling new HK data */
+                DP.EPS.HK_DATA = hk_data;
+                DP.EPS.COMMAND_STATUS = EPS_COMMAND_SUCCESS;
+
+                if (!EventManager_raise_event(EVT_EPS_NEW_HK_DATA)) {
+                    DEBUG_ERR("Couldn't raise EVT_EPS_NEW_HK_DATA");
+                    DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
+                    DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
+                    return false;
                 }
             }
             else {
