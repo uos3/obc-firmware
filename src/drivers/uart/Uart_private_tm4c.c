@@ -95,7 +95,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         EVT_UART_NONE,
         UDMA_MODE_STOP,
         INT_UART3,
-        9600,
+        115200,
         false
     },
 

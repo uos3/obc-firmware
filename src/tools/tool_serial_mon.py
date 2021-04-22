@@ -5,7 +5,7 @@ Simple hexadecimal serial monitor
 import serial
 from time import sleep
 
-ser = serial.Serial("/dev/serial0", 9600)
+ser = serial.Serial("/dev/ttyUSB0", 56000)
 
 print('Reading serial data')
 
