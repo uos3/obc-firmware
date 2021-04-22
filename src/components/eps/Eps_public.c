@@ -52,7 +52,7 @@ bool Eps_init(void) {
     /* Prepare to recieve any potential unsolicited header bytes from the 
      * UART */
     DP.EPS.UART_ERROR.code = Uart_recv_bytes(
-        UART_DEVICE_ID_EPS, 
+        UART_DEVICE_ID_GNSS, 
         (uint8_t *)DP.EPS.EPS_REPLY, 
         EPS_UART_HEADER_LENGTH
     );
@@ -147,7 +147,7 @@ bool Eps_step(void) {
 
             /* Send the EPS request over the UART */
             DP.EPS.UART_ERROR.code = Uart_send_bytes(
-                UART_DEVICE_ID_EPS,
+                UART_DEVICE_ID_GNSS,
                 (uint8_t *)DP.EPS.EPS_REQUEST,
                 DP.EPS.EPS_REQUEST_LENGTH
             );
@@ -288,6 +288,11 @@ bool Eps_send_config(void) {
     /* build the config struct and add it to the frame */
     config.reset_rail_after_ocp = CFG.EPS_RESET_RAIL_AFTER_OCP;
     config.tobc_timer_length = CFG.EPS_TOBC_TIMER_LENGTH;
+
+    Eps_serialise_config_data(
+        &config,
+        &request_frame[EPS_UART_HEADER_LENGTH]
+    );
 
     /* Add the CRC to the frame */
     Eps_append_crc_to_frame(

@@ -72,7 +72,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         EVT_UART_NONE,
         UDMA_MODE_STOP,
         INT_UART0,
-        9600,
+        56000,
         false
     },
 
@@ -118,7 +118,7 @@ Uart_Device UART_DEVICES[UART_NUM_UARTS] = {
         EVT_UART_NONE,
         UDMA_MODE_STOP,
         INT_UART7,
-        9600,
+        56000,
         false
     },
 
