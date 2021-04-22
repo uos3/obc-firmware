@@ -67,6 +67,8 @@ ErrorCode Udma_init(void) {
                 return UDMA_ERROR_PERIPHERAL_NOT_READY;
             }
         }
+    
+    IntEnable(INT_UDMAERR);
 
     /* Enable the uDMA channels */
     uDMAEnable();

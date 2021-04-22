@@ -141,9 +141,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE
     );
 
-    /* Enable the UART and uDMA interface for TX and RX */
-    UARTEnable(p_uart_device->uart_base);
-    UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
 
     /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
         * controller when more data should be transferred. These are defined
@@ -155,6 +152,10 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         UART_RX_FIFO_THRESHOLD
     );
 
+    /* Enable the UART and uDMA interface for TX and RX */
+    UARTEnable(p_uart_device->uart_base);
+    UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
+    
     /* Set the UART state as initialised. */
     p_uart_device->initialised = true;
         /* Return error none if this point has been reached without any errors
