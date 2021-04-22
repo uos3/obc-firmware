@@ -11,15 +11,14 @@ from time import sleep
 
 ser = serial.Serial("/dev/ttyUSB0", 9600) #open port and set baud rate
 
-count = 0
+data = b''
 
 while True:
-    print("Waiting for bytes to receive\n")
-    received_data = ser.read() #read serial port
-    sleep(0.03)
-    data_left = ser.inWaiting() #check for remaining bytes
-    received_data += ser.read(data_left)
-    print("\nDATA RECEIVED:\n")
-    print(received_data) #print received data 
-    ser.write(received_data) #transmit data back
-    count += 1
+    if ser.in_waiting > 0:
+        data += ser.read()
+        
+        if (len(data) >= 255):
+            print(data)
+            ser.write(data)
+            data = b''
+            exit(0)

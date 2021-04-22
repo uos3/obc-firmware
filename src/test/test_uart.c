@@ -22,6 +22,7 @@
 
 /* Internal includes */
 #include "drivers/uart/Uart_public.h"
+#include "drivers/uart/Uart_private.h"
 #include "drivers/udma/Udma_public.h"
 #include "components/led/Led_public.h"
 #include "drivers/gpio/Gpio_public.h"
@@ -29,33 +30,41 @@
 #include "system/event_manager/EventManager_public.h"
 #include "system/kernel/Kernel_public.h"
 
+#define UART_DEVICE UART_DEVICE_ID_GNSS
+#define UART_RX_EVT EVT_UART_GNSS_RX_COMPLETE
+#define UART_TX_EVT EVT_UART_GNSS_TX_COMPLETE
+
+#define DATA_LENGTH (255)
+
 /* -------------------------------------------------------------------------   
  * MAIN
  * ------------------------------------------------------------------------- */
 
 int main(void) {
     uint8_t i;
-    uint32_t data_size = 10;
-    uint8_t send_data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    uint8_t recv_data[10] = {0};
+    uint8_t send_data[DATA_LENGTH] = {0};
+    uint8_t recv_data[DATA_LENGTH] = {0};
     uint8_t test_step;
     uint8_t num_attempts;
     uint8_t max_num_attemps;
     bool test_complete;
-
+    bool recv_matches_sent = true;
 
     test_complete = false;
     test_step = 0;
     num_attempts = 0;
-    max_num_attemps = 10;
+    max_num_attemps = 100;
 
+    for (i = 0; i < DATA_LENGTH; i++) {
+        send_data[i] = 'A';
+    }
 
     Kernel_init_critical_modules();
 
     DEBUG_INF(" ===== Uart test =====");
 
     /* Initialise the UART devices. */
-    if (Uart_init_specific(UART_DEVICE_ID_CAM) != ERROR_NONE) {
+    if (Uart_init_specific(UART_DEVICE) != ERROR_NONE) {
         DEBUG_ERR("Failed to initialise the UART devices.");
         Debug_exit(1);
         return 1;
@@ -68,16 +77,13 @@ int main(void) {
         return 1;
     }
 
-    DEBUG_DBG("Element 0 of recv_data is %d", recv_data[0]);
-    DEBUG_DBG("Element 0 of sent data was %d", send_data[0]);
-
     /* Main loop */
     while (test_complete == false) {
         switch(test_step) {
             /* Step 0 is to send the bytes */
             case 0:
                 DEBUG_INF("----- STEP 0 -----");
-                if (Uart_send_bytes(UART_DEVICE_ID_CAM, send_data, data_size) != ERROR_NONE) {
+                if (Uart_send_bytes(UART_DEVICE, send_data, DATA_LENGTH) != ERROR_NONE) {
                     DEBUG_ERR("Failed to send bytes");
                     Debug_exit(1);
                     return 1;
@@ -97,7 +103,7 @@ int main(void) {
             case 1:
                 DEBUG_INF("----- STEP 1 -----");
                 if (num_attempts < max_num_attemps) {
-                    if (EventManager_poll_event(EVT_UART_CAM_TX_COMPLETE)) {
+                    if (EventManager_poll_event(UART_TX_EVT)) {
                         DEBUG_INF("Bytes have been sent");
                         test_step++;
                         break;
@@ -120,7 +126,7 @@ int main(void) {
             /* Step 2 is to receive the bytes */
             case 2:
                 DEBUG_INF("----- STEP 2 -----");
-                if (Uart_recv_bytes(UART_DEVICE_ID_CAM, recv_data, data_size) != ERROR_NONE) {
+                if (Uart_recv_bytes(UART_DEVICE, recv_data, DATA_LENGTH) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step() != ERROR_NONE) {
@@ -134,7 +140,7 @@ int main(void) {
             case 3:
                 DEBUG_INF("----- STEP 3 -----");
                 if (num_attempts < max_num_attemps) {
-                    if (EventManager_poll_event(EVT_UART_CAM_RX_COMPLETE)) {
+                    if (EventManager_poll_event(UART_RX_EVT)) {
                         DEBUG_INF("Bytes have been received");
                         test_step++;
                         break;
@@ -156,13 +162,15 @@ int main(void) {
              * receiving the same data. */
             case 4:
                 DEBUG_INF("----- STEP 4 -----");
-                for (i = 0; i < data_size; ++i) {
+                DEBUG_INF("index: [sent, received]");
+                for (i = 0; i < DATA_LENGTH; ++i) {
                     if (recv_data[i] != send_data[i]) {
-                        DEBUG_ERR("Send and recv data not equal, test failed");
-                        Debug_exit(1);
+                        DEBUG_ERR("%3d: [0x%02X, 0x%02X]", i, send_data[i], recv_data[i]);
+                        recv_matches_sent = false;
                     }
-                    DEBUG_DBG("Element %d of recv_data is %d", i, recv_data[i]);
-                    DEBUG_DBG("Element %d of sent data was %d", i, send_data[i]);
+                    else {
+                        DEBUG_INF("%3d: [0x%02X, 0x%02X]", i, send_data[i], recv_data[i]);
+                    }
                 }
                 /* Increment the step number and move on to next case */
                 test_step++;
@@ -170,6 +178,12 @@ int main(void) {
             default:
                 DEBUG_INF(" ----- TEST COMPLETE AT STEP %d -----", test_step);
                 test_complete = true;
+                if (recv_matches_sent) {
+                    DEBUG_INF(" ---- TEST PASSED ---- ");
+                }
+                else {
+                    DEBUG_ERR(" ---- TEST FAILED ---- ");
+                }
         }
     }
 

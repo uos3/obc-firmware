@@ -36,6 +36,7 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
+#include "driverlib/interrupt.h"
 #include "driverlib/udma.h"
 #include "driverlib/uart.h"
 #include "driverlib/pin_map.h"
