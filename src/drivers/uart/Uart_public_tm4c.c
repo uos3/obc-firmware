@@ -102,14 +102,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         }
     }
 
-    /* Configure the GPIO pins */
-    GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
-    GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
-    GPIOPinTypeUART(p_uart_device->gpio_base,
-        p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
-    );
-
-
     /* Check if the UART has already been initialised, give a warning if it has
      * already been initialised, or continue if it has not. */
     if (p_uart_device->initialised) {
@@ -129,13 +121,12 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         }
     }
 
-    UARTConfigSetExpClk(
-        p_uart_device->uart_base,
-        SysCtlClockGet(),
-        p_uart_device->baud_rate,
-        UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE
+    /* Configure the GPIO pins */
+    GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
+    GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
+    GPIOPinTypeUART(p_uart_device->gpio_base,
+        p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
     );
-
 
     /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
         * controller when more data should be transferred. These are defined
@@ -151,6 +142,13 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     UARTEnable(p_uart_device->uart_base);
     UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
     
+    UARTConfigSetExpClk(
+        p_uart_device->uart_base,
+        SysCtlClockGet(),
+        p_uart_device->baud_rate,
+        UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE
+    );
+
     /* Set the UART state as initialised. */
     p_uart_device->initialised = true;
         /* Return error none if this point has been reached without any errors
@@ -205,6 +203,8 @@ ErrorCode Uart_send_bytes(
             DEBUG_ERR("Unexpected UART ID");
             return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
+
+    uDMAChannelAssign(p_uart_device->udma_channel_tx);
     
     /* Configure the control parameters for the UART TX channel.
      * UDMA_ARB_4 to match the FIFO trigger threshold.
@@ -289,6 +289,8 @@ ErrorCode Uart_recv_bytes(
             DEBUG_ERR("Unexpected UART device ID");
             return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
+
+    uDMAChannelAssign(p_uart_device->udma_channel_tx);
 
     /* Configure the control parameters for the UART RX channel.
      * UDMA_ARB_4 to match the FIFO trigger threshold. 

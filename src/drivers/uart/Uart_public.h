@@ -88,10 +88,10 @@ typedef struct _Uart_Device {
     GPIO_PIN_INDEX gpio_pin_id_tx;
     uint8_t gpio_pin_rx;
     uint8_t gpio_pin_tx;
-    uint32_t udma_channel_tx;
     uint32_t udma_channel_rx;
-    Uart_Status uart_status_tx;
+    uint32_t udma_channel_tx;
     Uart_Status uart_status_rx;
+    Uart_Status uart_status_tx;
     Event uart_event;
     uint32_t udma_mode;
     uint32_t uart_base_int;
