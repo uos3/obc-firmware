@@ -180,7 +180,6 @@ ErrorCode Uart_send_bytes(
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
     UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
-    // IntEnable(p_uart_device->uart_base_int);
 
     switch(uart_id_in) {
         case UART_DEVICE_ID_CAM:
@@ -220,7 +219,7 @@ ErrorCode Uart_send_bytes(
     /* Set the transfer addresses, size, and mode for TX */
     uDMAChannelTransferSet(
         p_uart_device->udma_channel_tx | UDMA_PRI_SELECT,
-        UDMA_MODE_AUTO,
+        UDMA_MODE_BASIC,
         (void *)p_data_in,
         (void *)(p_uart_device->uart_base + UART_O_DR), /* TODO: Check this, and in rx */
         length_in
@@ -259,7 +258,6 @@ ErrorCode Uart_recv_bytes(
     }
 
     UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
-    // IntEnable(p_uart_device->uart_base_int);
 
     switch(uart_id_in) {
         case UART_DEVICE_ID_CAM:
@@ -292,11 +290,11 @@ ErrorCode Uart_recv_bytes(
         p_uart_device->udma_channel_rx | UDMA_PRI_SELECT,
         UDMA_SIZE_8 | UDMA_SRC_INC_NONE | UDMA_DST_INC_8 | UDMA_ARB_4
     );
-    
+
     /* Set the transfer addresses, size, and mode for RX */
     uDMAChannelTransferSet(
         p_uart_device->udma_channel_rx | UDMA_PRI_SELECT,
-        UDMA_MODE_AUTO,
+        UDMA_MODE_BASIC,
         (void *)(p_uart_device->uart_base + UART_O_DR),
         (void *)p_data_out,
         length_in
@@ -307,17 +305,6 @@ ErrorCode Uart_recv_bytes(
     uDMAChannelEnable(p_uart_device->udma_channel_rx);
 
     p_uart_device->uart_status_rx = UART_STATUS_IN_PROGRESS;
-
-    /* Enable the UART interrupt.
-     * TODO: Check this, and in rx */
-    #if 0
-    UARTIntDisable(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
-    UARTIntClear(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
-    #endif
-    
-
-    /* FIXME: Check uDMAErrorStatusGet */
 
     return ERROR_NONE;
 }

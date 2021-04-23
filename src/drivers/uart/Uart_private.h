@@ -122,7 +122,9 @@ void Uart_test_rx_int_handler(void);
  */
 void Uart_test_tx_int_handler(void);
 
-void Uart_service_irq(Uart_DeviceId uart_id_in);
+void Uart_service_rx_irq(Uart_DeviceId uart_id_in);
+
+void Uart_service_tx_irq(Uart_DeviceId uart_id_in);
 
 
 #endif /* H_UART_PRIVATE_H */

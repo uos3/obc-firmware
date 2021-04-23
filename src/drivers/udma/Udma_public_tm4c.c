@@ -47,7 +47,9 @@
  * ------------------------------------------------------------------------- */
 
 bool UDMA_INITIALISED;
-uint8_t UDMA_CONTROL_TABLE[1024]; __attribute__ ((aligned(1024)));
+
+#pragma DATA_ALIGN(UDMA_CONTROL_TABLE, 1024)
+uint8_t UDMA_CONTROL_TABLE[1024];
 
 /* -------------------------------------------------------------------------   
  * FUNCTIONS

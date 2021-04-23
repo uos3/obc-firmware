@@ -11,18 +11,13 @@ from time import sleep
 
 ser = serial.Serial("/dev/ttyUSB0", 56000) #open port and set baud rate
 
-data = b''
-
 while True:
     print("Waiting for data to receive")
-    recvd_data = ser.read(7)
-    sleep(0.03)
-    data_left = ser.inWaiting()
-    recvd_data += ser.read(data_left)
+    recvd_data = ser.read(255)
+    sleep(0.2)
     print(recvd_data)
-    send = [r + 1 for r in recvd_data]
-    print(f'Sending {send}')
-    ser.write(send)
+    print(f'Sending')
+    ser.write(recvd_data)
 
     """
     if ser.in_waiting > 0:

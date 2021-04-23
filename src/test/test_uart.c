@@ -34,16 +34,17 @@
 #define UART_RX_EVT EVT_UART_EPS_RX_COMPLETE
 #define UART_TX_EVT EVT_UART_EPS_TX_COMPLETE
 
-#define DATA_LENGTH (7)
+#define DATA_LENGTH (255)
 
 /* -------------------------------------------------------------------------   
  * MAIN
  * ------------------------------------------------------------------------- */
 
+uint8_t recv_data[DATA_LENGTH] = {0};
+
 int main(void) {
     uint8_t i;
     uint8_t send_data[DATA_LENGTH] = {0};
-    uint8_t recv_data[DATA_LENGTH] = {0};
     uint8_t test_step;
     uint8_t num_attempts;
     uint8_t max_num_attemps;
@@ -56,8 +57,7 @@ int main(void) {
     max_num_attemps = 100;
 
     for (i = 0; i < DATA_LENGTH; i++) {
-        send_data[i] = 'A' + i;
-        recv_data[i] = send_data[i] + 1;
+        send_data[i] = 'A';
     }
 
     Kernel_init_critical_modules();
