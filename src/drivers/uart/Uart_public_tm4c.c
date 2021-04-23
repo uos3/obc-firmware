@@ -102,6 +102,13 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         }
     }
 
+    /* Configure the GPIO pins */
+    GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
+    GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
+    GPIOPinTypeUART(p_uart_device->gpio_base,
+        p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
+    );
+
     /* Check if the UART has already been initialised, give a warning if it has
      * already been initialised, or continue if it has not. */
     if (p_uart_device->initialised) {
@@ -121,11 +128,11 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
         }
     }
 
-    /* Configure the GPIO pins */
-    GPIOPinConfigure(p_uart_device->uart_pin_rx_func);
-    GPIOPinConfigure(p_uart_device->uart_pin_tx_func);
-    GPIOPinTypeUART(p_uart_device->gpio_base,
-        p_uart_device->gpio_pin_rx | p_uart_device->gpio_pin_tx
+    UARTConfigSetExpClk(
+        p_uart_device->uart_base,
+        SysCtlClockGet(),
+        p_uart_device->baud_rate,
+        UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE
     );
 
     /* Set the TX and RX FIFO trigger thresholds to tell the uDMA
@@ -141,13 +148,6 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     /* Enable the UART and uDMA interface for TX and RX */
     UARTEnable(p_uart_device->uart_base);
     UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
-    
-    UARTConfigSetExpClk(
-        p_uart_device->uart_base,
-        SysCtlClockGet(),
-        p_uart_device->baud_rate,
-        UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE
-    );
 
     /* Set the UART state as initialised. */
     p_uart_device->initialised = true;

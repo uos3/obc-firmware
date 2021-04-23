@@ -56,7 +56,7 @@ int main(void) {
     max_num_attemps = 100;
 
     for (i = 0; i < DATA_LENGTH; i++) {
-        send_data[i] = i;
+        send_data[i] = 'A' + i;
     }
 
     Kernel_init_critical_modules();
