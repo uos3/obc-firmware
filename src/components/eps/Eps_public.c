@@ -52,7 +52,7 @@ bool Eps_init(void) {
     /* Prepare to recieve any potential unsolicited header bytes from the 
      * UART */
     DP.EPS.UART_ERROR.code = Uart_recv_bytes(
-        UART_DEVICE_ID_GNSS, 
+        UART_DEVICE_ID_EPS, 
         (uint8_t *)DP.EPS.EPS_REPLY, 
         EPS_UART_HEADER_LENGTH
     );
@@ -147,7 +147,7 @@ bool Eps_step(void) {
 
             /* Send the EPS request over the UART */
             DP.EPS.UART_ERROR.code = Uart_send_bytes(
-                UART_DEVICE_ID_GNSS,
+                UART_DEVICE_ID_EPS,
                 (uint8_t *)DP.EPS.EPS_REQUEST,
                 DP.EPS.EPS_REQUEST_LENGTH
             );

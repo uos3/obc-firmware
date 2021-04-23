@@ -767,7 +767,7 @@ bool Eps_start_uart_receive_payload(void) {
 
     /* Call the recieve function */
     DP.EPS.UART_ERROR.code = Uart_recv_bytes(
-        UART_DEVICE_ID_GNSS,
+        UART_DEVICE_ID_EPS,
         &DP.EPS.EPS_REPLY[EPS_UART_HEADER_LENGTH],
         payload_length
     );

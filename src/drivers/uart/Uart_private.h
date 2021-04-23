@@ -122,20 +122,7 @@ void Uart_test_rx_int_handler(void);
  */
 void Uart_test_tx_int_handler(void);
 
-ErrorCode Udma_interrupt_handler_rx(
-    Uart_DeviceId uart_id_in,
-    size_t length_in
-);
-
-ErrorCode Udma_interrupt_handler_rx(
-    Uart_DeviceId uart_id_in,
-    size_t length_in
-);
-
-void Udma_service_irq(
-    Uart_DeviceId uart_id_in,
-    Event complete_event_in
-);
+void Uart_service_irq(Uart_DeviceId uart_id_in);
 
 
 #endif /* H_UART_PRIVATE_H */

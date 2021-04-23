@@ -30,11 +30,11 @@
 #include "system/event_manager/EventManager_public.h"
 #include "system/kernel/Kernel_public.h"
 
-#define UART_DEVICE UART_DEVICE_ID_GNSS
-#define UART_RX_EVT EVT_UART_GNSS_RX_COMPLETE
-#define UART_TX_EVT EVT_UART_GNSS_TX_COMPLETE
+#define UART_DEVICE UART_DEVICE_ID_EPS
+#define UART_RX_EVT EVT_UART_EPS_RX_COMPLETE
+#define UART_TX_EVT EVT_UART_EPS_TX_COMPLETE
 
-#define DATA_LENGTH (2)
+#define DATA_LENGTH (7)
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -57,6 +57,7 @@ int main(void) {
 
     for (i = 0; i < DATA_LENGTH; i++) {
         send_data[i] = 'A' + i;
+        recv_data[i] = send_data[i] + 1;
     }
 
     Kernel_init_critical_modules();

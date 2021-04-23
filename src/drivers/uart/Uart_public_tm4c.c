@@ -179,7 +179,7 @@ ErrorCode Uart_send_bytes(
 
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMATX);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
     // IntEnable(p_uart_device->uart_base_int);
 
     switch(uart_id_in) {
@@ -233,13 +233,6 @@ ErrorCode Uart_send_bytes(
 
 
     /* FIXME: uDMAErrorStatusGet */
-
-    Event uart_event_tx;
-    Event uart_event_rx;
-    if (!Uart_get_events_for_device(uart_id_in, &uart_event_tx, &uart_event_rx)) {
-        return UART_ERROR_EVENTS_FAILED;
-    }
-    p_uart_device->uart_event = uart_event_tx;
 
     return ERROR_NONE;
 }
@@ -326,13 +319,6 @@ ErrorCode Uart_recv_bytes(
 
     /* FIXME: Check uDMAErrorStatusGet */
 
-    Event uart_event_tx;
-    Event uart_event_rx;
-    if (!Uart_get_events_for_device(uart_id_in, &uart_event_tx, &uart_event_rx)) {
-        return UART_ERROR_EVENTS_FAILED;
-    }
-    p_uart_device->uart_event = uart_event_rx;
-
     return ERROR_NONE;
 }
 
@@ -368,6 +354,8 @@ ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
 }
 
 ErrorCode Uart_step(void) {
+    #if 0
+    /* TODO: Split into rx and tx and use right event */
     int i;
     for (i = 0; i < UART_NUM_UARTS; ++i) {
         /* Loop through all UART devices whose status is NOT UART_STATUS_NONE
@@ -389,12 +377,13 @@ ErrorCode Uart_step(void) {
         UART_STATUS_NONE
         ) {
             /* Check to see if the UART device's event is raised. */
-            if (!EventManager_is_event_raised(UART_DEVICES[i].uart_event)) {
+            if (!EventManager_is_event_raised(UART_DEVICES[i].tx_event)) {
                 /* If the UART device's event is not raise, raise it. */
-                EventManager_raise_event(UART_DEVICES[i].uart_event);
+                EventManager_raise_event(UART_DEVICES[i].tx_event);
             }
         }
     }
+    #endif
 
     /* If this point has been reached without error, return ERROR NONE. */
     return ERROR_NONE;

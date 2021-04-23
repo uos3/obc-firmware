@@ -92,7 +92,8 @@ typedef struct _Uart_Device {
     uint32_t udma_channel_tx;
     Uart_Status uart_status_rx;
     Uart_Status uart_status_tx;
-    Event uart_event;
+    Event rx_event;
+    Event tx_event;
     uint32_t udma_mode;
     uint32_t uart_base_int;
     uint32_t baud_rate;
