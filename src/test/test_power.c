@@ -44,7 +44,8 @@ int main(void) {
     ErrorCode error = ERROR_NONE;
     bool run_loop = true;
     uint8_t test_step = 0;
-    Event timeout_event;
+    Event timer_event = EVT_NONE;
+    double ocp_duration_s = 60.0;
     double timeout_duration_s = CFG.POWER_TASK_TIMER_DURATION_S * 1.1;
     bool timeout_passed;
     bool check_wfi = true;
@@ -159,9 +160,12 @@ int main(void) {
         switch (test_step) {
             /* Stepping through different opmodes */
             case 0:
-                /* If there's no events raised at the end of the last cycle
-                 * move to the next opmode */
-                if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0) {
+                /* If the OCP change has timed out, of if we haven't started
+                 * one yet */
+                if (EventManager_is_event_raised(timer_event)
+                    ||
+                    timer_event == EVT_NONE
+                ) {
                     if (DP.OPMODEMANAGER.OPMODE 
                         < OPMODEMANAGER_OPMODE_PICTURE_TAKING
                     ) {                
@@ -178,6 +182,17 @@ int main(void) {
                                 "No events, setting OPMODE to %d", 
                                 DP.OPMODEMANAGER.NEXT_OPMODE
                             );
+
+                            /* Start timer for next transition */
+                            if (Timer_start_one_shot(
+                                ocp_duration_s, 
+                                &timer_event) 
+                                != 
+                                ERROR_NONE
+                            ) {
+                                DEBUG_ERR("Couldn't start OCP timer");
+                                Debug_exit(1);
+                            }
                         }
                     }
                     else {
@@ -211,7 +226,7 @@ int main(void) {
                      * collection */
                     if (Timer_start_one_shot(
                         timeout_duration_s,
-                        &timeout_event
+                        &timer_event
                     ) != ERROR_NONE) {
                         DEBUG_ERR("Couldn't start timeout timer");
                         Debug_exit(1);
@@ -221,7 +236,7 @@ int main(void) {
             /* Wait for EPS HK data */
             case 3:
                 /* Check timeout of collection */
-                if (EventManager_poll_event(timeout_event)) {
+                if (EventManager_poll_event(timer_event)) {
                     DEBUG_ERR("HK collection timeout passed");
                     Debug_exit(1);
                 }
@@ -232,7 +247,7 @@ int main(void) {
                     check_wfi = false;
                     test_step++;
 
-                    if (Timer_disable(timeout_event) != ERROR_NONE) {
+                    if (Timer_disable(timer_event) != ERROR_NONE) {
                         DEBUG_ERR("Couldn't disable timeout timer");
                         Debug_exit(1);
                     }

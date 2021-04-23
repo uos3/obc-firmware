@@ -30,9 +30,9 @@
 #include "system/event_manager/EventManager_public.h"
 #include "system/kernel/Kernel_public.h"
 
-#define UART_DEVICE UART_DEVICE_ID_CAM
-#define UART_RX_EVT EVT_UART_CAM_RX_COMPLETE
-#define UART_TX_EVT EVT_UART_CAM_TX_COMPLETE
+#define UART_DEVICE UART_DEVICE_ID_GNSS
+#define UART_RX_EVT EVT_UART_GNSS_RX_COMPLETE
+#define UART_TX_EVT EVT_UART_GNSS_TX_COMPLETE
 
 #define DATA_LENGTH (2)
 
