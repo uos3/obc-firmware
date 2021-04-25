@@ -15,8 +15,9 @@ while True:
     print("Waiting for data to receive")
     recvd_data = ser.read(255)
     sleep(0.2)
+    print("The data received is:")
     print(recvd_data)
-    print(f'Sending')
+    print(f'Sending back to Launchpad/TOBC')
     ser.write(recvd_data)
 
     """

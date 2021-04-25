@@ -340,37 +340,38 @@ ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
     return ERROR_NONE;
 }
 
-ErrorCode Uart_step(void) {
-    #if 0
-    /* TODO: Split into rx and tx and use right event */
+ErrorCode Uart_step_tx(void) {
+    Uart_Device *p_uart_device;
     int i;
+    /* Loop through all UART devices which have completed a transfer, and check
+     * to see if the UART's event has been raised */
     for (i = 0; i < UART_NUM_UARTS; ++i) {
-        /* Loop through all UART devices whose status is NOT UART_STATUS_NONE
-         * or UART_STATUS_IN_PROGRESS */
-        if (UART_DEVICES[i].uart_status_rx
-        !=
-        UART_STATUS_IN_PROGRESS
-        &&
-        UART_DEVICES[i].uart_status_tx
-        !=
-        UART_STATUS_IN_PROGRESS
-        &&
-        UART_DEVICES[i].uart_status_rx
-        !=
-        UART_STATUS_NONE
-        &&
-        UART_DEVICES[i].uart_status_tx
-        !=
-        UART_STATUS_NONE
-        ) {
-            /* Check to see if the UART device's event is raised. */
-            if (!EventManager_is_event_raised(UART_DEVICES[i].tx_event)) {
-                /* If the UART device's event is not raise, raise it. */
-                EventManager_raise_event(UART_DEVICES[i].tx_event);
+        p_uart_device = &UART_DEVICES[i];
+        if (p_uart_device->uart_status_tx == UART_STATUS_COMPLETE) {
+            if (!EventManager_is_event_raised(p_uart_device->tx_event)) {
+                EventManager_raise_event(p_uart_device->tx_event);
             }
         }
+
     }
-    #endif
+
+    /* If this point has been reached without error, return ERROR NONE. */
+    return ERROR_NONE;
+}
+ErrorCode Uart_step_rx(void) {
+    Uart_Device *p_uart_device;
+    int i;
+    /* Loop through all UART devices which have completed a transfer, and check
+     * to see if the UART's event has been raised */
+    for (i = 0; i < UART_NUM_UARTS; ++i) {
+        p_uart_device = &UART_DEVICES[i];
+        if (p_uart_device->uart_status_rx == UART_STATUS_COMPLETE) {
+            if (!EventManager_is_event_raised(p_uart_device->rx_event)) {
+                EventManager_raise_event(p_uart_device->rx_event);
+            }
+        }
+
+    }
 
     /* If this point has been reached without error, return ERROR NONE. */
     return ERROR_NONE;

@@ -115,13 +115,23 @@ typedef struct _Uart_Device {
  */
 ErrorCode Uart_init(void);
 
-ErrorCode Uart_step(void);
-    /* In Uart_step():
-     * 
-     * - Check all devices with a status that isn't UART_STATUS_IN_PROGRESS or
-     *   UART_STATUS_NONE 
-     * - if that device's event hasn't been raised, raise it again
-     */
+/**
+ * @brief Check all devices with a TX status of 'COMPLETE'
+ * 
+ * If that device's event hasn't been raised, raise it again
+ * 
+ * @return ErrorCode 
+ */
+ErrorCode Uart_step_tx(void);
+
+/**
+ * @brief Check all devices with a RX status of 'COMPLETE'
+ * 
+ * If that device's event hasn't been raised, raise it again
+ * 
+ * @return ErrorCode 
+ */
+ErrorCode Uart_step_rx(void);
 
 /**
  * @brief Initialise (or re-init) a specific UART device.
@@ -134,11 +144,18 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in);
 /**
  * @brief Send bytes to a UART device
  * 
- * Event EVT_UART_SEND_COMPLETE is raised when the bytes have been sent to the
- * device. This could either be successful or it could fail, so use
- * Uart_get_status() for the device to check.
+ * Event EVT_UART_TX_COMPLETE is raised when the bytes have been sent to the
+ * device.
  * 
- * TODO: Change this comment to be about the EVT_UART_device_TX_COMPLETE
+ * This function uses uDMA to send data of a specified length. uDMA handles
+ * the TX FIFO, sending the data in bursts. The ARBITRATION SIZE argument
+ * within uDMAChannelControlSet determines the number of bytes sent with each
+ * burst, and the FIFO level can be set so that transfers are triggered when
+ * the FIFO is at a certain capacity (e.g. 1/2 full)
+ * 
+ * The arbitration size isn't taken into account if the channels are set to
+ * AUTO MODE, and this breaks the function (see the GDP2021 report for more)
+ * So the mode should be set to BASIC MODE
  * 
  * @param uart_id_in 
  * @param p_data_in 
@@ -154,8 +171,21 @@ ErrorCode Uart_send_bytes(
 /**
  * @brief Receive bytes from a UART device
  * 
- * TODO: Add note on specific event
- * TODO: Add note on how p_data_out __MUST__ exist statically
+ * Event EVT_UART_RX_COMPLETE is raised when the bytes have been sent to the
+ * device.
+ * 
+ * This function uses uDMA to receive data of a specified length. uDMA handles
+ * the RX FIFO, receiving the data in bursts. The ARBITRATION SIZE argument
+ * within uDMAChannelControlSet determines the number of bytes received with
+ * each burst, and the FIFO level can be set so that transfers are triggered
+ * when the FIFO is at a certain capacity (e.g. 1/2 full)
+ * 
+ * The arbitration size isn't taken into account if the channels are set to
+ * AUTO MODE, and this breaks the function (see the GDP2021 report for more)
+ * So the mode should be set to BASIC MODE
+ * 
+ * p_data out MUST exist statically before this function is called,
+ * otherwise the data will be 'received' to an address which does not exist
  * 
  * @param uart_id_in 
  * @param p_data_out 
@@ -189,7 +219,7 @@ bool Uart_get_events_for_device(
 
 
 /* -------------------------------------------------------------------------   
- * TODO: FUNCTIONS BELOW ARE TEMPORARY - WILL BE REPLACED BY NEW INTERFACE
+ * TODO: FUNCTIONS BELOW ARE THE OLD INTERFACE, AND ARE UNUSED
  * ------------------------------------------------------------------------- */
 
 /**

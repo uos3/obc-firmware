@@ -78,18 +78,19 @@ int main(void) {
         return 1;
     }
 
+    DEBUG_INF("UART device and uDMA channel initialised");
+
     /* Main loop */
     while (test_complete == false) {
         switch(test_step) {
             /* Step 0 is to send the bytes */
             case 0:
-                DEBUG_INF("----- STEP 0 -----");
                 if (Uart_send_bytes(UART_DEVICE, send_data, DATA_LENGTH) != ERROR_NONE) {
                     DEBUG_ERR("Failed to send bytes");
                     Debug_exit(1);
                     return 1;
                 }
-                if (Uart_step() != ERROR_NONE) {
+                if (Uart_step_tx() != ERROR_NONE) {
                     DEBUG_ERR("Step function failed");
                     Debug_exit(1);
                     return 1;
@@ -102,7 +103,7 @@ int main(void) {
              * automatically clear it with poll_event). Will check 3 times
              * before failing. */
             case 1:
-                DEBUG_INF("----- STEP 1 -----");
+                DEBUG_INF("Checking for TX COMPLETE Event");
                 if (num_attempts < max_num_attemps) {
                     if (EventManager_poll_event(UART_TX_EVT)) {
                         DEBUG_INF("Bytes have been sent");
@@ -126,20 +127,19 @@ int main(void) {
                 break;
             /* Step 2 is to receive the bytes */
             case 2:
-                DEBUG_INF("----- STEP 2 -----");
                 if (Uart_recv_bytes(UART_DEVICE, recv_data, DATA_LENGTH) != ERROR_NONE) {
                     Debug_exit(1);
                 }
-                if (Uart_step() != ERROR_NONE) {
+                if (Uart_step_rx() != ERROR_NONE) {
                     Debug_exit(1);
                 }
+                DEBUG_INF("Receiving bytes");
                 /* Increment the step number and move on to next case */
                 test_step++;
                 break;
             /* Step 3 is to check if the correct event has been raised after
              * receiving bytes. */
             case 3:
-                DEBUG_INF("----- STEP 3 -----");
                 if (num_attempts < max_num_attemps) {
                     if (EventManager_poll_event(UART_RX_EVT)) {
                         DEBUG_INF("Bytes have been received");
@@ -162,7 +162,7 @@ int main(void) {
              * which was sent, as all this test is doing is sending and
              * receiving the same data. */
             case 4:
-                DEBUG_INF("----- STEP 4 -----");
+                DEBUG_INF("Comparing sent and received data");
                 DEBUG_INF("index: [sent, received]");
                 for (i = 0; i < DATA_LENGTH; ++i) {
                     if (recv_data[i] != send_data[i]) {
@@ -177,7 +177,7 @@ int main(void) {
                 test_step++;
                 break;
             default:
-                DEBUG_INF(" ----- TEST COMPLETE AT STEP %d -----", test_step);
+                DEBUG_INF("Send and recv has been successfully compared");
                 test_complete = true;
                 if (recv_matches_sent) {
                     DEBUG_INF(" ---- TEST PASSED ---- ");
@@ -195,42 +195,6 @@ int main(void) {
         DEBUG_ERR("Error when clearing events");
         return 1;
     }
-
-    #if 0
-    /* Send the data to the UART RX associated with the UART device.
-     * TODO: Change which device for send and receive below. */
-    if (Uart_send_bytes(UART_DEVICE_ID_TEST, send_data, data_size) != ERROR_NONE) {
-        Uart_test_tx_int_handler();
-        /*Udma_interrupt_handler(UART_DEVICE_ID_TEST, data_size)*/
-        DEBUG_ERR("Failed to send bytes to UART device.");
-    }
-
-    if (EventManager_is_event_raised(EVT_UART_TEST_TX_COMPLETE)) {
-        /* Receive the data from the UART TX associated with the UART device. */
-        if (Uart_recv_bytes(UART_DEVICE_ID_TEST, recv_data, data_size) != ERROR_NONE) {
-            Uart_test_rx_int_handler();
-            /*Udma_interrupt_handler(UART_DEVICE_ID_TEST, data_size)*/
-            DEBUG_ERR("Failed to receive bytes from UART device.");
-        }
-        else {
-            if(EventManager_is_event_raised(EVT_UART_TEST_RX_COMPLETE)) {
-                /* Loop through the data size, making sure that the data received from the
-                * TX is the same as what was sent to the RX (the raspberry pi should re
-                * echo the data it received, and send the same data back) */
-                for (i = 0; i < data_size; ++i) {
-                    if (recv_data[i] != send_data[i]) {
-                        DEBUG_ERR("Unexpected receive data - should be the same as sent.");
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    else {
-        DEBUG_ERR("EventManager_is_event_raised failed.");
-        return 1;
-    }
-    #endif
 
     /* Return 0 if no errors occured up to this point. */
     return 0;
