@@ -107,6 +107,7 @@ int main(void) {
                 if (num_attempts < max_num_attemps) {
                     if (EventManager_poll_event(UART_TX_EVT)) {
                         DEBUG_INF("Bytes have been sent");
+                        num_attempts = 0;
                         test_step++;
                         break;
                     }
