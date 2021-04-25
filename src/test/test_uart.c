@@ -54,7 +54,7 @@ int main(void) {
     test_complete = false;
     test_step = 0;
     num_attempts = 0;
-    max_num_attemps = 100;
+    max_num_attemps = 150;
 
     for (i = 0; i < DATA_LENGTH; i++) {
         send_data[i] = 'A';
@@ -103,10 +103,12 @@ int main(void) {
              * automatically clear it with poll_event). Will check 3 times
              * before failing. */
             case 1:
-                DEBUG_INF("Checking for TX COMPLETE Event");
+                DEBUG_INF("Checking TX Event");
                 if (num_attempts < max_num_attemps) {
                     if (EventManager_poll_event(UART_TX_EVT)) {
-                        DEBUG_INF("Bytes have been sent");
+                        DEBUG_INF("Bytes have been sent after %d attempts",
+                        num_attempts
+                        );
                         num_attempts = 0;
                         test_step++;
                         break;
@@ -141,9 +143,12 @@ int main(void) {
             /* Step 3 is to check if the correct event has been raised after
              * receiving bytes. */
             case 3:
+                DEBUG_INF("Checking RX Event");
                 if (num_attempts < max_num_attemps) {
                     if (EventManager_poll_event(UART_RX_EVT)) {
-                        DEBUG_INF("Bytes have been received");
+                        DEBUG_INF("Bytes have been received after %d attempts",
+                        num_attempts
+                        );
                         test_step++;
                         break;
                     }
