@@ -12,12 +12,11 @@ from time import sleep
 ser = serial.Serial("/dev/ttyUSB0", 56000) #open port and set baud rate
 
 while True:
-    print("Waiting for data to receive")
+    print("Waiting for data to receive:")
     recvd_data = ser.read(255)
     sleep(0.2)
-    print("The data received is:")
     print(recvd_data)
-    print(f'Sending back to Launchpad/TOBC')
+    print(f'SendingC')
     ser.write(recvd_data)
 
     """
