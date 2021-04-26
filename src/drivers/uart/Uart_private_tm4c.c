@@ -170,7 +170,7 @@ void Uart_eps_rx_int_handler(void) {
     Uart_service_rx_irq(UART_DEVICE_ID_EPS);
 }
 void Uart_eps_tx_int_handler(void) {
-   Uart_service_tx_irq(UART_DEVICE_ID_EPS);
+    Uart_service_tx_irq(UART_DEVICE_ID_EPS);
 }
 
 void Uart_test_rx_int_handler(void) {

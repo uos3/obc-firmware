@@ -49,21 +49,7 @@ bool Eps_init(void) {
     /* Set the EPS as initialised */
     DP.EPS.INITIALISED = true;
 
-    /* Prepare to recieve any potential unsolicited header bytes from the 
-     * UART */
-    DP.EPS.UART_ERROR.code = Uart_recv_bytes(
-        UART_DEVICE_ID_EPS, 
-        (uint8_t *)DP.EPS.EPS_REPLY, 
-        EPS_UART_HEADER_LENGTH
-    );
-    if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
-        DEBUG_ERR("Unable to start Uart_recv_bytes for EPS");
-        DP.EPS.UART_ERROR.p_cause = NULL;
-        DP.EPS.ERROR.code = EPS_ERROR_UART_START_RECV_FAILED;
-        DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
-        return false;
-    }
-    DP.EPS.EXPECT_HEADER = true;
+    
 
     return true;
 }
@@ -81,6 +67,7 @@ bool Eps_step(void) {
 
     /* Check UART any TM */
     if (EventManager_poll_event(EVT_UART_EPS_RX_COMPLETE)) {
+        DEBUG_DBG("RX event raised");
         /* If we expected a header for this recieve process it, this will start
          * the recieve for the payload and CRC as well */
         if (DP.EPS.EXPECT_HEADER) {
@@ -187,6 +174,23 @@ bool Eps_step(void) {
             p_hex_str[0] = '\0';
             #endif
 
+            /* Prepare to recieve any potential unsolicited header bytes from the 
+             * UART */
+            DP.EPS.UART_ERROR.code = Uart_recv_bytes(
+                UART_DEVICE_ID_EPS, 
+                (uint8_t *)DP.EPS.EPS_REPLY, 
+                EPS_UART_HEADER_LENGTH
+            );
+            if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
+                DEBUG_ERR("Unable to start Uart_recv_bytes for EPS");
+                DP.EPS.UART_ERROR.p_cause = NULL;
+                DP.EPS.ERROR.code = EPS_ERROR_UART_START_RECV_FAILED;
+                DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
+                return false;
+            }
+            DP.EPS.EXPECT_HEADER = true;
+            DEBUG_DBG("EPS reply recv started");
+
             /* Advance to next state */
             DP.EPS.STATE = EPS_STATE_WAIT_REPLY;
 
@@ -226,6 +230,14 @@ bool Eps_step(void) {
 
             if (DP.EPS.COMMAND_STATUS != EPS_COMMAND_IN_PROGRESS) {
                 DP.EPS.STATE = EPS_STATE_IDLE;
+
+                /* Raise command complete event */
+                if (!EventManager_raise_event(EVT_EPS_COMMAND_COMPLETE)) {
+                    DEBUG_ERR("Couldn't raise EPS command complete event");
+                    DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
+                    return false;
+                }
+
                 /* Stop the timer */
                 DP.EPS.TIMER_ERROR.code = Timer_disable(
                     DP.EPS.TIMEOUT_EVENT

@@ -470,7 +470,7 @@ bool Eps_process_uart_header(void) {
         (
             DP.EPS.EPS_REPLY[EPS_UART_HEADER_FRAME_NUMBER_POS]
             ==
-            DP.EPS.UART_FRAME_NUMBER
+            DP.EPS.EPS_REQUEST[EPS_UART_HEADER_FRAME_NUMBER_POS]
         )
     ) {
         DEBUG_TRC("Got EPS UART header");
@@ -512,7 +512,7 @@ bool Eps_process_uart_header(void) {
         else {
             DEBUG_ERR(
                 "Expected UART frame number %u but got %u",
-                DP.EPS.UART_FRAME_NUMBER,
+                DP.EPS.EPS_REQUEST[EPS_UART_HEADER_FRAME_NUMBER_POS],
                 DP.EPS.EPS_REPLY[EPS_UART_HEADER_FRAME_NUMBER_POS]
             );
 
@@ -534,6 +534,7 @@ bool Eps_process_uart_header(void) {
 bool Eps_process_uart_payload(void) {
     Crypto_Crc16 expected_crc;
     Crypto_Crc16 received_crc;
+    char p_hex_str[64];
     
     /* We've recieved the payload bytes, need to check with UART if it was
      * successful.
@@ -542,18 +543,27 @@ bool Eps_process_uart_payload(void) {
 
     /* TODO: Determine if UART worked or not */
 
+    /* Print the message */
+    #ifdef DEBUG_MODE
+    Debug_hex_string(
+        DP.EPS.EPS_REPLY, 
+        p_hex_str, 
+        DP.EPS.EPS_REPLY_LENGTH
+    );
+    DEBUG_DBG("message from EPS = %s", p_hex_str);
+    p_hex_str[0] = '\0';
+    #endif
+
     /* Calculate the expected CRC of the received packet */
     Crypto_get_crc16(
         (uint8_t *)DP.EPS.EPS_REPLY,
-        DP.EPS.EPS_REPLY_LENGTH - sizeof(Crypto_Crc16),
+        DP.EPS.EPS_REPLY_LENGTH - EPS_UART_CRC_LENGTH,
         &expected_crc
     );
 
     /* Pack the received CRC from it's pair of bytes into a 16 bit int. */
-    received_crc = (uint16_t)(
-        DP.EPS.EPS_REPLY[DP.EPS.EPS_REPLY_LENGTH - 1] << 8
-        |
-        DP.EPS.EPS_REPLY[DP.EPS.EPS_REPLY_LENGTH - 2]
+    received_crc = Packing_u16_from_be(
+        &DP.EPS.EPS_REPLY[DP.EPS.EPS_REPLY_LENGTH - EPS_UART_CRC_LENGTH]
     );
 
     /* If the CRCs don't match then we can't actually depend on the data type
@@ -656,7 +666,7 @@ bool Eps_process_uart_payload(void) {
     /* Process normal TM from a command */
     else if (DP.EPS.EPS_REPLY[EPS_UART_HEADER_FRAME_NUMBER_POS]
         ==
-        DP.EPS.UART_FRAME_NUMBER
+        DP.EPS.EPS_REQUEST[EPS_UART_HEADER_FRAME_NUMBER_POS]
     ) {
         /* Check we are actully supposed to be recieving a command */
         if (DP.EPS.STATE != EPS_STATE_WAIT_REPLY) {
@@ -683,21 +693,13 @@ bool Eps_process_uart_payload(void) {
             return false;
         }
 
-        /* Raise the command complete event */
-        if (!EventManager_raise_event(EVT_EPS_COMMAND_COMPLETE)) {
-            DEBUG_ERR(
-                "EventManager error while raising command complete event"
-            );
-            DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
-            DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
-            return false;
-        }
+        /* Wait reply will raise command complete event if required */
     }
     /* Frame number is wrong, handle this error */
     else {
         DEBUG_ERR(
             "Expected UART frame number %u or 0 but got %u",
-            DP.EPS.UART_FRAME_NUMBER,
+            DP.EPS.EPS_REQUEST[EPS_UART_HEADER_FRAME_NUMBER_POS],
             DP.EPS.EPS_REPLY[EPS_UART_HEADER_FRAME_NUMBER_POS]
         );
 

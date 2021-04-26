@@ -306,6 +306,8 @@ ErrorCode Uart_recv_bytes(
 
     p_uart_device->uart_status_rx = UART_STATUS_IN_PROGRESS;
 
+    DEBUG_DBG("Uart_recv started on UART %d, length %u", uart_id_in, length_in);
+
     return ERROR_NONE;
 }
 
