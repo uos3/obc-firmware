@@ -199,7 +199,7 @@ typedef uint8_t Eps_OcpByte;
 /**
  * @brief EPS command timeout duration in seconds.
  */
-#define EPS_COMMAND_TIMEOUT_S ((double)(10.0))
+#define EPS_COMMAND_TIMEOUT_S ((double)(4.0))
 
 /* -------------------------------------------------------------------------   
  * STRUCTS

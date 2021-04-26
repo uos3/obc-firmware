@@ -53,9 +53,9 @@ typedef enum _Uart_DeviceId {
 /* Add status enum */
 typedef enum _Uart_Status {
     UART_STATUS_NONE = 0,
-    UART_STATUS_COMPLETE = 1,
+    UART_STATUS_COMPLETE = 1, /* TODO: SUCCESS */
     UART_STATUS_IN_PROGRESS = 2,
-    UART_STATUS_UDMA_TRANSFER_ERROR = 3, /* add many error kinds */
+    UART_STATUS_UDMA_TRANSFER_ERROR = 3, /* TODO: FAILURE */
 } Uart_Status;
 
 /*

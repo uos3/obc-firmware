@@ -309,6 +309,7 @@ ErrorCode Uart_recv_bytes(
     return ERROR_NONE;
 }
 
+/* TODO: Change to clear the internal status when the user calls this function */
 ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];

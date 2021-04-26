@@ -45,7 +45,7 @@ int main(void) {
     bool run_loop = true;
     uint8_t test_step = 0;
     Event timer_event = EVT_NONE;
-    double ocp_duration_s = 60.0;
+    double ocp_duration_s = 30.0;
     double timeout_duration_s = CFG.POWER_TASK_TIMER_DURATION_S * 1.1;
     bool timeout_passed;
     bool check_wfi = true;
@@ -105,11 +105,19 @@ int main(void) {
 
         /* ---- DRIVERS ---- */
         
-        error = Uart_step();
+        /* Removed: pending changes to UART driver */
+        #if 0
+        error = Uart_step_tx();
         if (error != ERROR_NONE) {
-            DEBUG_ERR("Uart_step() failed! Error = 0x%04X", error);
+            DEBUG_ERR("Uart_step_tx() failed! Error = 0x%04X", error);
             Debug_exit(1);
         }
+        error = Uart_step_rx();
+        if (error != ERROR_NONE) {
+            DEBUG_ERR("Uart_step_rx() failed! Error = 0x%04X", error);
+            Debug_exit(1);
+        }
+        #endif
 
         /* ---- COMPONENTS ---- */
         
