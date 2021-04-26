@@ -189,7 +189,9 @@ void Uart_service_irq(Uart_DeviceId uart_id_in) {
             );
             if (udma_mode_tx == UDMA_MODE_STOP) {
                 EventManager_raise_event(p_uart_device->tx_event);
-                p_uart_device->uart_status_tx = UART_STATUS_COMPLETE;
+                Uart_get_status(uart_id_in, p_uart_device->uart_status_tx);
+                /* TODO: Change name of the above func to udma get status
+                 * and move to udma module */
             }
             break;
         case UART_INT_RX:
@@ -200,7 +202,9 @@ void Uart_service_irq(Uart_DeviceId uart_id_in) {
             );
             if (udma_mode_rx == UDMA_MODE_STOP) {
                 EventManager_raise_event(p_uart_device->rx_event);
-                p_uart_device->uart_status_rx = UART_STATUS_COMPLETE;
+                Uart_get_status(uart_id_in, p_uart_device->uart_status_rx);
+                /* TODO: Change name of the above func to udma get status
+                 * and move to udma module */
             }
             break;
         default:
