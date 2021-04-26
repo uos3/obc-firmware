@@ -149,6 +149,31 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     UARTEnable(p_uart_device->uart_base);
     UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
 
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
+
+    switch(uart_id_in) {
+        case UART_DEVICE_ID_CAM:
+            UARTIntRegister(p_uart_device->uart_base, Uart_cam_int_handler);
+            // IntRegister(p_uart_device->uart_base_int, Uart_cam_tx_int_handler);
+            break;
+        case UART_DEVICE_ID_GNSS:
+            UARTIntRegister(p_uart_device->uart_base, Uart_gnss_int_handler);
+            // IntRegister(p_uart_device->uart_base_int, Uart_gnss_tx_int_handler);
+            break;
+        case UART_DEVICE_ID_EPS:
+            UARTIntRegister(p_uart_device->uart_base, Uart_eps_int_handler);
+            // IntRegister(p_uart_device->uart_base_int, Uart_eps_tx_int_handler);
+            break;
+        case UART_DEVICE_ID_TEST:
+            UARTIntRegister(p_uart_device->uart_base, Uart_test_int_handler);
+            // IntRegister(p_uart_device->uart_base_int, Uart_test_tx_int_handler);
+            break;
+        default:
+            DEBUG_ERR("Unexpected UART ID");
+            return UART_ERROR_UNEXPECTED_DEVICE_ID;
+    }
+
     /* Set the UART state as initialised. */
     p_uart_device->initialised = true;
         /* Return error none if this point has been reached without any errors
@@ -177,6 +202,8 @@ ErrorCode Uart_send_bytes(
         return UDMA_ERROR_NOT_INITIALISED;
     }
 
+    #if 0
+
     /* Enable the UART interrupt.
      * TODO: Check this, and in rx */
     UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
@@ -202,6 +229,7 @@ ErrorCode Uart_send_bytes(
             DEBUG_ERR("Unexpected UART ID");
             return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
+    #endif
 
     uDMAChannelAssign(p_uart_device->udma_channel_tx);
     
@@ -257,6 +285,8 @@ ErrorCode Uart_recv_bytes(
         return UDMA_ERROR_NOT_INITIALISED;
     }
 
+    #if 0
+
     UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
 
     switch(uart_id_in) {
@@ -280,6 +310,7 @@ ErrorCode Uart_recv_bytes(
             DEBUG_ERR("Unexpected UART device ID");
             return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
+    #endif
 
     uDMAChannelAssign(p_uart_device->udma_channel_rx);
 
