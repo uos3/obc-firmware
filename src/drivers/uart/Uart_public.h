@@ -208,7 +208,7 @@ ErrorCode Uart_recv_bytes(
  */
 ErrorCode Uart_get_status(
     Uart_DeviceId uart_id_in,
-    Uart_Status p_status_out
+    Uart_Status *p_status_out
 );
 
 bool Uart_get_events_for_device(
@@ -216,6 +216,20 @@ bool Uart_get_events_for_device(
     Event *p_tx_event_out,
     Event *p_rx_event_out
 );
+
+/**
+ * @brief Stop any existing transmit action on the given device.
+ * 
+ * @param uart_id_in The UART device to stop.
+ */
+void Uart_stop_send(Uart_DeviceId uart_id_in);
+
+/**
+ * @brief Stop any existing receive action on the given device.
+ * 
+ * @param uart_id_in The UART device to stop.
+ */
+void Uart_stop_recv(Uart_DeviceId uart_id_in);
 
 
 /* -------------------------------------------------------------------------   

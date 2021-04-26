@@ -1,0 +1,77 @@
+[         0 ---] test/test_power.c:70 ---- Power Test ----
+[         4 ---] test/test_power.c:71 Basic initialisation complete
+[        11 ---] test/test_power.c:87 Eps initialised
+[        16 ---] system/opmode_manager/OpModeManager_bu.c:95 Dwell time not ellapsed, starting timer
+[        25 ---] test/test_power.c:93 OpModeManager initialised
+[        31 ---] test/test_power.c:99 Power initialised
+[        36 ---] test/test_power.c:101 ---- TEST 1: OPMODE TRANSITIONS ----
+[        43 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8803
+[        51 TRC] applications/power/Power_public.c:308 Updated EPS config sent
+[        58 ---] test/test_power.c:189 No events, setting OPMODE to 1
+[        65 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[        73 DBG] components/eps/Eps_public.c:173 EPS message = 01 02 3F 00 10 AD 90 
+[        81 DBG] drivers/uart/Uart_public_tm4c.c:309 Uart_recv started on UART 2, length 2
+[        90 DBG] components/eps/Eps_public.c:192 EPS reply recv started
+[        97 ---] system/opmode_manager/OpModeManager_public.c:103 TC requested graceful OpMode transition
+[       106 TRC] system/event_manager/EventManager_private.c:141 Event 0x6006 was polled as part of cleanup
+[       174 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       180 DBG] components/eps/Eps_public.c:70 RX event raised
+[       187 TRC] components/eps/Eps_private.c:476 Got EPS UART header
+[       194 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       201 DBG] drivers/uart/Uart_public_tm4c.c:309 Uart_recv started on UART 2, length 5
+[       210 DBG] components/eps/Eps_public.c:70 RX event raised
+[       217 DBG] components/eps/Eps_private.c:553 message from EPS = 01 82 3F 00 00 62 99 
+[       225 ERR] components/eps/Eps_private.c:835 Set and loaded EPS configs do not match
+[       234 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8801
+[       242 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8803
+[       249 TRC] applications/power/Power_public.c:308 Updated EPS config sent
+[       257 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[       265 DBG] components/eps/Eps_public.c:173 EPS message = 02 02 3F 00 10 43 42 
+[       273 DBG] drivers/uart/Uart_public_tm4c.c:309 Uart_recv started on UART 2, length 2
+[       282 DBG] components/eps/Eps_public.c:192 EPS reply recv started
+[       289 TRC] system/event_manager/EventManager_private.c:141 Event 0x6006 was polled as part of cleanup
+[       366 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       372 DBG] components/eps/Eps_public.c:70 RX event raised
+[       379 TRC] components/eps/Eps_private.c:476 Got EPS UART header
+[       386 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       393 DBG] drivers/uart/Uart_public_tm4c.c:309 Uart_recv started on UART 2, length 5
+[       402 DBG] components/eps/Eps_public.c:70 RX event raised
+[       409 DBG] components/eps/Eps_private.c:553 message from EPS = 02 82 3F 00 00 8C 4B 
+[       417 ERR] components/eps/Eps_private.c:835 Set and loaded EPS configs do not match
+[       426 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8801
+[       434 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8803
+[       441 TRC] applications/power/Power_public.c:308 Updated EPS config sent
+[       449 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[       457 DBG] components/eps/Eps_public.c:173 EPS message = 03 02 3F 00 10 E9 13 
+[       465 DBG] drivers/uart/Uart_public_tm4c.c:309 Uart_recv started on UART 2, length 2
+[       474 DBG] components/eps/Eps_public.c:192 EPS reply recv started
+[       481 TRC] system/event_manager/EventManager_private.c:141 Event 0x6006 was polled as part of cleanup
+[       558 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       564 DBG] components/eps/Eps_public.c:70 RX event raised
+[       571 TRC] components/eps/Eps_private.c:476 Got EPS UART header
+[       578 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       585 DBG] drivers/uart/Uart_public_tm4c.c:309 Uart_recv started on UART 2, length 5
+[       594 DBG] components/eps/Eps_public.c:70 RX event raised
+[       601 DBG] components/eps/Eps_private.c:553 message from EPS = 03 82 3F 00 00 26 1A 
+[       609 ERR] components/eps/Eps_private.c:835 Set and loaded EPS configs do not match
+[       618 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8801
+[       626 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8803
+[       633 TRC] applications/power/Power_public.c:308 Updated EPS config sent
+[       641 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[       649 DBG] components/eps/Eps_public.c:173 EPS message = 04 02 3F 00 10 8E C7 
+[       657 DBG] drivers/uart/Uart_public_tm4c.c:309 Uart_recv started on UART 2, length 2
+[       666 DBG] components/eps/Eps_public.c:192 EPS reply recv started
+[       673 TRC] system/event_manager/EventManager_private.c:141 Event 0x6006 was polled as part of cleanup
+[       750 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       756 DBG] components/eps/Eps_public.c:70 RX event raised
+[       763 TRC] components/eps/Eps_private.c:476 Got EPS UART header
+[       770 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       777 DBG] drivers/uart/Uart_public_tm4c.c:309 Uart_recv started on UART 2, length 5
+[       786 DBG] components/eps/Eps_public.c:70 RX event raised
+[       793 DBG] components/eps/Eps_private.c:553 message from EPS = 04 82 3F 00 00 41 CE 
+[       801 ERR] components/eps/Eps_private.c:835 Set and loaded EPS configs do not match
+[       810 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8801
+[       818 ERR] applications/power/Power_public.c:114 Maximum number of failed EPS commands exceeded
+[       828 ERR] test/test_power.c:147 Power_step() failed! Error chain = [D40B 880E]
+
+

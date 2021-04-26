@@ -128,4 +128,24 @@
  */
 #define EPS_ERROR_COMMAND_TIMEOUT ((ErrorCode)(MOD_ID_EPS | 18))
 
+/**
+ * @brief The EPS responded to a command with an invalid data type error.
+ */
+#define EPS_ERROR_EPS_REPORTS_INVALID_DATA_TYPE ((ErrorCode)(MOD_ID_EPS | 19))
+
+/**
+ * @brief The EPS responded to a command with an invalid header length error.
+ */
+#define EPS_ERROR_EPS_REPORTS_INVALID_HEADER_LENGTH ((ErrorCode)(MOD_ID_EPS | 20))
+
+/**
+ * @brief The EPS responded to a command with an invalid payload length error.
+ */
+#define EPS_ERROR_EPS_REPORTS_INVALID_PAYLOAD_LENGTH ((ErrorCode)(MOD_ID_EPS | 21))
+
+/**
+ * @brief The EPS responded to a command with an incorrect CRC error.
+ */
+#define EPS_ERROR_EPS_REPORTS_INCORRECT_CRC ((ErrorCode)(MOD_ID_EPS | 22))
+
 #endif /* H_EPS_ERRORS_H */

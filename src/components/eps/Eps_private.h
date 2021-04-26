@@ -197,6 +197,12 @@ typedef uint8_t Eps_OcpByte;
 #define EPS_UART_TM_OCP_TRIPPED_PL_LENGTH (1)
 
 /**
+ * @brief Lenght of the EPS_UART_DATA_TYPE_TM_INVALID_DATA_TYPE payload in 
+ * bytes.
+ */
+#define EPS_UART_TM_INVALID_DATA_TYPE_PL_LENGTH (1)
+
+/**
  * @brief EPS command timeout duration in seconds.
  */
 #define EPS_COMMAND_TIMEOUT_S ((double)(4.0))

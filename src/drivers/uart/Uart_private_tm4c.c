@@ -29,6 +29,7 @@
 
 /* Internal */
 #include "util/debug/Debug_public.h"
+#include "system/data_pool/DataPool_public.h"
 #include "drivers/uart/Uart_public.h"
 #include "drivers/uart/Uart_private.h"
 #include "drivers/gpio/Gpio_public.h"
@@ -179,29 +180,57 @@ void Uart_service_irq(Uart_DeviceId uart_id_in) {
 
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
+    // DEBUG_DBG("UART_SERVICE_IRQ");
+
+    UARTIntStatus(p_uart_device->uart_base, true);
+    UARTIntClear(
+        p_uart_device->uart_base, 
+        (UART_INT_DMARX | UART_INT_DMATX)
+    );
 
     if (p_uart_device->uart_status_tx == UART_STATUS_IN_PROGRESS) {
-        UARTIntClear(p_uart_device->uart_base, (UART_INT_TX | UART_INT_DMATX));
+        // DEBUG_DBG("UART TX INPROG");
+        // UARTIntClear(p_uart_device->uart_base, (UART_INT_TX | UART_INT_DMATX));
         udma_mode_tx = uDMAChannelModeGet(
             p_uart_device->udma_channel_tx | UDMA_PRI_SELECT
         );
         if (udma_mode_tx == UDMA_MODE_STOP) {
+            // DEBUG_DBG("UART TX STOP");
             EventManager_raise_event(p_uart_device->tx_event);
-            Uart_get_status(uart_id_in, p_uart_device->uart_status_tx);
-            /* TODO: Change name of the above func to udma get status
-             * and move to udma module */
+            p_uart_device->uart_status_tx = UART_STATUS_COMPLETE;
+
+            #if 0
+            if (uDMAErrorStatusGet() == 0) {
+            }
+            else {
+                p_uart_device->uart_status_tx = UART_STATUS_UDMA_TRANSFER_ERROR;
+            }
+            #endif
         }
     }
     if (p_uart_device->uart_status_rx == UART_STATUS_IN_PROGRESS) {
-        UARTIntClear(p_uart_device->uart_base, (UART_INT_RX | UART_INT_DMARX));
+        // DEBUG_DBG("UART RX INPROG");
+        // UARTIntClear(p_uart_device->uart_base, (UART_INT_RX | UART_INT_DMARX));
         udma_mode_rx = uDMAChannelModeGet(
             p_uart_device->udma_channel_rx | UDMA_PRI_SELECT
         );
         if (udma_mode_rx == UDMA_MODE_STOP) {
+            // DEBUG_DBG("UART RX STOP");
+            // DEBUG_DBG("UART DATA: %02X %02X", DP.EPS.EPS_REPLY[0], DP.EPS.EPS_REPLY[1]);
             EventManager_raise_event(p_uart_device->rx_event);
-            Uart_get_status(uart_id_in, p_uart_device->uart_status_rx);
-            /* TODO: Change name of the above func to udma get status
-             * and move to udma module */
+            p_uart_device->uart_status_rx = UART_STATUS_COMPLETE;
+
+            // if (DP.EPS.EPS_REPLY[1] == 0x81 && DP.EPS.EXPECT_HEADER) {
+            //     Uart_recv_bytes(UART_DEVICE_ID_EPS, &DP.EPS.EPS_REPLY[2], 107 - 26);
+            // }
+            
+            #if 0
+            if (uDMAErrorStatusGet() == 0) {
+            }
+            else {
+                p_uart_device->uart_status_rx = UART_STATUS_UDMA_TRANSFER_ERROR;
+            }
+            #endif
         }
     }
 }

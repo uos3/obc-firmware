@@ -455,13 +455,6 @@ Eps_BattStatus Eps_parse_batt_status(uint8_t *p_data_in) {
 bool Eps_process_uart_header(void) {
     Uart_Status uart_status;
 
-    /* We've recieved the header bytes, need to check with UART if it was
-     * successful.
-     * TODO: This function doesn't work as expected yet */
-    /*Uart_get_status(UART_DEVICE_ID_EPS, &uart_status);*/
-
-    /* TODO: Determine if UART worked or not */
-
     /* Check the frame number. If it's unsolicited TM (zero) or the expected
      * reply to a request (frame numbers match), we setup the read for the
      * frame's payload and CRC. */
@@ -534,7 +527,7 @@ bool Eps_process_uart_header(void) {
 bool Eps_process_uart_payload(void) {
     Crypto_Crc16 expected_crc;
     Crypto_Crc16 received_crc;
-    char p_hex_str[64];
+    char p_hex_str[64] = {0};
     
     /* We've recieved the payload bytes, need to check with UART if it was
      * successful.
@@ -551,6 +544,7 @@ bool Eps_process_uart_payload(void) {
         DP.EPS.EPS_REPLY_LENGTH
     );
     DEBUG_DBG("message from EPS = %s", p_hex_str);
+    DEBUG_DBG("Reply length = %d", DP.EPS.EPS_REPLY_LENGTH);
     p_hex_str[0] = '\0';
     #endif
 
@@ -741,6 +735,9 @@ bool Eps_start_uart_receive_payload(void) {
             break;
         case EPS_UART_DATA_TYPE_TM_HK_DATA:
             payload_length = EPS_UART_TM_HK_DATA_PL_LENGTH;
+            // DP.EPS.EPS_REPLY_LENGTH = EPS_UART_HEADER_LENGTH + payload_length + 2;
+            // DP.EPS.EXPECT_HEADER = false;
+            // return true;
             break;
         case EPS_UART_DATA_TYPE_TM_LOADED_CONFIG:
             payload_length = EPS_UART_TM_LOADED_CONFIG_PL_LENGTH;
@@ -751,23 +748,56 @@ bool Eps_start_uart_receive_payload(void) {
         case EPS_UART_DATA_TYPE_TM_OCP_TRIPPED:
             payload_length = EPS_UART_TM_OCP_TRIPPED_PL_LENGTH;
             break;
+        case EPS_UART_DATA_TYPE_TM_INVALID_DATA_TYPE:
+            payload_length = EPS_UART_TM_INVALID_DATA_TYPE_PL_LENGTH;
+            break;
+        case EPS_UART_DATA_TYPE_TM_INVALID_HEADER_LENGTH:
+            payload_length = 0;
+            break;
+        case EPS_UART_DATA_TYPE_TM_INVALID_PAYLOAD_LENGTH:
+            payload_length = 0;
+            break;
+        case EPS_UART_DATA_TYPE_TM_CRC_FAIL:
+            payload_length = 0;
+            break;
+        case EPS_UART_DATA_TYPE_TM_FLASH_READ_FAIL:
+            payload_length = 0;
+            break;
         default:
             DEBUG_ERR(
                 "Received unexpected UART data type: %u",
                 DP.EPS.EPS_REPLY[EPS_UART_HEADER_DATA_TYPE_POS]
             );
-            /* Don't return here, we need to setup the rx for the remaining
-             * bytes */
+
+            #if 0
+            /* Stop the recieve action */
+            Uart_stop_recv(UART_DEVICE_ID_EPS);
+
+            /* Set the command as failed */
+            DP.EPS.COMMAND_STATUS = EPS_COMMAND_FAILURE;
+            DP.EPS.ERROR.code = EPS_ERROR_UNEXPECTED_UART_DATA_TYPE;
+            DP.EPS.ERROR.p_cause = NULL;
+
+            /* Raise the failed event */
+            if (!EventManager_raise_event(EVT_EPS_COMMAND_COMPLETE)) {
+                DEBUG_ERR("Couldn't raise EVT_EPS_COMMAND_COMPLETE");
+                /* Don't override the previous error */
+                return false;
+            }
+            
+            return true;
+            #endif
     }
     #pragma GCC diagnostic pop
 
     /* Add the CRC to the length */
-    payload_length += sizeof(Crypto_Crc16);
+    payload_length += EPS_UART_CRC_LENGTH;
 
     /* Set the total expected reply length */
     DP.EPS.EPS_REPLY_LENGTH = EPS_UART_HEADER_LENGTH + payload_length;
 
     /* Call the recieve function */
+    DEBUG_DBG("Receiving payload");
     DP.EPS.UART_ERROR.code = Uart_recv_bytes(
         UART_DEVICE_ID_EPS,
         &DP.EPS.EPS_REPLY[EPS_UART_HEADER_LENGTH],
@@ -788,6 +818,44 @@ bool Eps_start_uart_receive_payload(void) {
 
 bool Eps_process_reply(void) {
     Eps_HkData hk_data;
+    bool is_error = true;
+
+    /* First check for general error codes that can happen for any command */
+    switch (DP.EPS.EPS_REPLY[EPS_UART_HEADER_DATA_TYPE_POS]) {
+        case EPS_UART_DATA_TYPE_TM_INVALID_DATA_TYPE:
+            DEBUG_ERR("EPS replied with invalid data type error");
+            DP.EPS.ERROR.code = EPS_ERROR_EPS_REPORTS_INVALID_DATA_TYPE;
+            break;
+        case EPS_UART_DATA_TYPE_TM_INVALID_HEADER_LENGTH:
+            DEBUG_ERR("EPS replied with invalid header length error");
+            DP.EPS.ERROR.code = EPS_ERROR_EPS_REPORTS_INVALID_HEADER_LENGTH;
+            break;
+        case EPS_UART_DATA_TYPE_TM_INVALID_PAYLOAD_LENGTH:
+            DEBUG_ERR("EPS replied with invalid payload length error");
+            DP.EPS.ERROR.code = EPS_ERROR_EPS_REPORTS_INVALID_PAYLOAD_LENGTH;
+            break;
+        case EPS_UART_DATA_TYPE_TM_CRC_FAIL:
+            DEBUG_ERR("EPS replied with incorrect CRC error");
+            DP.EPS.ERROR.code = EPS_ERROR_EPS_REPORTS_INCORRECT_CRC;
+            break;
+        default:
+            is_error = false;
+            break;
+    }
+
+    if (is_error) {
+        DP.EPS.ERROR.p_cause = NULL;
+        DP.EPS.COMMAND_STATUS = EPS_COMMAND_FAILURE;
+
+        /* Discard the frame */
+        memset(
+            &DP.EPS.EPS_REPLY,
+            0,
+            EPS_MAX_UART_FRAME_LENGTH
+        );
+        DP.EPS.EPS_REPLY_LENGTH = 0;
+        return true;
+    }
     
     switch (DP.EPS.EPS_REQUEST[EPS_UART_HEADER_DATA_TYPE_POS]) {
         case EPS_UART_DATA_TYPE_TC_COLLECT_HK_DATA:

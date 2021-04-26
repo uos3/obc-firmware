@@ -149,8 +149,8 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
     UARTEnable(p_uart_device->uart_base);
     UARTDMAEnable(p_uart_device->uart_base, UART_DMA_RX | UART_DMA_TX);
 
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_TX | UART_INT_DMATX);
-    UARTIntEnable(p_uart_device->uart_base, UART_INT_RX | UART_INT_DMARX);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMATX);
+    UARTIntEnable(p_uart_device->uart_base, UART_INT_DMARX);
 
     switch(uart_id_in) {
         case UART_DEVICE_ID_CAM:
@@ -173,6 +173,10 @@ ErrorCode Uart_init_specific(Uart_DeviceId uart_id_in) {
             DEBUG_ERR("Unexpected UART ID");
             return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
+
+    /* Assign the right channel for this uart device */
+    uDMAChannelAssign(p_uart_device->udma_channel_tx);
+    uDMAChannelAssign(p_uart_device->udma_channel_rx);
 
     /* Set the UART state as initialised. */
     p_uart_device->initialised = true;
@@ -230,8 +234,6 @@ ErrorCode Uart_send_bytes(
             return UART_ERROR_UNEXPECTED_DEVICE_ID;
     }
     #endif
-
-    uDMAChannelAssign(p_uart_device->udma_channel_tx);
     
     /* Configure the control parameters for the UART TX channel.
      * UDMA_ARB_4 to match the FIFO trigger threshold.
@@ -312,8 +314,6 @@ ErrorCode Uart_recv_bytes(
     }
     #endif
 
-    uDMAChannelAssign(p_uart_device->udma_channel_rx);
-
     /* Configure the control parameters for the UART RX channel.
      * UDMA_ARB_4 to match the FIFO trigger threshold. 
      * TODO: make this the device specific rx channel */
@@ -342,8 +342,9 @@ ErrorCode Uart_recv_bytes(
     return ERROR_NONE;
 }
 
-/* TODO: Change to clear the internal status when the user calls this function */
-ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
+/* TODO: Change to clear the internal status when the user calls this function
+   TODO: Add TX/RX versions */
+ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status *p_status_out) {
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
@@ -359,19 +360,35 @@ ErrorCode Uart_get_status(Uart_DeviceId uart_id_in, Uart_Status p_status_out) {
         return UART_ERROR_MAX_NUM_UARTS;
     }
 
+    /* TODO: Return TX/RX for correct function 
+    *p_status_out = p_uart_device->
+    */
+
+    #if 0
     switch(uDMAErrorStatusGet()) {
         case 0:
-            p_status_out = UART_STATUS_COMPLETE;
+            *p_status_out = UART_STATUS_COMPLETE;
             break;
         default:
-            p_status_out = UART_STATUS_UDMA_TRANSFER_ERROR;
+            *p_status_out = UART_STATUS_UDMA_TRANSFER_ERROR;
     }
 
-    if (p_status_out == UART_STATUS_UDMA_TRANSFER_ERROR) {
+    if (*p_status_out == UART_STATUS_UDMA_TRANSFER_ERROR) {
         /* Check the uDMA error status, return an error if non-zero */
         DEBUG_WRN("uDMAErrorStatusGet returned a nonspecified non-zero error");
     }
+    #endif 
     return ERROR_NONE;
+}
+
+void Uart_stop_send(Uart_DeviceId uart_id_in) {
+    uDMAChannelDisable(UART_DEVICES[uart_id_in].udma_channel_tx);
+    UART_DEVICES[uart_id_in].uart_status_tx = UART_STATUS_NONE;
+}
+
+void Uart_stop_recv(Uart_DeviceId uart_id_in) {
+    uDMAChannelDisable(UART_DEVICES[uart_id_in].udma_channel_rx);
+    UART_DEVICES[uart_id_in].uart_status_rx = UART_STATUS_NONE;
 }
 
 ErrorCode Uart_step_tx(void) {

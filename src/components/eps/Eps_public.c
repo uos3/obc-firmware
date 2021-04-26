@@ -31,6 +31,10 @@
 #include "components/eps/Eps_public.h"
 #include "components/eps/Eps_private.h"
 
+#include "inc/hw_types.h"
+#include "inc/hw_uart.h"
+#include "inc/hw_memmap.h"
+
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
@@ -48,8 +52,21 @@ bool Eps_init(void) {
 
     /* Set the EPS as initialised */
     DP.EPS.INITIALISED = true;
-
-    
+    /* Prepare to recieve any potential unsolicited header bytes from the 
+        * UART */
+    DP.EPS.UART_ERROR.code = Uart_recv_bytes(
+        UART_DEVICE_ID_EPS, 
+        (uint8_t *)DP.EPS.EPS_REPLY, 
+        EPS_UART_HEADER_LENGTH
+    );
+    if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
+        DEBUG_ERR("Unable to start Uart_recv_bytes for EPS");
+        DP.EPS.UART_ERROR.p_cause = NULL;
+        DP.EPS.ERROR.code = EPS_ERROR_UART_START_RECV_FAILED;
+        DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
+        return false;
+    }
+    DP.EPS.EXPECT_HEADER = true;
 
     return true;
 }
@@ -67,9 +84,9 @@ bool Eps_step(void) {
 
     /* Check UART any TM */
     if (EventManager_poll_event(EVT_UART_EPS_RX_COMPLETE)) {
-        DEBUG_DBG("RX event raised");
         /* If we expected a header for this recieve process it, this will start
          * the recieve for the payload and CRC as well */
+        DEBUG_DBG("EPS.EXPECT_HEADER = %d", DP.EPS.EXPECT_HEADER);
         if (DP.EPS.EXPECT_HEADER) {
             if (!Eps_process_uart_header()) {
                 DEBUG_ERR("Couldn't process header from EPS");
@@ -82,6 +99,22 @@ bool Eps_step(void) {
                 DEBUG_ERR("Couldn't process payload from EPS");
                 return false;
             }
+
+            /* Prepare to recieve next header bytes from the UART */
+            DEBUG_DBG("Receiving header");
+            DP.EPS.UART_ERROR.code = Uart_recv_bytes(
+                UART_DEVICE_ID_EPS, 
+                (uint8_t *)DP.EPS.EPS_REPLY, 
+                EPS_UART_HEADER_LENGTH
+            );
+            if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
+                DEBUG_ERR("Unable to start Uart_recv_bytes for EPS");
+                DP.EPS.UART_ERROR.p_cause = NULL;
+                DP.EPS.ERROR.code = EPS_ERROR_UART_START_RECV_FAILED;
+                DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
+                return false;
+            }
+            DP.EPS.EXPECT_HEADER = true;
         }
     }
 
@@ -174,23 +207,6 @@ bool Eps_step(void) {
             p_hex_str[0] = '\0';
             #endif
 
-            /* Prepare to recieve any potential unsolicited header bytes from the 
-             * UART */
-            DP.EPS.UART_ERROR.code = Uart_recv_bytes(
-                UART_DEVICE_ID_EPS, 
-                (uint8_t *)DP.EPS.EPS_REPLY, 
-                EPS_UART_HEADER_LENGTH
-            );
-            if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
-                DEBUG_ERR("Unable to start Uart_recv_bytes for EPS");
-                DP.EPS.UART_ERROR.p_cause = NULL;
-                DP.EPS.ERROR.code = EPS_ERROR_UART_START_RECV_FAILED;
-                DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
-                return false;
-            }
-            DP.EPS.EXPECT_HEADER = true;
-            DEBUG_DBG("EPS reply recv started");
-
             /* Advance to next state */
             DP.EPS.STATE = EPS_STATE_WAIT_REPLY;
 
@@ -209,10 +225,12 @@ bool Eps_step(void) {
              * 
              * In addition we check the timeout event here, that way if we
              * timeout we can handle it at this level */
+
+            if (EventManager_poll_event(EVT_UART_EPS_TX_COMPLETE)) {
+                DEBUG_DBG("TX complete");
+            }
             
-            if (EventManager_poll_event(
-                DP.EPS.TIMEOUT_EVENT
-            )) {
+            if (EventManager_poll_event(DP.EPS.TIMEOUT_EVENT)) {
                 DEBUG_ERR("EPS command timed out");
                 DP.EPS.COMMAND_STATUS = EPS_COMMAND_FAILURE;
                 DP.EPS.ERROR.code = EPS_ERROR_COMMAND_TIMEOUT;

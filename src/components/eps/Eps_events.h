@@ -62,4 +62,9 @@
  */
 #define EVT_EPS_OCP_RAIL_TRIPPED ((Event)(MOD_ID_EPS | 5))
 
+/**
+ * @brief Event fired when an EPS UART header is received.
+ */
+#define EVT_EPS_UART_HEADER_RECVED ((Event)(MOD_ID_EPS | 6))
+
 #endif /* H_EPS_EVENTS_H */

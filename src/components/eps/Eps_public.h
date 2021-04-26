@@ -663,7 +663,46 @@ typedef enum _Eps_UartDataType {
      * 
      * Generated as an unsolicited TM packet by the EPS.
      */
-    EPS_UART_DATA_TYPE_TM_OCP_TRIPPED = 133
+    EPS_UART_DATA_TYPE_TM_OCP_TRIPPED = 133,
+
+    /**
+     * @brief EPS_TM that returns a data type that the EPS thinks 
+     * is invalid.
+     * 
+     * Generated on any command failure.
+     */
+    EPS_UART_DATA_TYPE_TM_INVALID_DATA_TYPE = 134,
+
+    /**
+     * @brief EPS_TM sent when the length of the received header is not 2.
+     * 
+     * Generated on any command failure.
+     */
+    EPS_UART_DATA_TYPE_TM_INVALID_HEADER_LENGTH = 135,
+
+    /**
+     * @brief EPS_TM sent when the length of the received farme is less than 
+     * that specified by the data type.
+     * 
+     * Generated on any command failure.
+     */
+    EPS_UART_DATA_TYPE_TM_INVALID_PAYLOAD_LENGTH = 136,
+
+    /**
+     * @brief EPS_TM sent when the CRC of the frame received by the EPS is 
+     * incorrect. 
+     * 
+     * Generated on any command failure.
+     */
+    EPS_UART_DATA_TYPE_TM_CRC_FAIL = 137,
+
+    /**
+     * @brief Unsolicited EPS_TM sent when the CRC of the EPS's flash has 
+     * failed. This shall prompt a new config to be sent.
+     * 
+     * Generated on failure of the EPS flash CRC.
+     */
+    EPS_UART_DATA_TYPE_TM_FLASH_READ_FAIL = 138
     
 } Eps_UartDataType;
 
