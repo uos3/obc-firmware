@@ -59,6 +59,7 @@ ErrorCode Uart_recv_bytes(
     uint32_t length_in
 ) {
     DEBUG_DBG("UART recv bytes attempted when running on linux, ignoring.");
+    EventManager_raise_event(EVT_UART_EPS_RX_COMPLETE);
     return ERROR_NONE;
 }
 
@@ -67,5 +68,11 @@ ErrorCode Uart_get_status(
     Uart_Status p_status_out
 ) {
     DEBUG_DBG("UART get status attempted when running on linux, ignoring.");
+    return ERROR_NONE;
+}
+
+ErrorCode Uart_step(void) {
+    /* No message so we don't flood the terminal with step being called every
+     * cycle */
     return ERROR_NONE;
 }
