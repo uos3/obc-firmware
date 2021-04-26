@@ -180,35 +180,29 @@ void Uart_service_irq(Uart_DeviceId uart_id_in) {
     /* Pointer to UART device */
     Uart_Device *p_uart_device = &UART_DEVICES[uart_id_in];
 
-    switch(UARTIntStatus(p_uart_device->uart_base, true)) {
-        case UART_INT_TX:
-        case UART_INT_DMATX:
-            UARTIntClear(p_uart_device->uart_base, (UART_INT_TX | UART_INT_DMATX));
-            udma_mode_tx = uDMAChannelModeGet(
-                p_uart_device->udma_channel_tx | UDMA_PRI_SELECT
-            );
-            if (udma_mode_tx == UDMA_MODE_STOP) {
-                EventManager_raise_event(p_uart_device->tx_event);
-                Uart_get_status(uart_id_in, p_uart_device->uart_status_tx);
-                /* TODO: Change name of the above func to udma get status
-                 * and move to udma module */
-            }
-            break;
-        case UART_INT_RX:
-        case UART_INT_DMARX:
-            UARTIntClear(p_uart_device->uart_base, (UART_INT_RX | UART_INT_DMARX));
-            udma_mode_tx = uDMAChannelModeGet(
-                p_uart_device->udma_channel_rx | UDMA_PRI_SELECT
-            );
-            if (udma_mode_rx == UDMA_MODE_STOP) {
-                EventManager_raise_event(p_uart_device->rx_event);
-                Uart_get_status(uart_id_in, p_uart_device->uart_status_rx);
-                /* TODO: Change name of the above func to udma get status
-                 * and move to udma module */
-            }
-            break;
-        default:
-            DEBUG_ERR("Unexpected UART Int Status");
+    if (p_uart_device->uart_status_tx == UART_STATUS_IN_PROGRESS) {
+        UARTIntClear(p_uart_device->uart_base, (UART_INT_TX | UART_INT_DMATX));
+        udma_mode_tx = uDMAChannelModeGet(
+            p_uart_device->udma_channel_tx | UDMA_PRI_SELECT
+        );
+        if (udma_mode_tx == UDMA_MODE_STOP) {
+            EventManager_raise_event(p_uart_device->tx_event);
+            Uart_get_status(uart_id_in, p_uart_device->uart_status_tx);
+            /* TODO: Change name of the above func to udma get status
+             * and move to udma module */
+        }
+    }
+    if (p_uart_device->uart_status_rx == UART_STATUS_IN_PROGRESS) {
+        UARTIntClear(p_uart_device->uart_base, (UART_INT_RX | UART_INT_DMARX));
+        udma_mode_rx = uDMAChannelModeGet(
+            p_uart_device->udma_channel_rx | UDMA_PRI_SELECT
+        );
+        if (udma_mode_rx == UDMA_MODE_STOP) {
+            EventManager_raise_event(p_uart_device->rx_event);
+            Uart_get_status(uart_id_in, p_uart_device->uart_status_rx);
+            /* TODO: Change name of the above func to udma get status
+             * and move to udma module */
+        }
     }
 }
 
