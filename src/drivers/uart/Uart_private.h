@@ -68,7 +68,7 @@ extern Uart_Device UART_DEVICES[UART_NUM_UARTS];
  * Gets the status of the transfer, and sets this onto the GNSS device's RX.
  * 
  */
-void Uart_gnss_rx_int_handler(void);
+void Uart_gnss_int_handler(void);
 /**
  * @brief Uart GNSS TX interrupt handler
  * 
@@ -83,7 +83,7 @@ void Uart_gnss_tx_int_handler(void);
  * Gets the status of the transfer, and sets this onto the CAM device's RX.
  * 
  */
-void Uart_cam_rx_int_handler(void);
+void Uart_cam_int_handler(void);
 /**
  * @brief Uart CAM TX interrupt handler
  * 
@@ -98,7 +98,7 @@ void Uart_cam_tx_int_handler(void);
  * Gets the status of the transfer, and sets this onto the EPS device's RX.
  * 
  */
-void Uart_eps_rx_int_handler(void);
+void Uart_eps_int_handler(void);
 /**
  * @brief Uart EPS TX interrupt handler
  * 
@@ -113,7 +113,7 @@ void Uart_eps_tx_int_handler(void);
  * Gets the status of the transfer, and sets this onto the TEST device's RX.
  * 
  */
-void Uart_test_rx_int_handler(void);
+void Uart_test_int_handler(void);
 /**
  * @brief Uart TEST TX interrupt handler
  * 
@@ -122,7 +122,7 @@ void Uart_test_rx_int_handler(void);
  */
 void Uart_test_tx_int_handler(void);
 
-void Uart_service_rx_irq(Uart_DeviceId uart_id_in);
+void Uart_service_irq(Uart_DeviceId uart_id_in);
 
 void Uart_service_tx_irq(Uart_DeviceId uart_id_in);
 
