@@ -63,7 +63,7 @@ def main():
     if args.target == 'launchpad':
         flash_ok = flash_launchpad(elf_path)
     elif args.target == 'tobc':
-        flash_ok = flash_tobc(elf_path)
+        flash_ok = flash_tobc(elf_path, args.debug)
 
     if not flash_ok:
         error('Could not flash binary to target')
@@ -107,7 +107,7 @@ def flash_launchpad(elf_path):
 
     return lm4flash.returncode == 0
 
-def flash_tobc(elf_path):
+def flash_tobc(elf_path, debug):
     '''
     Use gdb to flash the TOBC with the given elf file, which should be 
     connected to the host via the BlackMagic probe
@@ -115,15 +115,25 @@ def flash_tobc(elf_path):
 
     info('Launching arm-none-eabi-gdb and flashing')
 
-    # Use gdb to flash the file
-    gdb = subprocess.run([
-        'arm-none-eabi-gdb',
-        '-nx',
-        '--batch',
-        '-ex', 'target extended-remote /dev/serial/by-id/usb-Black_Sphere_Technologies_Black_Magic_Probe_79A779DC-if00',
-        '-x', 'blackmagic.gdb',
-        elf_path
-    ])
+    # Use gdb to flash the file, in debug mode if needed
+    if debug:
+        info('Starting debug mode')
+        gdb = subprocess.run([
+            'arm-none-eabi-gdb',
+            '-nx',
+            '-ex', 'target extended-remote /dev/serial/by-id/usb-Black_Sphere_Technologies_Black_Magic_Probe_79A779DC-if00',
+            '-x', 'blackmagic_debug.gdb',
+            elf_path
+        ])
+    else:
+        gdb = subprocess.run([
+            'arm-none-eabi-gdb',
+            '-nx',
+            '--batch',
+            '-ex', 'target extended-remote /dev/serial/by-id/usb-Black_Sphere_Technologies_Black_Magic_Probe_79A779DC-if00',
+            '-x', 'blackmagic.gdb',
+            elf_path
+        ])
 
     return gdb.returncode == 0
 
@@ -141,6 +151,11 @@ def parse_args():
     parser.add_argument(
         'elf',
         help='The path to the ELF image to flash'
+    )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='If flashing the TOBC start a GDB debugging session'
     )
 
     # Parse the arguments
