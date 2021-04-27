@@ -27,7 +27,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-void Crypto_get_crc32(
+bool Crypto_get_crc32(
     uint8_t *p_data_in, 
     size_t length_in, 
     Crypto_Crc32 *p_crc_out
@@ -36,6 +36,11 @@ void Crypto_get_crc32(
      * See
      * https://reveng.sourceforge.io/crc-catalogue/17plus.htm#crc.cat.crc-32c 
      */
+
+    if (p_data_in == NULL || p_crc_out == NULL) {
+        DEBUG_ERR("NULL passed into Crypto_get_crc32");
+        return false;
+    }
 
     uint8_t table_idx;
     *p_crc_out = 0xFFFFFFFF;
@@ -48,14 +53,21 @@ void Crypto_get_crc32(
 
     /* XOR the final CRC with the value given in the CRC catalogue*/
     *p_crc_out = *p_crc_out ^ 0xFFFFFFFF;
+
+    return true;
 }
 
-void Crypto_get_crc16(
+bool Crypto_get_crc16(
     uint8_t *p_data_in, 
     size_t length_in, 
     Crypto_Crc16 *p_crc_out
 ) {
     uint8_t table_idx;
+
+    if (p_data_in == NULL || p_crc_out == NULL) {
+        DEBUG_ERR("NULL passed into Crypto_get_crc16");
+        return false;
+    }
 
     /* Set the initial value of the CRC */
     *p_crc_out = 0xFFFF;
@@ -72,4 +84,6 @@ void Crypto_get_crc16(
             ((*p_crc_out << 8) & 0xFF00) ^ CRYPTO_CRC16_TABLE[table_idx]
         );
     }
+
+    return true;
 }

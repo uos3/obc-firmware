@@ -25,6 +25,7 @@
 /* Standard includes */
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 /* -------------------------------------------------------------------------   
  * TYPEDEFS
@@ -53,8 +54,9 @@ typedef uint16_t Crypto_Crc16;
  * @param p_data_in Pointer to the data to calculate the CRC for
  * @param length_in The length of the p_data_in pointer
  * @param p_crc_out Pointer to the CRC value to output.
+ * @return bool False if either p_data_in or p_crc_out are NULL.
  */
-void Crypto_get_crc32(
+bool Crypto_get_crc32(
     uint8_t *p_data_in, 
     size_t length_in, 
     Crypto_Crc32 *p_crc_out
@@ -69,8 +71,9 @@ void Crypto_get_crc32(
  * @param p_data_in Pointer to the data to calculate the CRC for
  * @param length_in The length of the p_data_in pointer
  * @param p_crc_out Pointer to the CRC value to output.
+ * @return bool False if either p_data_in or p_crc_out are NULL.
  */
-void Crypto_get_crc16(
+bool Crypto_get_crc16(
     uint8_t *p_data_in,
     size_t length_in,
     Crypto_Crc16 *p_crc_out

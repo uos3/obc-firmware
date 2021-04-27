@@ -61,11 +61,13 @@ void Eps_append_crc_to_frame(
     Crypto_Crc16 crc;
 
     /* Calculate the CRC of the frame header + payload */
-    Crypto_get_crc16(
+    if (!Crypto_get_crc16(
         p_frame_in,
         length_without_crc_in,
         &crc
-    );
+    )) {
+
+    }
 
     /* Add the CRC to the end of the frame */
     p_frame_in[length_without_crc_in] = (uint8_t)((crc >> 8) & 0xFF);
@@ -80,11 +82,13 @@ bool Eps_check_uart_frame(
 
     /* Recompute the CRC for the frame, excluding the CRC bytes which are at
      * the end */
-    Crypto_get_crc16(
+    if (!Crypto_get_crc16(
         p_frame_in,
         length_in - EPS_UART_CRC_LENGTH,
         &new_crc
-    );
+    )) {
+        return false;
+    }
 
     /* Check that the new CRC and the old CRC match */
     return (
@@ -549,16 +553,20 @@ bool Eps_process_uart_payload(void) {
     #endif
 
     /* Calculate the expected CRC of the received packet */
-    Crypto_get_crc16(
+    if (!Crypto_get_crc16(
         (uint8_t *)DP.EPS.EPS_REPLY,
         DP.EPS.EPS_REPLY_LENGTH - EPS_UART_CRC_LENGTH,
         &expected_crc
-    );
+    )) {
+        return false;
+    }
 
     /* Pack the received CRC from it's pair of bytes into a 16 bit int. */
     received_crc = Packing_u16_from_be(
         &DP.EPS.EPS_REPLY[DP.EPS.EPS_REPLY_LENGTH - EPS_UART_CRC_LENGTH]
     );
+
+    DEBUG_DBG("CRCs calculated");
 
     /* If the CRCs don't match then we can't actually depend on the data type
      * or frame number being correct (this could actually be a problem in that
@@ -872,7 +880,7 @@ bool Eps_process_reply(void) {
 
         /* Discard the frame */
         memset(
-            &DP.EPS.EPS_REPLY,
+            DP.EPS.EPS_REPLY,
             0,
             EPS_MAX_UART_FRAME_LENGTH
         );

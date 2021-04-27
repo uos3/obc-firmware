@@ -268,13 +268,15 @@ int main(void) {
                 run_loop = false;
         }
 
-        if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0 && !check_wfi) {
+        Kernel_disable_interrupts();
+        if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0 && check_wfi) {
             /* Wait for interrupts if no events raised on the TM4C */
             #ifdef TARGET_TM4C
             DEBUG_INF("No events, waiting for interrupt...");
             __asm("WFI");
             #endif
         }
+        Kernel_enable_interrupts();
     }
 
     /* Cleanup */
