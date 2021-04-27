@@ -97,7 +97,7 @@
 /**
  * @brief The maximum length (in bytes) of a UART frame in the EPS system.
  */
-#define EPS_MAX_UART_FRAME_LENGTH (256)
+#define EPS_MAX_UART_FRAME_LENGTH (128)
 
 /**
  * @brief The length (in bytes) of the UART frame header.
@@ -497,6 +497,12 @@ typedef struct _Eps_HkData {
     uint16_t mppt3_mid_pv_vsense;
 
     /**
+     * @brief Contains 0 if the flash is working, 1 if there was an error 
+     * reading from it.
+     */
+    uint8_t log_flash_error;
+
+    /**
      * @brief Number of times OCP1 has tripped since the last housekeeping 
      * request.
      */
@@ -625,13 +631,21 @@ typedef enum _Eps_UartDataType {
     EPS_UART_DATA_TYPE_TC_RESET_OCP = 5,
 
     /**
+     * @brief Data type indicating that the OBC has been reset and the 
+     * communications chain should also be reset.
+     * 
+     * This has no payload or CRC.
+     */
+    EPS_UART_DATA_TYPE_TC_RESET_COMMUNICATIONS = 126,
+
+    /**
      * @brief Data type indicating that the previous header has been received 
      * and the receiving end is now ready to receive the following payload 
      * bytes. 
      * 
-     * Send by both the EPS and OBC.
+     * Send by both the OBC only with no payload or CRC.
      */
-    EPS_UART_DATA_TYPE_CONTINUE = 127,
+    EPS_UART_DATA_TYPE_TC_CONTINUE = 127,
 
     /**
      * @brief Reply containing housekeeping data.

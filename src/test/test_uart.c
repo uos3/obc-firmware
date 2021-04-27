@@ -130,7 +130,7 @@ int main(void) {
                 break;
             /* Step 2 is to receive the bytes */
             case 2:
-                if (Uart_recv_bytes(UART_DEVICE, recv_data, 2) != ERROR_NONE) {
+                if (Uart_recv_bytes(UART_DEVICE, recv_data, DATA_LENGTH) != ERROR_NONE) {
                     Debug_exit(1);
                 }
                 if (Uart_step_rx() != ERROR_NONE) {
@@ -165,43 +165,6 @@ int main(void) {
                 num_attempts = 0;
                 test_step++;
             case 4:
-                if (Uart_recv_bytes(UART_DEVICE, &recv_data[2], DATA_LENGTH - 2) != ERROR_NONE) {
-                    Debug_exit(1);
-                }
-                if (Uart_step_rx() != ERROR_NONE) {
-                    Debug_exit(1);
-                }
-                DEBUG_INF("Receiving payload bytes");
-                /* Increment the step number and move on to next case */
-                test_step++;
-                Uart_recv_bytes(UART_DEVICE, &recv_data[2], DATA_LENGTH - 2);
-                break;
-            case 5:
-                DEBUG_INF("Checking RX Event");
-                if (num_attempts < max_num_attemps) {
-                    if (EventManager_poll_event(UART_RX_EVT)) {
-                        DEBUG_INF("Bytes have been received after %d attempts",
-                        num_attempts
-                        );
-                        test_step++;
-                        break;
-                    }
-                    else {
-                        num_attempts++;
-                        break;
-                    }
-                }
-                else {
-                    DEBUG_INF("RX Not complete after max num attempts. Exiting.");
-                    Debug_exit(1);
-                    return 1;
-                }
-                num_attempts = 0;
-                test_step++;
-            /* Step 4 is to check that the data received is equal to the data
-             * which was sent, as all this test is doing is sending and
-             * receiving the same data. */
-            case 6:
                 DEBUG_INF("Comparing sent and received data");
                 DEBUG_INF("index: [sent, received]");
                 for (i = 0; i < DATA_LENGTH; ++i) {

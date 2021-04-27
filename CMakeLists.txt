@@ -56,7 +56,12 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}\
     -Wstrict-prototypes \
     -Wmissing-prototypes \
     -Wmissing-declarations \
+    -fno-omit-frame-pointer \
 ")
+
+# Enable address sanitiser
+#set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS}")
+#set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG}")
 
 # If building for the TM4C
 if(${UOS3_TARGET_TM4C})

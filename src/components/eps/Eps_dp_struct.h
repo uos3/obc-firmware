@@ -180,6 +180,14 @@ typedef struct _Eps_Dp {
      */
     uint8_t CONTINUE_TC[EPS_UART_HEADER_LENGTH];
 
+    /**
+     * @brief Buffer to hold the reset communications command to send to the 
+     * EPS.
+     * 
+     * @dp 20
+     */
+    uint8_t RESET_COMMS_TC[EPS_UART_HEADER_LENGTH];
+
 } Eps_Dp;
 
 #endif /* H_EPS_DP_STRUCT_H */

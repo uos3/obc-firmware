@@ -356,6 +356,13 @@
         "data_type": "uint8_t",
         "brief": "Buffer to hold continue command to send to the EPS."
     },
+    "DP.EPS.RESET_COMMS_TC[EPS_UART_HEADER_LENGTH]": {
+        "block_id": 34,
+        "block_index": 20,
+        "dp_id": 34836,
+        "data_type": "uint8_t",
+        "brief": "Buffer to hold the reset communications command to send to the  EPS."
+    },
     "DP.POWER.INITIALISED": {
         "block_id": 53,
         "block_index": 1,

@@ -448,6 +448,14 @@ bool DataPool_get(
         return true;
 
 
+    /* DP.EPS.RESET_COMMS_TC[EPS_UART_HEADER_LENGTH] */
+    case 0x8814:
+        *pp_data_out = &DP.EPS.RESET_COMMS_TC[EPS_UART_HEADER_LENGTH];
+        *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
+        *p_data_size_out = sizeof(uint8_t);
+        return true;
+
+
     /* DP.POWER.INITIALISED */
     case 0xd401:
         *pp_data_out = &DP.POWER.INITIALISED;
@@ -989,6 +997,12 @@ bool DataPool_get_symbol_str(
     /* DP.EPS.CONTINUE_TC[EPS_UART_HEADER_LENGTH] */
     case 0x8813:
         *pp_symbol_str_out = strdup("DP.EPS.CONTINUE_TC[EPS_UART_HEADER_LENGTH]");
+        return true;
+
+
+    /* DP.EPS.RESET_COMMS_TC[EPS_UART_HEADER_LENGTH] */
+    case 0x8814:
+        *pp_symbol_str_out = strdup("DP.EPS.RESET_COMMS_TC[EPS_UART_HEADER_LENGTH]");
         return true;
 
 

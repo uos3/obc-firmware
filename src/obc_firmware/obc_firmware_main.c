@@ -59,12 +59,14 @@ int main(void) {
 
         /* If no events after cleanup wait until interrupt occurs (only on
          * TM4C, don't have propper interrupts on linux */
+        Kernel_disable_interrupts();
         if (DP.EVENTMANAGER.NUM_RAISED_EVENTS == 0) {
             #ifdef TARGET_TM4C
             DEBUG_INF("No events, waiting for interrupt...");
             __asm("WFI");
             #endif
         }
+        Kernel_enable_interrupts();
     }
 
     return 0;

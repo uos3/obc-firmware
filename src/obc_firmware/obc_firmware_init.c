@@ -22,6 +22,7 @@
 
 /* Drivers */
 #include "drivers/board/Board_public.h"
+#include "drivers/udma/Udma_public.h"
 #include "drivers/uart/Uart_public.h"
 #include "drivers/timer/Timer_public.h"
 #include "drivers/eeprom/Eeprom_public.h"
@@ -118,7 +119,12 @@ void obc_firmware_init_early_modules(void) {
         /* TODO: raise timer disabled FDIR event? */
     }
 
-    /* TODO: init udma driver */
+    /* init udma driver */
+    error = Udma_init();
+    if (error != ERROR_NONE) {
+        /* If UDMA fails to init SPI and UART will also fail to init, mission
+         * ending failure? */
+    }
 
     /* Init GPIO driver */
     /* TODO: fix GPIO init
@@ -127,7 +133,12 @@ void obc_firmware_init_early_modules(void) {
 
     }*/
 
-    /* TODO: Init uart driver */
+    /* Init uart driver */
+    error = Uart_init();
+    if (error != ERROR_NONE) {
+        /* If UART fails to init EPS can't be communicated with, we will be
+         * entering safe mode */
+    }
 
     /* Init I2C driver. If this fails only those components dependent on I2C
      * are affected, unfortunately this includes the temp monitoring app, which

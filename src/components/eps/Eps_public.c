@@ -31,10 +31,6 @@
 #include "components/eps/Eps_public.h"
 #include "components/eps/Eps_private.h"
 
-#include "inc/hw_types.h"
-#include "inc/hw_uart.h"
-#include "inc/hw_memmap.h"
-
 /* -------------------------------------------------------------------------   
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
@@ -52,8 +48,26 @@ bool Eps_init(void) {
 
     /* Set the EPS as initialised */
     DP.EPS.INITIALISED = true;
+
+    /* Send the reset communications command */
+    DP.EPS.RESET_COMMS_TC[EPS_UART_HEADER_FRAME_NUMBER_POS] = 0;
+    DP.EPS.RESET_COMMS_TC[EPS_UART_HEADER_DATA_TYPE_POS]
+        = EPS_UART_DATA_TYPE_TC_RESET_COMMUNICATIONS;
+    DP.EPS.UART_ERROR.code = Uart_send_bytes(
+        UART_DEVICE_ID_EPS,
+        (uint8_t *)DP.EPS.RESET_COMMS_TC,
+        EPS_UART_HEADER_LENGTH
+    );
+    if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
+        DEBUG_ERR("Unable to start Uart_send_bytes for comms reset toEPS");
+        DP.EPS.UART_ERROR.p_cause = NULL;
+        DP.EPS.ERROR.code = EPS_ERROR_UART_START_SEND_FAILED;
+        DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
+        return false;
+    }
+
     /* Prepare to recieve any potential unsolicited header bytes from the 
-        * UART */
+     * UART */
     DP.EPS.UART_ERROR.code = Uart_recv_bytes(
         UART_DEVICE_ID_EPS, 
         (uint8_t *)DP.EPS.EPS_REPLY, 
@@ -99,6 +113,8 @@ bool Eps_step(void) {
                 DEBUG_ERR("Couldn't process payload from EPS");
                 return false;
             }
+
+            DEBUG_INF("HELLO");
 
             /* Prepare to recieve next header bytes from the UART */
             DEBUG_DBG("Receiving header");

@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 /* Internal includes */
+#include "drivers/delay/Delay_public.h"
 #include "util/debug/Debug_public.h"
 #include "util/packing/Packing_public.h"
 #include "drivers/uart/Uart_public.h"
@@ -102,283 +103,286 @@ void Eps_parse_hk_data(
     uint8_t *p_data_in,
     Eps_HkData *p_hk_data_out
 ) {
+    uint8_t *p_data = p_data_in;
     /* Strategy: Consume bytes sequentially parsing each group according to the
      * format specified in [SW_ICD 5.2.8]. */
 
     p_hk_data_out->batt_status = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->batt_output_voltage_scaledint = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->batt_current_magnitude_scaledint = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->batt_current_direction = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
     
     p_hk_data_out->batt_motherboard_temp_scaledint = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->batt_5v_current_scaledint = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->batt_5v_voltage_scaledint = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->batt_3v3_current_scaledint = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->batt_3v3_voltage_scaledint = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->batt_daughterboard_temp_scaledint = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->batt_daughterboard_heater_status = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->eps_temp_scaledint = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_top1_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_top2_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp5_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp6_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp6_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp4_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp4_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp5_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp3_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp3_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->sys_5v_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->sys_3v3_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp2_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp2_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp1_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_north2_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_north1_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->charge_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_west1_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->mppt_bus_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->mppt2_lower_pv_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->mppt2_mid_pv_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_west2_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_south2_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_south2_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->uvp_5v_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->uvp_3v3_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->vbatt_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->ocp1_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_east2_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->pv_east1_csense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->mppt1_lower_pv_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->mppt3_lower_pv_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->mppt1_mid_pv_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
     p_hk_data_out->mppt3_mid_pv_vsense = Packing_u16_from_be(
-        p_data_in
+        p_data
     );
-    p_data_in += 2;
+    p_data += 2;
 
-    p_hk_data_out->log_ocp1_trip_count = *p_data_in;
-    p_data_in++;
+    p_hk_data_out->log_flash_error = *p_data;
 
-    p_hk_data_out->log_ocp2_trip_count = *p_data_in;
-    p_data_in++;
+    p_hk_data_out->log_ocp1_trip_count = *p_data;
+    p_data++;
 
-    p_hk_data_out->log_ocp3_trip_count = *p_data_in;
-    p_data_in++;
+    p_hk_data_out->log_ocp2_trip_count = *p_data;
+    p_data++;
 
-    p_hk_data_out->log_ocp4_trip_count = *p_data_in;
-    p_data_in++;
+    p_hk_data_out->log_ocp3_trip_count = *p_data;
+    p_data++;
 
-    p_hk_data_out->log_ocp5_trip_count = *p_data_in;
-    p_data_in++;
+    p_hk_data_out->log_ocp4_trip_count = *p_data;
+    p_data++;
 
-    p_hk_data_out->log_ocp6_trip_count = *p_data_in;
-    p_data_in++;
+    p_hk_data_out->log_ocp5_trip_count = *p_data;
+    p_data++;
 
-    p_hk_data_out->log_reboot_count = *p_data_in;
-    p_data_in++;
+    p_hk_data_out->log_ocp6_trip_count = *p_data;
+    p_data++;
 
-    p_hk_data_out->log_tobc_time_count = *p_data_in;
-    p_data_in++;
+    p_hk_data_out->log_reboot_count = *p_data;
+    p_data++;
 
-    p_hk_data_out->ocp_rail_state = *p_data_in;
-    p_data_in++;
+    p_hk_data_out->log_tobc_time_count = *p_data;
+    p_data++;
+
+    p_hk_data_out->ocp_rail_state = *p_data;
 }
 
 void Eps_parse_config_data(
     uint8_t *p_data_in,
     Eps_ConfigData *p_config_out
 ) {
+    uint8_t *p_data = p_data_in;
+
     /* Strategy: consume bytes and pack them into the struct as done with the
      * hk data */
-    p_config_out->reset_rail_after_ocp = *p_data_in;
-    p_data_in++;
+    p_config_out->reset_rail_after_ocp = *p_data;
+    p_data++;
 
-    p_config_out->tobc_timer_length = Packing_u16_from_be(p_data_in);
-    p_data_in += 2;
+    p_config_out->tobc_timer_length = Packing_u16_from_be(p_data);
 }
 
 void Eps_serialise_config_data(
@@ -490,7 +494,7 @@ bool Eps_process_uart_header(void) {
 
             /* Clear the frame */
             memset(
-                &DP.EPS.EPS_REPLY,
+                (void *)DP.EPS.EPS_REPLY,
                 0,
                 EPS_MAX_UART_FRAME_LENGTH
             );
@@ -532,13 +536,6 @@ bool Eps_process_uart_payload(void) {
     Crypto_Crc16 expected_crc;
     Crypto_Crc16 received_crc;
     char p_hex_str[64] = {0};
-    
-    /* We've recieved the payload bytes, need to check with UART if it was
-     * successful.
-     * TODO: This function doesn't work as expected yet */
-    /*Uart_get_status(UART_DEVICE_ID_EPS, &uart_status);*/
-
-    /* TODO: Determine if UART worked or not */
 
     /* Print the message */
     #ifdef DEBUG_MODE
@@ -609,7 +606,7 @@ bool Eps_process_uart_payload(void) {
             DP.EPS.EPS_REPLY[EPS_UART_HEADER_FRAME_NUMBER_POS]
         );
         memset(
-            &DP.EPS.EPS_REPLY,
+            (void *)DP.EPS.EPS_REPLY,
             0,
             EPS_MAX_UART_FRAME_LENGTH
         );
@@ -633,7 +630,7 @@ bool Eps_process_uart_payload(void) {
                 DP.EPS.EPS_REPLY[EPS_UART_HEADER_DATA_TYPE_POS]
             );
             memset(
-                &DP.EPS.EPS_REPLY,
+                (void *)DP.EPS.EPS_REPLY,
                 0,
                 EPS_MAX_UART_FRAME_LENGTH
             );
@@ -680,7 +677,7 @@ bool Eps_process_uart_payload(void) {
 
             /* Discard the frame */
             memset(
-                &DP.EPS.EPS_REPLY,
+                (void *)DP.EPS.EPS_REPLY,
                 0,
                 EPS_MAX_UART_FRAME_LENGTH
             );
@@ -692,8 +689,19 @@ bool Eps_process_uart_payload(void) {
         /* Process the recieved reply, checking that it is correct when
          * compared to the request which was sent. */
         if (!Eps_process_reply()) {
+            DEBUG_INF("EPS reply false");
             return false;
         }
+        DEBUG_INF("EPS reply true");
+        
+        if (EventManager_is_event_raised(EVT_EPS_NEW_HK_DATA)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+
+        Delay_ms(1000);
 
         /* Wait reply will raise command complete event if required */
     }
@@ -711,7 +719,7 @@ bool Eps_process_uart_payload(void) {
 
         /* Discard the frame */
         memset(
-            &DP.EPS.EPS_REPLY,
+            (void *)DP.EPS.EPS_REPLY,
             0,
             EPS_MAX_UART_FRAME_LENGTH
         );
@@ -825,7 +833,7 @@ bool Eps_start_uart_receive_payload(void) {
     DP.EPS.CONTINUE_TC[EPS_UART_HEADER_FRAME_NUMBER_POS]
         = DP.EPS.EPS_REPLY[EPS_UART_HEADER_FRAME_NUMBER_POS];
     DP.EPS.CONTINUE_TC[EPS_UART_HEADER_DATA_TYPE_POS] 
-        = EPS_UART_DATA_TYPE_CONTINUE;
+        = EPS_UART_DATA_TYPE_TC_CONTINUE;
 
     /* Send continue bytes to EPS to indicate we're ready to receive the
      * payload */
@@ -848,7 +856,6 @@ bool Eps_start_uart_receive_payload(void) {
 }
 
 bool Eps_process_reply(void) {
-    Eps_HkData hk_data;
     bool is_error = true;
 
     /* First check for general error codes that can happen for any command */
@@ -880,7 +887,7 @@ bool Eps_process_reply(void) {
 
         /* Discard the frame */
         memset(
-            DP.EPS.EPS_REPLY,
+            (void *)DP.EPS.EPS_REPLY,
             0,
             EPS_MAX_UART_FRAME_LENGTH
         );
@@ -897,22 +904,23 @@ bool Eps_process_reply(void) {
                 /* Got an HK reply to an HK request, parse the HK and
                  * update it in the data pool. Use a temp variable so we
                  * don't overwrite the datapool if it fails to parse */
+                /*
                 Eps_parse_hk_data(
                     &DP.EPS.EPS_REPLY[EPS_UART_HEADER_LENGTH],
-                    &hk_data
-                );
+                    &DP.EPS.HK_DATA
+                );*/
 
                 /* Set the data pool data and command status, and emmit
-                    * the event signalling new HK data */
-                DP.EPS.HK_DATA = hk_data;
+                 * the event signalling new HK data */
                 DP.EPS.COMMAND_STATUS = EPS_COMMAND_SUCCESS;
 
+                /*
                 if (!EventManager_raise_event(EVT_EPS_NEW_HK_DATA)) {
                     DEBUG_ERR("Couldn't raise EVT_EPS_NEW_HK_DATA");
                     DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
                     DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
                     return false;
-                }
+                }*/
             }
             else {
                 Eps_handle_incorrect_reply_data_type();
@@ -1041,7 +1049,7 @@ void Eps_handle_incorrect_reply_data_type(void) {
 
     /* Discard the frame */
     memset(
-        &DP.EPS.EPS_REPLY,
+        (void *)DP.EPS.EPS_REPLY,
         0,
         EPS_MAX_UART_FRAME_LENGTH
     );

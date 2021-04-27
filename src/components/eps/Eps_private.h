@@ -174,7 +174,7 @@ typedef uint8_t Eps_OcpByte;
  * 
  * From [SW_ICD]
  */
-#define EPS_UART_TM_HK_DATA_PL_LENGTH (105)
+#define EPS_UART_TM_HK_DATA_PL_LENGTH (106)
 
 /**
  * @brief Length of the EPS_UART_DATA_TYPE_TM_BATT_REPLY payload in bytes.
