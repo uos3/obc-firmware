@@ -8,6 +8,24 @@ POWER_TASK_TIMER_DURATION_S = 300
 # TODO: Issue this reference.
 POWER_OPMODE_OCP_STATE_CONFIG = 4039954176
 
+# Determines the battery voltage at which the low power mode will be activated.
+# This value is derived from the ADC to voltage equation in UoS3_SoftwareIcd:
+#   v_sense_threshold = v_threshold * R_2 / (R_1 + R_2) = 1.8337408312 V
+# where:
+#   R_1 = 309 k Ohm
+#   R_2 = 100 k Ohm
+#   v_threshold = 7.5 V
+#
+# This value then needs to be converted into raw ADC values, which can be done
+# using the equation below:
+#   vbatt_vsense_threshold = v_sense_threshold * 1024 / 2.5 V = 751.10024449
+#
+# The value stored here is of type uint16_t, therefore vbatt_vsense_threshold
+# is floor-ed down to 751 to be conservative.
+#
+# TODO: section reference
+POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD = 751
+
 # All rails will reset after an OCP event (all lower 6 bits set to 1)
 EPS_RESET_RAIL_AFTER_OCP = 63
 

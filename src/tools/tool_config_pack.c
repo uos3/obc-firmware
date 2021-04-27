@@ -123,6 +123,21 @@ int main(int argc, char **pp_argv) {
             = (uint32_t)power_op_mode_ocp_rail_config.u.i;
     }
 
+    toml_datum_t power_vbatt_vsense_low_power_threshold = toml_int_in(
+        p_config, 
+        "POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD"
+    );
+    if (!power_vbatt_vsense_low_power_threshold.ok) {
+        DEBUG_ERR(
+            "Missing TOML parameter: POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD"
+        );
+        cfg_ok = false;
+    }
+    else {
+        cfg_data.POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD 
+            = (uint32_t)power_vbatt_vsense_low_power_threshold.u.i;
+    }
+
     toml_datum_t eps_reset_rail_after_ocp = toml_int_in(
         p_config, 
         "EPS_RESET_RAIL_AFTER_OCP"

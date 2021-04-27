@@ -86,6 +86,20 @@ typedef struct _MemStoreManager_ConfigData {
     Power_OpModeOcpStateConfig POWER_OPMODE_OCP_STATE_CONFIG;
 
     /**
+     * @brief The ADC value of Eps_HkData.vbatt_vsense used as the threshold
+     * for low power mode.
+     * 
+     * This is determined using the following logic:
+     * if (DP.EPS.HK_DATA.vbatt_vsense 
+     *    <=
+     *    CFG.POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD 
+     * ) {
+     *    TRANSITION TO LOW POWER MODE
+     * }
+     */
+    uint16_t POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD;
+
+    /**
      * @brief An Eps_OcpByte which determines whether or not the EPS will reset
      * an OCP rail after its OCP has been tripped.
      */

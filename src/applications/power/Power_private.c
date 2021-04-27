@@ -20,6 +20,8 @@
 #include <stdbool.h>
 
 /* Internal includes */
+#include "util/debug/Debug_public.h"
+#include "system/data_pool/DataPool_public.h"
 #include "system/opmode_manager/OpModeManager_public.h"
 #include "applications/power/Power_public.h"
 #include "applications/power/Power_private.h"
@@ -66,6 +68,31 @@ Eps_OcpState Power_get_ocp_state_for_op_mode(
 }
 
 bool Power_low_power_status_check(void) {
-    /* TODO: check DP.EPS.HK_DATA for the battery voltage and compare it to the
-     * low power voltage threshold */
+    /* Check that the EPS reported battery voltage sense (note: not actual
+     * battery voltage, it's the voltage of the sense resistor!), is above the
+     * minimum threshold stored in the config file */
+    if (DP.EPS.HK_DATA.vbatt_vsense 
+        <= 
+        CFG.POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD
+    ) {
+        DEBUG_ERR("Battery voltage sense below LP threshold");
+        DEBUG_INF(
+            "CFG.POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD is %u, vbatt_vsense is %u",
+            CFG.POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD,
+            DP.EPS.HK_DATA.vbatt_vsense
+        );
+
+        /* Set low power status */
+        DP.POWER.LOW_POWER_STATUS = POWER_LOW_POWER_STATUS_LOW_POWER;
+    }
+    else {
+        DEBUG_INF("Battery voltage sense above LP threshold");
+        DEBUG_INF(
+            "CFG.POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD is %u, vbatt_vsense is %u",
+            CFG.POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD,
+            DP.EPS.HK_DATA.vbatt_vsense
+        );
+
+        DP.POWER.LOW_POWER_STATUS = POWER_LOW_POWER_STATUS_OK;
+    }
 }
