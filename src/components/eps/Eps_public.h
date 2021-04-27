@@ -702,7 +702,16 @@ typedef enum _Eps_UartDataType {
      * 
      * Generated on failure of the EPS flash CRC.
      */
-    EPS_UART_DATA_TYPE_TM_FLASH_READ_FAIL = 138
+    EPS_UART_DATA_TYPE_TM_FLASH_READ_FAIL = 138,
+
+    /**
+     * @brief Data type indicating that the previous header has been received 
+     * and the receiving end is now ready to receive the following payload 
+     * bytes. 
+     * 
+     * Send by both the EPS and OBC.
+     */
+    EPS_UART_DATA_TYPE_CONTINUE = 255
     
 } Eps_UartDataType;
 

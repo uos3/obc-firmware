@@ -86,7 +86,7 @@ bool Eps_step(void) {
     if (EventManager_poll_event(EVT_UART_EPS_RX_COMPLETE)) {
         /* If we expected a header for this recieve process it, this will start
          * the recieve for the payload and CRC as well */
-        DEBUG_DBG("EPS.EXPECT_HEADER = %d", DP.EPS.EXPECT_HEADER);
+        DEBUG_DBG("DP.EPS.EXPECT_HEADER = %d", DP.EPS.EXPECT_HEADER);
         if (DP.EPS.EXPECT_HEADER) {
             if (!Eps_process_uart_header()) {
                 DEBUG_ERR("Couldn't process header from EPS");

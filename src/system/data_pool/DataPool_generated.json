@@ -349,6 +349,13 @@
         "data_type": "Error",
         "brief": "Holds errors originating from the Timer driver."
     },
+    "DP.EPS.CONTINUE_TC[EPS_UART_HEADER_LENGTH]": {
+        "block_id": 34,
+        "block_index": 19,
+        "dp_id": 34835,
+        "data_type": "uint8_t",
+        "brief": "Buffer to hold continue command to send to the EPS."
+    },
     "DP.POWER.INITIALISED": {
         "block_id": 53,
         "block_index": 1,

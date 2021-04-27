@@ -173,6 +173,13 @@ typedef struct _Eps_Dp {
      */
     Error TIMER_ERROR;
 
+    /**
+     * @brief Buffer to hold continue command to send to the EPS.
+     * 
+     * @dp 19
+     */
+    uint8_t CONTINUE_TC[EPS_UART_HEADER_LENGTH];
+
 } Eps_Dp;
 
 #endif /* H_EPS_DP_STRUCT_H */

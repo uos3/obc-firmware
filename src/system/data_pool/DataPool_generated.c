@@ -9,7 +9,7 @@
  * This file was generated from DataPool_struct.h by DataPool_generate.py.
  * 
  * @version Generated from DataPool_struct.h version 0.1
- * @date 2021-04-19
+ * @date 2021-04-27
  * 
  * @copyright Copyright (c) UoS3 2020
  */
@@ -437,6 +437,14 @@ bool DataPool_get(
         *pp_data_out = &DP.EPS.TIMER_ERROR;
         *p_data_type_out = DATAPOOL_DATATYPE_ERROR;
         *p_data_size_out = sizeof(Error);
+        return true;
+
+
+    /* DP.EPS.CONTINUE_TC[EPS_UART_HEADER_LENGTH] */
+    case 0x8813:
+        *pp_data_out = &DP.EPS.CONTINUE_TC[EPS_UART_HEADER_LENGTH];
+        *p_data_type_out = DATAPOOL_DATATYPE_UINT8_T;
+        *p_data_size_out = sizeof(uint8_t);
         return true;
 
 
@@ -975,6 +983,12 @@ bool DataPool_get_symbol_str(
     /* DP.EPS.TIMER_ERROR */
     case 0x8812:
         *pp_symbol_str_out = strdup("DP.EPS.TIMER_ERROR");
+        return true;
+
+
+    /* DP.EPS.CONTINUE_TC[EPS_UART_HEADER_LENGTH] */
+    case 0x8813:
+        *pp_symbol_str_out = strdup("DP.EPS.CONTINUE_TC[EPS_UART_HEADER_LENGTH]");
         return true;
 
 

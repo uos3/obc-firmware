@@ -796,7 +796,7 @@ bool Eps_start_uart_receive_payload(void) {
     /* Set the total expected reply length */
     DP.EPS.EPS_REPLY_LENGTH = EPS_UART_HEADER_LENGTH + payload_length;
 
-    /* Call the recieve function */
+    /* Setup receive for the payload and CRC */
     DEBUG_DBG("Receiving payload");
     DP.EPS.UART_ERROR.code = Uart_recv_bytes(
         UART_DEVICE_ID_EPS,
@@ -812,6 +812,29 @@ bool Eps_start_uart_receive_payload(void) {
         return false;
     }
     DP.EPS.EXPECT_HEADER = false;
+
+    /* Build the continue bytes to send to the EPS */
+    DP.EPS.CONTINUE_TC[EPS_UART_HEADER_FRAME_NUMBER_POS]
+        = DP.EPS.EPS_REPLY[EPS_UART_HEADER_FRAME_NUMBER_POS];
+    DP.EPS.CONTINUE_TC[EPS_UART_HEADER_DATA_TYPE_POS] 
+        = EPS_UART_DATA_TYPE_CONTINUE;
+
+    /* Send continue bytes to EPS to indicate we're ready to receive the
+     * payload */
+    DEBUG_DBG("Sending continue bytes");
+    DP.EPS.UART_ERROR.code = Uart_send_bytes(
+        UART_DEVICE_ID_EPS,
+        DP.EPS.CONTINUE_TC,
+        EPS_UART_HEADER_LENGTH
+    );
+    DP.EPS.UART_ERROR.p_cause = NULL;
+    if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
+        DEBUG_ERR("Unable to start Uart_send_bytes for continue command to EPS");
+        DP.EPS.UART_ERROR.p_cause = NULL;
+        DP.EPS.ERROR.code = EPS_ERROR_UART_START_RECV_FAILED;
+        DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
+        return false;
+    }
 
     return true;
 }
