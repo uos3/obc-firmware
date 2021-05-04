@@ -139,6 +139,9 @@ void Debug_exit(int error_code);
 /**
  * @brief Returns a hex-formatted string representing the bytes given.
  * 
+ * WARNING: The user shall ensure that p_str_out is large enough to hold (3 *
+ * length_in) chracters.
+ * 
  * @param p_bytes_in The bytes to print
  * @param p_str_out The formatted string
  * @param length_in The length of the bytes

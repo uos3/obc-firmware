@@ -535,10 +535,10 @@ bool Eps_process_uart_header(void) {
 bool Eps_process_uart_payload(void) {
     Crypto_Crc16 expected_crc;
     Crypto_Crc16 received_crc;
-    char p_hex_str[64] = {0};
 
     /* Print the message */
     #ifdef DEBUG_MODE
+    char p_hex_str[EPS_MAX_UART_FRAME_LENGTH * 3] = {0};
     Debug_hex_string(
         DP.EPS.EPS_REPLY, 
         p_hex_str, 
@@ -904,23 +904,21 @@ bool Eps_process_reply(void) {
                 /* Got an HK reply to an HK request, parse the HK and
                  * update it in the data pool. Use a temp variable so we
                  * don't overwrite the datapool if it fails to parse */
-                /*
                 Eps_parse_hk_data(
                     &DP.EPS.EPS_REPLY[EPS_UART_HEADER_LENGTH],
                     &DP.EPS.HK_DATA
-                );*/
+                );
 
                 /* Set the data pool data and command status, and emmit
                  * the event signalling new HK data */
                 DP.EPS.COMMAND_STATUS = EPS_COMMAND_SUCCESS;
 
-                /*
                 if (!EventManager_raise_event(EVT_EPS_NEW_HK_DATA)) {
                     DEBUG_ERR("Couldn't raise EVT_EPS_NEW_HK_DATA");
                     DP.EPS.ERROR.code = EPS_ERROR_EVENTMANAGER_ERROR;
                     DP.EPS.ERROR.p_cause = &DP.EVENTMANAGER.ERROR;
                     return false;
-                }*/
+                }
             }
             else {
                 Eps_handle_incorrect_reply_data_type();
