@@ -351,11 +351,6 @@ def build(
     info('Running make')
 
     make_cmd = [
-        'scan-build',
-        '-v',
-        '-stats',
-        '--use-cc=/usr/bin/arm-none-eabi-gcc',
-        '--analyzer-target=arm-none-eabi',
         'make', '-j', '4'
     ]
     make_cmd.extend(make_targets)
