@@ -36,7 +36,8 @@
  *  - IMU
  *  - Temperature sensor
  * 
- * TODO: Check if the battery should also be an I2C device.
+ * The battery is not an I2C device connected to the OBC, it's connected to the
+ * EPS instead.
  */
 #define I2C_MAX_NUM_ACTIONS (2)
 
@@ -50,7 +51,6 @@
  * before an error will be issued.
  * 
  * TODO: This value is arbitrary
- * TODO: This should be in the configuration file
  */
 #define I2C_MAX_NUM_I2C_PERIPH_READY_CHECKS (10)
 
@@ -59,7 +59,6 @@
  * before an error will be issued.
  * 
  * TODO: This value is arbitrary
- * TODO: This should be in the configuration file
  */
 #define I2C_MAX_NUM_GPIO_PERIPH_READY_CHECKS (10)
 
@@ -68,7 +67,6 @@
  * module is busy.
  * 
  * TODO: Possibly need separate values for each action type?
- * TODO: This should be in the configuration file
  */
 #define I2C_MAX_NUM_MASTER_BUSY_MAJOR_CHECKS (3)
 
@@ -77,7 +75,6 @@
  * module is busy.
  * 
  * TODO: Possibly need separate values for each action type?
- * TODO: This should be in the configuration file
  */
 #define I2C_MAX_NUM_MASTER_BUSY_MINOR_CHECKS (5)
 
