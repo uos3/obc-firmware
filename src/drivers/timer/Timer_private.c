@@ -527,6 +527,9 @@ ErrorCode Timer_update_pointers(void) {
     Timer_Timer *p_last_timer = &TIMER_STATE.timers[TIMER_NUM_TIMERS - 1];
     bool next_timer_found = false;
 
+    /* FIXME: Potential bug here where timers are all used up when some are
+     * actually available? */
+
     /* General update algorithm:
      *  - If current available pointer is available do nothing
      *  - Otherwise:

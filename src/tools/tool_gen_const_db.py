@@ -260,7 +260,7 @@ def gen_datapool_table(root_dir, db):
     for (symbol, param) in dp_data.items():
         table.insert({
             'symbol': symbol,
-            'module_name': modules_table.get(where('id') == param['block_id'])['module_name'],
+            'module': modules_table.get(where('id') == param['block_id'])['module_name'],
             'value': param['dp_id'],
             'description': param['brief']
         })

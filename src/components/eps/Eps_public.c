@@ -59,12 +59,13 @@ bool Eps_init(void) {
         EPS_UART_HEADER_LENGTH
     );
     if (DP.EPS.UART_ERROR.code != ERROR_NONE) {
-        DEBUG_ERR("Unable to start Uart_send_bytes for comms reset toEPS");
+        DEBUG_ERR("Unable to start Uart_send_bytes for comms reset to EPS");
         DP.EPS.UART_ERROR.p_cause = NULL;
         DP.EPS.ERROR.code = EPS_ERROR_UART_START_SEND_FAILED;
         DP.EPS.ERROR.p_cause = &DP.EPS.UART_ERROR;
         return false;
     }
+    DEBUG_TRC("Reset command sent to EPS");
 
     /* Prepare to recieve any potential unsolicited header bytes from the 
      * UART */
@@ -113,8 +114,6 @@ bool Eps_step(void) {
                 DEBUG_ERR("Couldn't process payload from EPS");
                 return false;
             }
-
-            DEBUG_INF("HELLO");
 
             /* Prepare to recieve next header bytes from the UART */
             DEBUG_DBG("Receiving header");

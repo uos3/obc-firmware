@@ -24,34 +24,33 @@ def const_lookup(search, const_type=None):
     db = open_database(root_dir)
 
     # See if the search is a constant or is a module name
-    module_name = None
     try:
-        value = int(search, 0)
+        search = int(search, 0)
     except ValueError:
-        module_name = search
-        value = None
+        pass
 
     # Matches dictionary
-    matches = {table:[] for table in db.tables()}
+    tab_matches = {table:[] for table in db.tables()}
 
     # Search
     if const_type is None:
         for table_name in db.tables():
             # Match for constants
-            if value is not None:
-                table_matches = db.table(table_name).search(where('value') == value)
+            if isinstance(search, int):
+                table_matches = db.table(table_name).search(where('value') == search)
             else:
-                table_matches = db.table(table_name).search(where('module') == module_name)
+                table_matches = db.table(table_name).search(where('module') == search)
+                table_matches.extend(db.table(table_name).search(where('symbol') == search))
             if len(table_matches) > 0:
-                matches[table_name].extend(table_matches)
+                tab_matches[table_name].extend(table_matches)
     else:
         # Match for constants
-        if value is not None:
-            matches = db.table(const_type).search(where('value') == value)
+        if search is not None:
+            tab_matches = db.table(const_type).search(where('value') == search)
         else:
-            matches = db.table(const_type).search(where('module') == module_name)
+            tab_matches = db.table(const_type).search(where('module') == search)
 
-    return matches
+    return tab_matches
 
 def open_database(root_dir):
     '''

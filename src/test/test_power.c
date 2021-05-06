@@ -98,6 +98,18 @@ int main(void) {
     }
     DEBUG_INF("Power initialised");
 
+    /* Start timer for opmode transitions */
+    if (Timer_start_periodic(
+            ocp_duration_s, 
+            &timer_event
+        ) 
+        != 
+        ERROR_NONE
+    ) {
+        DEBUG_ERR("Couldn't start OCP timer");
+        Debug_exit(1);
+    }
+
     DEBUG_INF("---- TEST 1: OPMODE TRANSITIONS ----");
 
     /* Enter main exec loop */
@@ -190,17 +202,6 @@ int main(void) {
                                 "No events, setting OPMODE to %d", 
                                 DP.OPMODEMANAGER.NEXT_OPMODE
                             );
-
-                            /* Start timer for next transition */
-                            if (Timer_start_one_shot(
-                                ocp_duration_s, 
-                                &timer_event) 
-                                != 
-                                ERROR_NONE
-                            ) {
-                                DEBUG_ERR("Couldn't start OCP timer");
-                                Debug_exit(1);
-                            }
                         }
                     }
                     else {

@@ -1,0 +1,85 @@
+[         0 ---] test/test_power.c:70 ---- Power Test ----
+[         4 ---] test/test_power.c:71 Basic initialisation complete
+[        11 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[        18 TRC] components/eps/Eps_public.c:68 Reset command sent to EPS
+[        25 DBG] drivers/uart/Uart_public_tm4c.c:340 Uart_recv started on UART 2, length 2
+[        34 ---] test/test_power.c:87 Eps initialised
+[        39 ---] system/opmode_manager/OpModeManager_bu.c:95 Dwell time not ellapsed, starting timer
+[        49 ---] test/test_power.c:93 OpModeManager initialised
+[        54 ---] test/test_power.c:99 Power initialised
+[        60 ---] test/test_power.c:113 ---- TEST 1: OPMODE TRANSITIONS ----
+[        67 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8803
+[        74 TRC] applications/power/Power_public.c:308 Updated EPS config sent
+[        82 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[        90 DBG] components/eps/Eps_public.c:221 EPS message = 01 02 3F 00 10 AD 90 
+[        98 DBG] components/eps/Eps_public.c:245 TX complete
+[       104 DBG] components/eps/Eps_public.c:245 TX complete
+[       110 ---] test/test_power.c:276 No events, waiting for interrupt...
+[       189 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       195 DBG] components/eps/Eps_public.c:104 DP.EPS.EXPECT_HEADER = 1
+[       203 TRC] components/eps/Eps_private.c:479 Got EPS UART header
+[       210 DBG] components/eps/Eps_private.c:810 Receiving payload
+[       216 DBG] drivers/uart/Uart_public_tm4c.c:340 Uart_recv started on UART 2, length 5
+[       225 DBG] components/eps/Eps_private.c:834 Sending continue bytes
+[       232 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[       240 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       248 DBG] components/eps/Eps_public.c:245 TX complete
+[       254 DBG] components/eps/Eps_public.c:104 DP.EPS.EXPECT_HEADER = 0
+[       261 DBG] components/eps/Eps_private.c:549 message from EPS = 01 82 3F 00 10 70 A8 
+[       270 DBG] components/eps/Eps_private.c:550 Reply length = 7
+[       277 DBG] components/eps/Eps_private.c:571 CRCs calculated
+[       283 DBG] components/eps/Eps_public.c:119 Receiving header
+[       290 DBG] drivers/uart/Uart_public_tm4c.c:340 Uart_recv started on UART 2, length 2
+[       299 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8801
+[       306 TRC] applications/power/Power_public.c:271 No action on successful EPS TC 2
+[       315 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8803
+[       322 TRC] applications/power/Power_public.c:340 Updated EPS OCP state sent
+[       330 DBG] applications/power/Power_public.c:341 DP.POWER.REQUESTED_OCP_STATE: 001100
+[       339 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[       347 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       355 DBG] components/eps/Eps_public.c:221 EPS message = 02 03 0C 36 23 
+[       362 DBG] components/eps/Eps_public.c:245 TX complete
+[       368 DBG] components/eps/Eps_public.c:104 DP.EPS.EXPECT_HEADER = 1
+[       376 TRC] components/eps/Eps_private.c:479 Got EPS UART header
+[       383 DBG] components/eps/Eps_private.c:810 Receiving payload
+[       389 DBG] drivers/uart/Uart_public_tm4c.c:340 Uart_recv started on UART 2, length 3
+[       398 DBG] components/eps/Eps_private.c:834 Sending continue bytes
+[       405 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[       413 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       421 DBG] components/eps/Eps_public.c:245 TX complete
+[       427 DBG] components/eps/Eps_public.c:104 DP.EPS.EXPECT_HEADER = 0
+[       434 DBG] components/eps/Eps_private.c:549 message from EPS = 02 83 0C 2D BB 
+[       442 DBG] components/eps/Eps_private.c:550 Reply length = 5
+[       449 DBG] components/eps/Eps_private.c:571 CRCs calculated
+[       456 DBG] components/eps/Eps_public.c:119 Receiving header
+[       462 DBG] drivers/uart/Uart_public_tm4c.c:340 Uart_recv started on UART 2, length 2
+[       471 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8801
+[       479 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8803
+[       486 TRC] applications/power/Power_public.c:407 Update EPS HK request sent
+[       494 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[       502 DBG] components/eps/Eps_public.c:221 EPS message = 03 01 58 7D 
+[       509 DBG] components/eps/Eps_public.c:245 TX complete
+[       516 ---] test/test_power.c:276 No events, waiting for interrupt...
+[       671 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       677 DBG] components/eps/Eps_public.c:104 DP.EPS.EXPECT_HEADER = 1
+[       684 TRC] components/eps/Eps_private.c:479 Got EPS UART header
+[       691 DBG] components/eps/Eps_private.c:810 Receiving payload
+[       698 DBG] drivers/uart/Uart_public_tm4c.c:340 Uart_recv started on UART 2, length 108
+[       707 DBG] components/eps/Eps_private.c:834 Sending continue bytes
+[       714 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6006
+[       722 DBG] components/eps/Eps_public.c:245 TX complete
+[       728 ---] test/test_power.c:276 No events, waiting for interrupt...
+[       735 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x6005
+[       743 DBG] components/eps/Eps_public.c:104 DP.EPS.EXPECT_HEADER = 0
+[       753 DBG] components/eps/Eps_private.c:549 message from EPS = 03 81 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4C 01 00 00 00 00 01 00 01 00 01 00 01 00 00 00 00 00 01 00 76 01 01 00 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 78 01 FA 00 5D 02 08 00 00 00 01 01 8B 01 EA 01 1C 02 00 00 00 00 00 0C 00 00 00 00 00 00 00 00 D0 D1 
+[       787 DBG] components/eps/Eps_private.c:550 Reply length = 110
+[       794 DBG] components/eps/Eps_private.c:571 CRCs calculated
+[       801 DBG] components/eps/Eps_private.c:305 HK BYTES.VBATT_VSENSE = 5D 02
+[       808 DBG] components/eps/Eps_private.c:310 HK.VBATT_VSENSE = 605
+[       816 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8802
+[       823 DBG] components/eps/Eps_public.c:119 Receiving header
+[       830 DBG] drivers/uart/Uart_public_tm4c.c:340 Uart_recv started on UART 2, length 2
+[       839 TRC] system/event_manager/EventManager_public.c:124 EVENT: 0x8801
+[       846 ---] applications/power/Power_private.c:89 Battery voltage sense above LP threshold
+[       855 ---] applications/power/Power_private.c:90 CFG.POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD is 568, vbatt_vsense is 605
+[       866 TRC] system/event_manager/EventManager_private.c:141 Event 0x8802 was polled as part of cleanup

@@ -25,17 +25,17 @@
 
 uint16_t Packing_u16_from_be(uint8_t *p_data_in) {
     #if __BYTE_ORDER == __LITTLE_ENDIAN
-    return (uint16_t)((uint16_t)(p_data_in[0] << 8) | p_data_in[1]);
-    #else
     return (uint16_t)((uint16_t)(p_data_in[1] << 8) | p_data_in[0]);
+    #else
+    return (uint16_t)((uint16_t)(p_data_in[0] << 8) | p_data_in[1]);
     #endif
 }
 
 uint16_t Packing_u16_from_le(uint8_t *p_data_in) {
     #if __BYTE_ORDER == __LITTLE_ENDIAN
-    return (uint16_t)((uint16_t)(p_data_in[1] << 8) | p_data_in[0]);
-    #else
     return (uint16_t)((uint16_t)(p_data_in[0] << 8) | p_data_in[1]);
+    #else
+    return (uint16_t)((uint16_t)(p_data_in[1] << 8) | p_data_in[0]);
     #endif
 }
 

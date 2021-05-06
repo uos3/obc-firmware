@@ -18,13 +18,13 @@ POWER_OPMODE_OCP_STATE_CONFIG = 4039954176
 #
 # This value then needs to be converted into raw ADC values, which can be done
 # using the equation below:
-#   vbatt_vsense_threshold = v_sense_threshold * 1024 / 2.5 V = 751.10024449
+#   vbatt_vsense_threshold = v_sense_threshold * 1023 / 3.3 V = 568.46197672
 #
 # The value stored here is of type uint16_t, therefore vbatt_vsense_threshold
-# is floor-ed down to 751 to be conservative.
+# is floor-ed down to 568 to be conservative.
 #
 # TODO: section reference
-POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD = 751
+POWER_VBATT_VSENSE_LOW_POWER_THRESHOLD = 568
 
 # All rails will reset after an OCP event (all lower 6 bits set to 1)
 EPS_RESET_RAIL_AFTER_OCP = 63

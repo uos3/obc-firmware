@@ -302,10 +302,12 @@ void Eps_parse_hk_data(
     );
     p_data += 2;
 
+    DEBUG_DBG("HK BYTES.VBATT_VSENSE = %02X %02X", *p_data, *(p_data + 1));
     p_hk_data_out->vbatt_vsense = Packing_u16_from_be(
         p_data
     );
     p_data += 2;
+    DEBUG_DBG("HK.VBATT_VSENSE = %d", p_hk_data_out->vbatt_vsense);
 
     p_hk_data_out->ocp1_csense = Packing_u16_from_be(
         p_data
@@ -555,11 +557,14 @@ bool Eps_process_uart_payload(void) {
         DP.EPS.EPS_REPLY_LENGTH - EPS_UART_CRC_LENGTH,
         &expected_crc
     )) {
+        /* TODO: add error code here */
         return false;
     }
 
-    /* Pack the received CRC from it's pair of bytes into a 16 bit int. */
-    received_crc = Packing_u16_from_be(
+    /* Pack the received CRC from it's pair of bytes into a 16 bit int. Note
+     * that even though the message is big endian the CRC is calculated on a LE
+     * machine, so we acutally want to pack it from LE not BE. */
+    received_crc = Packing_u16_from_le(
         &DP.EPS.EPS_REPLY[DP.EPS.EPS_REPLY_LENGTH - EPS_UART_CRC_LENGTH]
     );
 
@@ -689,19 +694,8 @@ bool Eps_process_uart_payload(void) {
         /* Process the recieved reply, checking that it is correct when
          * compared to the request which was sent. */
         if (!Eps_process_reply()) {
-            DEBUG_INF("EPS reply false");
             return false;
         }
-        DEBUG_INF("EPS reply true");
-        
-        if (EventManager_is_event_raised(EVT_EPS_NEW_HK_DATA)) {
-            return false;
-        }
-        else {
-            return true;
-        }
-
-        Delay_ms(1000);
 
         /* Wait reply will raise command complete event if required */
     }
