@@ -39,11 +39,28 @@ static void Crypto_test_crc_value(void **state) {
     (void) state;
     Crypto_Crc32 calculated_crc32 = 0;
     Crypto_Crc16 calcualted_crc16 = 0;
+
+    /* Check that both CRC funcs will reject NULL pointers */
+    assert_false(Crypto_get_crc32(
+        NULL,
+        0,
+        NULL
+    ));
+    assert_false(Crypto_get_crc16(
+        NULL,
+        0,
+        NULL
+    ));
+
     /* 
      * Using the check value from the CRC catalogue
      * https://reveng.sourceforge.io/crc-catalogue/17plus.htm#crc.cat.crc-32c 
      */
-    Crypto_get_crc32("123456789", strlen("123456789"), &calculated_crc32);
+    assert_true(Crypto_get_crc32(
+        "123456789", 
+        strlen("123456789"), 
+        &calculated_crc32
+    ));
     assert_int_equal(calculated_crc32, 0xe3069283);
 
     /* Check CRC-16 compliance with ECSS-E-ST-70-41 B.1.5 */
@@ -57,11 +74,11 @@ static void Crypto_test_crc_value(void **state) {
     Crypto_Crc16 expected_crc16[4] = {0x1D0F, 0xCC9C, 0x04A2, 0x7FD5};
 
     for (int i = 0; i < 4; i++) {
-        Crypto_get_crc16(
+        assert_true(Crypto_get_crc16(
             test_vectors[i], 
             test_vector_sizes[i], 
             &calcualted_crc16
-        );
+        ));
         assert_int_equal(calcualted_crc16, expected_crc16[i]);
     }
 }
