@@ -10,7 +10,7 @@
  * software, so that consideration doesn't have to be given to which physical
  * timer perhipheral is being used for a particular module or task. 
  * 
- * The user can start a timer using the `Timer_start()` function, which returns
+ * The user can start a timer using the `Timer_start` functions, which return
  * an Event ID that the user can poll for. This event will be fired when the
  * timer completes. When a timer completes it becomes available for use by any
  * other part of the software.
