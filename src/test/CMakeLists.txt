@@ -109,3 +109,12 @@ target_link_libraries(test_bu
     Power
     OpModeManager
 )
+
+add_executable(timer_test
+    ${STARTUP_SOURCE}
+    timer_test.c
+)
+target_link_libraries(timer_test
+    ${STANDARD_LINK_LIBS}
+    Timer
+)

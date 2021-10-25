@@ -120,6 +120,16 @@ int main(void) {
             timer_disabled = true;
         }
 
+        if (EventManager_poll_event(timer_0_20_done))
+        {
+            num_of_0_20_fired_timers++;
+        }
+
+        if (num_of_0_20_fired_timers >= one_shot_timers_amount)
+        {
+            run_loop = false;
+        }
+
         EventManager_cleanup_events();
     }
     
