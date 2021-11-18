@@ -28,7 +28,22 @@
 #include "system/event_manager/EventManager_public.h"
 #include "drivers/timer/Timer_public.h"
 
-#define ACTIVITY_TIMEOUT_MS (10000)
+/* Defines when the 0.20s one shot timers will be fired */
+Event fire_one_shot_timers(Event *timer_one_shot_event, int size) {
+
+    /* Start a 0.20s one shot timer (For testing) */
+    DEBUG_INF("Activating several 0.20s one shot timers");
+    for (int i = 0; i < 24; i++)
+    {
+        bool error = Timer_start_one_shot(0.20, &timer_one_shot_event[i]);
+        if (error = ERROR_NONE) 
+        {
+            Debug_exit(1);
+        }
+
+        DEBUG_INF("Timer event code: 0x%04X", timer_one_shot_event[i]);
+    }
+}
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -50,7 +65,7 @@ int main(void) {
     int num_of_0_20_fired_timers = 0;
     int num_of_1_timers = 0;
     /* This will be used to measure how long should the 1s periodic timer should run for */
-    int periodic_run_time_required = 100;
+    int periodic_run_time_required = 10;
 
     /* Init system critical modules */
     Kernel_init_critical_modules();
@@ -61,9 +76,10 @@ int main(void) {
     }
 
     DEBUG_INF(" ---- TIMER TEST ----");
-
+    
+    /* Required initialisations and verifications for the Datapool, EventManager, and Board */
     DEBUG_INF("Init DP...");
-    DataPool_init;
+    DataPool_init();
     if (!DP.INITIALISED)
     {
         DEBUG_INF("Could not initialize the datapool, exiting...");
@@ -77,7 +93,8 @@ int main(void) {
         Debug_exit(1);
     }
 
-    DEBUG_INF("Init Board...")
+    DEBUG_INF("Init Board...");
+    Board_init();
     if (!DP.BOARD_INITIALISED)
     {
         DEBUG_INF("Could not initialize the Board");
@@ -141,25 +158,3 @@ int main(void) {
     
     return 0;
 }
-
-/* Defines when the 0.20s one shot timers will be fired */
-Event fire_one_shot_timers(Event *timer_one_shot_event, int size) {
-
-    /* Start a 0.20s one shot timer (For testing) */
-    DEBUG_INF("Activating several 0.20s one shot timers");
-    for (int i = 0; i < 24; i++)
-    {
-        bool error = Timer_start_one_shot(0.20, &timer_one_shot_event[i]);
-        if (error = ERROR_NONE) 
-        {
-            Debug_exit(1);
-        }
-
-        DEBUG_INF("Timer event code: 0x%04X", timer_one_shot_event[i]);
-    }
-
-
-
-}
-
-
