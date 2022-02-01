@@ -139,7 +139,7 @@ int main(void) {
         if (EventManager_poll_event(timer_1_periodic_done)) {
             /* Initializing a 0.2s one shot timer every second*/
             /* Checking for errors when the timer is initialized */
-            bool error = Timer_start_one_shot(0.20, &timer_0_20_done);
+            error = Timer_start_one_shot(0.20, &timer_0_20_done);
             if (error != ERROR_NONE) {
                 DEBUG_INF("Could not initialize 0.20s one shot timer");
                 Debug_exit(1);
