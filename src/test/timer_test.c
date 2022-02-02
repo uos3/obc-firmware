@@ -32,7 +32,9 @@
  * CONSTANTS
  * ------------------------------------------------------------------------- */
 
-#define TIMERS_AMOUNT 24
+/* This will be used to measure how long should the 1s periodic timer should run for */
+#define PERIODIC_RUN_TIME 40
+#define MAX_0_20_TIMERS 40
 
 /* -------------------------------------------------------------------------   
  * MAIN
@@ -53,8 +55,6 @@ int main(void) {
     int num_of_0_20_fired_timers = 0;
     int num_of_1_one_shot_timers = 0;
     int num_of_1_timers = 0;
-    /* This will be used to measure how long should the 1s periodic timer should run for */
-    int periodic_run_time_required = 20;
 
     /* Init system critical modules */
     Kernel_init_critical_modules();
@@ -63,9 +63,11 @@ int main(void) {
         return 0;
     }
 
+    DEBUG_INF("");
     DEBUG_INF("---------------------");
     DEBUG_INF(" ---- TIMER TEST ----");
     DEBUG_INF("---------------------");
+    DEBUG_INF("");
     
     /* Required initialisations and verifications for the Datapool, EventManager, and Board */
     DEBUG_INF("Init DP...");
@@ -149,9 +151,7 @@ int main(void) {
             num_of_1_timers++;
         }
 
-        /* TODO: Make it so that the periodic timer is running for the amount of time required to launch a single one shot timer everytime the periodic timer is triggered.
-         * It will run for a specific amount of time until either the num_of_0_20_fired_timers >= TIMERS_AMOUNT or until it has reached a maximum run time */
-        if (num_of_1_timers >= periodic_run_time_required && !timer_disabled) {
+        if (num_of_1_timers >= PERIODIC_RUN_TIME && !timer_disabled) {
 
             /* Disable the 1s periodic timer after it ran its required time */
             error = Timer_disable(timer_1_periodic_done);
@@ -163,13 +163,14 @@ int main(void) {
             run_loop = false;
         }
 
-        if (num_of_0_20_fired_timers >= TIMERS_AMOUNT) {
+        /* Disable while loop in case any errors arise causing a infinite loop*/
+        if (num_of_0_20_fired_timers >= MAX_0_20_TIMERS) {
             run_loop = false;
         }
 
         EventManager_cleanup_events();
     }
-    DEBUG_INF("The test ran for a total of %ds. In %ds had a total of %dx0.2s timers and %dx1s one shot timer.", periodic_run_time_required, num_of_1_timers, num_of_0_20_fired_timers, num_of_1_one_shot_timers);
+    DEBUG_INF("In %ds had a total of %dx0.2s timers and %dx1s one shot timer.", num_of_1_timers, num_of_0_20_fired_timers, num_of_1_one_shot_timers);
     
     /* Disable all timers then destroy the event manager. Must be done in this
      * order to prevent a hardfault if a timer attempts to access the event

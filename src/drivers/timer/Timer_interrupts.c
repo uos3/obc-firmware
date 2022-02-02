@@ -64,7 +64,7 @@ void Timer_int_raise_event(Timer_Timer *p_timer) {
 }
 
 void Timer_int_00A(void) {
-    Timer_int_raise_event(TIMER_STATE.blocks[0].p_a);    
+    Timer_int_raise_event(TIMER_STATE.blocks[0].p_a);
 }
 
 void Timer_int_00B(void) {
@@ -80,7 +80,7 @@ void Timer_int_01B(void) {
 }
 
 void Timer_int_02A(void) {
-    Timer_int_raise_event(TIMER_STATE.blocks[2].p_a);    
+    Timer_int_raise_event(TIMER_STATE.blocks[2].p_a);
 }
 
 void Timer_int_02B(void) {
@@ -88,7 +88,7 @@ void Timer_int_02B(void) {
 }
 
 void Timer_int_03A(void) {
-    Timer_int_raise_event(TIMER_STATE.blocks[3].p_a);    
+    Timer_int_raise_event(TIMER_STATE.blocks[3].p_a);
 }
 
 void Timer_int_03B(void) {

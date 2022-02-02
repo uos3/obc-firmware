@@ -552,7 +552,7 @@ ErrorCode Timer_update_pointers(void) {
         !next_timer_found
     ) {
         /* Get next pointer */
-        p_next = TIMER_STATE.p_next_16 + 1;
+        p_next = TIMER_STATE.p_next_16;
 
         /* If next is of the right type increment the pointer (and we're in the
          * array still) */
