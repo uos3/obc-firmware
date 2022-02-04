@@ -14,3 +14,27 @@
 /* -------------------------------------------------------------------------   
  * INCLUDES
  * ------------------------------------------------------------------------- */
+
+/* Standard Includes */
+#include <stdint.h>
+#include <stdbool.h>
+
+/* Internal Includes */
+#include "util/debug/Debug_public.h"
+#include "system/event_manager/EventManager_public.h"
+#include "drivers/spi/Spi_private.h"
+
+/* External Includes */
+#include "driverlib/sysctl.h"
+#include "driverlib/pin_map.h"
+#include "driverlib/ssi.h"
+#include "driverlib/gpio.h"
+#include "inc/hw_memmap.h"
+
+/* -------------------------------------------------------------------------   
+ * GLOBALS
+ * ------------------------------------------------------------------------- */
+
+Spi_Module SPI_MODULES[] {
+    /* TODO: Implement pin map*/
+}
