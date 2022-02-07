@@ -37,4 +37,6 @@
 
 Spi_Module SPI_MODULES[] {
     /* TODO: Implement pin map*/
+    SYSCTL_PERIPH_GPIOA;
+
 }
