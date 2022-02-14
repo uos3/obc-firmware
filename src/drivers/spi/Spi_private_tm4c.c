@@ -36,7 +36,18 @@
  * ------------------------------------------------------------------------- */
 
 Spi_Module SPI_MODULES[] {
-    /* TODO: Implement pin map*/
-    SYSCTL_PERIPH_GPIOA;
-
+    {
+    SYSCTL_PERIPH_GPIOF,
+    SYSCTL_PERIPH_PERIPH_SSI1,
+    GPIO_PORTF_BASE,
+    SSI_BASE,
+    GPIO_PF2_SSI1CLK,
+    GPIO_PF0_SSI1RX,
+    GPIO_PF1_SSI1TX,
+    GPIO_PIN_2,
+    GPIO_PING_0,
+    GPIO_PIN_1,
+    5000000,
+    false
+    }
 }
