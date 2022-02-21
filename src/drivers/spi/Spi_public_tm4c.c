@@ -1,5 +1,5 @@
 /**
- * @file Spi_private_tm4c.c
+ * @file Spi_public_tm4c.c
  * @author Gianluca Borgo (gb2g20@soton.ac.uk/gianborgo@hotmail.com)
  * @brief This is the private SPI driver for the cubesat's firmware.
  * 
@@ -16,13 +16,16 @@
  * ------------------------------------------------------------------------- */
 
 /* Standard Includes */
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 /* Internal Includes */
 #include "util/debug/Debug_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "drivers/spi/Spi_private.h"
+#include "drivers/spi/Spi_public.h"
 
 /* External Includes */
 #include "driverlib/sysctl.h"
@@ -32,29 +35,22 @@
 #include "inc/hw_memmap.h"
 
 /* -------------------------------------------------------------------------   
- * GLOBALS
+ * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-Spi_Module SPI_MODULES[NUM_OF_SPI_MODULES] = {
-    // TODO: Add the pins for the other 3 modules
-    {
-    SYSCTL_PERIPH_GPIOF,
-    SYSCTL_PERIPH_PERIPH_SSI1,
-    GPIO_PORTF_BASE,
-    SSI_BASE,
-    GPIO_PF2_SSI1CLK,
-    GPIO_PF0_SSI1RX,
-    GPIO_PF1_SSI1TX,
-    GPIO_PIN_2,
-    GPIO_PING_0,
-    GPIO_PIN_1,
-    GPIO_PA3,
-    5000000,
-    false,
-    true
-    }
-};
+ErrorCode Spi_init() {
+    for (size_t i = 0; i < NUM_SPI_MOD_ENABLED; i++) {
+        /* Getting a reference to the module to init */
+        Spi_Module *p_module = &SPI_MODULES[SPI_ENABLED_MODULES[i]];
 
-/* TODO: For now I put a dummy array similar to the I2C, these are the only 2 modules that are currently using SPI, there still isn't anything for index 2. This will be added later
- * when I implement the pins for the other 3 modules mentioned above, this means the 0 and 2 indexes will certainly change. */
-uint32_t SPI_ENABLED_MODULES[NUM_SPI_MOD_ENABLED] = {0, 2}
+        /* Checking if the module has already been initialised */
+        if (p_module->initialised) {
+            DEBUG_WRN("SPI module %d has already been initialised and is being called again on Spi_init()", SPI_ENABLED_MODULES[i]);
+
+            /* Move to the next module on the list */
+            continue;
+        }
+
+    }
+    
+}
