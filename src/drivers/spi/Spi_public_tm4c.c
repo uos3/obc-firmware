@@ -59,13 +59,14 @@ ErrorCode Spi_init() {
 
             /* Attempt to initialise the peripheral */
             bool enabled = false;
-            for (int attempt = 0; attempt < SPI_MAX_NUM_SPI_PERIPH_READY_CHECKS; ++i) {
+            for (int attempt = 0; attempt < SPI_MAX_NUM_SPI_PERIPH_READY_CHECKS; ++attempt) {
                 if (SysCtlPeripheralReady(p_module->peripheral_ssi)) {
                     enabled = true;
                     break;
                 }
             }
 
+            /* If the peripheral wasn't enabled before the max attempts was reached, return an error */
             if (!enabled) {
                 DEBUG_ERR("Could not enable SPI module %d", SPI_ENABLED_MODULES[i]);
                 return SPI_ERROR_SPI_PERIPH_ENABLE_FAILED;
@@ -77,5 +78,10 @@ ErrorCode Spi_init() {
         
 
     }
+    /* Make sure the SPI driver is marked as initialised */
+    SPI.initialised = true;
+
+    /* Return initialisation success */
+    return ERROR_NONE;
     
 }
