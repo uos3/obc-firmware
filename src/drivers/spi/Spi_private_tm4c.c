@@ -38,20 +38,36 @@
 Spi_Module SPI_MODULES[NUM_OF_SPI_MODULES] = {
     // TODO: Add the pins for the other 3 modules
     {
-    SYSCTL_PERIPH_GPIOF,
-    SYSCTL_PERIPH_PERIPH_SSI1,
-    GPIO_PORTF_BASE,
-    SSI_BASE,
-    GPIO_PF2_SSI1CLK,
-    GPIO_PF0_SSI1RX,
-    GPIO_PF1_SSI1TX,
-    GPIO_PIN_2,
-    GPIO_PING_0,
-    GPIO_PIN_1,
-    GPIO_PA3,
-    5000000,
-    false,
-    true
+        SYSCTL_PERIPH_GPIOF,
+        SYSCTL_PERIPH_SSI1,
+        GPIO_PORTF_BASE,
+        SSI1_BASE,
+        GPIO_PF2_SSI1CLK,
+        GPIO_PF0_SSI1RX,
+        GPIO_PF1_SSI1TX,
+        GPIO_PIN_2,
+        GPIO_PIN_0,
+        GPIO_PIN_1,
+        GPIO_PA3,
+        5000000,
+        false,
+        true
+    },
+
+    {
+        SYSCTL_PERIPH_GPIOG,
+        SYSCTL_PERIPH_SSI2,
+        GPIO_PORTG_BASE,
+        SSI2_BASE,
+        GPIO_PB4_SSI2CLK,
+        GPIO_PB6_SSI2RX,
+        GPIO_PB7_SSI2TX,
+        GPIO_PIN_3,
+        GPIO_PIN_4,
+        GPIO_PIN_5,
+
+
+
     }
 };
 

@@ -32,6 +32,12 @@
 #define NUM_OF_SPI_MODULES (4)
 /* Number of enabled SPI modules, currently one is used for the radio (CC1125) and the other is for the FRAM */
 #define NUM_SPI_MOD_ENABLED (2)
+/* Maximum amount of attempts the software should attempt to start the SPI peripheral
+NOTE: This number is abstract and doesn't depend on anything */
+#define SPI_MAX_NUM_SPI_PERIPH_READY_CHECKS (10)
+/* Maximum amount of attempts the software should attempt to start the GPIO peripheral
+NOTE: This number is abstract and doesn't depend on anything */
+#define SPI_MAX_NUM_GPIO_PERIPH_READY_CHECKS (10)
 
 /* -------------------------------------------------------------------------   
  * STRUCTS/UNIONS

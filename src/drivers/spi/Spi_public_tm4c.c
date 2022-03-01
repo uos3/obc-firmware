@@ -26,6 +26,7 @@
 #include "system/event_manager/EventManager_public.h"
 #include "drivers/spi/Spi_private.h"
 #include "drivers/spi/Spi_public.h"
+#include "drivers/spi/Spi_errors.h"
 
 /* External Includes */
 #include "driverlib/sysctl.h"
@@ -50,6 +51,30 @@ ErrorCode Spi_init() {
             /* Move to the next module on the list */
             continue;
         }
+
+        /* Reset peripheral if it is not ready */
+        if (!SysCtlPeripheralReady(p_module->peripheral_ssi)) {
+            SysCtlPeripheralReset(p_module->peripheral_ssi);
+            SysCtlPeripheralSleepEnable(p_module->peripheral_ssi);
+
+            /* Attempt to initialise the peripheral */
+            bool enabled = false;
+            for (int attempt = 0; attempt < SPI_MAX_NUM_SPI_PERIPH_READY_CHECKS; ++i) {
+                if (SysCtlPeripheralReady(p_module->peripheral_ssi)) {
+                    enabled = true;
+                    break;
+                }
+            }
+
+            if (!enabled) {
+                DEBUG_ERR("Could not enable SPI module %d", SPI_ENABLED_MODULES[i]);
+                return SPI_ERROR_SPI_PERIPH_ENABLE_FAILED;
+            }
+            
+            
+            
+        }
+        
 
     }
     
