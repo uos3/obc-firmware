@@ -25,6 +25,7 @@
 #include "drivers/spi/Spi_private.h"
 
 /* External Includes */
+#include "inc/tm4c123gh6pm.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/ssi.h"

@@ -39,7 +39,7 @@
  * FUNCTIONS
  * ------------------------------------------------------------------------- */
 
-ErrorCode Spi_init() {
+ErrorCode Spi_init(void) {
     for (size_t i = 0; i < NUM_SPI_MOD_ENABLED; i++) {
         /* Getting a reference to the module to init */
         Spi_Module *p_module = &SPI_MODULES[SPI_ENABLED_MODULES[i]];
@@ -71,17 +71,53 @@ ErrorCode Spi_init() {
                 DEBUG_ERR("Could not enable SPI module %d", SPI_ENABLED_MODULES[i]);
                 return SPI_ERROR_SPI_PERIPH_ENABLE_FAILED;
             }
-            
-            
-            
+        }
+
+        /* Reset the peripheral if it is not ready */
+        if (!SysCtlPeripheralReady(p_module->peripheral_gpio)) {
+            SysCtlPeripheralReset(p_module->peripheral_gpio);
+            SysCtlPeripheralEnable(p_module->peripheral_gpio);
+
+            bool enabled = false;
+            for (int attempt = 0; attempt < SPI_MAX_NUM_GPIO_PERIPH_READY_CHECKS; ++attempt) {
+                if (SysCtlPeripheralReady(p_module->peripheral_gpio)) {
+                    enabled = true;
+                    break;
+                }
+            }
+
+            /* If the peripheral wasn't enabled before the max attempts was reached, return an error */
+            if (!enabled) {
+                DEBUG_ERR("Could not enable SPI module %d", SPI_ENABLED_MODULES[i]);
+                return SPI_ERROR_GPIO_PERIPH_ENABLE_FAILED;
+            }
+
         }
         
+        /* Configure the GPIO pins for their SPI functions */
+        GPIOPinConfigure(p_module->pin_ssi_clk_func);
+        GPIOPinConfigure(p_module->pin_ssi_miso_func);
+        GPIOPinConfigure(p_module->pin_ssi_mosi_func);
 
+        /* Assigning pins to the SPI peripheral */
+        GPIOPinTypeSSI(p_module->base_gpio, p_module->pin_ssi_clk | p_module->pin_ssi_miso | p_module->pin_ssi_mosi);
+        SSIClockSourceSet(p_module->base_spi, SSI_CLOCK_SYSTEM);
+        
+        /* Set the SPI clock rate */
+        SSIConfigSetExpClk(p_module->base_spi, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER, p_module->clockrate, 8);
+
+        /* Enable the SPI master mode */
+        SSIEnable(p_module->base_spi);
+
+        p_module->initialised = true;
     }
     /* Make sure the SPI driver is marked as initialised */
     SPI.initialised = true;
 
     /* Return initialisation success */
     return ERROR_NONE;
-    
+}
+
+ErrorCode Spi_step(void) {
+
 }

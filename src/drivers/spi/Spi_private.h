@@ -69,6 +69,7 @@ typedef struct _Spi_Send_Single_Byte {
     ErrorCode error;
     Spi_Device device;
     uint8_t byte;
+    
 } Spi_Send_Single_Byte;
 
 typedef struct Spi {
