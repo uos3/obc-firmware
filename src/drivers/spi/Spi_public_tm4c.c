@@ -119,5 +119,5 @@ ErrorCode Spi_init(void) {
 }
 
 ErrorCode Spi_step(void) {
-
+    
 }
