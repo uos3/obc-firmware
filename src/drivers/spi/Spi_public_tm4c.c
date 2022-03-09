@@ -121,3 +121,21 @@ ErrorCode Spi_init(void) {
 ErrorCode Spi_step(void) {
     
 }
+
+ErrorCode Spi_device_send_bytes(Spi_Device *p_Device_in, uint8_t *p_data_in, size_t length_in) {
+    /* Checking if the SPI module is initialised */
+    if (!SPI.initialised) {
+        DEBUG_ERR("Attempted to send byte(s) to SPI when it wasn't initialised.");
+        return SPI_ERROR_NOT_INITIALISED;
+    }
+
+    /* TODO: Check if the module can be locked */
+
+    /* Check if the length of the data going in is 0, we can't send 0 bytes */
+    if (length_in == 0) {
+        DEBUG_ERR("Attempted to send zero bytes.");
+        return SPI_ERROR_ZERO_LENGTH_SEND;
+    }
+    
+    
+}

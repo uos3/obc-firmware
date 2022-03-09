@@ -25,7 +25,6 @@
 #include "drivers/spi/Spi_private.h"
 
 /* External Includes */
-#include "inc/tm4c123gh6pm.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/ssi.h"
@@ -68,10 +67,13 @@ Spi_Module SPI_MODULES[NUM_OF_SPI_MODULES] = {
         GPIO_PIN_5,
 
 
-
     }
 };
 
 /* TODO: For now I put a dummy array similar to the I2C, these are the only 2 modules that are currently using SPI, there still isn't anything for index 2. This will be added later
  * when I implement the pins for the other 3 modules mentioned above, this means the 0 and 2 indexes will certainly change. */
-uint32_t SPI_ENABLED_MODULES[NUM_SPI_MOD_ENABLED] = {0, 2}
+uint32_t SPI_ENABLED_MODULES[NUM_SPI_MOD_ENABLED] = {0, 2};
+
+ErrorCode Spi_action_single_send(Spi_ActionSingleSend *p_action_in) {
+    
+}
