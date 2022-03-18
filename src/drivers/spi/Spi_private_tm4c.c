@@ -23,6 +23,7 @@
 #include "util/debug/Debug_public.h"
 #include "system/event_manager/EventManager_public.h"
 #include "drivers/spi/Spi_private.h"
+#include "drivers/spi/Spi_errors.h"
 
 /* External Includes */
 #include "driverlib/sysctl.h"
@@ -75,5 +76,18 @@ Spi_Module SPI_MODULES[NUM_OF_SPI_MODULES] = {
 uint32_t SPI_ENABLED_MODULES[NUM_SPI_MOD_ENABLED] = {0, 2};
 
 ErrorCode Spi_action_single_send(Spi_ActionSingleSend *p_action_in) {
+
+    /* Get the pointer to the SPI module this device is associated with */
+    Spi_Module *p_spi_module = &SPI_MODULES[p_action_in->device.module];
+
+    switch (p_action_in->step) {
+    case 0:
+        
+        p_action_in->step++;
     
+    default:
+        DEBUG_ERR("Reached unexpected step of single send action for the SPI driver");
+        return SPI_ERROR_UNEXPECTED_ACTION_STEP;
+    }
+
 }
