@@ -82,13 +82,111 @@ ErrorCode Spi_action_single_send(Spi_ActionSingleSend *p_action_in) {
 
     switch (p_action_in->step) {
     case 0:
-        SSIDataPut(p_spi_module->base_spi, p_action_in->device.address);
+        /* Attempt to flush FIFO */
+        bool flushed_fifo = false;
+        for (int i = 0; i < SPI_MAX_NUM_ATTEMPT_FLUSH_FIFO; i++) {
+            if (SSIDataGetNonBlocking(p_spi_module->base_spi, p_action_in->fifo_byte)) {
+                flushed_fifo = true;
+                break;
+            }
+        }
+
+        if (!flushed_fifo) {
+            DEBUG_ERR("Could not flush FIFO for SPI module %d", p_action_in->device.module);
+            p_action_in->status = SPI_ACTION_STATUS_FAILURE;
+            p_action_in->error = SPI_ERROR_FIFO_FLUSH_FAILED;
+            return SPI_ERROR_FIFO_FLUSH_FAILED;
+        }
+
+        /* TODO: Check for the wait_miso here create a variable that will check for an X amount of times (SPI_MAX_NUM_WAIT_MISO_CHECKS) PARTIALLY COMPLETED */
+        /* It will only wait for MISO it is configured to do so in the module */
+        if (p_spi_module->wait_miso) {
+            bool waiting_miso = true;
+            for (int i = 0; i < SPI_MAX_NUM_CHECKS_WAIT_MISO; i++) {
+                if (GPIOPinRead(p_spi_module->base_gpio, p_spi_module->pin_ssi_miso)) {
+                    waiting_miso = false;
+                    break;
+                }
+            }
+
+            if (waiting_miso) {
+                DEBUG_ERR("SPI module %d has attempted to wait for MISO, this means \
+                MISO isn't low and that means the clock stability of the cc1120 can't be indicated.", p_action_in->device.module);
+                p_action_in->status = SPI_ACTION_STATUS_FAILURE;
+                p_action_in->error = SPI_ERROR_MISO_NOT_LOW;
+                return SPI_ERROR_MISO_NOT_LOW;
+            }
+        }
+
+        /* Increment the step index */
         p_action_in->step++;
 
+        /* 
+        * This GCC attribute prevents the fallthrough warning for this
+        * case. Usually fallthrough in switches is bad, but here we
+        * actually want this so that we do not interrupt the function when
+        * it has the possibility to actually make progress. Therefore this
+        * attribute is used to keep the fallthrough warning enabled but to
+        * say that here it is ok
+        */
         __attribute__ ((fallthrough));
     
     case 1:
-        /* TODO: Check for the wait_miso here create a variable that will check for an X amount of times (SPI_MAX_NUM_WAIT_MISO_CHECKS) */
+        /* Write to the address and read the status byte */
+        SSIDataPut(p_spi_module->base_spi, p_action_in->device.address);
+        SSIDataGet(p_spi_module->base_spi, p_action_in->status_byte);
+
+        /* Write data */
+        if (p_action_in->byte != NULL) {
+            SSIDataPut(p_spi_module->base_spi, p_action_in->byte);
+            SSIDataGet(p_spi_module->base_spi, p_action_in->fifo_byte);
+        }
+        
+        /* Increment the step index */
+        p_action_in->step++;
+
+        __attribute__ ((fallthrough));
+
+    case 2:
+        if (p_action_in->num_master_busy_checks >= SPI_MAX_NUM_MASTER_MAJOR_BUSY_CHECKS) {
+                DEBUG_ERR(
+                "SPI master module %d has been busy for %d major loops, now\
+                considered unresponsive.",
+                p_action_in->device.module,
+                p_action_in->num_master_busy_major_checks
+                );
+                p_action_in->status = SPI_ACTION_STATUS_FAILURE;
+                p_action_in->error = SPI_ERROR_MASTER_MODULE_BUSY;
+                return SPI_ERROR_MASTER_MODULE_BUSY;
+        }
+
+        bool master_busy = true;
+        for (int i = 0; i < SPI_MAX_NUM_MASTER_MINOR_BUSY_CHECKS; i++) {
+            master_busy = SSIBusy(p_spi_module->base_spi);
+
+            if (!master_busy) {
+                break;
+            }
+            
+        }
+
+        if (master_busy) {
+            p_action_in->num_master_busy_checks++;
+
+            DEBUG_DBG("I2C master module %d still busy after minor check.",
+            p_action_in->device.module);
+
+            return ERROR_NONE;
+        }
+
+        /* Increment the step index */
+        p_action_in->step++;
+
+        __attribute__ ((fallthrough));
+
+    case 3:
+        return ERROR_NONE;
+        
     
     default:
         DEBUG_ERR("Reached unexpected step of single send action for the SPI driver");

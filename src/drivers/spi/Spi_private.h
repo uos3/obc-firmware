@@ -62,6 +62,10 @@
 
 #define SPI_MAX_NUM_CHECKS_WAIT_MISO (10)
 
+#define SPI_MAX_NUM_MASTER_MAJOR_BUSY_CHECKS (10)
+
+#define SPI_MAX_NUM_MASTER_MINOR_BUSY_CHECKS (10)
+
 /* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */
@@ -123,6 +127,17 @@ typedef struct _Spi_Send_Single_Send {
      * @brief The byte to send to the device
      */
     uint8_t byte;
+
+    /**
+     * @brief The number of checks attempted by the major loop to wait for miso
+     * 
+     */
+    uint32_t num_master_busy_checks;
+
+    // TODO: Check if this is neccessary 
+    uint32_t fifo_byte;
+
+    uint32_t status_byte;
     
 } Spi_ActionSingleSend;
 

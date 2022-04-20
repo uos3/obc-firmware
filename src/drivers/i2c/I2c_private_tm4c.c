@@ -148,7 +148,7 @@ ErrorCode I2c_action_single_send(I2c_ActionSingleSend *p_action_in) {
                 I2C_MASTER_CMD_SINGLE_SEND
             );
 
-            /* Increment the setp index */
+            /* Increment the step index */
             p_action_in->step++;
         
             /* 

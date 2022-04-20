@@ -52,3 +52,10 @@
  * @brief MISO failed to go to low on a given number of checks so the clock stability can't be checked
  */
 #define SPI_ERROR_MISO_NOT_LOW ((ErrorCode)MOD_ID_SPI | 6)
+
+/**
+ * @brief Failed to flush FIFO.
+ */
+#define SPI_ERROR_FIFO_FLUSH_FAILED ((ErrorCode)MOD_ID_SPI | 7)
+
+#define SPI_ERROR_MASTER_MODULE_BUSY ((ErrorCode)MOD_ID_SPI | 8)
