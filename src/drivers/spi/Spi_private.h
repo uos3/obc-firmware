@@ -58,6 +58,10 @@
  */
 #define SPI_MAX_NUM_GPIO_PERIPH_READY_CHECKS (10)
 
+#define SPI_MAX_NUM_ATTEMPT_FLUSH_FIFO (10)
+
+#define SPI_MAX_NUM_CHECKS_WAIT_MISO (10)
+
 /* -------------------------------------------------------------------------   
  * ENUMS
  * ------------------------------------------------------------------------- */

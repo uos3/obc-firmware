@@ -136,6 +136,8 @@ ErrorCode Spi_device_send_bytes(Spi_Device *p_Device_in, uint8_t *p_data_in, siz
         DEBUG_ERR("Attempted to send zero bytes.");
         return SPI_ERROR_ZERO_LENGTH_SEND;
     }
+
+    /* TODO: Actually send stuff here */
     
     
 }

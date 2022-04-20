@@ -82,8 +82,13 @@ ErrorCode Spi_action_single_send(Spi_ActionSingleSend *p_action_in) {
 
     switch (p_action_in->step) {
     case 0:
-        
+        SSIDataPut(p_spi_module->base_spi, p_action_in->device.address);
         p_action_in->step++;
+
+        __attribute__ ((fallthrough));
+    
+    case 1:
+        /* TODO: Check for the wait_miso here create a variable that will check for an X amount of times (SPI_MAX_NUM_WAIT_MISO_CHECKS) */
     
     default:
         DEBUG_ERR("Reached unexpected step of single send action for the SPI driver");
